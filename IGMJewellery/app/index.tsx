@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
 import homePageIcon from "../assets/images/homePageIcon.png"; // or "./assets/..." if under app/assets
+import { Link } from "expo-router";
 const IGMJewelleryPage: React.FC = () => {
   return (
     <ScrollView
@@ -22,6 +23,9 @@ const IGMJewelleryPage: React.FC = () => {
         India’s first AI-powered jewellery marketplace, where heritage meets
         high tech
       </Text>
+      <Link href="/home" style={styles.secondaryLinkText}>
+        Explore Home →
+      </Link>
     </ScrollView>
   );
 };
@@ -51,5 +55,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 26,
     lineHeight: 22,
     marginBottom: 40,
+  },
+  secondaryLinkText: {
+    fontSize: 16,
+    color: "#007aff",
+    marginTop: 6,
   },
 });
