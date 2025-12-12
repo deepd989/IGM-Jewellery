@@ -12,5 +12,6 @@ export interface Product {
   brand: Brand;
   tags: string[]; //
   thumbnailUrls: string[];
-    isNew?: boolean;
+  isNew?: boolean;
+  rating: number;
 }

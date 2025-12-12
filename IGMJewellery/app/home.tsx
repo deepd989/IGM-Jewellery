@@ -13,13 +13,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import HomePageCard from "@/components/homePageCard";
 import HorizontalRuleIGM from "@/components/horizontalRuleIGM";
 import BrandGrid from "@/components/brandGrid";
+import GiftFinder from "@/components/giftFinder";
+import OccasionCardList from "@/components/occaisionsHome";
+import { TopPicks } from "@/components/topPicks";
 
 
 
 export default function HomeScreen() {
     const [expanded, setExpanded] = useState(false);
     const [firstRowHeight, setFirstRowHeight] = useState<number | null>(60);
-    const produts = useSelector(selectProducts)
+    const products = useSelector(selectProducts)
   return (
     <SafeAreaView style={{flex:1}}>
     <ScrollView style={styles.container}>
@@ -97,10 +100,15 @@ export default function HomeScreen() {
         {/* Featured Product Card */}
         <HomePageCard />
         <HorizontalRuleIGM/>
-        <View style={{alignItems:"center",marginBottom:20}}>
-            <Text style={styles.hey}> Explore Brands</Text>
-         </View>
+        <SectionHeader value="Explore Brand"/>
         <BrandGrid />
+        <HorizontalRuleIGM/>
+        <GiftFinder/>
+        <HorizontalRuleIGM/>
+        <SectionHeader value="Shop by Occaision"/>
+        <OccasionCardList/>
+        <HorizontalRuleIGM/>
+        <TopPicks products={products}/>
         <HorizontalRuleIGM/>
 
 
@@ -108,6 +116,15 @@ export default function HomeScreen() {
     </SafeAreaView>
   
   );
+}
+
+
+export function SectionHeader({value}: {value:string}) {
+    return (
+        <View style={{alignItems:"center",marginBottom:40}}>
+        <Text style={styles.hey}>{value}</Text>
+     </View>
+    )
 }
 
 const styles = StyleSheet.create({
