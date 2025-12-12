@@ -1,10 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, ScrollView, Image, TouchableOpacity } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import NecklaceCard from "@/components/homePageCard";
 import SearchBar from "@/components/searchBar";
+import { AudioLines } from 'lucide-react-native';
+import Icon from '@mdi/react';
+import EarringIcon from "@/components/ui/earingsComponentSvg";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
+
 
 export default function HomeScreen() {
+    const [expanded, setExpanded] = useState(false);
+    const [firstRowHeight, setFirstRowHeight] = useState<number | null>(60);
   return (
     // todo add in safe area
     <ScrollView style={styles.container}>
@@ -34,28 +42,69 @@ export default function HomeScreen() {
           style={styles.input}
         />
         <Ionicons name="mic-outline" size={22} />
-        <Feather name="bar-chart-2" size={22} />
+        <View style={{ borderRadius:50, height:30, width:30, alignItems:"center", justifyContent:"center", backgroundColor:"#EBEBEB"}}>
+            <AudioLines />
+        </View>
       </View>
 
-      {/* Tag Chips */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipsRow}>
-        {["Ai powered", "TBZ latest collection", "Rings", "Wedding", "Men’s gifting", "Mom’s gift", "Anniversary"].map(
-          (chip, idx) => (
-            <View key={idx} style={styles.chip}>
-              <Text style={styles.chipText}>{chip}</Text>
-            </View>
-          )
-        )}
-      </ScrollView>
+      <View>
+  <View
+    style={[
+      styles.chipsRow,
+      !expanded && firstRowHeight !== null
+        ? { height: firstRowHeight, overflow: "hidden" }
+        : {}
+    ]}
+    onLayout={(e) => {
+      if (firstRowHeight === null) {
+        setFirstRowHeight(e.nativeEvent.layout.height);
+      }
+    }}
+  >
+    {[
+      "Ai powered",
+      "TBZ latest collection",
+      "Rings",
+      "Wedding",
+      "Men’s gifting",
+      "Mom’s gift",
+      "Anniversary",
+      "Ai powered",
+      "TBZ latest collection",
+      "Rings",
+      "Wedding",
+      "Men’s gifting",
+      "Mom’s gift",
+      "Anniversary",
+    ].map((chip, idx) => (
+      <View key={idx} style={styles.chip}>
+        <Text style={styles.chipText}>{chip}</Text>
+      </View>
+    ))}
+  </View>
 
-    <View style={{backgroundColor: "lightgrey", paddingTop: 6, marginTop: 10, borderRadius: 8, paddingHorizontal: 12}}>
+  <TouchableOpacity onPress={() => setExpanded(!expanded)}>
+    <Text style={styles.moreText}>{expanded ? "Show less" : "More"}</Text>
+  </TouchableOpacity>
+</View>
+
+    <View style={{backgroundColor: "#F8F8F8", paddingTop: 6, marginTop: 100, borderRadius: 8, paddingHorizontal: 12, borderColor:"grey", borderWidth:2}}>
       {/* Category Icons (static placeholders) */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.iconRow}>
-        {["●", "○", "◇", "▦", "🎁", "👂", "💍"].map((i, idx) => (
-          <Text key={idx} style={styles.iconItem}>{i}</Text>
-        ))}
-      </ScrollView>
-
+      <View style={styles.iconRow}>
+        <MaterialCommunityIcons name="necklace" size={32} color="#000" />
+        <MaterialCommunityIcons name="ring" size={32} color="#000" />
+        <MaterialCommunityIcons name="diamond-stone" size={32} color="#000" />
+        <MaterialCommunityIcons name="gold" size={32} color="#000" />
+        <MaterialCommunityIcons name="gift" size={32} color="#000" />
+        <EarringIcon width={40} height={40} />
+      </View>
+      <View
+            style={{
+                height: 2,
+                backgroundColor: "#ccc",
+                width: "100%",
+            }}
+            />
       {/* Necklace Section */}
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Necklace</Text>
@@ -97,20 +146,34 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 30,
     gap: 12,
+    backgroundColor: "#F8F8F8",
   },
-  input: { flex: 1 },
+  input: { flex: 1, backgroundColor:"#F8F8F8" },
 
-  chipsRow: { marginTop: 15, flexGrow: 0 },
-  chip: {
-    backgroundColor: "#f5f5f5",
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 10,
+  chipsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginVertical: 10,
   },
+  
+  chip: {
+    backgroundColor: "#f2f2f2",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  
+  moreText: {
+    paddingHorizontal: 12,
+    color: "black",
+    marginTop: 6,
+    fontWeight: "100",
+  },
+  
   chipText: { fontSize: 12, color: "#444" },
 
-  iconRow: { marginTop: 20, flexGrow: 0 },
+  iconRow: { marginTop: 20, flexGrow: 0, justifyContent:"space-evenly", flexDirection: "row", alignItems: "center", paddingVertical: 12, },
   iconItem: { fontSize: 22, marginRight: 20 },
 
   sectionHeader: {
