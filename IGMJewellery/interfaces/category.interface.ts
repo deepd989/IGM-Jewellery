@@ -26,11 +26,11 @@ export interface Department {
   categories: SidebarCategory[];
 }
 
-export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  currency: string;
-  imageUrl: string;
-  isNew?: boolean;
-}
+// export interface Product {
+//   id: string;
+//   name: string;
+//   price: number;
+//   currency: string;
+//   imageUrl: string;
+//   isNew?: boolean;
+// }

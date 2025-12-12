@@ -2,6 +2,7 @@ import { Brand } from "@/enums/brand.enum";
 import { ProductType } from "@/enums/productType.enum";
 
 export interface Product {
+  title:string;
   id: string;
   name: string;
   description: string;
@@ -11,4 +12,5 @@ export interface Product {
   brand: Brand;
   tags: string[]; //
   thumbnailUrls: string[];
+    isNew?: boolean;
 }
