@@ -6,7 +6,6 @@ import {
     FlatList,
     Image,
     Platform,
-    SafeAreaView,
     StyleSheet,
     Text,
     TextInput,
@@ -15,6 +14,7 @@ import {
 } from 'react-native';
 import { COLORS, SPACING } from '../../constants/theme';
 import { useCategories } from '../../hooks/useCategories';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 

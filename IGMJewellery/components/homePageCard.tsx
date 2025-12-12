@@ -3,6 +3,70 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { Product } from "@/interfaces/product.interface";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import EarringIcon from "./ui/earingsComponentSvg";
+import { selectProducts } from "@/store/productSlice";
+import { useSelector } from "react-redux";
+
+
+export default function HomePageCard() {
+    const products = useSelector(selectProducts);   
+    return (
+        <View style={{backgroundColor: "#F8F8F8", paddingTop: 6, marginTop: 100, borderRadius: 8, paddingHorizontal: 12, borderColor:"grey", borderWidth:2,marginBottom:40}}>
+          {/* Category Icons (static placeholders) */}
+          <View style={styles.iconRow}>
+            <MaterialCommunityIcons name="necklace" size={32} color="#000" />
+            <MaterialCommunityIcons name="ring" size={32} color="#000" />
+            <MaterialCommunityIcons name="diamond-stone" size={32} color="#000" />
+            <MaterialCommunityIcons name="gold" size={32} color="#000" />
+            <MaterialCommunityIcons name="gift" size={32} color="#000" />
+            <EarringIcon width={40} height={40} />
+          </View>
+          <View
+                style={{
+                    height: 2,
+                    backgroundColor: "#ccc",
+                    width: "100%",
+                }}
+                />
+          {/* Necklace Section */}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Necklace</Text>
+            <Ionicons name="chevron-forward" size={18} />
+          </View>
+    
+          {/* Product Card */}
+          <NecklaceCard
+               product={products[0]}
+               onTryOn={() => {
+                // Handle try-on action
+               }}
+               deliveryDate="Delivery by Sep 25"
+                />
+        </View>)
+}
+
+const styles = StyleSheet.create({
+    iconRow: { marginTop: 20, flexGrow: 0, justifyContent:"space-evenly", flexDirection: "row", alignItems: "center", paddingVertical: 12, },
+    iconItem: { fontSize: 22, marginRight: 20 },
+  
+    sectionHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 30,
+      alignItems: "center",
+    },
+    sectionTitle: { fontSize: 20, fontWeight: "600" },
+
+
+});
+
+
+
+
+
+
+
 
 interface Props {
   product:Product,
@@ -10,53 +74,53 @@ interface Props {
   deliveryDate: string;  
 }
 
-const NecklaceCard: React.FC<Props> = ({
+
+export const NecklaceCard: React.FC<Props> = ({
   product,
   deliveryDate,
   onTryOn,
 }) => {
   return (
-    <View style={styles.wrapper}>
-      <TouchableOpacity style={styles.card} activeOpacity={0.9}>
+    <View style={necklaceCardStyle.wrapper}>
+      <TouchableOpacity style={necklaceCardStyle.card} activeOpacity={0.9}>
         {/* Product Image */}
-        <View style={styles.imageWrapper}>
-          <Image source={{ uri: product.thumbnailUrls[0] }} style={styles.image} />
+        <View style={necklaceCardStyle.imageWrapper}>
+          <Image source={{ uri: product.thumbnailUrls[0] }} style={necklaceCardStyle.image} />
 
-          <TouchableOpacity style={styles.wishlistButton}>
+          <TouchableOpacity style={necklaceCardStyle.wishlistButton}>
             <AntDesign name="heart" size={22} color="#000" />
           </TouchableOpacity>
 
-          <View style={styles.deliveryTag}>
+          <View style={necklaceCardStyle.deliveryTag}>
             <AntDesign name="truck" size={14} color="#555" />
-            <Text style={styles.deliveryText}>{deliveryDate}</Text>
+            <Text style={necklaceCardStyle.deliveryText}>{deliveryDate}</Text>
           </View>
         </View>
 
         {/* Details */}
-        <View style={styles.details}>
-          <Text style={styles.title}>{product.title}</Text>
+        <View style={necklaceCardStyle.details}>
+          <Text style={necklaceCardStyle.title}>{product.title}</Text>
 
-          <View style={styles.priceRow}>
-            <Text style={styles.price}>₹{product.discountedPrice.toLocaleString()}</Text>
-            <Text style={styles.oldPrice}>₹{product.givenPrice.toLocaleString()}</Text>
+          <View style={necklaceCardStyle.priceRow}>
+            <Text style={necklaceCardStyle.price}>₹{product.discountedPrice.toLocaleString()}</Text>
+            <Text style={necklaceCardStyle.oldPrice}>₹{product.givenPrice.toLocaleString()}</Text>
           </View>
 
-          <Text style={styles.brand}>{product.brand}</Text>
+          <Text style={necklaceCardStyle.brand}>{product.brand}</Text>
         </View>
       </TouchableOpacity>
 
       {/* Floating "See how it looks on you" Button */}
-      <TouchableOpacity style={styles.tryOnButton} onPress={onTryOn}>
+      <TouchableOpacity style={necklaceCardStyle.tryOnButton} onPress={onTryOn}>
         <Ionicons name="sparkles-outline" size={18} color="#fff" />
-        <Text style={styles.tryOnText}>See how it looks on you</Text>
+        <Text style={necklaceCardStyle.tryOnText}>See how it looks on you</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-export default NecklaceCard;
 
-const styles = StyleSheet.create({
+const necklaceCardStyle = StyleSheet.create({
   wrapper: {
     
   },

@@ -5,15 +5,15 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import AuthGuard from '@/components/authGaurd';
+import { Provider } from 'react-redux';
+import { store } from '@/store/store';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
+    <Provider store={store}>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       {/* <AuthGuard> */}
       <Stack>
@@ -25,5 +25,6 @@ export default function RootLayout() {
       <StatusBar style="auto" />
       {/* </AuthGuard> */}
     </ThemeProvider>
+    </Provider>
   );
 }

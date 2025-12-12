@@ -1,12 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ProductType } from '../enums/productType.enum';
 import { Product } from '@/interfaces/product.interface';
+import { dummyProducts } from '@/dummyData/dummyProducts';
 
 
 
 type ProductsState = Product[];
 
-const initialState: ProductsState = [];
+const initialState: ProductsState = dummyProducts;
 
 const productSlice = createSlice({
   name: 'products',
