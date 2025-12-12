@@ -7,14 +7,24 @@ import { AudioLines } from 'lucide-react-native';
 import Icon from '@mdi/react';
 import EarringIcon from "@/components/ui/earingsComponentSvg";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { selectProducts } from "@/store/productSlice";
+import { useSelector } from "react-redux";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import HomePageCard from "@/components/homePageCard";
+import HorizontalRuleIGM from "@/components/horizontalRuleIGM";
+import BrandGrid from "@/components/brandGrid";
+import GiftFinder from "@/components/giftFinder";
+import OccasionCardList from "@/components/occaisionsHome";
+import { TopPicks } from "@/components/topPicks";
 
 
 
 export default function HomeScreen() {
     const [expanded, setExpanded] = useState(false);
     const [firstRowHeight, setFirstRowHeight] = useState<number | null>(60);
+    const products = useSelector(selectProducts)
   return (
-    // todo add in safe area
+    <SafeAreaView style={{flex:1}}>
     <ScrollView style={styles.container}>
       
       {/* Header */}
@@ -87,43 +97,34 @@ export default function HomeScreen() {
     <Text style={styles.moreText}>{expanded ? "Show less" : "More"}</Text>
   </TouchableOpacity>
 </View>
+        {/* Featured Product Card */}
+        <HomePageCard />
+        <HorizontalRuleIGM/>
+        <SectionHeader value="Explore Brand"/>
+        <BrandGrid />
+        <HorizontalRuleIGM/>
+        <GiftFinder/>
+        <HorizontalRuleIGM/>
+        <SectionHeader value="Shop by Occaision"/>
+        <OccasionCardList/>
+        <HorizontalRuleIGM/>
+        <TopPicks products={products}/>
+        <HorizontalRuleIGM/>
 
-    <View style={{backgroundColor: "#F8F8F8", paddingTop: 6, marginTop: 100, borderRadius: 8, paddingHorizontal: 12, borderColor:"grey", borderWidth:2}}>
-      {/* Category Icons (static placeholders) */}
-      <View style={styles.iconRow}>
-        <MaterialCommunityIcons name="necklace" size={32} color="#000" />
-        <MaterialCommunityIcons name="ring" size={32} color="#000" />
-        <MaterialCommunityIcons name="diamond-stone" size={32} color="#000" />
-        <MaterialCommunityIcons name="gold" size={32} color="#000" />
-        <MaterialCommunityIcons name="gift" size={32} color="#000" />
-        <EarringIcon width={40} height={40} />
-      </View>
-      <View
-            style={{
-                height: 2,
-                backgroundColor: "#ccc",
-                width: "100%",
-            }}
-            />
-      {/* Necklace Section */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Necklace</Text>
-        <Ionicons name="chevron-forward" size={18} />
-      </View>
 
-      {/* Product Card */}
-      <NecklaceCard
-            title="24K Gold Necklace"
-            brand="Kalyan Jewellers"
-            price={20000}
-            oldPrice={25000}
-            deliveryDate="19th Nov"
-            image="https://your-image-url-here"
-            />
-    </View>
     </ScrollView>
+    </SafeAreaView>
   
   );
+}
+
+
+export function SectionHeader({value}: {value:string}) {
+    return (
+        <View style={{alignItems:"center",marginBottom:40}}>
+        <Text style={styles.hey}>{value}</Text>
+     </View>
+    )
 }
 
 const styles = StyleSheet.create({
@@ -173,17 +174,6 @@ const styles = StyleSheet.create({
   
   chipText: { fontSize: 12, color: "#444" },
 
-  iconRow: { marginTop: 20, flexGrow: 0, justifyContent:"space-evenly", flexDirection: "row", alignItems: "center", paddingVertical: 12, },
-  iconItem: { fontSize: 22, marginRight: 20 },
-
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 30,
-    alignItems: "center",
-  },
-  sectionTitle: { fontSize: 20, fontWeight: "600" },
-
   card: {
     marginTop: 16,
     backgroundColor: "#fff",
@@ -191,13 +181,6 @@ const styles = StyleSheet.create({
     padding: 12,
     borderWidth: 1,
     borderColor: "#eee",
-  },
-
-  productImage: {
-    width: "100%",
-    height: 180,
-    backgroundColor: "#eee",
-    borderRadius: 8,
   },
 
   heartIcon: { position: "absolute", top: 20, right: 20 },

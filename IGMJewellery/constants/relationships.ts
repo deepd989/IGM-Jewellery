@@ -1,0 +1,1 @@
+export const RELATIONSHIPS = ["Mother", "Father", "Brother", "Sister", "Partner", "Friend"];
