@@ -1,7 +1,7 @@
-import { Product } from '@/interfaces/category.interface';
 import React from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { COLORS, FONTS, SIZES, SPACING } from '../../../constants/theme';
+import { Product } from '@/interfaces/product.interface';
 
 
 interface ProductGridProps {
@@ -18,7 +18,7 @@ const ProductCard = ({ product, onPress }: { product: Product; onPress: (p: Prod
     accessibilityLabel={`View details for ${product.name}`}
   >
     <View style={styles.imageWrapper}>
-      <Image source={{ uri: product.imageUrl }} style={styles.image} resizeMode="cover" />
+      <Image source={{ uri: product.thumbnailUrls[0] }} style={styles.image} resizeMode="cover" />
       {product.isNew && (
         <View style={styles.badge}>
           <Text style={styles.badgeText}>NEW</Text>
@@ -27,7 +27,7 @@ const ProductCard = ({ product, onPress }: { product: Product; onPress: (p: Prod
     </View>
     <View style={styles.details}>
       <Text style={styles.name} numberOfLines={1}>{product.name}</Text>
-      <Text style={styles.price}>{product.currency}{product.price.toLocaleString()}</Text>
+      <Text style={styles.price}>{"currency"}{product.discountedPrice.toLocaleString()}</Text>
     </View>
   </TouchableOpacity>
 );

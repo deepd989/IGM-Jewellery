@@ -2,24 +2,17 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { Product } from "@/interfaces/product.interface";
 
 interface Props {
-  title: string;
-  brand: string;
-  price: number;
-  oldPrice: number;
-  deliveryDate: string;
-  image: string;
-  onTryOn?: () => void;
+  product:Product,
+  onTryOn: () => void;
+  deliveryDate: string;  
 }
 
 const NecklaceCard: React.FC<Props> = ({
-  title,
-  brand,
-  price,
-  oldPrice,
+  product,
   deliveryDate,
-  image,
   onTryOn,
 }) => {
   return (
@@ -27,7 +20,7 @@ const NecklaceCard: React.FC<Props> = ({
       <TouchableOpacity style={styles.card} activeOpacity={0.9}>
         {/* Product Image */}
         <View style={styles.imageWrapper}>
-          <Image source={{ uri: image }} style={styles.image} />
+          <Image source={{ uri: product.thumbnailUrls[0] }} style={styles.image} />
 
           <TouchableOpacity style={styles.wishlistButton}>
             <AntDesign name="heart" size={22} color="#000" />
@@ -41,14 +34,14 @@ const NecklaceCard: React.FC<Props> = ({
 
         {/* Details */}
         <View style={styles.details}>
-          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.title}>{product.title}</Text>
 
           <View style={styles.priceRow}>
-            <Text style={styles.price}>₹{price.toLocaleString()}</Text>
-            <Text style={styles.oldPrice}>₹{oldPrice.toLocaleString()}</Text>
+            <Text style={styles.price}>₹{product.discountedPrice.toLocaleString()}</Text>
+            <Text style={styles.oldPrice}>₹{product.givenPrice.toLocaleString()}</Text>
           </View>
 
-          <Text style={styles.brand}>{brand}</Text>
+          <Text style={styles.brand}>{product.brand}</Text>
         </View>
       </TouchableOpacity>
 

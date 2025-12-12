@@ -6,6 +6,7 @@ export const dummyProducts: Product[] = [
   {
     id: "prod-001",
     name: "Classic Gold Necklace",
+    title: "Classic Gold Necklace",
     description: "Elegant 22K gold necklace with intricate design.",
     productType: ProductType.Necklace,
     givenPrice: 1200,
@@ -20,6 +21,7 @@ export const dummyProducts: Product[] = [
   {
     id: "prod-002",
     name: "Diamond Stud Earrings",
+    title: "Diamond Stud Earrings",
     description: "Timeless diamond studs set in 18K white gold.",
     productType: ProductType.DiamondStone,
     givenPrice: 800,
@@ -34,6 +36,7 @@ export const dummyProducts: Product[] = [
   {
     id: "prod-003",
     name: "Silver Charm Bracelet",
+    title: "Silver Charm Bracelet",
     description: "Sterling silver bracelet with customizable charms.",
     productType: ProductType.Bracelet,
     givenPrice: 250,
@@ -47,6 +50,7 @@ export const dummyProducts: Product[] = [
   {
     id: "prod-004",
     name: "Ruby Ring",
+    title: "Ruby Ring",
     description: "Statement ring featuring a natural ruby centerpiece.",
     productType: ProductType.Ring,
     givenPrice: 950,
