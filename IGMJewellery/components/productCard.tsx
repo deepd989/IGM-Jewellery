@@ -2,18 +2,27 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { Product } from "@/interfaces/product.interface";
+import type { StyleProp, ViewStyle } from "react-native";
 
 interface ProductCardProps {
- product:Product,
- deliveryDate: string,
+  product: Product,
+  width?: number,
+  deliveryDate?: string,
+  label1Text?:string,
+  label2Text?:string,
+    
+
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
- product,
- deliveryDate,
+  product,
+  deliveryDate,
+  width,
+  label1Text="Try Now",
+  label2Text="Try at home",
 }) => {
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { width }]}>
       {/* Top badges */}
       <View style={styles.topRow}>
         {product.isNew && (
@@ -32,10 +41,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </View>
 
       {/* Delivery badge */}
-      <View style={styles.deliveryBadge}>
+      {!deliveryDate && <View style={styles.deliveryBadge}>
         <MaterialIcons name="local-shipping" size={16} color="black" />
         <Text style={styles.deliveryText}>{deliveryDate}</Text>
-      </View>
+      </View>}
 
       {/* Price */}
       <View style={styles.priceRow}>
@@ -62,10 +71,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Buttons */}
       <View style={styles.buttonRow}>
         <TouchableOpacity style={[styles.button, styles.tryNow]}>
-          <Text style={styles.tryNowText}>Try Now</Text>
+          <Text style={styles.tryNowText}>{label1Text}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.button, styles.tryAtHome]}>
-          <Text style={styles.tryAtHomeText}>Try at home</Text>
+          <Text style={styles.tryAtHomeText}>{label2Text}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -74,7 +83,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    width: 180,
     padding: 10,
     borderRadius: 10,
     backgroundColor: "#fff",
@@ -97,7 +105,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   imagePlaceholder: {
-    height: 120,
+    height: 200,
     backgroundColor: "#f0f0f0",
     marginVertical: 10,
     justifyContent: "center",
@@ -160,16 +168,21 @@ const styles = StyleSheet.create({
   tryNow: {
     borderWidth: 1,
     borderColor: "#000",
+    justifyContent: "center",
+    alignItems: "center",
+
   },
   tryAtHome: {
     backgroundColor: "#000",
   },
   tryNowText: {
     fontWeight: "bold",
+    textAlign: "center",
   },
   tryAtHomeText: {
     color: "#fff",
     fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
