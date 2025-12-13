@@ -16,6 +16,10 @@ import BrandGrid from "@/components/brandGrid";
 import GiftFinder from "@/components/giftFinder";
 import OccasionCardList from "@/components/occaisionsHome";
 import { TopPicks } from "@/components/topPicks";
+import LatestCollections from "@/components/latestCollections";
+import TryAtHomeCard from "@/components/tryAtHomeCard";
+import GiftingCard from "@/components/giftingCard";
+import BestSellersSection from "@/components/bestSellers";
 
 
 
@@ -110,6 +114,16 @@ export default function HomeScreen() {
         <HorizontalRuleIGM/>
         <TopPicks products={products}/>
         <HorizontalRuleIGM/>
+        <LatestCollections/>
+        <HorizontalRuleIGM/>
+        <TryAtHomeCard/>
+        <HorizontalRuleIGM/>
+        <GiftingCard/>
+        <HorizontalRuleIGM/>
+        <BestSellersSection/>
+        {/* Necklace Section */}
+
+
 
 
     </ScrollView>

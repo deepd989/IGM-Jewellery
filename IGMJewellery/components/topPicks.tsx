@@ -14,6 +14,7 @@ export function TopPicks({ products }: TopPicksProps) {
       renderItem={({ item }) => (
         <ProductCard
           product={item}
+          width={180}
           deliveryDate={"Delivery by Sep 25"}
         />
       )}
