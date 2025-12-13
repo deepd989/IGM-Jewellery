@@ -8,6 +8,8 @@ interface ProductCardProps {
   product: Product,
   width?: number,
   deliveryDate?: string,
+  label1Text?:string,
+  label2Text?:string,
     
 
 }
@@ -16,6 +18,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   product,
   deliveryDate,
   width,
+  label1Text="Try Now",
+  label2Text="Try at home",
 }) => {
   return (
     <View style={[styles.card, { width }]}>
@@ -67,10 +71,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Buttons */}
       <View style={styles.buttonRow}>
         <TouchableOpacity style={[styles.button, styles.tryNow]}>
-          <Text style={styles.tryNowText}>Try Now</Text>
+          <Text style={styles.tryNowText}>{label1Text}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.button, styles.tryAtHome]}>
-          <Text style={styles.tryAtHomeText}>Try at home</Text>
+          <Text style={styles.tryAtHomeText}>{label2Text}</Text>
         </TouchableOpacity>
       </View>
     </View>

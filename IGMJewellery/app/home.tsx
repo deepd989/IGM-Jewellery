@@ -20,6 +20,10 @@ import LatestCollections from "@/components/latestCollections";
 import TryAtHomeCard from "@/components/tryAtHomeCard";
 import GiftingCard from "@/components/giftingCard";
 import BestSellersSection from "@/components/bestSellers";
+import CommunityCarousel from "@/components/communityCarousel";
+import BespokeSection from "@/components/bespokeSection";
+import EventCard from "@/components/EventCard";
+import HashtagComponent from "@/components/hashtagComponent";
 
 
 
@@ -104,12 +108,10 @@ export default function HomeScreen() {
         {/* Featured Product Card */}
         <HomePageCard />
         <HorizontalRuleIGM/>
-        <SectionHeader value="Explore Brand"/>
         <BrandGrid />
         <HorizontalRuleIGM/>
         <GiftFinder/>
         <HorizontalRuleIGM/>
-        <SectionHeader value="Shop by Occaision"/>
         <OccasionCardList/>
         <HorizontalRuleIGM/>
         <TopPicks products={products}/>
@@ -121,6 +123,16 @@ export default function HomeScreen() {
         <GiftingCard/>
         <HorizontalRuleIGM/>
         <BestSellersSection/>
+        <HorizontalRuleIGM/>
+        <CommunityCarousel/>
+        <HorizontalRuleIGM/>
+        <BespokeSection/>
+        <HorizontalRuleIGM/>
+        <EventCard/>
+        <HorizontalRuleIGM/>
+        <HashtagComponent/>
+        {/* <HorizontalRuleIGM/> */}
+
         {/* Necklace Section */}
 
 

@@ -1,3 +1,4 @@
+import { SectionHeader } from "@/app/home";
 import { OCCASIONS } from "@/constants/occasions";
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
@@ -7,6 +8,8 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 export default function OccasionCardList() {
     const data= OCCASIONS
   return (
+    <>
+    <SectionHeader value="Shop by Occaision"/>
     <View style={styles.container}>
       {data.map((item, index) => (
         <TouchableOpacity
@@ -19,6 +22,7 @@ export default function OccasionCardList() {
         </TouchableOpacity>
       ))}
     </View>
+    </>
   );
 }
 

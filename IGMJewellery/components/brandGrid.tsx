@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Image, Pressable, StyleSheet, Dimensions } from "react-native";
 import tanishqLogo from "../assets/images/Tanishq_Logo.png";
+import { SectionHeader } from "@/app/home";
 
 
 const W = Dimensions.get("window").width;
@@ -41,6 +42,8 @@ export default function BrandGrid() {
   );
 
   return (
+    <>
+    <SectionHeader value="Explore Brand"/>
     <View style={styles.container}>
   
       {/* ROW 1 */}
@@ -80,8 +83,8 @@ export default function BrandGrid() {
         <Tile id="r3right" w={W * 0.64} h={W * 0.38} src={tanishqLogo} />
       </View>
     </View>
+    </>
   );
-  
 }
 
 const styles = StyleSheet.create({
