@@ -10,8 +10,8 @@ export interface Product {
   givenPrice: number;
   discountedPrice: number;
   brand: Brand;
-  tags: string[]; //
+  tags: string[]; 
   thumbnailUrls: string[];
   isNew?: boolean;
-  rating: number;
+  rating?: number;
 }
