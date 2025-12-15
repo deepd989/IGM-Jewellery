@@ -14,12 +14,106 @@ import {
     View
 } from 'react-native';
 
-import { COLORS, SPACING } from '../constants/theme';
-
+import { FilterModal } from '@/components/products/FilterModal';
 import { ProductCard } from '@/components/products/ProductCard';
+import { SortModal } from '@/components/products/SortModal';
+import { Product } from '@/interfaces/product.interface';
 import { selectProducts } from '@/store/productSlice';
 import { useSelector } from 'react-redux';
+import { COLORS, SPACING } from '../constants/theme';
+import { Brand } from '../enums/brand.enum';
+import { ProductType } from '../enums/productType.enum';
 
+
+
+
+// --- MOCK DATA ---
+const MOCK_PRODUCTS: Product[] = [
+  {
+    id: '1',
+    title: '24K Diamond Ring',
+    name: 'Solitaire Shine',
+    description: 'Beautiful solitaire ring.',
+    productType: ProductType.Ring,
+    givenPrice: 25000,
+    discountedPrice: 20000,
+    brand: Brand.Kalyan,
+    tags: ['new', 'diamond'],
+    thumbnailUrls: ['https://images.unsplash.com/photo-1605100804763-eb2fc645a382?q=80&w=400'],
+    isNew: true,
+    rating: 4,
+  },
+  {
+    id: '2',
+    title: 'Gold Plated Ring',
+    name: 'Daily Wear',
+    description: 'Perfect for daily use.',
+    productType: ProductType.Ring,
+    givenPrice: 12000,
+    discountedPrice: 9500,
+    brand: Brand.Malabar,
+    tags: ['gold', 'sale'],
+    thumbnailUrls: ['https://images.unsplash.com/photo-1626784215021-2e39ccf971cd?q=80&w=400'],
+    isNew: true,
+    rating: 5,
+  },
+  {
+    id: '3',
+    title: 'Emerald Cut Ring',
+    name: 'Green Glory',
+    description: 'Stunning emerald.',
+    productType: ProductType.Ring,
+    givenPrice: 45000,
+    discountedPrice: 38000,
+    brand: Brand.Tanishq,
+    tags: ['gemstone'],
+    thumbnailUrls: ['https://images.unsplash.com/photo-1599643477877-530eb83abc8e?q=80&w=400'],
+    isNew: false,
+    rating: 4,
+  },
+  {
+    id: '4',
+    title: 'Platinum Band',
+    name: 'Classic Band',
+    description: 'Timeless platinum.',
+    productType: ProductType.Ring,
+    givenPrice: 30000,
+    discountedPrice: 28500,
+    brand: Brand.CaratLane,
+    tags: ['platinum'],
+    thumbnailUrls: ['https://images.unsplash.com/photo-1589674781759-c21c37956a44?q=80&w=400'],
+    isNew: true,
+    rating: 3,
+  },
+  {
+    id: '5',
+    title: 'Rose Gold Ring',
+    name: 'Rose Petal',
+    description: 'Delicate rose gold.',
+    productType: ProductType.Ring,
+    givenPrice: 18000,
+    discountedPrice: 15000,
+    brand: Brand.Bluestone,
+    tags: ['rosegold'],
+    thumbnailUrls: ['https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=400'],
+    isNew: false,
+    rating: 5,
+  },
+  {
+    id: '6',
+    title: 'Silver Band',
+    name: 'Simple Silver',
+    description: 'Minimalist.',
+    productType: ProductType.Ring,
+    givenPrice: 5000,
+    discountedPrice: 4500,
+    brand: Brand.CaratLane,
+    tags: ['silver'],
+    thumbnailUrls: ['https://images.unsplash.com/photo-1603561591411-07134e71a2a9?q=80&w=400'],
+    isNew: false,
+    rating: 4,
+  },
+];
 
 const FILTER_CHIPS = ['All', 'Latest', 'Best Sellers', 'Express Delivery', 'Store Pick-up'];
 const MENU_ITEMS = ['Bespoke Jewellery', 'Our Brands', 'Call an expert', 'Chat with Sonar'];
@@ -31,13 +125,27 @@ export default function ListingScreen() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const products = useSelector(selectProducts);
 
-   const handleCategoriesPress = () => {
-    // Navigate back to the Categories tab
-    router.navigate('/(tabs)/categories');
-  };
+  // Sorting State
+  const [isSortVisible, setIsSortVisible] = useState(false);
+  const [selectedSort, setSelectedSort] = useState('Featured');
+
+  // Filtering State
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  // Store filter selection for demonstration
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
 
   const toggleViewMode = () => {
     setViewMode(prev => prev === 'grid' ? 'list' : 'grid');
+  };
+
+  const handleCategoriesPress = () => {
+    router.navigate('/(tabs)/categories');
+  };
+
+  const handleApplyFilters = (filters: Record<string, string[]>) => {
+    console.log("Filters Applied:", filters);
+    setActiveFilters(filters);
+    // In a real app, you would filter the `MOCK_PRODUCTS` here
   };
 
   const renderHeader = () => (
@@ -127,9 +235,8 @@ export default function ListingScreen() {
       {/* Right: Support Menu */}
       {!isMenuOpen ? (
         <TouchableOpacity style={styles.closeFab} onPress={() => setIsMenuOpen(true)}>
-           {/* Placeholder for the 'D' icon or similar */}
-           
-             <Ionicons name="sparkles" size={32}  /> 
+          
+             <Ionicons name="sparkles" size={22}  /> 
            
         </TouchableOpacity>
       ) : (
@@ -159,17 +266,22 @@ export default function ListingScreen() {
           <Text style={styles.bottomBarText}>CATEGORIES</Text>
         </TouchableOpacity>
         
-        
         <View style={styles.bottomBarDivider} />
         
-        <TouchableOpacity style={styles.bottomBarItem}>
+        <TouchableOpacity 
+          style={styles.bottomBarItem}
+          onPress={() => setIsSortVisible(true)}
+        >
           <Ionicons name="swap-vertical" size={18} color="#FFF" style={{ marginRight: 8 }} />
           <Text style={styles.bottomBarText}>SORT</Text>
         </TouchableOpacity>
 
         <View style={styles.bottomBarDivider} />
 
-        <TouchableOpacity style={styles.bottomBarItem}>
+        <TouchableOpacity 
+          style={styles.bottomBarItem}
+          onPress={() => setIsFilterVisible(true)}
+        >
           <Ionicons name="options-outline" size={18} color="#FFF" style={{ marginRight: 8 }} />
           <Text style={styles.bottomBarText}>FILTER</Text>
         </TouchableOpacity>
@@ -179,6 +291,20 @@ export default function ListingScreen() {
       {isMenuOpen && (
         <Pressable style={styles.dimOverlay} onPress={() => setIsMenuOpen(false)} />
       )}
+
+      {/* --- MODALS --- */}
+      <SortModal 
+        visible={isSortVisible} 
+        onClose={() => setIsSortVisible(false)}
+        selectedSort={selectedSort}
+        onSelect={setSelectedSort}
+      />
+
+      <FilterModal 
+        visible={isFilterVisible}
+        onClose={() => setIsFilterVisible(false)}
+        onApply={handleApplyFilters}
+      />
     </SafeAreaView>
   );
 }
