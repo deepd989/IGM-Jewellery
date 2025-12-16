@@ -89,7 +89,7 @@ export default function BrandGrid() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: GAP,
+    paddingRight: 16,
     gap: GAP,
   },
   row: {
