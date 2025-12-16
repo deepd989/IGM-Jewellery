@@ -2,17 +2,22 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-    FlatList,
-    Image,
-    Platform,
-    Pressable,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  FlatList,
+  Image,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
+
+import { COLORS, SPACING } from '../constants/theme';
+import { Brand } from '../enums/brand.enum';
+import { ProductType } from '../enums/productType.enum';
+
 
 import { FilterModal } from '@/components/products/FilterModal';
 import { ProductCard } from '@/components/products/ProductCard';
@@ -20,11 +25,6 @@ import { SortModal } from '@/components/products/SortModal';
 import { Product } from '@/interfaces/product.interface';
 import { selectProducts } from '@/store/productSlice';
 import { useSelector } from 'react-redux';
-import { COLORS, SPACING } from '../constants/theme';
-import { Brand } from '../enums/brand.enum';
-import { ProductType } from '../enums/productType.enum';
-
-
 
 
 // --- MOCK DATA ---
@@ -131,7 +131,6 @@ export default function ListingScreen() {
 
   // Filtering State
   const [isFilterVisible, setIsFilterVisible] = useState(false);
-  // Store filter selection for demonstration
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
 
   const toggleViewMode = () => {
@@ -142,10 +141,17 @@ export default function ListingScreen() {
     router.navigate('/(tabs)/categories');
   };
 
+  const handleProductPress = (product: Product) => {
+    // Navigate to PDP
+    router.push({
+      pathname: '/product/[id]',
+      params: { id: product.id }
+    });
+  };
+
   const handleApplyFilters = (filters: Record<string, string[]>) => {
     console.log("Filters Applied:", filters);
     setActiveFilters(filters);
-    // In a real app, you would filter the `MOCK_PRODUCTS` here
   };
 
   const renderHeader = () => (
@@ -212,7 +218,7 @@ export default function ListingScreen() {
           <ProductCard 
             product={item} 
             viewMode={viewMode} 
-            onPress={() => console.log('Product', item.id)} 
+            onPress={handleProductPress} 
           />
         )}
         ListHeaderComponent={renderHeader}
