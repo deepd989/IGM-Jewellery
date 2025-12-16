@@ -24,7 +24,7 @@ const IGMJewelleryPage: React.FC = () => {
         high tech
       </Text>
       <Link href="/signUp" style={styles.secondaryLinkText}>SignUp link</Link>
-      <Link href="/phoneNumber" style={styles.secondaryLinkText}>
+      <Link href="/login" style={styles.secondaryLinkText}>
         phone number login →
       </Link>
       <Link href="/home" style={styles.secondaryLinkText}>
