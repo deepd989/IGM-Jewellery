@@ -23,6 +23,7 @@ const IGMJewelleryPage: React.FC = () => {
         India’s first AI-powered jewellery marketplace, where heritage meets
         high tech
       </Text>
+      <Link href="/signUp" style={styles.secondaryLinkText}>SignUp link</Link>
       <Link href="/phoneNumber" style={styles.secondaryLinkText}>
         phone number login →
       </Link>

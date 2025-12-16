@@ -22,8 +22,8 @@ import GiftingCard from "@/components/giftingCard";
 import BestSellersSection from "@/components/bestSellers";
 import CommunityCarousel from "@/components/communityCarousel";
 import BespokeSection from "@/components/bespokeSection";
-import EventCard from "@/components/EventCard";
 import HashtagComponent from "@/components/hashtagComponent";
+import EventCard from "@/components/eventCard";
 
 
 
