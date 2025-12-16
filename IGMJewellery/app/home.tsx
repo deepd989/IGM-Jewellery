@@ -1,29 +1,25 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, ScrollView, Image, TouchableOpacity } from "react-native";
-import { Ionicons, Feather } from "@expo/vector-icons";
-import NecklaceCard from "@/components/homePageCard";
-import SearchBar from "@/components/searchBar";
-import { AudioLines } from 'lucide-react-native';
-import Icon from '@mdi/react';
-import EarringIcon from "@/components/ui/earingsComponentSvg";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { selectProducts } from "@/store/productSlice";
-import { useSelector } from "react-redux";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import BespokeSection from "@/components/bespokeSection";
+import BestSellersSection from "@/components/bestSellers";
+import BrandGrid from "@/components/brandGrid";
+import CommunityCarousel from "@/components/communityCarousel";
+import GiftFinder from "@/components/giftFinder";
+import GiftingCard from "@/components/giftingCard";
 import HomePageCard from "@/components/homePageCard";
 import HorizontalRuleIGM from "@/components/horizontalRuleIGM";
-import BrandGrid from "@/components/brandGrid";
-import GiftFinder from "@/components/giftFinder";
-import OccasionCardList from "@/components/occaisionsHome";
-import { TopPicks } from "@/components/topPicks";
 import LatestCollections from "@/components/latestCollections";
+import OccasionCardList from "@/components/occaisionsHome";
+import SearchBar from "@/components/searchBar";
+import { TopPicks } from "@/components/topPicks";
 import TryAtHomeCard from "@/components/tryAtHomeCard";
-import GiftingCard from "@/components/giftingCard";
-import BestSellersSection from "@/components/bestSellers";
-import CommunityCarousel from "@/components/communityCarousel";
-import BespokeSection from "@/components/bespokeSection";
-import HashtagComponent from "@/components/hashtagComponent";
+import { selectProducts } from "@/store/productSlice";
+import { Feather, Ionicons } from "@expo/vector-icons";
+import { AudioLines } from 'lucide-react-native';
+import React, { useState } from "react";
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSelector } from "react-redux";
 import EventCard from "@/components/eventCard";
+import HashtagComponent from "@/components/hashtagComponent";
 
 
 
