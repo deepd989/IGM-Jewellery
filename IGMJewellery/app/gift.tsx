@@ -19,7 +19,15 @@ export default function Gift() {
     const products = useSelector(selectProducts)
   return (
     <SafeAreaView style={styles.container}>
-       <GiftStepper />
+       <ScrollView >
+        <GiftExplore/>
+       <HorizontalRuleIGM/>
+       <TopPicks products={products}/>
+       <HorizontalRuleIGM/>
+        <LatestCollections/>
+        <HorizontalRuleIGM/>
+        <HashtagComponent/>
+       </ScrollView>
     </SafeAreaView>
   );
 }

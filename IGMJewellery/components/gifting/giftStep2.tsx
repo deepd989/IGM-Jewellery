@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
+import RibbonGiftCard from './ribbonGiftCard';
 
 interface GiftCardScreenProps {
   onDataChange: (data: {
@@ -101,17 +102,7 @@ export default function GiftCardScreen({ onDataChange,initialData }: GiftCardScr
       </ScrollView>
 
       {/* Gift Card Preview */}
-      <View style={styles.cardPreview}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardBadge}>💎 IGM E-Gift</Text>
-        </View>
-        <Text style={styles.cardTitle}>Happy {occasion} !</Text>
-        <Text style={styles.cardSubtitle}>{message}</Text>
-        <Text style={styles.cardAmount}>₹ {selectedAmount}</Text>
-        <View style={styles.cardDecoration}>
-          <View style={styles.ribbon} />
-        </View>
-      </View>
+      <RibbonGiftCard cardBackgroundColor='white' heading={'Happy ' + occasion + "!"} caption={message} amount={selectedAmount} />
 
       {/* Amount Selection */}
       <View style={styles.section}>

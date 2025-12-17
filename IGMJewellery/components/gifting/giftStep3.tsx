@@ -8,6 +8,7 @@ import {
   Modal,
   Dimensions,
 } from 'react-native';
+import RibbonGiftCard from './ribbonGiftCard';
 
 const { width } = Dimensions.get('window');
 
@@ -36,30 +37,12 @@ export default function EGiftCardScreen({ phoneNumber, amount, occasion,message 
     // Navigate to order review
   };
 
-  const formattedAmount = `₹${amount.toLocaleString('en-IN')}`;
+  const formattedAmount = `${amount.toLocaleString('en-IN')}`;
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Gift Card */}
-        <View style={styles.giftCard}>
-          <View style={styles.giftCardHeader}>
-            <View style={styles.logoContainer}>
-              <View style={styles.logo} />
-              <Text style={styles.logoText}>IGM E-Gift</Text>
-            </View>
-          </View>
-          
-          <View style={styles.giftCardContent}>
-            <Text style={styles.title}>{'Happy '+occasion+  ' !'}</Text>
-            <Text style={styles.subtitle}>{message}</Text>
-            <Text style={styles.amount}>{formattedAmount}</Text>
-          </View>
-          
-          <View style={styles.loadingBar}>
-            <View style={styles.spinner} />
-          </View>
-        </View>
+        <RibbonGiftCard cardBackgroundColor='white' heading={'Happy '+occasion+  ' !'} caption={message} amount={formattedAmount}/>
 
         {/* Order Summary */}
         <View style={styles.orderSection}>
