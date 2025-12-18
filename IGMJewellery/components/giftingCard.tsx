@@ -8,10 +8,12 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import RibbonGiftCard from "./gifting/ribbonGiftCard";
+import { useRouter } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
 export default function GiftingCard() {
+    const router = useRouter();
   return (
     <View style={styles.container}>
       {/* Heading */}
@@ -24,7 +26,7 @@ export default function GiftingCard() {
         <RibbonGiftCard/>
 
         {/* CTA Button */}
-        <Pressable style={styles.button}>
+        <Pressable style={styles.button} onPress={() => router.push('/gift')}>
           <Text style={styles.buttonText}>Explore gifting</Text>
           <View style={styles.iconCircle}>
             <Ionicons name="arrow-forward" size={18} color="#000" />
