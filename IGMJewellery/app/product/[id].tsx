@@ -57,7 +57,7 @@ export default function ProductDetailScreen() {
            <TouchableOpacity style={styles.iconBtn}>
              <Ionicons name="heart-outline" size={22} color={COLORS.text} />
            </TouchableOpacity>
-           <TouchableOpacity style={styles.iconBtn}>
+           <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/cart')}>
              <Ionicons name="bag-outline" size={22} color={COLORS.text} />
            </TouchableOpacity>
         </View>

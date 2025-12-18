@@ -14,18 +14,13 @@ import {
   View
 } from 'react-native';
 
-import { COLORS, SPACING } from '../constants/theme';
-import { Brand } from '../enums/brand.enum';
-import { ProductType } from '../enums/productType.enum';
-
-
 import { FilterModal } from '@/components/products/FilterModal';
 import { ProductCard } from '@/components/products/ProductCard';
 import { SortModal } from '@/components/products/SortModal';
 import { Product } from '@/interfaces/product.interface';
-import { selectProducts } from '@/store/productSlice';
-import { useSelector } from 'react-redux';
-
+import { COLORS, SPACING } from '../constants/theme';
+import { Brand } from '../enums/brand.enum';
+import { ProductType } from '../enums/productType.enum';
 
 // --- MOCK DATA ---
 const MOCK_PRODUCTS: Product[] = [
@@ -70,49 +65,7 @@ const MOCK_PRODUCTS: Product[] = [
     thumbnailUrls: ['https://images.unsplash.com/photo-1599643477877-530eb83abc8e?q=80&w=400'],
     isNew: false,
     rating: 4,
-  },
-  {
-    id: '4',
-    title: 'Platinum Band',
-    name: 'Classic Band',
-    description: 'Timeless platinum.',
-    productType: ProductType.Ring,
-    givenPrice: 30000,
-    discountedPrice: 28500,
-    brand: Brand.CaratLane,
-    tags: ['platinum'],
-    thumbnailUrls: ['https://images.unsplash.com/photo-1589674781759-c21c37956a44?q=80&w=400'],
-    isNew: true,
-    rating: 3,
-  },
-  {
-    id: '5',
-    title: 'Rose Gold Ring',
-    name: 'Rose Petal',
-    description: 'Delicate rose gold.',
-    productType: ProductType.Ring,
-    givenPrice: 18000,
-    discountedPrice: 15000,
-    brand: Brand.Bluestone,
-    tags: ['rosegold'],
-    thumbnailUrls: ['https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=400'],
-    isNew: false,
-    rating: 5,
-  },
-  {
-    id: '6',
-    title: 'Silver Band',
-    name: 'Simple Silver',
-    description: 'Minimalist.',
-    productType: ProductType.Ring,
-    givenPrice: 5000,
-    discountedPrice: 4500,
-    brand: Brand.CaratLane,
-    tags: ['silver'],
-    thumbnailUrls: ['https://images.unsplash.com/photo-1603561591411-07134e71a2a9?q=80&w=400'],
-    isNew: false,
-    rating: 4,
-  },
+  }
 ];
 
 const FILTER_CHIPS = ['All', 'Latest', 'Best Sellers', 'Express Delivery', 'Store Pick-up'];
@@ -123,7 +76,6 @@ export default function ListingScreen() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const products = useSelector(selectProducts);
 
   // Sorting State
   const [isSortVisible, setIsSortVisible] = useState(false);
@@ -142,7 +94,6 @@ export default function ListingScreen() {
   };
 
   const handleProductPress = (product: Product) => {
-    // Navigate to PDP
     router.push({
       pathname: '/product/[id]',
       params: { id: product.id }
@@ -150,7 +101,6 @@ export default function ListingScreen() {
   };
 
   const handleApplyFilters = (filters: Record<string, string[]>) => {
-    console.log("Filters Applied:", filters);
     setActiveFilters(filters);
   };
 
@@ -169,7 +119,7 @@ export default function ListingScreen() {
           <TouchableOpacity style={styles.iconBtn}>
             <Ionicons name="heart-outline" size={22} color={COLORS.text} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn}>
+          <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/cart')}>
             <Ionicons name="bag-outline" size={22} color={COLORS.text} />
           </TouchableOpacity>
         </View>
@@ -210,8 +160,8 @@ export default function ListingScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        key={viewMode} // Forces re-render when switching cols
-        data={products}
+        key={viewMode}
+        data={MOCK_PRODUCTS}
         keyExtractor={(item) => item.id}
         numColumns={viewMode === 'grid' ? 2 : 1}
         renderItem={({ item }) => (
@@ -227,8 +177,6 @@ export default function ListingScreen() {
         showsVerticalScrollIndicator={false}
       />
 
-      {/* --- FLOATING CONTROLS --- */}
-      
       {/* Left: View Toggle */}
       <TouchableOpacity style={styles.leftFab} onPress={toggleViewMode}>
         <Ionicons 
@@ -293,19 +241,16 @@ export default function ListingScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Dim Overlay when menu is open */}
       {isMenuOpen && (
         <Pressable style={styles.dimOverlay} onPress={() => setIsMenuOpen(false)} />
       )}
 
-      {/* --- MODALS --- */}
       <SortModal 
         visible={isSortVisible} 
         onClose={() => setIsSortVisible(false)}
         selectedSort={selectedSort}
         onSelect={setSelectedSort}
       />
-
       <FilterModal 
         visible={isFilterVisible}
         onClose={() => setIsFilterVisible(false)}
@@ -388,13 +333,11 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: SPACING.m,
-    paddingBottom: 100, // Space for bottom bar
+    paddingBottom: 100,
   },
   columnWrapper: {
     justifyContent: 'space-between',
   },
-  
-  // Floating Buttons
   leftFab: {
     position: 'absolute',
     bottom: 80, 
@@ -419,7 +362,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#007AFF', // Blue color
+    backgroundColor: '#007AFF',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -460,11 +403,9 @@ const styles = StyleSheet.create({
     elevation: 6,
     zIndex: 20,
   },
-
-  // Menu Popup
   menuPopup: {
     position: 'absolute',
-    bottom: 140, // Above the Close FAB
+    bottom: 140,
     right: SPACING.m,
     width: 200,
     backgroundColor: '#FFFFFF',
@@ -480,8 +421,6 @@ const styles = StyleSheet.create({
   menuItem: {
     paddingVertical: 12,
     paddingHorizontal: SPACING.m,
-    // borderBottomWidth: 1,
-    // borderBottomColor: '#F5F5F5',
   },
   menuItemText: {
     fontSize: 14,
@@ -489,14 +428,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'right', 
   },
-
   dimOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.3)',
     zIndex: 15,
   },
-
-  // Bottom Bar
   bottomBar: {
     position: 'absolute',
     bottom: 0,
