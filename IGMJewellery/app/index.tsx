@@ -33,6 +33,9 @@ const IGMJewelleryPage: React.FC = () => {
       <Link href="/gift" style={styles.secondaryLinkText}>
         Explore gift
       </Link>
+      <Link href="/brands" style={styles.secondaryLinkText}>
+        Explore brands
+      </Link>
     </ScrollView>
   );
 };

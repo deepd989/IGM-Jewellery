@@ -7,7 +7,7 @@ import { SectionHeader } from "@/app/home";
 const W = Dimensions.get("window").width;
 const GAP = 12;
 
-export default function BrandGrid() {
+export default function BrandGridTileView() {
   const [selected, setSelected] = useState("");
 
   const Tile = ({

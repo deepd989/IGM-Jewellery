@@ -25,6 +25,7 @@ export default function RootLayout() {
         <Stack.Screen name="verifyOtp" options={{ headerShown: false }} />
         <Stack.Screen name="signUp" options={{ headerShown: false }} />
         <Stack.Screen name="gift" options={{ headerShown: false }} />
+        <Stack.Screen name="brands" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
       {/* </AuthGuard> */}
