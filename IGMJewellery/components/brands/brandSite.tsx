@@ -123,11 +123,12 @@ export default function BrandProfile({
   const products = useSelector(selectProducts);
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <>
       <ProfileHeader {...header} />
       <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
       {activeTab === 'About' && (
+          <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.contentContainer}>
           <Image source={{ uri: heroImageUri }} style={styles.imagePlaceholder} />
           {aboutSections.map((section, idx) => (
@@ -135,9 +136,11 @@ export default function BrandProfile({
           ))}
           <StatsRow stats={stats} />
         </View>
+        </ScrollView>
       )}
 
       {activeTab === 'Products' && (
+        
         <View style={styles.productsContainer}>
               <FlatList
                 data={products}
@@ -153,8 +156,9 @@ export default function BrandProfile({
                 showsVerticalScrollIndicator={false}
               />
               </View>
+              
       )}
-    </ScrollView>
+    </>
   );
 }
 
