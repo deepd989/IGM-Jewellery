@@ -152,7 +152,10 @@ export default function CartScreen() {
 
         {/* Offers & Benefits */}
         <Text style={styles.sectionHeader}>OFFERS & BENEFITS</Text>
-        <TouchableOpacity style={styles.couponRow}>
+        <TouchableOpacity 
+          style={styles.couponRow} 
+          onPress={() => router.push('/coupons')}
+        >
           <View style={styles.couponIcon}>
             <Ionicons name="pricetag-outline" size={24} color={COLORS.text} />
           </View>
