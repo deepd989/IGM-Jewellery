@@ -1,9 +1,11 @@
-import { OrderDetails } from '@/interfaces/order-details.interface';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SPACING } from '../../constants/theme';
 
+import { OrderDetails } from '@/interfaces/order-details.interface';
+import { OrderItemCard } from './OrderItemCard';
+import { PriceBreakdown } from './PriceBreakdown';
 
 interface CheckoutSummaryProps {
   order: OrderDetails;
@@ -34,55 +36,20 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ order }) => {
         <View style={styles.content}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.itemsScroll}>
             {order.items.map((item) => (
-              <View key={item.product.id} style={styles.itemCard}>
-                <View style={styles.imageBox}>
-                   <Image 
-                     source={{ uri: item.product.thumbnailUrls[0] }} 
-                     style={styles.itemImg} 
-                   />
-                </View>
-                <View style={styles.itemInfo}>
-                  <Text style={styles.brand}>{item.product.brand}</Text>
-                  <Text style={styles.title} numberOfLines={1}>{item.product.title}</Text>
-                  <Text style={styles.specs}>
-                    Size: {item.selectedSize || '12'}   Qty: {item.quantity}
-                  </Text>
-                  <View style={styles.deliveryTag}>
-                    <Ionicons name="bus-outline" size={12} color="#000" />
-                    <Text style={styles.deliveryText}>Delivery by 19th Nov</Text>
-                  </View>
-                  <View style={styles.priceRow}>
-                    <Text style={styles.oldPrice}>₹{item.product.givenPrice.toLocaleString()}</Text>
-                    <Text style={styles.newPrice}>₹{item.product.discountedPrice.toLocaleString()}</Text>
-                  </View>
-                </View>
-              </View>
+              <OrderItemCard 
+                key={item.product.id} 
+                item={item} 
+                style={styles.itemCardOverride}
+              />
             ))}
           </ScrollView>
 
-          <View style={styles.breakdown}>
-            <View style={styles.row}>
-              <Text style={styles.label}>Subtotal</Text>
-              <Text style={styles.value}>₹{order.subtotal.toLocaleString()}</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Shipping Charges</Text>
-              <Text style={styles.freeText}>Free</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Platform Fee</Text>
-              <Text style={styles.value}>₹{order.platformFee}</Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>You Saved</Text>
-              <Text style={styles.savings}>- ₹{order.savings.toLocaleString()}</Text>
-            </View>
-            <View style={styles.divider} />
-            <View style={styles.row}>
-              <Text style={styles.totalLabel}>Total Amount</Text>
-              <Text style={styles.totalValue}>₹{order.total.toLocaleString()}</Text>
-            </View>
-          </View>
+          <PriceBreakdown 
+            subtotal={order.subtotal}
+            savings={order.savings}
+            platformFee={order.platformFee}
+            total={order.total}
+          />
         </View>
       )}
     </View>
@@ -123,108 +90,8 @@ const styles = StyleSheet.create({
   itemsScroll: {
     marginBottom: SPACING.m,
   },
-  itemCard: {
-    flexDirection: 'row',
+  itemCardOverride: {
     width: 280,
-    borderWidth: 1,
-    borderColor: '#F0F0F0',
-    borderRadius: 8,
-    padding: 10,
     marginRight: 12,
-  },
-  imageBox: {
-    width: 70,
-    height: 70,
-    backgroundColor: '#F9F9F9',
-    borderRadius: 4,
-    marginRight: 12,
-  },
-  itemImg: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-  },
-  itemInfo: {
-    flex: 1,
-  },
-  brand: {
-    fontSize: 10,
-    color: '#8E8E93',
-  },
-  title: {
-    fontSize: 13,
-    fontWeight: '700',
-    marginBottom: 2,
-  },
-  specs: {
-    fontSize: 11,
-    color: '#8E8E93',
-    marginBottom: 4,
-  },
-  deliveryTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F5F5F5',
-    alignSelf: 'flex-start',
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-    borderRadius: 4,
-    marginBottom: 4,
-  },
-  deliveryText: {
-    fontSize: 9,
-    marginLeft: 4,
-  },
-  priceRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  oldPrice: {
-    fontSize: 11,
-    textDecorationLine: 'line-through',
-    color: '#8E8E93',
-    marginRight: 8,
-  },
-  newPrice: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  breakdown: {
-    marginTop: 8,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 4,
-  },
-  label: {
-    fontSize: 13,
-    color: '#8E8E93',
-  },
-  value: {
-    fontSize: 13,
-    fontWeight: '500',
-  },
-  freeText: {
-    fontSize: 13,
-    color: '#34C759',
-    fontWeight: '600',
-  },
-  savings: {
-    fontSize: 13,
-    color: '#34C759',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#F0F0F0',
-    marginVertical: 12,
-  },
-  totalLabel: {
-    fontSize: 14,
-    color: '#8E8E93',
-  },
-  totalValue: {
-    fontSize: 16,
-    fontWeight: '800',
-  },
+  }
 });

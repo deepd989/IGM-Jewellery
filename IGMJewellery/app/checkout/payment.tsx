@@ -1,3 +1,4 @@
+import { PriceBreakdown } from '@/components/checkout/PriceBreakdown';
 import { DUMMY_CART_ITEMS } from '@/dummyData/cart-item';
 import { OrderDetails } from '@/interfaces/order-details.interface';
 import { Ionicons } from '@expo/vector-icons';
@@ -126,31 +127,13 @@ export default function PaymentScreen() {
         {/* Static breakdown at the bottom of scroll */}
         <View style={styles.finalSummary}>
           <Text style={styles.summaryTitle}>Order Summary</Text>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Subtotal</Text>
-            <Text style={styles.summaryValue}>₹{orderDetails.subtotal.toLocaleString()}</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Shipping Charges</Text>
-            <Text style={styles.freeText}>Free</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Platform Fee</Text>
-            <Text style={styles.summaryValue}>₹{orderDetails.platformFee}</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Coupon Applied</Text>
-            <Text style={styles.summaryValue}>-₹20</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>You Saved</Text>
-            <Text style={styles.savingsValue}>- ₹{orderDetails.savings.toLocaleString()}</Text>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.summaryRow}>
-            <Text style={styles.totalLabel}>Total Amount</Text>
-            <Text style={styles.totalValue}>₹{orderDetails.total.toLocaleString()}</Text>
-          </View>
+          <PriceBreakdown 
+                    subtotal={orderDetails.subtotal}
+                    savings={orderDetails.savings}
+                    platformFee={orderDetails.platformFee}
+                    couponApplied={20}
+                    total={orderDetails.total}
+            />
         </View>
       </ScrollView>
 

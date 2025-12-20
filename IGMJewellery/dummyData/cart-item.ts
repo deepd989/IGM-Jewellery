@@ -14,7 +14,7 @@ export const DUMMY_CART_ITEMS: CartItem[] = [
       givenPrice: 25000,
       discountedPrice: 20000,
       brand: Brand.Kalyan,
-      thumbnailUrls: ['https://images.unsplash.com/photo-1605100804763-eb2fc645a382?q=80&w=400'],
+      thumbnailUrls: ["https://images.unsplash.com/photo-1589674781759-c21c37956a44?q=80&w=400"],
       tags: [],
       rating: 5
     },
@@ -31,7 +31,7 @@ export const DUMMY_CART_ITEMS: CartItem[] = [
       givenPrice: 150000,
       discountedPrice: 130000,
       brand: Brand.Malabar,
-      thumbnailUrls: ['https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=400'],
+      thumbnailUrls: ['https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=400'],
       tags: [],
       rating: 4
     },
