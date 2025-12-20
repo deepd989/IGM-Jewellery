@@ -1,4 +1,5 @@
-import { CartItem, OrderDetails } from '@/interfaces/order-details.interface';
+import { DUMMY_CART_ITEMS } from '@/dummyData/cart-item';
+import { OrderDetails } from '@/interfaces/order-details.interface';
 import { Ionicons } from '@expo/vector-icons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
@@ -19,11 +20,11 @@ import * as z from 'zod';
 import { CheckoutStepper } from '../../components/checkout/CheckoutStepper';
 import { CheckoutSummary } from '../../components/checkout/CheckoutSummary';
 import { COLORS, SPACING } from '../../constants/theme';
-import { Brand } from '../../enums/brand.enum';
-import { ProductType } from '../../enums/productType.enum';
 
 
-
+// --- ZOD VALIDATION SCHEMA ---
+// Removed .default() as it causes type mismatch in react-hook-form resolver
+// Default values are handled by the useForm defaultValues prop
 const addressSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
@@ -35,49 +36,12 @@ const addressSchema = z.object({
   country: z.string().min(1, 'Country is required'),
   phone: z.string().length(10, 'Phone must be 10 digits').regex(/^\d+$/, 'Phone must be numeric'),
   email: z.string().email('Invalid email address'),
-  billingSameAsShipping: z.boolean().default(true),
-  whatsappUpdates: z.boolean().default(true),
+  billingSameAsShipping: z.boolean(),
+  whatsappUpdates: z.boolean(),
 });
 
 type AddressFormData = z.infer<typeof addressSchema>;
 
-// --- DUMMY DATA (Normally from Redux) ---
-const DUMMY_CART_ITEMS: CartItem[] = [
-  {
-    product: {
-      id: '1',
-      title: '24K Diamond Ring',
-      name: 'Solitaire Shine',
-      description: 'Elegant ring',
-      productType: ProductType.Ring,
-      givenPrice: 25000,
-      discountedPrice: 20000,
-      brand: Brand.Kalyan,
-      thumbnailUrls: ['https://images.unsplash.com/photo-1605100804763-eb2fc645a382?q=80&w=400'],
-      tags: [],
-      rating: 5
-    },
-    quantity: 1,
-    selectedSize: '12'
-  },
-  {
-    product: {
-      id: '2',
-      title: 'Gold Plated Necklace',
-      name: 'Luxe Chain',
-      description: 'Stunning piece',
-      productType: ProductType.Necklace,
-      givenPrice: 150000,
-      discountedPrice: 130000,
-      brand: Brand.Malabar,
-      thumbnailUrls: ['https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=400'],
-      tags: [],
-      rating: 4
-    },
-    quantity: 1,
-    selectedSize: 'One Size'
-  }
-];
 
 export default function AddressScreen() {
   const router = useRouter();
@@ -99,6 +63,7 @@ export default function AddressScreen() {
     };
   }, []);
 
+  // Fixed: Resolver type alignment by ensuring schema doesn't have .default() which makes fields optional in resolver input
   const { control, handleSubmit, formState: { errors } } = useForm<AddressFormData>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
@@ -121,7 +86,7 @@ export default function AddressScreen() {
 
   const onSubmit = (data: AddressFormData) => {
     console.log('Address Validated & Saved:', data);
-    // router.push('/checkout/gifting'); 
+    router.push('/checkout/gifting'); 
   };
 
   return (
