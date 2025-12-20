@@ -1,3 +1,4 @@
+import { CustomizationModal } from '@/components/products/CustomizationModal';
 import { DeliveryCheck } from '@/components/products/DeliveryCheck';
 import { ProductAccordion } from '@/components/products/ProductAccordion';
 import { ProductImageGallery } from '@/components/products/ProductImageGallery';
@@ -6,7 +7,7 @@ import { ReviewSection } from '@/components/products/ReviewSection';
 import { Product } from '@/interfaces/product.interface';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { Platform, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { COLORS, SPACING } from '../../constants/theme';
 import { Brand } from '../../enums/brand.enum';
@@ -25,11 +26,10 @@ const getProductDetails = (id: string): Product => {
     discountedPrice: 20000,
     brand: Brand.Kalyan,
     tags: ['new', 'gold'],
-    thumbnailUrls: ['https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=600',
+    thumbnailUrls: [' https://images.unsplash.com/photo-1605100804763-eb2fc645a382?q=80&w=600',
         'https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=600',
-        'https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=600',
-        'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?q=80&w=600',],
-   
+        'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?q=80&w=600'
+    ],
     isNew: true,
     rating: 5.0,
     sku: 'UE399-G0000'
@@ -39,8 +39,8 @@ const getProductDetails = (id: string): Product => {
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const [isCustomizeVisible, setIsCustomizeVisible] = useState(false);
   
-  // In real app, fetch via useEffect or useQuery
   const product = getProductDetails(id as string);
 
   return (
@@ -57,19 +57,24 @@ export default function ProductDetailScreen() {
            <TouchableOpacity style={styles.iconBtn}>
              <Ionicons name="heart-outline" size={22} color={COLORS.text} />
            </TouchableOpacity>
-           <TouchableOpacity style={styles.iconBtn}>
+           <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/cart')}>
              <Ionicons name="bag-outline" size={22} color={COLORS.text} />
            </TouchableOpacity>
         </View>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        
         {/* Gallery */}
         <ProductImageGallery images={ product.thumbnailUrls} />
 
         {/* Info & Specs */}
-        <ProductInfo product={product} />
+        <View style={styles.infoWrapper}>
+          <ProductInfo 
+            product={product} 
+            onCustomize={() => setIsCustomizeVisible(true)}
+          />
+ 
+        </View>
 
         {/* Delivery & Highlights */}
         <DeliveryCheck />
@@ -79,8 +84,14 @@ export default function ProductDetailScreen() {
 
         {/* Reviews */}
         <ReviewSection product={product} />
-
       </ScrollView>
+
+      {/* Customization Bottom Sheet Modal */}
+      <CustomizationModal 
+        visible={isCustomizeVisible}
+        onClose={() => setIsCustomizeVisible(false)}
+        product={product}
+      />
     </SafeAreaView>
   );
 }
@@ -113,4 +124,29 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 40,
   },
+  infoWrapper: {
+    backgroundColor: '#FFF',
+  },
+  customActionRow: {
+    paddingHorizontal: SPACING.m,
+    paddingBottom: SPACING.m,
+  },
+  customizeFullBtn: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.primary,
+    height: 54,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  customizeFullBtnText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '700',
+  }
 });

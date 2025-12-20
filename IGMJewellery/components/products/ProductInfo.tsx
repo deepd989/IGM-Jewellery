@@ -7,11 +7,12 @@ import { COLORS, SPACING } from '../../constants/theme';
 
 interface ProductInfoProps {
   product: Product;
+  onCustomize?: () => void;
 }
 
 const SPEC_CHIPS = ['14 KT', 'Yellow Gold', '0.00 g', '0.880 g', '0.024 C', 'FG SI'];
 
-export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
+export const ProductInfo: React.FC<ProductInfoProps> = ({ product, onCustomize }) => {
   return (
     <View style={styles.container}>
       {/* Header Row */}
@@ -54,7 +55,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
           <Ionicons name="chevron-down" size={16} color={COLORS.text} />
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.actionBtn}>
+        <TouchableOpacity style={styles.actionBtn} onPress={onCustomize}>
           <Ionicons name="sparkles" size={14} color={COLORS.text} style={{ marginRight: 6 }} />
           <Text style={styles.actionBtnText}>Customize</Text>
         </TouchableOpacity>
@@ -149,7 +150,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: COLORS.text, // Active/Selected look
+    borderColor: COLORS.text,
   },
   sizeText: {
     fontSize: 12,
