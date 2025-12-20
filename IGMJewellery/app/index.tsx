@@ -1,7 +1,7 @@
-import React from "react";
-import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
-import homePageIcon from "../assets/images/homePageIcon.png"; // or "./assets/..." if under app/assets
 import { Link } from "expo-router";
+import React from "react";
+import { Image, ScrollView, StyleSheet, Text } from "react-native";
+import homePageIcon from "../assets/images/homePageIcon.png"; // or "./assets/..." if under app/assets
 const IGMJewelleryPage: React.FC = () => {
   return (
     <ScrollView
@@ -33,6 +33,10 @@ const IGMJewelleryPage: React.FC = () => {
       <Link href="/gift" style={styles.secondaryLinkText}>
         Explore gift
       </Link>
+      <Link href="/product-list" style={styles.secondaryLinkText}>
+        Explore Products
+      </Link>
+      
     </ScrollView>
   );
 };
