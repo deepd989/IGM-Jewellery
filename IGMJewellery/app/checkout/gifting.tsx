@@ -72,7 +72,7 @@ export default function GiftingScreen() {
 
   const onSubmit = (data: GiftingFormData) => {
     console.log('Gifting Data Saved:', data);
-    // router.push('/checkout/payment');
+    router.push('/checkout/payment');
   };
 
   return (
