@@ -13,5 +13,6 @@ export interface Product {
   tags: string[]; 
   thumbnailUrls: string[];
   isNew?: boolean;
+  sku?: string;
   rating?: number;
 }
