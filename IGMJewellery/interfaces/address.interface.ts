@@ -6,3 +6,10 @@ export interface SavedAddress {
   phone: string;
   email: string;
 }
+
+export interface Address {
+  id: string;
+  label: string;
+  details: string;
+  isDefault: boolean;
+}

@@ -1,13 +1,13 @@
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
+  Keyboard,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
-  Keyboard,
+  View,
 } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const OTP_LENGTH = 5;
@@ -58,7 +58,7 @@ export default function OtpScreen() {
 
   /* ---------------- OTP Validation ---------------- */
   const verifyOtp = (code: string) => {
-    // 🔴 Replace with API call
+    //  Replace with API call
     const isValid = code === "12345";
 
     if (isValid) {
