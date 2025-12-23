@@ -4,9 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import AuthGuard from '@/components/authGaurd';
-import { Provider } from 'react-redux';
 import { store } from '@/store/store';
+import { Provider } from 'react-redux';
 
 
 
@@ -27,6 +26,7 @@ export default function RootLayout() {
         <Stack.Screen name="gift" options={{ headerShown: false }} />
         <Stack.Screen name="brands" options={{ headerShown: false }} />
         <Stack.Screen name="exploreAi" options={{ headerShown: false }} />
+        <Stack.Screen name="product-list" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
       {/* </AuthGuard> */}

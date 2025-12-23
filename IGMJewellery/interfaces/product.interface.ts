@@ -1,6 +1,12 @@
 import { Brand } from "@/enums/brand.enum";
 import { ProductType } from "@/enums/productType.enum";
+import { Review } from "./review.interface";
 
+
+export interface ProductSpecification {
+  label: string;
+  value: string;
+}
 export interface Product {
   title:string;
   id: string;
@@ -15,4 +21,6 @@ export interface Product {
   isNew?: boolean;
   sku?: string;
   rating?: number;
+  specifications?: ProductSpecification[];
+  reviews?: Review[];
 }
