@@ -27,6 +27,7 @@ export default function RootLayout() {
         <Stack.Screen name="brands" options={{ headerShown: false }} />
         <Stack.Screen name="exploreAi" options={{ headerShown: false }} />
         <Stack.Screen name="product-list" options={{ headerShown: false }} />
+        <Stack.Screen name="searchPage" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
       {/* </AuthGuard> */}
