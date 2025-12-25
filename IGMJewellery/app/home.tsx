@@ -1,6 +1,6 @@
 import BespokeSection from "@/components/bespokeSection";
 import BestSellersSection from "@/components/bestSellers";
-import BrandGrid from "@/components/brandGrid";
+import BrandGridTileView from "@/components/brandGrid";
 import CommunityCarousel from "@/components/communityCarousel";
 import GiftFinder from "@/components/giftFinder";
 import GiftingCard from "@/components/giftingCard";
@@ -104,7 +104,7 @@ export default function HomeScreen() {
         {/* Featured Product Card */}
         <HomePageCard />
         <HorizontalRuleIGM/>
-        <BrandGrid />
+        <BrandGridTileView />
         <HorizontalRuleIGM/>
         <GiftFinder/>
         <HorizontalRuleIGM/>

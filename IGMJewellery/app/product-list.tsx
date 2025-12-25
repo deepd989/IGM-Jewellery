@@ -23,7 +23,7 @@ import { Brand } from '../enums/brand.enum';
 import { ProductType } from '../enums/productType.enum';
 
 // --- MOCK DATA ---
-const MOCK_PRODUCTS: Product[] = [
+export const MOCK_PRODUCTS: Product[] = [
   {
     id: '1',
     title: '24K Diamond Ring',

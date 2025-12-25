@@ -1,0 +1,426 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Platform } from 'react-native';
+import { Camera, CameraView } from 'expo-camera';
+
+export default function VoiceVideoInterface({ mode: initialMode = 'voice' }) {
+  const [isListening, setIsListening] = useState(true);
+  const [hasPermission, setHasPermission] = useState(null);
+  const [mode, setMode] = useState(initialMode);
+  const [pulseAnim] = useState(new Animated.Value(1));
+  const [bar1] = useState(new Animated.Value(0.3));
+  const [bar2] = useState(new Animated.Value(0.5));
+  const [bar3] = useState(new Animated.Value(0.8));
+  const [bar4] = useState(new Animated.Value(0.6));
+  const [bar5] = useState(new Animated.Value(0.4));
+
+  useEffect(() => {
+    // Request camera permission for video mode
+    if (mode === 'video') {
+      (async () => {
+        const { status } = await Camera.requestCameraPermissionsAsync();
+        setHasPermission(status === 'granted');
+      })();
+    }
+  }, [mode]);
+
+  useEffect(() => {
+    // Pulse animation for the glow
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.2,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
+
+  useEffect(() => {
+    // Animated bars for voice mode
+    if (isListening && mode === 'voice') {
+      const bars = [bar1, bar2, bar3, bar4, bar5];
+      bars.forEach((bar, index) => {
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(bar, {
+              toValue: Math.random() * 0.7 + 0.3,
+              duration: 300 + index * 100,
+              useNativeDriver: true,
+            }),
+            Animated.timing(bar, {
+              toValue: Math.random() * 0.7 + 0.3,
+              duration: 300 + index * 100,
+              useNativeDriver: true,
+            }),
+          ])
+        ).start();
+      });
+    }
+  }, [isListening, mode]);
+
+  const renderVisualizer = () => {
+    if (mode === 'video') {
+      if (hasPermission === null) {
+        return (
+          <View style={styles.cameraPlaceholder}>
+            <Text style={styles.cameraText}>Requesting camera permission...</Text>
+          </View>
+        );
+      }
+      if (hasPermission === false) {
+        return (
+          <View style={styles.cameraPlaceholder}>
+            <Text style={styles.cameraText}>No access to camera</Text>
+          </View>
+        );
+      }
+      return (
+        <View style={styles.cameraContainer}>
+          <CameraView
+            style={styles.camera}
+            facing="back"
+          />
+        </View>
+      );
+    }
+
+    // Voice mode - render animated bars
+    return (
+      <View style={styles.visualizerInner}>
+        <Animated.View
+          style={[
+            styles.bar,
+            { height: 20, transform: [{ scaleY: bar1 }] },
+          ]}
+        />
+        <Animated.View
+          style={[
+            styles.bar,
+            { height: 40, transform: [{ scaleY: bar2 }] },
+          ]}
+        />
+        <Animated.View
+          style={[
+            styles.bar,
+            { height: 60, transform: [{ scaleY: bar3 }] },
+          ]}
+        />
+        <Animated.View
+          style={[
+            styles.bar,
+            { height: 40, transform: [{ scaleY: bar4 }] },
+          ]}
+        />
+        <Animated.View
+          style={[
+            styles.bar,
+            { height: 25, transform: [{ scaleY: bar5 }] },
+          ]}
+        />
+        <View style={styles.sparkle}>
+          <View style={styles.sparkleVertical} />
+          <View style={styles.sparkleHorizontal} />
+        </View>
+      </View>
+    );
+  };
+
+  const toggleMode = (newMode) => {
+    setMode(newMode);
+  };
+
+  return (
+    <View style={styles.container}>
+      {/* Glowing Visualizer or Camera Feed */}
+      <View style={styles.visualizerContainer}>
+        <Animated.View
+          style={[
+            styles.glowOuter,
+            {
+              transform: [{ scale: pulseAnim }],
+            },
+          ]}
+        />
+        {/* <Animated.View style={[styles.glowMid]} /> */}
+        
+        {renderVisualizer()}
+      </View>
+
+      {/* Status Text */}
+      <Text style={styles.statusText}>
+        {mode === 'video' ? 'Video call..' : 'Talking..'}
+      </Text>
+
+      {/* Message */}
+      <View style={styles.messageContainer}>
+        <Text style={styles.messageText}>
+          <Text style={styles.messageBold}>Hey there!</Text> What sparkle are we
+          looking for today?
+        </Text>
+      </View>
+
+      {/* Control Buttons */}
+      <View style={styles.controls}>
+        <TouchableOpacity
+          style={[
+            styles.controlButton,
+            mode === 'voice' && styles.activeButton
+          ]}
+          onPress={() => toggleMode('voice')}
+        >
+          <View style={styles.micIcon}>
+            <View style={[
+              styles.micBody,
+              mode === 'voice' && styles.activeIcon
+            ]} />
+            <View style={[
+              styles.micStand,
+              mode === 'voice' && styles.activeIcon
+            ]} />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.controlButton,
+            mode === 'video' && styles.activeButton
+          ]}
+          onPress={() => toggleMode('video')}
+        >
+          <View style={styles.videoOffIcon}>
+            <View style={[
+              styles.videoRect,
+              mode === 'video' && styles.activeIcon
+            ]} />
+            {mode !== 'video' && <View style={styles.videoSlash} />}
+          </View>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  visualizerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 40,
+    position: 'relative',
+    height: 300,
+  },
+  glowOuter: {
+    position: 'absolute',
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+  },
+  glowMid: {
+    position: 'absolute',
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: 'rgba(139, 92, 246, 0.25)',
+  },
+  visualizerInner: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(99, 102, 241, 0.8)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  cameraContainer: {
+    width: 300,
+    height: 300,
+    borderRadius:150,
+    overflow: 'hidden',
+    backgroundColor: '#000',
+  },
+  camera: {
+    width: '100%',
+    height: '100%',
+  },
+  cameraPlaceholder: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(99, 102, 241, 0.8)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+  },
+  cameraText: {
+    color: 'white',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  bar: {
+    width: 8,
+    backgroundColor: 'white',
+    borderRadius: 4,
+  },
+  sparkle: {
+    position: 'absolute',
+    top: 15,
+    right: 20,
+    width: 20,
+    height: 20,
+  },
+  sparkleVertical: {
+    position: 'absolute',
+    width: 3,
+    height: 20,
+    backgroundColor: 'white',
+    left: 8.5,
+    borderRadius: 2,
+  },
+  sparkleHorizontal: {
+    position: 'absolute',
+    width: 20,
+    height: 3,
+    backgroundColor: 'white',
+    top: 8.5,
+    borderRadius: 2,
+  },
+  avatar: {
+    position: 'absolute',
+    right: -80,
+    top: 100,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#1e40af',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 4,
+    borderColor: '#1f2937',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
+  },
+  avatarText: {
+    color: 'white',
+    fontSize: 28,
+    fontWeight: 'bold',
+  },
+  statusText: {
+    fontSize: 16,
+    color: '#9ca3af',
+    marginBottom: 20,
+  },
+  messageContainer: {
+    maxWidth: 400,
+    marginBottom: 60,
+    paddingHorizontal: 20,
+  },
+  messageText: {
+    fontSize: 24,
+    color: '#1f2937',
+    textAlign: 'center',
+    lineHeight: 32,
+  },
+  messageBold: {
+    fontWeight: Platform.select({
+      ios: '700',
+      android: 'bold',
+    }),
+  },
+  controls: {
+    flexDirection: 'row',
+    gap: 200,
+    position: 'absolute',
+    bottom: Platform.select({
+      ios: 60,
+      android: 40,
+    }),
+  },
+  controlButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: '#e5e7eb',
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
+  micIcon: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  micBody: {
+    width: 16,
+    height: 24,
+    backgroundColor: '#1f2937',
+    borderRadius: 8,
+    marginBottom: 2,
+  },
+  micStand: {
+    width: 24,
+    height: 3,
+    backgroundColor: '#1f2937',
+    borderRadius: 2,
+  },
+  videoOffIcon: {
+    width: 32,
+    height: 20,
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  videoRect: {
+    width: 28,
+    height: 18,
+    backgroundColor: '#1f2937',
+    borderRadius: 4,
+  },
+  videoSlash: {
+    position: 'absolute',
+    width: 40,
+    height: 3,
+    backgroundColor: '#1f2937',
+    transform: [{ rotate: '-45deg' }],
+    borderRadius: 2,
+  },
+  activeButton: {
+    backgroundColor: '#6366f1',
+  },
+  activeIcon: {
+    backgroundColor: 'white',
+  },
+});

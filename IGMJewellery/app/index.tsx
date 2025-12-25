@@ -33,6 +33,12 @@ const IGMJewelleryPage: React.FC = () => {
       <Link href="/gift" style={styles.secondaryLinkText}>
         Explore gift
       </Link>
+      <Link href="/brands" style={styles.secondaryLinkText}>
+        Explore brands
+      </Link>
+      <Link href="/exploreAi" style={styles.secondaryLinkText}>
+        Explore AI site
+      </Link>
       <Link href="/product-list" style={styles.secondaryLinkText}>
         Explore Products
       </Link>
