@@ -17,10 +17,12 @@ export default function OrderDetailsScreen() {
   if (isLoading) return <SafeAreaView style={styles.container}><Text style={styles.loading}>Loading...</Text></SafeAreaView>;
   if (!order) return null;
 
-  const item = order.items[0];
+  const item = order.items[2];
+  const isDelivered = item.status === 'Delivered';
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={24} color="#000" />
@@ -28,16 +30,18 @@ export default function OrderDetailsScreen() {
         <Text style={styles.headerTitle}>Order Details</Text>
         <TouchableOpacity style={styles.helpRow}>
            <Text style={styles.helpText}>Help?</Text>
-           <Ionicons name="call-outline" size={20} />
+           <Ionicons name="call-outline" size={20} color="#000" />
         </TouchableOpacity>
       </View>
 
+      {/* Status Bar */}
       <View style={styles.statusHeader}>
          <Text style={styles.statusId}>Order ID <Text style={{fontWeight:'800'}}>{order.displayId}</Text></Text>
-         <Text style={styles.statusBadge}>{order.statusSummary}</Text>
+         <Text style={styles.statusBadge}>{item.status === 'Delivered' ? 'Order Delivered' : order.statusSummary}</Text>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+         {/* Product Info Section */}
          <View style={styles.productSection}>
             <View style={styles.productThumbBox}>
                <View style={styles.brandLogo} />
@@ -58,26 +62,72 @@ export default function OrderDetailsScreen() {
             </View>
          </View>
 
+         {/* Status Specific Tracking Box */}
          <View style={styles.trackingBox}>
-            <View style={styles.truckIcon}><Ionicons name="bus-outline" size={20} color="#000" /></View>
+            <View style={styles.statusIconBox}>
+               <Ionicons name={isDelivered ? "cube-outline" : "bus-outline"} size={22} color="#000" />
+            </View>
             <View style={styles.trackingInfo}>
-               <Text style={styles.trackTitle}>Delivery by <Text style={{fontWeight:'800'}}>{item.statusDate}</Text></Text>
+               <Text style={styles.trackTitle}>
+                 {isDelivered ? 'Delivered on' : 'Delivery by'} <Text style={{fontWeight:'800'}}>{item.statusDate}</Text>
+               </Text>
                <Text style={styles.trackId}>Order ID #00100010001</Text>
-               <TouchableOpacity><Text style={styles.trackLink}>Track here</Text></TouchableOpacity>
+               {!isDelivered && (
+                 <TouchableOpacity><Text style={styles.trackLink}>Track here</Text></TouchableOpacity>
+               )}
             </View>
             <TouchableOpacity><Ionicons name="copy-outline" size={18} color="#000" /></TouchableOpacity>
          </View>
 
-         <TouchableOpacity style={styles.policyBox}>
-            <Text style={styles.policyText}>Exchange and replacement available for this order.</Text>
-            <Text style={styles.policyLink}>Read Policy</Text>
-         </TouchableOpacity>
+         {/* Return/Replace or Cancel logic */}
+         {isDelivered ? (
+           <View style={styles.deliveredActionsSection}>
+              <View style={styles.policyInfoRow}>
+                <Text style={styles.policyInfoText}>You can replace or return this item by 17th December.</Text>
+                <TouchableOpacity><Text style={styles.readPolicyInline}>Read Policy</Text></TouchableOpacity>
+              </View>
+              
+              <View style={styles.actionBtnRow}>
+                 <TouchableOpacity style={styles.outlineActionBtn}>
+                    <Ionicons name="refresh-outline" size={20} color="#000" />
+                    <Text style={styles.actionBtnText}>Replace</Text>
+                 </TouchableOpacity>
+                 <TouchableOpacity style={styles.outlineActionBtn}>
+                    <Ionicons name="return-up-back-outline" size={20} color="#000" />
+                    <Text style={styles.actionBtnText}>Return</Text>
+                 </TouchableOpacity>
+              </View>
 
-         <View style={styles.cancelBox}>
-            <Text style={styles.cancelPrompt}>Wish to request for a cancellation of your order?</Text>
-            <TouchableOpacity style={styles.cancelBtn}><Text style={styles.cancelBtnText}>Cancel</Text></TouchableOpacity>
-         </View>
+              <View style={styles.reviewSection}>
+                 <View style={styles.reviewHeader}>
+                    <Text style={styles.reviewTitle}>Rate & Review</Text>
+                    <View style={styles.pointsBadge}>
+                       <Text style={styles.pointsBadgeText}>Earn <Text style={{fontWeight:'800'}}>IGM points!</Text></Text>
+                    </View>
+                 </View>
+                 <View style={styles.reviewInputRow}>
+                    <View style={styles.starsRow}>
+                       {[1,2,3,4,5].map(i => <Ionicons key={i} name="star-outline" size={24} color="#BBB" style={{marginRight: 6}} />)}
+                    </View>
+                    <TouchableOpacity><Text style={styles.writeReviewLink}>Write Review</Text></TouchableOpacity>
+                 </View>
+              </View>
+           </View>
+         ) : (
+           <>
+            <TouchableOpacity style={styles.policyBox}>
+                <Text style={styles.policyText}>Exchange and replacement available for this order.</Text>
+                <Text style={styles.policyLink}>Read Policy</Text>
+            </TouchableOpacity>
 
+            <View style={styles.cancelBox}>
+                <Text style={styles.cancelPrompt}>Wish to request for a cancellation of your order?</Text>
+                <TouchableOpacity style={styles.cancelBtn}><Text style={styles.cancelBtnText}>Cancel</Text></TouchableOpacity>
+            </View>
+           </>
+         )}
+
+         {/* Delivery Details */}
          <View style={styles.section}>
             <Text style={styles.sectionHeader}>Delivery Details</Text>
             <View style={styles.addressCard}>
@@ -91,6 +141,7 @@ export default function OrderDetailsScreen() {
             </View>
          </View>
 
+         {/* Payment Details */}
          <View style={styles.section}>
             <TouchableOpacity style={styles.payHeader} onPress={() => setPayExpanded(!payExpanded)}>
                <Text style={styles.sectionHeader}>Payment Details</Text>
@@ -113,11 +164,13 @@ export default function OrderDetailsScreen() {
             )}
          </View>
 
+         {/* Loyalty Points Banner */}
          <View style={styles.pointsBanner}>
             <Text style={styles.pointsTitle}>+{order.pointsEarned} IGM Points earned!</Text>
             <Text style={styles.pointsDesc}>Congratulations! you have earned points on this order</Text>
          </View>
 
+         {/* Invoice Download */}
          <TouchableOpacity style={styles.invoiceBtn}>
             <Text style={styles.invoiceText}>Get invoice for this shipment</Text>
             <Text style={styles.downloadText}>Download</Text>
@@ -156,7 +209,7 @@ const styles = StyleSheet.create({
   amtPaid: { fontSize: 11, color: '#888' },
   prodSpecs: { fontSize: 12, color: '#666', lineHeight: 18 },
   trackingBox: { flexDirection: 'row', margin: 16, padding: 16, backgroundColor: '#F9F9F9', borderRadius: 8, alignItems: 'flex-start' },
-  truckIcon: { width: 40, height: 40, backgroundColor: '#FFF', borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginRight: 16 },
+  statusIconBox: { width: 40, height: 40, backgroundColor: '#FFF', borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginRight: 16 },
   trackingInfo: { flex: 1 },
   trackTitle: { fontSize: 14, marginBottom: 2 },
   trackId: { fontSize: 12, color: '#888', marginBottom: 8 },
@@ -168,6 +221,24 @@ const styles = StyleSheet.create({
   cancelPrompt: { flex: 1, fontSize: 12, color: '#666' },
   cancelBtn: { backgroundColor: '#F0F0F0', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 4 },
   cancelBtnText: { fontSize: 13, fontWeight: '700' },
+  
+  // Delivered Specific styles
+  deliveredActionsSection: { paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  policyInfoRow: { paddingHorizontal: 16, alignItems: 'center', marginBottom: 20 },
+  policyInfoText: { fontSize: 13, color: '#333', textAlign: 'center' },
+  readPolicyInline: { fontSize: 13, fontWeight: '700', textDecorationLine: 'underline', marginTop: 4 },
+  actionBtnRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 12, marginBottom: 24 },
+  outlineActionBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 48, borderRadius: 4, backgroundColor: '#F5F5F5', gap: 8 },
+  actionBtnText: { fontSize: 14, fontWeight: '600' },
+  reviewSection: { padding: 16, borderTopWidth: 1, borderTopColor: '#F9F9F9' },
+  reviewHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  reviewTitle: { fontSize: 14, fontWeight: '700' },
+  pointsBadge: { backgroundColor: '#F0F0F0', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 },
+  pointsBadgeText: { fontSize: 10 },
+  reviewInputRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  starsRow: { flexDirection: 'row' },
+  writeReviewLink: { fontSize: 12, fontWeight: '700', textDecorationLine: 'underline' },
+
   section: { padding: 16, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   sectionHeader: { fontSize: 15, fontWeight: '700' },
   addressCard: { flexDirection: 'row', marginTop: 16 },

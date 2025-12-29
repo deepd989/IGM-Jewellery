@@ -75,8 +75,8 @@ export const profileApiService = createApi({
           displayId: '#12345667',
           orderDate: 'Sun, 3 Nov',
           totalAmount: 20000,
-          itemCount: 1,
-          statusSummary: 'Order Dispatched',
+          itemCount: 3,
+            statusSummary: '2 Items In Progress | 1 item delivered',
           pointsEarned: 670,
           paymentMethod: 'Paid by UPI',
           deliveryAddress: {
@@ -85,9 +85,11 @@ export const profileApiService = createApi({
             line2: 'Mumbai 400 010',
             phone: '+91 9870951999'
           },
-          items: [
-            { id: 'si1', status: 'Dispatched', statusDate: 'Sun, 20 April 2025', price: 20000, product: { title: '24K Gold Ring', brand: 'Kalyan Jewellers' as any, description: '14 KT, Yellow Gold, 0.01 gm, Gem stone-Emerald, FG, Size 14, Length 16' } },
-          ]
+          items:  [
+              { id: 'si1', status: 'Dispatched', statusDate: 'Mon, 2 Nov', price: 3000, product: { title: 'Diamond Ring 24K, Kal...', brand: 'Kalyan Jewellers' as any } },
+              { id: 'si2', status: 'Out for delivery', statusDate: 'Mon, 2 Nov', price: 5000, product: { title: 'Long Necklace 12k, Kal...', brand: 'Kalyan Jewellers' as any } },
+              { id: 'si3', status: 'Delivered', statusDate: 'Mon, 2 Nov', price: 5000, product: { title: 'Diamond Ring 24K, Kal...', brand: 'Kalyan Jewellers' as any } },
+            ]
         }
       })
     })
