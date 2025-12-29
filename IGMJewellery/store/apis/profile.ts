@@ -2,6 +2,7 @@
 
 import { FAQ, Policy } from '@/interfaces/faq.interface';
 import { Order } from '@/interfaces/order-details.interface';
+import { TrialRequest } from '@/interfaces/trail.interface';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 
@@ -68,7 +69,7 @@ export const profileApiService = createApi({
       })
     }),
 
-        getOrderById: builder.query<Order, string>({
+    getOrderById: builder.query<Order, string>({
       queryFn: (id) => ({
         data: {
           id,
@@ -92,8 +93,64 @@ export const profileApiService = createApi({
             ]
         }
       })
+    }),
+       getTrialRequests: builder.query<TrialRequest[], void>({
+      queryFn: () => ({
+        data: [
+          {
+            id: 'tr1',
+            displayId: '#12345566',
+            status: 'Scheduled',
+            statusLabel: 'Order Scheduled',
+            items: [{ id: '1' }, { id: '2' }, { id: '3' }],
+            requestedDate: 'Mon, 20 April, 2025',
+            appointmentDate: 'Wed, 20 April, 2025',
+          },
+          {
+            id: 'tr2',
+            displayId: '#12345566',
+            status: 'Cancelled',
+            statusLabel: 'Order Cancelled',
+            items: [{ id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }],
+            requestedDate: 'Mon, 20 April, 2025',
+            cancellationDate: 'Wed, 20 April, 2025',
+            appointmentDate: 'Wed, 20 April, 2025',
+          },
+          {
+            id: 'tr3',
+            displayId: '#12345566',
+            status: 'Executed',
+            statusLabel: 'Order Executed',
+            items: [{ id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }],
+            requestedDate: 'Mon, 20 April, 2025',
+            appointmentDate: 'Wed, 20 April, 2025',
+          }
+        ]
+      })
+    }),
+    getTrialRequestById: builder.query<TrialRequest, string>({
+      queryFn: (id) => ({
+        data: {
+          id,
+          displayId: '#12345667',
+          status: id === 'tr_delivered' ? 'Delivered' : 'InTransit',
+          statusLabel: id === 'tr_delivered' ? 'Products Delivered' : 'Request Confirmed',
+          items: [
+            { id: '1', title: 'Gold Chain', description: '14 KT, Yellow Gold, 0.01 gm, Gem stone-Emerald, FG' },
+            { id: '2', title: 'Gold Chain', description: '14 KT, Yellow Gold, 0.01 gm, Gem stone-Emerald, FG..' },
+            { id: '3', title: 'Gold Chain', description: '14 KT, Yellow Gold, 0.01 gm, Gem stone-Emerald, FG..' },
+          ],
+          requestedDate: 'Mon, 20 April, 2025',
+          appointmentDate: 'Wed, 20 April, 2025',
+          bookingTime: '12:00 PM',
+          bookingAddress: 'Andheri West, Mumbai',
+          nearestStore: 'Kalyan Jewellers, 400 066 Mumbai'
+        }
+      })
     })
+
   }),
 });
 
-export const { useGetFAQsQuery , useGetPrivacyPoliciesQuery ,useGetOrdersQuery, useGetOrderByIdQuery } = profileApiService;
+export const { useGetFAQsQuery , useGetPrivacyPoliciesQuery ,useGetOrdersQuery, useGetOrderByIdQuery,useGetTrialRequestsQuery,
+  useGetTrialRequestByIdQuery } = profileApiService;
