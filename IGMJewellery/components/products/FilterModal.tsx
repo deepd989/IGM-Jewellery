@@ -1,15 +1,15 @@
 import { FILTER_CATEGORIES } from '@/dummyData/filters';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    Dimensions,
-    FlatList,
-    Modal,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Dimensions,
+  FlatList,
+  Modal,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { COLORS, SPACING } from '../../constants/theme';
 
@@ -17,16 +17,26 @@ interface FilterModalProps {
   visible: boolean;
   onClose: () => void;
   onApply: (filters: Record<string, string[]>) => void;
+  initialFilters?: Record<string, string[]>;
 }
-
-
 
 const { width, height } = Dimensions.get('window');
 
-export const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onApply }) => {
+export const FilterModal: React.FC<FilterModalProps> = ({ 
+  visible, 
+  onClose, 
+  onApply,
+  initialFilters = {}
+}) => {
   const [activeCategoryId, setActiveCategoryId] = useState('productType');
-  // Record<CategoryId, Array<OptionId>>
-  const [selections, setSelections] = useState<Record<string, string[]>>({});
+  const [selections, setSelections] = useState<Record<string, string[]>>(initialFilters);
+
+  // Update selections when modal opens with new initial filters
+  useEffect(() => {
+    if (visible) {
+      setSelections(initialFilters);
+    }
+  }, [visible, initialFilters]);
 
   const activeCategory = FILTER_CATEGORIES.find(c => c.id === activeCategoryId) || FILTER_CATEGORIES[0];
 
@@ -51,6 +61,10 @@ export const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onAp
   const handleApply = () => {
     onApply(selections);
     onClose();
+  };
+
+  const getTotalSelectedCount = () => {
+    return Object.values(selections).reduce((total, options) => total + options.length, 0);
   };
 
   const renderSidebarItem = ({ item }: { item: typeof FILTER_CATEGORIES[0] }) => {
@@ -84,7 +98,6 @@ export const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onAp
         onPress={() => toggleSelection(activeCategoryId, item.id)}
       >
         <View style={[styles.gridItemBox, isSelected && styles.gridItemBoxSelected]}>
-           {/* Placeholder for image */}
            {isSelected && (
              <Ionicons name="checkmark" size={24} color={COLORS.text} style={styles.checkIconCenter} />
            )}
@@ -121,6 +134,11 @@ export const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onAp
           <View style={styles.headerLeft}>
             <Ionicons name="options-outline" size={24} color={COLORS.text} />
             <Text style={styles.headerTitle}>Filters</Text>
+            {getTotalSelectedCount() > 0 && (
+              <View style={styles.headerBadge}>
+                <Text style={styles.headerBadgeText}>{getTotalSelectedCount()}</Text>
+              </View>
+            )}
           </View>
           <TouchableOpacity onPress={onClose}>
             <Ionicons name="close" size={24} color={COLORS.text} />
@@ -144,20 +162,22 @@ export const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onAp
           <View style={styles.content}>
             {activeCategory.type === 'grid' ? (
               <FlatList
-                key={activeCategoryId} // Refresh on category change
+                key={`grid-${activeCategoryId}`}
                 data={activeCategory.options}
                 keyExtractor={item => item.id}
                 numColumns={3}
                 renderItem={renderGridOption}
                 contentContainerStyle={styles.gridContent}
+                showsVerticalScrollIndicator={false}
               />
             ) : (
               <FlatList
-                key={activeCategoryId}
+                key={`list-${activeCategoryId}`}
                 data={activeCategory.options}
                 keyExtractor={item => item.id}
                 renderItem={renderListOption}
                 contentContainerStyle={styles.listContent}
+                showsVerticalScrollIndicator={false}
               />
             )}
           </View>
@@ -165,12 +185,23 @@ export const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, onAp
 
         {/* Footer */}
         <View style={styles.footer}>
-          <TouchableOpacity style={styles.clearBtn} onPress={clearAll}>
-            <Text style={styles.clearBtnText}>CLEAR ALL</Text>
+          <TouchableOpacity 
+            style={styles.clearBtn} 
+            onPress={clearAll}
+            disabled={getTotalSelectedCount() === 0}
+          >
+            <Text style={[
+              styles.clearBtnText,
+              getTotalSelectedCount() === 0 && styles.clearBtnTextDisabled
+            ]}>
+              CLEAR ALL
+            </Text>
           </TouchableOpacity>
           <View style={styles.verticalDivider} />
           <TouchableOpacity style={styles.applyBtn} onPress={handleApply}>
-            <Text style={styles.applyBtnText}>APPLY FILTER</Text>
+            <Text style={styles.applyBtnText}>
+              APPLY{getTotalSelectedCount() > 0 ? ` (${getTotalSelectedCount()})` : ''}
+            </Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -202,13 +233,28 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     marginLeft: SPACING.s,
   },
+  headerBadge: {
+    backgroundColor: COLORS.primary,
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+    marginLeft: 8,
+  },
+  headerBadgeText: {
+    color: '#FFF',
+    fontSize: 11,
+    fontWeight: '700',
+  },
   body: {
     flex: 1,
     flexDirection: 'row',
   },
   sidebar: {
     width: '35%',
-    backgroundColor: '#F9F9F9', // Sidebar background typically lighter/gray
+    backgroundColor: '#F9F9F9',
   },
   sidebarContent: {
     paddingBottom: SPACING.xl,
@@ -218,7 +264,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.m,
   },
   sidebarItemActive: {
-    backgroundColor: '#FFFFFF', // Highlighted
+    backgroundColor: '#FFFFFF',
     borderLeftWidth: 3,
     borderLeftColor: COLORS.primary,
   },
@@ -248,7 +294,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
   },
-  
   content: {
     width: '65%',
     backgroundColor: '#FFFFFF',
@@ -288,7 +333,6 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     fontWeight: '600',
   },
-
   listContent: {
     padding: SPACING.m,
   },
@@ -321,7 +365,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     borderColor: COLORS.primary,
   },
-
   footer: {
     flexDirection: 'row',
     borderTopWidth: 1,
@@ -338,6 +381,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 14,
   },
+  clearBtnTextDisabled: {
+    color: COLORS.textSecondary,
+    opacity: 0.5,
+  },
   verticalDivider: {
     width: 1,
     backgroundColor: '#F0F0F0',
@@ -349,7 +396,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   applyBtnText: {
-    color: COLORS.text, // Usually apply is prominent, but design shows plain text
+    color: COLORS.text,
     fontWeight: '600',
     fontSize: 14,
   },
