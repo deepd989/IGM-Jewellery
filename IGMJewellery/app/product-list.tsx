@@ -6,7 +6,6 @@ import {
   Image,
   Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -21,52 +20,12 @@ import { Product } from '@/interfaces/product.interface';
 import { COLORS, SPACING } from '../constants/theme';
 import { Brand } from '../enums/brand.enum';
 import { ProductType } from '../enums/productType.enum';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSelector } from 'react-redux';
+import { selectProducts } from '@/store/productSlice';
 
 // --- MOCK DATA ---
-export const MOCK_PRODUCTS: Product[] = [
-  {
-    id: '1',
-    title: '24K Diamond Ring',
-    name: 'Solitaire Shine',
-    description: 'Beautiful solitaire ring.',
-    productType: ProductType.Ring,
-    givenPrice: 25000,
-    discountedPrice: 20000,
-    brand: Brand.Kalyan,
-    tags: ['new', 'diamond'],
-    thumbnailUrls: ['https://images.unsplash.com/photo-1605100804763-eb2fc645a382?q=80&w=400'],
-    isNew: true,
-    rating: 4,
-  },
-  {
-    id: '2',
-    title: 'Gold Plated Ring',
-    name: 'Daily Wear',
-    description: 'Perfect for daily use.',
-    productType: ProductType.Ring,
-    givenPrice: 12000,
-    discountedPrice: 9500,
-    brand: Brand.Malabar,
-    tags: ['gold', 'sale'],
-    thumbnailUrls: ['https://images.unsplash.com/photo-1626784215021-2e39ccf971cd?q=80&w=400'],
-    isNew: true,
-    rating: 5,
-  },
-  {
-    id: '3',
-    title: 'Emerald Cut Ring',
-    name: 'Green Glory',
-    description: 'Stunning emerald.',
-    productType: ProductType.Ring,
-    givenPrice: 45000,
-    discountedPrice: 38000,
-    brand: Brand.Tanishq,
-    tags: ['gemstone'],
-    thumbnailUrls: ['https://images.unsplash.com/photo-1599643477877-530eb83abc8e?q=80&w=400'],
-    isNew: false,
-    rating: 4,
-  }
-];
+
 
 const FILTER_CHIPS = ['All', 'Latest', 'Best Sellers', 'Express Delivery', 'Store Pick-up'];
 const MENU_ITEMS = ['Bespoke Jewellery', 'Our Brands', 'Call an expert', 'Chat with Sonar'];
@@ -76,6 +35,7 @@ export default function ListingScreen() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const MOCK_PRODUCTS = useSelector(selectProducts)
 
   // Sorting State
   const [isSortVisible, setIsSortVisible] = useState(false);

@@ -3,7 +3,8 @@ import { useGetFAQsQuery } from '@/store/apis/profile';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { LayoutAnimation, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { LayoutAnimation, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const CATEGORIES = ['Payment', 'Brands', 'Orders', 'Try At Home', 'Ai Sonar'];

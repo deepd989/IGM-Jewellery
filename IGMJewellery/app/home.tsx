@@ -20,6 +20,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from "react-redux";
 import EventCard from "@/components/eventCard";
 import HashtagComponent from "@/components/hashtagComponent";
+import { useRouter } from 'expo-router';
+
 
 
 
@@ -27,6 +29,14 @@ export default function HomeScreen() {
     const [expanded, setExpanded] = useState(false);
     const [firstRowHeight, setFirstRowHeight] = useState<number | null>(60);
     const products = useSelector(selectProducts)
+    const router = useRouter();
+    const [inputChip, setInputChip] = useState<string>("");
+    const handleSubmit = () => {
+      router.push({
+        pathname: '/product-list',
+        params: { value: inputChip },
+      });
+    };
   return (
     <SafeAreaView style={{flex:1}}>
     <ScrollView style={styles.container}>
@@ -54,6 +64,10 @@ export default function HomeScreen() {
           placeholder="Sonar is listening"
           placeholderTextColor="#999"
           style={styles.input}
+          value={inputChip}
+          onChangeText={setInputChip}
+          returnKeyType="send"          // or "done", "go", "search"
+          onSubmitEditing={handleSubmit}
         />
         <Ionicons name="mic-outline" size={22} />
         <View style={{ borderRadius:50, height:30, width:30, alignItems:"center", justifyContent:"center", backgroundColor:"#EBEBEB"}}>
@@ -91,9 +105,9 @@ export default function HomeScreen() {
       "Mom’s gift",
       "Anniversary",
     ].map((chip, idx) => (
-      <View key={idx} style={styles.chip}>
+      <TouchableOpacity onPress={()=>{setInputChip(chip)}} key={idx} style={styles.chip}>
         <Text style={styles.chipText}>{chip}</Text>
-      </View>
+      </TouchableOpacity>
     ))}
   </View>
 

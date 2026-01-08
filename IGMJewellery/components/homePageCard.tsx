@@ -7,20 +7,24 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import EarringIcon from "./ui/earingsComponentSvg";
 import { selectProducts } from "@/store/productSlice";
 import { useSelector } from "react-redux";
+import { ProductType } from "@/enums/productType.enum";
 
 
 export default function HomePageCard() {
     const products = useSelector(selectProducts);   
+    const [cardTitle, setCardTitle] = React.useState<ProductType>(ProductType.Necklace);
     return (
         <View style={{backgroundColor: "#F8F8F8", paddingTop: 6, marginTop: 100, borderRadius: 8, paddingHorizontal: 12, borderColor:"grey", borderWidth:2,marginBottom:40}}>
           {/* Category Icons (static placeholders) */}
           <View style={styles.iconRow}>
-            <MaterialCommunityIcons name="necklace" size={32} color="#000" />
-            <MaterialCommunityIcons name="ring" size={32} color="#000" />
-            <MaterialCommunityIcons name="diamond-stone" size={32} color="#000" />
-            <MaterialCommunityIcons name="gold" size={32} color="#000" />
-            <MaterialCommunityIcons name="gift" size={32} color="#000" />
-            <EarringIcon width={40} height={40} />
+            <MaterialCommunityIcons name="necklace" size={32} color="#000" onPress={()=>setCardTitle(ProductType.Necklace)}/>
+            <MaterialCommunityIcons name="ring" size={32} color="#000" onPress={()=>setCardTitle(ProductType.Ring)} />
+            <MaterialCommunityIcons name="diamond-stone" size={32} color="#000" onPress={()=>setCardTitle(ProductType.DiamondStone)}  />
+            <MaterialCommunityIcons name="gold" size={32} color="#000" onPress={()=>setCardTitle(ProductType.Gold)}/>
+            <MaterialCommunityIcons name="gift" size={32} color="#000" onPress={()=>setCardTitle(ProductType.Gift)} />
+            <TouchableOpacity onPress={()=>setCardTitle(ProductType.Earring)}>
+            <EarringIcon width={40} height={40}  />
+            </TouchableOpacity>
           </View>
           <View
                 style={{
@@ -31,13 +35,14 @@ export default function HomePageCard() {
                 />
           {/* Necklace Section */}
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Necklace</Text>
+            <Text style={styles.sectionTitle}>{cardTitle}</Text>
             <Ionicons name="chevron-forward" size={18} />
           </View>
     
           {/* Product Card */}
           <NecklaceCard
-               product={products[0]}
+              productType={cardTitle}
+               product={products.filter(p=>p.productType===cardTitle)[0]}
                onTryOn={() => {
                 // Handle try-on action
                }}
@@ -69,45 +74,68 @@ const styles = StyleSheet.create({
 
 
 interface Props {
-  product:Product,
+  productType: ProductType;
+  product:Product | undefined, // undefined in case there are no products of that type
   onTryOn: () => void;
   deliveryDate: string;  
 }
 
 
 export const NecklaceCard: React.FC<Props> = ({
+  productType,
   product,
   deliveryDate,
   onTryOn,
 }) => {
+  const defaultImages: Record<ProductType, any> = {
+    "Earring": require('../assets/images/dummyImages/dummyEarring.png'),
+    "Necklace": require('../assets/images/dummyImages/dummyNecklace.png'),
+    "Ring": require('../assets/images/dummyImages/dummyRing.png'),
+    "Bracelet": require('../assets/images/dummyImages/dummyBracelete.png'),
+    "Gold": require('../assets/images/dummyImages/dummyGold.png'),
+    "Gift": require('../assets/images/dummyImages/dummyGift.jpg'),
+    "Diamond Stone": require('../assets/images/dummyImages/dummyDiamond.png'),
+  };
   return (
     <View style={necklaceCardStyle.wrapper}>
       <TouchableOpacity style={necklaceCardStyle.card} activeOpacity={0.9}>
         {/* Product Image */}
+         
         <View style={necklaceCardStyle.imageWrapper}>
-          <Image source={{ uri: product.thumbnailUrls[0] }} style={necklaceCardStyle.image} />
-
+        <Image
+      source={defaultImages[productType]}
+  style={necklaceCardStyle.image}
+/>
+          { product &&
           <TouchableOpacity style={necklaceCardStyle.wishlistButton}>
             <AntDesign name="heart" size={22} color="#000" />
-          </TouchableOpacity>
-
+          </TouchableOpacity>}
+        { product &&
           <View style={necklaceCardStyle.deliveryTag}>
             <AntDesign name="truck" size={14} color="#555" />
             <Text style={necklaceCardStyle.deliveryText}>{deliveryDate}</Text>
           </View>
+          }
         </View>
+        
 
         {/* Details */}
+        {
+
+product && product.discountedPrice != undefined && product.givenPrice != undefined &&
         <View style={necklaceCardStyle.details}>
-          <Text style={necklaceCardStyle.title}>{product.title}</Text>
-
+          <Text style={necklaceCardStyle.title}>{product?.title || "Not Available"}</Text>
+          
           <View style={necklaceCardStyle.priceRow}>
-            <Text style={necklaceCardStyle.price}>₹{product.discountedPrice.toLocaleString()}</Text>
-            <Text style={necklaceCardStyle.oldPrice}>₹{product.givenPrice.toLocaleString()}</Text>
+            <Text style={necklaceCardStyle.price}>₹{product?.discountedPrice.toLocaleString()}</Text>
+            <Text style={necklaceCardStyle.oldPrice}>₹{product?.givenPrice.toLocaleString()}</Text>
           </View>
+          
 
-          <Text style={necklaceCardStyle.brand}>{product.brand}</Text>
+          <Text style={necklaceCardStyle.brand}>{product?.brand}</Text>
         </View>
+        // </View>
+}
       </TouchableOpacity>
 
       {/* Floating "See how it looks on you" Button */}
