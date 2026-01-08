@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   Platform,
@@ -27,6 +28,8 @@ import { selectProducts } from '@/store/productSlice';
 // --- MOCK DATA ---
 
 
+import { useGetProductsQuery } from '@/store/apis/product';
+
 const FILTER_CHIPS = ['All', 'Latest', 'Best Sellers', 'Express Delivery', 'Store Pick-up'];
 const MENU_ITEMS = ['Bespoke Jewellery', 'Our Brands', 'Call an expert', 'Chat with Sonar'];
 
@@ -45,6 +48,18 @@ export default function ListingScreen() {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
 
+  // Fetch products from Redux API with filters and sorting
+  const { data: products = [], isLoading, isError, error, refetch } = useGetProductsQuery({
+    sortBy: selectedSort,
+    filters: activeFilters,
+  });
+
+  // Count active filters
+  const activeFilterCount = Object.values(activeFilters).reduce(
+    (total, options) => total + options.length, 
+    0
+  );
+
   const toggleViewMode = () => {
     setViewMode(prev => prev === 'grid' ? 'list' : 'grid');
   };
@@ -61,12 +76,23 @@ export default function ListingScreen() {
   };
 
   const handleApplyFilters = (filters: Record<string, string[]>) => {
+    console.log('Applying Filters:', filters);
     setActiveFilters(filters);
+    // The query will automatically refetch with new filters due to RTK Query
+  };
+
+  const handleClearFilters = () => {
+    setActiveFilters({});
+  };
+
+  const handleSortSelect = (sort: string) => {
+    setSelectedSort(sort);
+    // The query will automatically refetch with new sort due to RTK Query
   };
 
   const renderHeader = () => (
     <View>
-       {/* Page Header */}
+      {/* Page Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}>
           <Ionicons name="chevron-back" size={24} color={COLORS.text} />
@@ -94,6 +120,9 @@ export default function ListingScreen() {
           />
         </View>
         <Text style={styles.pageTitle}>[Rings]</Text>
+        <Text style={styles.resultsCount}>
+          {products.length} {products.length === 1 ? 'Product' : 'Products'}
+        </Text>
       </View>
 
       {/* Filter Chips */}
@@ -114,14 +143,75 @@ export default function ListingScreen() {
           </TouchableOpacity>
         ))}
       </ScrollView>
+
+      {/* Active Filters Summary */}
+      {activeFilterCount > 0 && (
+        <View style={styles.activeFiltersBar}>
+          <Text style={styles.activeFiltersText}>
+            {activeFilterCount} {activeFilterCount === 1 ? 'filter' : 'filters'} applied
+          </Text>
+          <TouchableOpacity onPress={handleClearFilters}>
+            <Text style={styles.clearFiltersText}>Clear All</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.centerContent}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Loading products...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.centerContent}>
+          <Ionicons name="alert-circle-outline" size={48} color={COLORS.error} />
+          <Text style={styles.errorText}>Failed to load products</Text>
+          <Text style={styles.errorSubtext}>{error?.toString()}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={() => refetch()}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Empty state (after filtering)
+  if (products.length === 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        {renderHeader()}
+        <View style={styles.centerContent}>
+          <Ionicons name="search-outline" size={64} color={COLORS.textSecondary} />
+          <Text style={styles.emptyText}>No products found</Text>
+          <Text style={styles.emptySubtext}>
+            Try adjusting your filters or search criteria
+          </Text>
+          {activeFilterCount > 0 && (
+            <TouchableOpacity style={styles.clearButton} onPress={handleClearFilters}>
+              <Text style={styles.clearButtonText}>Clear Filters</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
         key={viewMode}
-        data={MOCK_PRODUCTS}
+        data={products}
         keyExtractor={(item) => item.id}
         numColumns={viewMode === 'grid' ? 2 : 1}
         renderItem={({ item }) => (
@@ -149,9 +239,7 @@ export default function ListingScreen() {
       {/* Right: Support Menu */}
       {!isMenuOpen ? (
         <TouchableOpacity style={styles.closeFab} onPress={() => setIsMenuOpen(true)}>
-          
-             <Ionicons name="sparkles" size={22}  /> 
-           
+          <Ionicons name="sparkles" size={22} /> 
         </TouchableOpacity>
       ) : (
         <TouchableOpacity style={styles.closeFab} onPress={() => setIsMenuOpen(false)}>
@@ -188,6 +276,9 @@ export default function ListingScreen() {
         >
           <Ionicons name="swap-vertical" size={18} color="#FFF" style={{ marginRight: 8 }} />
           <Text style={styles.bottomBarText}>SORT</Text>
+          {selectedSort !== 'Featured' && (
+            <View style={styles.activeDot} />
+          )}
         </TouchableOpacity>
 
         <View style={styles.bottomBarDivider} />
@@ -198,6 +289,11 @@ export default function ListingScreen() {
         >
           <Ionicons name="options-outline" size={18} color="#FFF" style={{ marginRight: 8 }} />
           <Text style={styles.bottomBarText}>FILTER</Text>
+          {activeFilterCount > 0 && (
+            <View style={styles.filterBadge}>
+              <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
 
@@ -209,12 +305,13 @@ export default function ListingScreen() {
         visible={isSortVisible} 
         onClose={() => setIsSortVisible(false)}
         selectedSort={selectedSort}
-        onSelect={setSelectedSort}
+        onSelect={handleSortSelect}
       />
       <FilterModal 
         visible={isFilterVisible}
         onClose={() => setIsFilterVisible(false)}
         onApply={handleApplyFilters}
+        initialFilters={activeFilters}
       />
     </SafeAreaView>
   );
@@ -225,6 +322,65 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
     paddingTop: Platform.OS === 'android' ? 30 : 0,
+  },
+  centerContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: SPACING.l,
+  },
+  loadingText: {
+    marginTop: SPACING.m,
+    fontSize: 16,
+    color: COLORS.textSecondary,
+  },
+  errorText: {
+    marginTop: SPACING.m,
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLORS.text,
+  },
+  errorSubtext: {
+    marginTop: SPACING.s,
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: SPACING.l,
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.m,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  emptyText: {
+    marginTop: SPACING.m,
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLORS.text,
+  },
+  emptySubtext: {
+    marginTop: SPACING.s,
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+  },
+  clearButton: {
+    marginTop: SPACING.l,
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.m,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+  },
+  clearButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
   header: {
     flexDirection: 'row',
@@ -266,6 +422,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.text,
   },
+  resultsCount: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    marginTop: 4,
+  },
   filterContainer: {
     paddingHorizontal: SPACING.m,
     paddingBottom: SPACING.m,
@@ -291,6 +452,27 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '600',
   },
+  activeFiltersBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.m,
+    paddingVertical: SPACING.s,
+    backgroundColor: '#F9F9F9',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#E5E5EA',
+  },
+  activeFiltersText: {
+    fontSize: 13,
+    color: COLORS.text,
+    fontWeight: '500',
+  },
+  clearFiltersText: {
+    fontSize: 13,
+    color: COLORS.primary,
+    fontWeight: '600',
+  },
   listContent: {
     paddingHorizontal: SPACING.m,
     paddingBottom: 100,
@@ -314,37 +496,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     zIndex: 10,
-  },
-  rightFab: {
-    position: 'absolute',
-    bottom: 80, 
-    right: SPACING.m,
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#007AFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
-    zIndex: 20,
-  },
-  dIcon: {
-    width: 24,
-    height: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#FFF',
-    borderRadius: 12,
-  },
-  dText: {
-    color: '#FFF',
-    fontWeight: '700',
-    fontSize: 14,
   },
   closeFab: {
     position: 'absolute',
@@ -410,6 +561,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
   },
   bottomBarText: {
     color: '#FFFFFF',
@@ -421,5 +573,31 @@ const styles = StyleSheet.create({
     width: 1,
     height: 24,
     backgroundColor: 'rgba(255,255,255,0.2)',
+  },
+  activeDot: {
+    position: 'absolute',
+    top: -4,
+    right: '30%',
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#FFD700',
+  },
+  filterBadge: {
+    position: 'absolute',
+    top: -4,
+    right: '25%',
+    backgroundColor: '#FFD700',
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  filterBadgeText: {
+    color: COLORS.text,
+    fontSize: 10,
+    fontWeight: '700',
   },
 });
