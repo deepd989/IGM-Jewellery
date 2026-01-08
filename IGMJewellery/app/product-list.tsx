@@ -40,14 +40,17 @@ export default function ListingScreen() {
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
 
-  // Fetch products from Redux API
-  const { data: products = [], isLoading, isError, error } = useGetProductsQuery({
-    sortBy: selectedSort === 'Price: Low to High' ? 'price-low' :
-           selectedSort === 'Price: High to Low' ? 'price-high' :
-           selectedSort === 'Top Rated' ? 'rating' :
-           selectedSort === 'Newest First' ? 'newest' : undefined,
-    // You can add more filter params here based on activeFilters
+  // Fetch products from Redux API with filters and sorting
+  const { data: products = [], isLoading, isError, error, refetch } = useGetProductsQuery({
+    sortBy: selectedSort,
+    filters: activeFilters,
   });
+
+  // Count active filters
+  const activeFilterCount = Object.values(activeFilters).reduce(
+    (total, options) => total + options.length, 
+    0
+  );
 
   const toggleViewMode = () => {
     setViewMode(prev => prev === 'grid' ? 'list' : 'grid');
@@ -65,8 +68,18 @@ export default function ListingScreen() {
   };
 
   const handleApplyFilters = (filters: Record<string, string[]>) => {
+    console.log('Applying Filters:', filters);
     setActiveFilters(filters);
-    
+    // The query will automatically refetch with new filters due to RTK Query
+  };
+
+  const handleClearFilters = () => {
+    setActiveFilters({});
+  };
+
+  const handleSortSelect = (sort: string) => {
+    setSelectedSort(sort);
+    // The query will automatically refetch with new sort due to RTK Query
   };
 
   const renderHeader = () => (
@@ -99,6 +112,9 @@ export default function ListingScreen() {
           />
         </View>
         <Text style={styles.pageTitle}>[Rings]</Text>
+        <Text style={styles.resultsCount}>
+          {products.length} {products.length === 1 ? 'Product' : 'Products'}
+        </Text>
       </View>
 
       {/* Filter Chips */}
@@ -119,6 +135,18 @@ export default function ListingScreen() {
           </TouchableOpacity>
         ))}
       </ScrollView>
+
+      {/* Active Filters Summary */}
+      {activeFilterCount > 0 && (
+        <View style={styles.activeFiltersBar}>
+          <Text style={styles.activeFiltersText}>
+            {activeFilterCount} {activeFilterCount === 1 ? 'filter' : 'filters'} applied
+          </Text>
+          <TouchableOpacity onPress={handleClearFilters}>
+            <Text style={styles.clearFiltersText}>Clear All</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 
@@ -142,6 +170,30 @@ export default function ListingScreen() {
           <Ionicons name="alert-circle-outline" size={48} color={COLORS.error} />
           <Text style={styles.errorText}>Failed to load products</Text>
           <Text style={styles.errorSubtext}>{error?.toString()}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={() => refetch()}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Empty state (after filtering)
+  if (products.length === 0) {
+    return (
+      <SafeAreaView style={styles.container}>
+        {renderHeader()}
+        <View style={styles.centerContent}>
+          <Ionicons name="search-outline" size={64} color={COLORS.textSecondary} />
+          <Text style={styles.emptyText}>No products found</Text>
+          <Text style={styles.emptySubtext}>
+            Try adjusting your filters or search criteria
+          </Text>
+          {activeFilterCount > 0 && (
+            <TouchableOpacity style={styles.clearButton} onPress={handleClearFilters}>
+              <Text style={styles.clearButtonText}>Clear Filters</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </SafeAreaView>
     );
@@ -216,6 +268,9 @@ export default function ListingScreen() {
         >
           <Ionicons name="swap-vertical" size={18} color="#FFF" style={{ marginRight: 8 }} />
           <Text style={styles.bottomBarText}>SORT</Text>
+          {selectedSort !== 'Featured' && (
+            <View style={styles.activeDot} />
+          )}
         </TouchableOpacity>
 
         <View style={styles.bottomBarDivider} />
@@ -226,6 +281,11 @@ export default function ListingScreen() {
         >
           <Ionicons name="options-outline" size={18} color="#FFF" style={{ marginRight: 8 }} />
           <Text style={styles.bottomBarText}>FILTER</Text>
+          {activeFilterCount > 0 && (
+            <View style={styles.filterBadge}>
+              <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
 
@@ -237,12 +297,13 @@ export default function ListingScreen() {
         visible={isSortVisible} 
         onClose={() => setIsSortVisible(false)}
         selectedSort={selectedSort}
-        onSelect={setSelectedSort}
+        onSelect={handleSortSelect}
       />
       <FilterModal 
         visible={isFilterVisible}
         onClose={() => setIsFilterVisible(false)}
         onApply={handleApplyFilters}
+        initialFilters={activeFilters}
       />
     </SafeAreaView>
   );
@@ -276,6 +337,42 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.textSecondary,
     textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: SPACING.l,
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.m,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  emptyText: {
+    marginTop: SPACING.m,
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLORS.text,
+  },
+  emptySubtext: {
+    marginTop: SPACING.s,
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+  },
+  clearButton: {
+    marginTop: SPACING.l,
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.m,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+  },
+  clearButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
   header: {
     flexDirection: 'row',
@@ -317,6 +414,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.text,
   },
+  resultsCount: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    marginTop: 4,
+  },
   filterContainer: {
     paddingHorizontal: SPACING.m,
     paddingBottom: SPACING.m,
@@ -340,6 +442,27 @@ const styles = StyleSheet.create({
   },
   chipTextActive: {
     color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  activeFiltersBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.m,
+    paddingVertical: SPACING.s,
+    backgroundColor: '#F9F9F9',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#E5E5EA',
+  },
+  activeFiltersText: {
+    fontSize: 13,
+    color: COLORS.text,
+    fontWeight: '500',
+  },
+  clearFiltersText: {
+    fontSize: 13,
+    color: COLORS.primary,
     fontWeight: '600',
   },
   listContent: {
@@ -430,6 +553,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
   },
   bottomBarText: {
     color: '#FFFFFF',
@@ -441,5 +565,31 @@ const styles = StyleSheet.create({
     width: 1,
     height: 24,
     backgroundColor: 'rgba(255,255,255,0.2)',
+  },
+  activeDot: {
+    position: 'absolute',
+    top: -4,
+    right: '30%',
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#FFD700',
+  },
+  filterBadge: {
+    position: 'absolute',
+    top: -4,
+    right: '25%',
+    backgroundColor: '#FFD700',
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  filterBadgeText: {
+    color: COLORS.text,
+    fontSize: 10,
+    fontWeight: '700',
   },
 });

@@ -1,83 +1,84 @@
- export const  FILTER_CATEGORIES = [
+export const FILTER_CATEGORIES = [
   {
     id: 'productType',
     label: 'Product Type',
-    type: 'grid',
+    type: 'grid' as const,
     options: [
-      { id: 'Earrings', label: 'Earrings' },
-      { id: 'Rings', label: 'Rings' },
-      { id: 'Bracelets', label: 'Bracelets' },
-      { id: 'Necklace', label: 'Necklace' },
-      { id: 'Bangle', label: 'Bangle' },
-      { id: 'Pendant', label: 'Pendant' },
-      { id: 'Chain', label: 'Chain' },
-    ]
-  },
-  {
-    id: 'price',
-    label: 'Price',
-    type: 'list',
-    options: [
-      { id: 'p1', label: 'Under ₹10,000' },
-      { id: 'p2', label: '₹10,000 - ₹20,000' },
-      { id: 'p3', label: '₹20,000 - ₹50,000' },
-      { id: 'p4', label: 'Above ₹50,000' },
-    ]
-  },
-  {
-    id: 'weight',
-    label: 'Weight Ranges',
-    type: 'list',
-    options: [
-      { id: 'w1', label: '0 - 2g' },
-      { id: 'w2', label: '2 - 5g' },
-      { id: 'w3', label: '5 - 10g' },
-      { id: 'w4', label: '10g+' },
-    ]
-  },
-  {
-    id: 'material',
-    label: 'Material',
-    type: 'list',
-    options: [
-      { id: 'gold', label: 'Gold' },
-      { id: 'diamond', label: 'Diamond' },
-      { id: 'platinum', label: 'Platinum' },
-      { id: 'silver', label: 'Silver' },
-    ]
-  },
-  {
-    id: 'ringSize',
-    label: 'Ring Size',
-    type: 'list',
-    options: [
-      { id: '6', label: '6' },
-      { id: '7', label: '7' },
-      { id: '8', label: '8' },
-      { id: '9', label: '9' },
-      { id: '10', label: '10' },
-    ]
-  },
-  {
-    id: 'bangleSize',
-    label: 'Bangle Size',
-    type: 'list',
-    options: [
-      { id: '2.2', label: '2.2' },
-      { id: '2.4', label: '2.4' },
-      { id: '2.6', label: '2.6' },
-      { id: '2.8', label: '2.8' },
+      { id: 'ring', label: 'Ring' },
+      { id: 'necklace', label: 'Necklace' },
+      { id: 'bracelet', label: 'Bracelet' },
+      { id: 'earring', label: 'Earring' },
+      { id: 'pendant', label: 'Pendant' },
+      { id: 'chain', label: 'Chain' },
     ]
   },
   {
     id: 'brand',
     label: 'Brand',
-    type: 'list',
+    type: 'list' as const,
     options: [
-      { id: 'kalyan', label: 'Kalyan' },
-      { id: 'tanishq', label: 'Tanishq' },
-      { id: 'malabar', label: 'Malabar' },
-      { id: 'caratlane', label: 'CaratLane' },
+      { id: 'Kalyan', label: 'Kalyan Jewellers' },
+      { id: 'Malabar', label: 'Malabar Gold' },
+      { id: 'Tanishq', label: 'Tanishq' },
     ]
   },
+  {
+    id: 'metal',
+    label: 'Metal',
+    type: 'list' as const,
+    options: [
+      { id: 'gold', label: 'Gold' },
+      { id: 'silver', label: 'Silver' },
+      { id: 'platinum', label: 'Platinum' },
+      { id: 'rose-gold', label: 'Rose Gold' },
+    ]
+  },
+  {
+    id: 'gemstone',
+    label: 'Gemstone',
+    type: 'grid' as const,
+    options: [
+      { id: 'diamond', label: 'Diamond' },
+      { id: 'ruby', label: 'Ruby' },
+      { id: 'emerald', label: 'Emerald' },
+      { id: 'sapphire', label: 'Sapphire' },
+      { id: 'pearl', label: 'Pearl' },
+      { id: 'none', label: 'None' },
+    ]
+  },
+  {
+    id: 'priceRange',
+    label: 'Price Range',
+    type: 'list' as const,
+    options: [
+      { id: 'under-10k', label: 'Under ₹10,000' },
+      { id: '10k-25k', label: '₹10,000 - ₹25,000' },
+      { id: '25k-50k', label: '₹25,000 - ₹50,000' },
+      { id: '50k-100k', label: '₹50,000 - ₹1,00,000' },
+      { id: 'above-100k', label: 'Above ₹1,00,000' },
+    ]
+  },
+  {
+    id: 'occasion',
+    label: 'Occasion',
+    type: 'list' as const,
+    options: [
+      { id: 'daily-wear', label: 'Daily Wear' },
+      { id: 'wedding', label: 'Wedding' },
+      { id: 'party', label: 'Party' },
+      { id: 'festive', label: 'Festive' },
+      { id: 'gift', label: 'Gift' },
+    ]
+  },
+  {
+    id: 'collection',
+    label: 'Collection',
+    type: 'list' as const,
+    options: [
+      { id: 'new-arrival', label: 'New Arrivals' },
+      { id: 'bestseller', label: 'Bestsellers' },
+      { id: 'exclusive', label: 'Exclusive' },
+      { id: 'sale', label: 'Sale' },
+    ]
+  }
 ];

@@ -98,66 +98,151 @@ const MOCK_PRODUCTS: Product[] = [
 ];
 
 interface ProductsQueryParams {
-  category?: string;
-  brand?: Brand;
-  minPrice?: number;
-  maxPrice?: number;
-  sortBy?: 'price-low' | 'price-high' | 'rating' | 'newest';
+  sortBy?: string;
+  filters?: Record<string, string[]>;
   searchQuery?: string;
 }
+
+// Helper function to apply filters
+const applyFilters = (products: Product[], filters: Record<string, string[]>): Product[] => {
+  let filtered = [...products];
+
+  Object.entries(filters).forEach(([categoryId, selectedOptions]) => {
+    if (selectedOptions.length === 0) return;
+
+    switch (categoryId) {
+      case 'productType':
+        filtered = filtered.filter(p => 
+          selectedOptions.some(opt => p.productType.toLowerCase() === opt.toLowerCase())
+        );
+        break;
+
+      case 'brand':
+        filtered = filtered.filter(p => 
+          selectedOptions.includes(p.brand)
+        );
+        break;
+
+      case 'priceRange':
+        filtered = filtered.filter(p => {
+          const price = p.discountedPrice;
+          return selectedOptions.some(range => {
+            switch (range) {
+              case 'under-10k': return price < 10000;
+              case '10k-25k': return price >= 10000 && price < 25000;
+              case '25k-50k': return price >= 25000 && price < 50000;
+              case '50k-100k': return price >= 50000 && price < 100000;
+              case 'above-100k': return price >= 100000;
+              default: return true;
+            }
+          });
+        });
+        break;
+
+      case 'gemstone':
+        filtered = filtered.filter(p => 
+          selectedOptions.some(gem => 
+            p.tags.some(tag => tag.toLowerCase().includes(gem.toLowerCase())) ||
+            p.title.toLowerCase().includes(gem.toLowerCase()) ||
+            p.description.toLowerCase().includes(gem.toLowerCase())
+          )
+        );
+        break;
+
+      case 'metal':
+        filtered = filtered.filter(p => 
+          selectedOptions.some(metal => 
+            p.tags.some(tag => tag.toLowerCase().includes(metal.toLowerCase())) ||
+            p.title.toLowerCase().includes(metal.toLowerCase()) ||
+            p.description.toLowerCase().includes(metal.toLowerCase())
+          )
+        );
+        break;
+
+      case 'collection':
+        filtered = filtered.filter(p => {
+          return selectedOptions.some(collection => {
+            switch (collection) {
+              case 'new-arrival': return p.isNew === true;
+              case 'bestseller': return (p.rating || 0) >= 4.5;
+              case 'sale': return p.tags.includes('sale');
+              case 'exclusive': return p.tags.includes('exclusive') || p.tags.includes('premium');
+              default: return true;
+            }
+          });
+        });
+        break;
+
+      case 'occasion':
+        // You can add occasion-based filtering logic here
+        // For now, keeping all products
+        break;
+    }
+  });
+
+  return filtered;
+};
+
+// Helper function to apply sorting
+const applySorting = (products: Product[], sortBy?: string): Product[] => {
+  const sorted = [...products];
+
+  switch (sortBy) {
+    case 'Latest':
+      return sorted.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+    
+    case 'Price: Low to high':
+      return sorted.sort((a, b) => a.discountedPrice - b.discountedPrice);
+    
+    case 'Price: High to low':
+      return sorted.sort((a, b) => b.discountedPrice - a.discountedPrice);
+    
+    case 'Customer Rating':
+      return sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    
+    case 'Discount':
+      return sorted.sort((a, b) => {
+        const discountA = ((a.givenPrice - a.discountedPrice) / a.givenPrice) * 100;
+        const discountB = ((b.givenPrice - b.discountedPrice) / b.givenPrice) * 100;
+        return discountB - discountA;
+      });
+    
+    case 'Featured':
+    default:
+      return sorted;
+  }
+};
 
 export const productApiService = createApi({
   reducerPath: 'products',
   baseQuery: fetchBaseQuery({ baseUrl: '/' }),
   endpoints: (builder) => ({
-    // Get all products with optional filters
+    // Get all products with optional filters and sorting
     getProducts: builder.query<Product[], ProductsQueryParams | void>({
       queryFn: (params) => {
-        let filteredProducts = [...MOCK_PRODUCTS];
+        let products = [...MOCK_PRODUCTS];
 
-        if (params) {
-          // Filter by brand
-          if (params.brand) {
-            filteredProducts = filteredProducts.filter(p => p.brand === params.brand);
-          }
-
-          // Filter by price range
-          if (params.minPrice !== undefined) {
-            filteredProducts = filteredProducts.filter(p => p.discountedPrice >= params.minPrice!);
-          }
-          if (params.maxPrice !== undefined) {
-            filteredProducts = filteredProducts.filter(p => p.discountedPrice <= params.maxPrice!);
-          }
-
-          // Search by title or name
-          if (params.searchQuery) {
-            const query = params.searchQuery.toLowerCase();
-            filteredProducts = filteredProducts.filter(p => 
-              p.title.toLowerCase().includes(query) || 
-              p.name.toLowerCase().includes(query)
-            );
-          }
-
-          // Sort products
-          if (params.sortBy) {
-            switch (params.sortBy) {
-              case 'price-low':
-                filteredProducts.sort((a, b) => a.discountedPrice - b.discountedPrice);
-                break;
-              case 'price-high':
-                filteredProducts.sort((a, b) => b.discountedPrice - a.discountedPrice);
-                break;
-              case 'rating':
-                filteredProducts.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-                break;
-              case 'newest':
-                filteredProducts.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
-                break;
-            }
-          }
+        // Apply filters if provided
+        if (params?.filters && Object.keys(params.filters).length > 0) {
+          products = applyFilters(products, params.filters);
         }
 
-        return { data: filteredProducts };
+        // Apply search if provided
+        if (params?.searchQuery) {
+          const query = params.searchQuery.toLowerCase();
+          products = products.filter(p => 
+            p.title.toLowerCase().includes(query) || 
+            p.name.toLowerCase().includes(query) ||
+            p.description.toLowerCase().includes(query)
+          );
+        }
+
+        // Apply sorting
+        if (params?.sortBy) {
+          products = applySorting(products, params.sortBy);
+        }
+
+        return { data: products };
       },
     }),
 
@@ -180,7 +265,7 @@ export const productApiService = createApi({
       },
     }),
 
-   
+    // Get featured/new products
     getFeaturedProducts: builder.query<Product[], void>({
       queryFn: () => {
         const featured = MOCK_PRODUCTS.filter(p => p.isNew).slice(0, 4);
@@ -188,7 +273,7 @@ export const productApiService = createApi({
       },
     }),
 
-    
+    // Get products by category/type
     getProductsByType: builder.query<Product[], ProductType>({
       queryFn: (productType) => {
         const products = MOCK_PRODUCTS.filter(p => p.productType === productType);
@@ -196,7 +281,7 @@ export const productApiService = createApi({
       },
     }),
 
-    
+    // Get products by brand
     getProductsByBrand: builder.query<Product[], Brand>({
       queryFn: (brand) => {
         const products = MOCK_PRODUCTS.filter(p => p.brand === brand);
