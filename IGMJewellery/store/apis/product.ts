@@ -246,26 +246,26 @@ interface ProductsQueryParams {
 
 // Helper function to apply filters
 const applyFilters = (products: Product[], filters: Record<string, string[]>): Product[] => {
-  let filtered = [...products];
+  let filteredProducts = [...products];
 
   Object.entries(filters).forEach(([categoryId, selectedOptions]) => {
     if (selectedOptions.length === 0) return;
 
     switch (categoryId) {
       case 'productType':
-        filtered = filtered.filter(p => 
+        filteredProducts = filteredProducts.filter(p => 
           selectedOptions.some(opt => p.productType.toLowerCase() === opt.toLowerCase())
         );
         break;
 
       case 'brand':
-        filtered = filtered.filter(p => 
+        filteredProducts = filteredProducts.filter(p => 
           selectedOptions.includes(p.brand)
         );
         break;
 
       case 'priceRange':
-        filtered = filtered.filter(p => {
+        filteredProducts = filteredProducts.filter(p => {
           const price = p.discountedPrice;
           return selectedOptions.some(range => {
             switch (range) {
@@ -281,7 +281,7 @@ const applyFilters = (products: Product[], filters: Record<string, string[]>): P
         break;
 
       case 'gemstone':
-        filtered = filtered.filter(p => 
+        filteredProducts = filteredProducts.filter(p => 
           selectedOptions.some(gem => 
             p.tags.some(tag => tag.toLowerCase().includes(gem.toLowerCase())) ||
             p.title.toLowerCase().includes(gem.toLowerCase()) ||
@@ -291,7 +291,7 @@ const applyFilters = (products: Product[], filters: Record<string, string[]>): P
         break;
 
       case 'metal':
-        filtered = filtered.filter(p => 
+        filteredProducts = filteredProducts.filter(p => 
           selectedOptions.some(metal => 
             p.tags.some(tag => tag.toLowerCase().includes(metal.toLowerCase())) ||
             p.title.toLowerCase().includes(metal.toLowerCase()) ||
@@ -301,7 +301,7 @@ const applyFilters = (products: Product[], filters: Record<string, string[]>): P
         break;
 
       case 'collection':
-        filtered = filtered.filter(p => {
+        filteredProducts = filteredProducts.filter(p => {
           return selectedOptions.some(collection => {
             switch (collection) {
               case 'new-arrival': return p.isNew === true;
@@ -315,13 +315,15 @@ const applyFilters = (products: Product[], filters: Record<string, string[]>): P
         break;
 
       case 'occasion':
-        // You can add occasion-based filtering logic here
-        // For now, keeping all products
+        filteredProducts = filteredProducts.filter(prod => 
+         prod.occaision.some(occ => 
+           selectedOptions.includes(occ)  
+        ));
         break;
-    }
+    } 
   });
 
-  return filtered;
+  return filteredProducts;
 };
 
 // Helper function to apply sorting

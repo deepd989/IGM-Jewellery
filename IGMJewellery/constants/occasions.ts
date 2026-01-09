@@ -1,4 +1,4 @@
-export const OCCASIONS = ["Birthday", "Anniversary", "Wedding", "Graduation", "Diwali"];
+
 
 
 
@@ -9,3 +9,5 @@ export enum OccasiomEnum {
     Graduation = "Graduation",
     Diwali = "Diwali",
 }
+
+export const OCCASIONS = [OccasiomEnum.Birthday,OccasiomEnum.Anniversary,OccasiomEnum.Wedding,OccasiomEnum.Graduation,OccasiomEnum.Diwali];

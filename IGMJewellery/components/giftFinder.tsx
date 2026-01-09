@@ -10,13 +10,16 @@ import {
 import Modal from "react-native-modal";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 
 import { RELATIONSHIPS } from "@/constants/relationships";
 import { OCCASIONS } from "@/constants/occasions";
 import { ProductTypes } from "@/constants/productTypes";
+import { RouteParam } from "@/constants/routeNavigationConstants";
 
 export default function GiftFinder() {
-    const SCREEN_WIDTH = Dimensions.get("window").width;
+  const SCREEN_WIDTH = Dimensions.get("window").width;
+  const navigation = useNavigation<NavigationProp<RouteParam>>();
 
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedRelationship, setSelectedRelationship] = useState("");
@@ -33,6 +36,47 @@ export default function GiftFinder() {
   const categories = ProductTypes;
   const relationships = RELATIONSHIPS;
   const occasions = OCCASIONS;
+
+  // Helper function to determine gender based on relationship
+  const getGenderFromRelationship = (relationship: string): string => {
+    const maleRelationships = [
+      "Father",
+      "Brother",
+      "Husband",
+      "Boyfriend",
+      "Son",
+      "Grandfather",
+      "Uncle",
+    ];
+
+    const femaleRelationships = [
+      "Mother",
+      "Sister",
+      "Wife",
+      "Girlfriend",
+      "Daughter",
+      "Grandmother",
+      "Aunt"
+    ];
+
+    if (maleRelationships.some((rel) => relationship.toLowerCase().includes(rel.toLowerCase()))) {
+      return "Male";
+    } else if (femaleRelationships.some((rel) => relationship.toLowerCase().includes(rel.toLowerCase()))) {
+      return "Female";
+    }
+    return "Unisex";
+  };
+
+  const handleStartLooking = () => {
+    const gender = getGenderFromRelationship(selectedRelationship);
+
+    navigation.navigate("product-list", {
+      categoryId: selectedCategory,
+      gender: gender,
+      occasion: selectedOccasion,
+      productType: selectedCategory,
+    });
+  };
 
   const renderDropdown = (
     label: string,
@@ -102,7 +146,7 @@ export default function GiftFinder() {
         <Text style={styles.label}>on the occasion of</Text>
         {renderDropdown("Occasion", selectedOccasion, "occasion")}
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleStartLooking}>
           <Text style={styles.buttonText}>Start looking</Text>
           <Ionicons name="search-outline" size={18} color="white" />
         </TouchableOpacity>
@@ -125,7 +169,7 @@ export default function GiftFinder() {
         <View style={styles.modalBox}>
           <Text style={styles.modalTitle}>Select Price Range</Text>
 
-          <View style={{width: "100%", paddingHorizontal: 0, paddingVertical: 20}}>
+          <View style={{ width: "100%", paddingHorizontal: 0, paddingVertical: 20 }}>
             <MultiSlider
               sliderLength={SCREEN_WIDTH - 100}
               values={[priceRange[0], priceRange[1]]}
