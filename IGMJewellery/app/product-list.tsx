@@ -7,7 +7,6 @@ import {
   Image,
   Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,10 +18,18 @@ import { FilterModal } from '@/components/products/FilterModal';
 import { ProductCard } from '@/components/products/ProductCard';
 import { SortModal } from '@/components/products/SortModal';
 import { Product } from '@/interfaces/product.interface';
+import { COLORS, SPACING } from '../constants/theme';
+import { Brand } from '../enums/brand.enum';
+import { ProductType } from '../enums/productType.enum';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSelector } from 'react-redux';
+import { selectProducts } from '@/store/productSlice';
+
+// --- MOCK DATA ---
+
 
 import { useGetCategoryHierarchyQuery } from '@/store/apis/categories';
 import { useGetProductsQuery } from '@/store/apis/product';
-import { COLORS, SPACING } from '../constants/theme';
 
 const FILTER_CHIPS = ['All', 'Latest', 'Best Sellers', 'Express Delivery', 'Store Pick-up'];
 const MENU_ITEMS = ['Bespoke Jewellery', 'Our Brands', 'Call an expert', 'Chat with Sonar'];
@@ -41,6 +48,7 @@ export default function ListingScreen() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const MOCK_PRODUCTS = useSelector(selectProducts)
 
   // Sorting State
   const [isSortVisible, setIsSortVisible] = useState(false);

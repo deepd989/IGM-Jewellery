@@ -21,11 +21,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
   label1Text="Try Now",
   label2Text="Try at home",
 }) => {
+  if (!product) {
+    return (
+      <View style={[styles.card, { width }]}>
+        <View style={styles.imagePlaceholder}>
+          <Text style={{ color: "#ccc" }}>Loading...</Text>
+        </View>
+      </View>
+    );
+  }
   return (
     <View style={[styles.card, { width }]}>
       {/* Top badges */}
       <View style={styles.topRow}>
-        {product.isNew && (
+        {product && product.isNew && (
           <View style={styles.newBadge}>
             <Text style={styles.newText}>New</Text>
           </View>

@@ -10,11 +10,12 @@ import ProductCard from "./productCard";
 import { useSelector } from "react-redux";
 import { selectProducts } from "@/store/productSlice";
 import { categories } from "@/constants/categories";
+import { useGetProductsQuery } from "@/store/apis/product";
 
 
 
 export default function BestSellersSection() {
-   const products=useSelector(selectProducts)
+  const { data: products = [], isLoading, isError, error, refetch } = useGetProductsQuery({});
   const [active, setActive] = useState("Earrings");
 
   return (
