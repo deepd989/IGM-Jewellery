@@ -18,23 +18,23 @@ import { FilterModal } from '@/components/products/FilterModal';
 import { ProductCard } from '@/components/products/ProductCard';
 import { SortModal } from '@/components/products/SortModal';
 import { Product } from '@/interfaces/product.interface';
-import { COLORS, SPACING } from '../constants/theme';
-import { Brand } from '../enums/brand.enum';
-import { ProductType } from '../enums/productType.enum';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useSelector } from 'react-redux';
-import { selectProducts } from '@/store/productSlice';
-
-// --- MOCK DATA ---
-
-
 import { useGetCategoryHierarchyQuery } from '@/store/apis/categories';
 import { useGetProductsQuery } from '@/store/apis/product';
+import { selectProducts } from '@/store/productSlice';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSelector } from 'react-redux';
+import { COLORS, SPACING } from '../constants/theme';
+
+type ListingScreenProps = {
+  filters?: Record<string, string[]>;
+};
 
 const FILTER_CHIPS = ['All', 'Latest', 'Best Sellers', 'Express Delivery', 'Store Pick-up'];
 const MENU_ITEMS = ['Bespoke Jewellery', 'Our Brands', 'Call an expert', 'Chat with Sonar'];
 
-export default function ListingScreen() {
+
+
+export default function ListingScreen({ filters }: ListingScreenProps) {
   const router = useRouter();
   const params = useLocalSearchParams();
   
@@ -63,6 +63,15 @@ export default function ListingScreen() {
     { departmentId, categoryId, subCategoryId },
     { skip: !departmentId && !categoryId }
   );
+
+  useEffect(() => {
+    if (!filters || Object.keys(filters).length === 0) return;
+
+    setActiveFilters(prev => ({
+      ...prev,
+      ...filters,
+    }));
+}, []);
 
   // Initialize filters based on category navigation
   useEffect(() => {
