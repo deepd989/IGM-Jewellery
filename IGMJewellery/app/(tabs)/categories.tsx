@@ -142,7 +142,7 @@ export default function CategoriesScreen() {
     
     // Navigate to listing page for this category
     router.push({
-      pathname: '/listing',
+      pathname: '/product-list',
       params: {
         departmentId: activeDepartmentId,
         categoryId: category.id,
