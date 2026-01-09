@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { productApiService } from './apis/product';
 import { profileApiService } from './apis/profile';
 import userReducer from './userSlice';
-import { brandsApiService } from './apis/brands';
+import { brandsApiService } from './apis/brandsApi';
 
 export const store = configureStore({
   reducer: {

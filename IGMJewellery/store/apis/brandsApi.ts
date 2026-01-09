@@ -8,11 +8,11 @@ export interface BrandAboutSection {
 export interface BrandStat {
   label: string;
   value: string;
-  imageUri: string;
+  imageUri?: string;
 }
 
 export interface Brand {
-  bwThumbnailUri: string;  
+  bwThumbnailUri?: string;  
   profileImageUri: string;
   businessNameKey: string; // optional key for internal use
   businessName: string; // used as unique key
@@ -25,6 +25,94 @@ export interface Brand {
 
 // Mock brands data
 const MOCK_BRANDS: Brand[] = [
+  {
+    profileImageUri: 'https://example.com/images/brands/malabar.jpg',
+    businessNameKey: 'malabar',
+    businessName: 'Malabar Gold & Diamonds',
+    tagline: 'Purity. Transparency. Trust.',
+    ratingText: '4.6 · 10k+ reviews',
+    storeButtonLabel: 'Visit Store',
+    aboutSections: [
+      {
+        title: 'Global Legacy',
+        paragraphs: [
+          'Malabar Gold & Diamonds is one of the world’s largest jewelry retailers.',
+          'Known for quality craftsmanship and transparent pricing across markets.',
+        ],
+      },
+      {
+        title: 'Ethical Excellence',
+        paragraphs: [
+          'We follow responsible sourcing and fair trade practices.',
+          'Customer trust and purity assurance are at the heart of our brand.',
+        ],
+      },
+    ],
+    stats: [
+      { label: 'Stores', value: '300+' },
+      { label: 'Established', value: '1993' },
+      { label: 'Countries', value: '10+' },
+    ],
+  }
+,  
+{
+  profileImageUri: 'https://example.com/images/brands/caratlane.jpg',
+  businessNameKey: 'caratlane',
+  businessName: 'CaratLane',
+  tagline: 'Modern jewellery for everyday elegance',
+  ratingText: '4.8 · 25k+ reviews',
+  storeButtonLabel: 'Visit Store',
+  aboutSections: [
+    {
+      title: 'Designed for Today',
+      paragraphs: [
+        'CaratLane brings contemporary jewellery designs for modern lifestyles.',
+        'A perfect blend of minimalism, elegance, and everyday wear.',
+      ],
+    },
+    {
+      title: 'Innovation & Trust',
+      paragraphs: [
+        'Backed by Tata, CaratLane ensures quality, transparency, and innovation.',
+        'Try-at-home and digital-first experiences set us apart.',
+      ],
+    },
+  ],
+  stats: [
+    { label: 'Stores', value: '200+' },
+    { label: 'Established', value: '2008' },
+    { label: 'Countries', value: '2+' },
+  ],
+}
+,{
+  profileImageUri: 'https://example.com/images/brands/pcj.jpg',
+  businessNameKey: 'pcj',
+  businessName: 'PC Jeweller',
+  tagline: 'Celebrating trust and timeless beauty',
+  ratingText: '4.5 · 8k+ reviews',
+  storeButtonLabel: 'Visit Store',
+  aboutSections: [
+    {
+      title: 'Trusted Craftsmanship',
+      paragraphs: [
+        'PC Jeweller is renowned for its traditional designs and purity assurance.',
+        'A strong presence across India with a loyal customer base.',
+      ],
+    },
+    {
+      title: 'Quality Promise',
+      paragraphs: [
+        'Every ornament undergoes strict quality checks.',
+        'We focus on value, trust, and long-term customer relationships.',
+      ],
+    },
+  ],
+  stats: [
+    { label: 'Stores', value: '90+' },
+    { label: 'Established', value: '2005' },
+    { label: 'Countries', value: '1+' },
+  ],
+},
   {
     profileImageUri: 'https://example.com/images/brands/kalyan.jpg',
     businessNameKey: 'kalyan_jewellers',
