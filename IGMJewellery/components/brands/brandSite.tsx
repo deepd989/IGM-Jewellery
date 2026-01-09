@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList }
 import { ProductCard } from '../products/ProductCard';
 import { useSelector } from 'react-redux';
 import { selectProducts } from '@/store/productSlice';
+import { BrandAboutSection, BrandStat } from '@/store/apis/brandsApi';
 
 type ProfileHeaderProps = {
   profileImageUri: string;
@@ -57,13 +58,9 @@ const TabNavigation = ({ tabs, activeTab, onTabChange }: TabNavigationProps) => 
   );
 };
 
-type StatsCardProps = {
-  label: string;
-  value: string;
-};
 
 // Stats Card Component
-const StatsCard = ({ label, value }: StatsCardProps) => (
+const StatsCard = ({ label, value }: BrandStat) => (
   <View style={styles.statsCard}>
     <View style={styles.statsIcon} />
     <Text style={styles.statsLabel}>{label}</Text>
@@ -71,13 +68,9 @@ const StatsCard = ({ label, value }: StatsCardProps) => (
   </View>
 );
 
-type HeritageSectionProps = {
-  title: string;
-  paragraphs: string[];
-};
 
 // Heritage Section Component
-const HeritageSection = ({ title, paragraphs }: HeritageSectionProps) => (
+const HeritageSection = ({ title, paragraphs }: BrandAboutSection) => (
   <View style={styles.heritageSection}>
     <Text style={styles.sectionTitle}>{title}</Text>
     {paragraphs.map((p, idx) => (
@@ -89,14 +82,14 @@ const HeritageSection = ({ title, paragraphs }: HeritageSectionProps) => (
 );
 
 type StatsRowProps = {
-  stats: StatsCardProps[];
+  stats: BrandStat[];
 };
 
 // Stats Row Component
 const StatsRow = ({ stats }: StatsRowProps) => (
   <View style={styles.statsRow}>
     {stats.map((s, idx) => (
-      <StatsCard key={`${s.label}-${idx}`} label={s.label} value={s.value} />
+      <StatsCard key={`${s.label}-${idx}`} label={s.label} value={s.value} imageUri={s.imageUri} />
     ))}
   </View>
 );
@@ -106,8 +99,8 @@ type BrandProfileProps = {
   tabs: string[];
   initialActiveTab: string;
   heroImageUri: string;
-  aboutSections: HeritageSectionProps[];
-  stats: StatsCardProps[];
+  aboutSections: BrandAboutSection[];
+  stats: BrandStat[];
 };
 
 // Main Component

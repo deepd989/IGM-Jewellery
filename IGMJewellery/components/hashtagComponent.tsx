@@ -10,6 +10,7 @@ import { ResizeMode, Video } from "expo-av";
 import ProductCard from "./productCard";
 import { useSelector } from "react-redux";
 import { selectProducts } from "@/store/productSlice";
+import { useGetProductsQuery } from "@/store/apis/product";
 
 const { width } = Dimensions.get("window");
 
@@ -18,7 +19,7 @@ const CARD_SPACING = 20;
 
 
 export default function HashtagComponent() {
-  const products=useSelector(selectProducts)
+  const { data: products = [], isLoading, isError, error, refetch } = useGetProductsQuery({});
   const scrollX = useRef(new Animated.Value(0)).current;
 
   return (
