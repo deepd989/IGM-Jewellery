@@ -1,6 +1,8 @@
 import { Brand } from "@/enums/brand.enum";
 import { ProductType } from "@/enums/productType.enum";
 import { Review } from "./review.interface";
+import { OccasiomEnum } from "@/constants/occasions";
+import { Gender } from "@/constants/genderEnum";
 
 
 export interface ProductSpecification {
@@ -23,4 +25,6 @@ export interface Product {
   rating?: number;
   specifications?: ProductSpecification[];
   reviews?: Review[];
+  occaision:OccasiomEnum[];
+  gender: Gender;
 }

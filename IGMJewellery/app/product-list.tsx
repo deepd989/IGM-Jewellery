@@ -24,9 +24,12 @@ import { selectProducts } from '@/store/productSlice';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { COLORS, SPACING } from '../constants/theme';
+import { RouteProp } from '@react-navigation/native';
+import { RouteParam } from '@/constants/routeNavigationConstants';
 
 type ListingScreenProps = {
   filters?: Record<string, string[]>;
+  route?: RouteProp<RouteParam, 'product-list'>;
 };
 
 const FILTER_CHIPS = ['All', 'Latest', 'Best Sellers', 'Express Delivery', 'Store Pick-up'];
@@ -34,8 +37,9 @@ const MENU_ITEMS = ['Bespoke Jewellery', 'Our Brands', 'Call an expert', 'Chat w
 
 
 
-export default function ListingScreen({ filters }: ListingScreenProps) {
-  const router = useRouter();
+export default function ListingScreen({ filters,route }: ListingScreenProps) {
+  console.log("FILTERS",route);
+  const router = useRouter(); 
   const params = useLocalSearchParams();
   
   // Extract category params from navigation
@@ -48,7 +52,6 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const MOCK_PRODUCTS = useSelector(selectProducts)
 
   // Sorting State
   const [isSortVisible, setIsSortVisible] = useState(false);

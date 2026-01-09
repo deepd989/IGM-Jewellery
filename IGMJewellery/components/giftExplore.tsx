@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     height: 120,
   },
   cardText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: '#1A1A1A',
   },

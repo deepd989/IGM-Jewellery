@@ -21,6 +21,14 @@ export interface Brand {
   storeButtonLabel: string;
   aboutSections: BrandAboutSection[];
   stats: BrandStat[];
+  collections: BrandCollection[]
+}
+
+export interface BrandCollection {
+  title: string;
+  description?: string;
+  imageUri: string;
+  productIds: string[];
 }
 
 // Mock brands data
@@ -53,37 +61,19 @@ const MOCK_BRANDS: Brand[] = [
       { label: 'Established', value: '1993' },
       { label: 'Countries', value: '10+' },
     ],
+    collections:[{
+      title: 'Heritage Collection',
+      description: 'Timeless pieces inspired by Indian culture.',
+      imageUri: 'https://example.com/images/brands/malabar_heritage.jpg',
+      productIds: ['prod1', 'prod2', 'prod3'],
+    },
+    {
+      title: 'Wedding Collection',
+      description: 'Grand designs crafted for your once-in-a-lifetime moments.',
+      imageUri: 'https://example.com/images/brands/wedding_collection.jpg',
+      productIds: ['prod4', 'prod5', 'prod6'],
+    }]
   }
-,  
-{
-  profileImageUri: 'https://example.com/images/brands/caratlane.jpg',
-  businessNameKey: 'caratlane',
-  businessName: 'CaratLane',
-  tagline: 'Modern jewellery for everyday elegance',
-  ratingText: '4.8 · 25k+ reviews',
-  storeButtonLabel: 'Visit Store',
-  aboutSections: [
-    {
-      title: 'Designed for Today',
-      paragraphs: [
-        'CaratLane brings contemporary jewellery designs for modern lifestyles.',
-        'A perfect blend of minimalism, elegance, and everyday wear.',
-      ],
-    },
-    {
-      title: 'Innovation & Trust',
-      paragraphs: [
-        'Backed by Tata, CaratLane ensures quality, transparency, and innovation.',
-        'Try-at-home and digital-first experiences set us apart.',
-      ],
-    },
-  ],
-  stats: [
-    { label: 'Stores', value: '200+' },
-    { label: 'Established', value: '2008' },
-    { label: 'Countries', value: '2+' },
-  ],
-}
 ,{
   profileImageUri: 'https://example.com/images/brands/pcj.jpg',
   businessNameKey: 'pcj',
@@ -112,6 +102,18 @@ const MOCK_BRANDS: Brand[] = [
     { label: 'Established', value: '2005' },
     { label: 'Countries', value: '1+' },
   ],
+  collections:[{
+    title: 'Bridal Classics',
+    description: 'Traditional bridal designs with a timeless appeal.',
+    imageUri: 'https://example.com/images/brands/bridal_classics.jpg',
+    productIds: ['prod13', 'prod14', 'prod15'],
+  },
+  {
+    title: 'Modern Minimal',
+    description: 'Sleek contemporary pieces for a refined modern look.',
+    imageUri: 'https://example.com/images/brands/modern_minimal.jpg',
+    productIds: ['prod16', 'prod17', 'prod18'],
+  },]
 },
   {
     profileImageUri: 'https://example.com/images/brands/kalyan.jpg',
@@ -141,6 +143,19 @@ const MOCK_BRANDS: Brand[] = [
       { label: 'Established', value: '1993' },
       { label: 'Countries', value: '3' },
     ],
+    collections:[{
+      title: 'Gifting Collection',
+      description: 'Thoughtful jewellery pieces perfect for meaningful gifts.',
+      imageUri: 'https://example.com/images/brands/gifting_collection.jpg',
+      productIds: ['prod19', 'prod20', 'prod21'],
+    },
+    {
+      title: 'Heritage Gold',
+      description: 'Inspired by Indian heritage and timeless gold artistry.',
+      imageUri: 'https://example.com/images/brands/heritage_gold.jpg',
+      productIds: ['prod22', 'prod23', 'prod24'],
+    }
+  ]
   },
   {
     businessNameKey: 'tanishq',
@@ -163,6 +178,12 @@ const MOCK_BRANDS: Brand[] = [
       { label: 'Established', value: '1994' },
       { label: 'Awards', value: '50+' },
     ],
+    collections:[{
+      title: 'Statement Pieces',
+      description: 'Bold designs that turn heads and start conversations.',
+      imageUri: 'https://example.com/images/brands/statement_pieces.jpg',
+      productIds: ['prod25', 'prod26', 'prod27'],
+    }]
   },
   {
     businessNameKey: 'caratlane',
@@ -184,6 +205,18 @@ const MOCK_BRANDS: Brand[] = [
       { label: 'Established', value: '2008' },
       { label: 'Cities', value: '40+' },
     ],
+    collections:[{
+      title: 'Royal Heirlooms',
+      description: 'Opulent designs inspired by royal Indian jewellery.',
+      imageUri: 'https://example.com/images/brands/royal_heirlooms.jpg',
+      productIds: ['prod28', 'prod29', 'prod30'],
+    },
+    {
+      title: 'Evening Glam',
+      description: 'Elegant statement pieces made for nights that shine.',
+      imageUri: 'https://example.com/images/brands/evening_glam.jpg',
+      productIds: ['prod34', 'prod35', 'prod36'],
+    }]
   },
 ];
 
