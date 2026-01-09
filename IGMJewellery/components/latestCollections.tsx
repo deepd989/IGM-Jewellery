@@ -1,16 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useGetBrandsQuery } from "@/store/apis/brandsApi";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Image,
 } from "react-native";
 
-const BRANDS = ["Tanishq", "Kalyan Jewellers", "Caratlane", "TVZ"];
+
 
 export default function LatestCollections() {
-  const [activeBrand, setActiveBrand] = useState("Tanishq");
+  const { data: brandsData = [], isLoading, isError, error, refetch } = useGetBrandsQuery({});
+  const [activeBrand, setActiveBrand] = useState<string | null>(null);
+
+useEffect(() => {
+  if (!activeBrand && brandsData.length > 0) {
+    setActiveBrand(brandsData[0].businessName);
+  }
+}, [brandsData, activeBrand]);
+
+const brandNames = useMemo(
+  () => brandsData.map((b) => b.businessName),
+  [brandsData]
+);
+
+const activeBrandData = useMemo(
+  () => brandsData.find((b) => b.businessName === activeBrand),
+  [brandsData, activeBrand]
+);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -23,7 +42,7 @@ export default function LatestCollections() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.brandRow}
       >
-        {BRANDS.map((brand) => {
+        {brandNames.map((brand) => {
           const isActive = brand === activeBrand;
 
           return (
@@ -56,9 +75,19 @@ export default function LatestCollections() {
       </ScrollView>
 
       {/* Collection Cards */}
-      {[1, 2, 3].map((i) => (
+      {activeBrandData?.collections.map((collection, i) => (
         <View key={i} style={styles.collectionCard}>
-          <Text style={styles.collectionText}>[COLLECTIONS]</Text>
+          <Image 
+            source={{ uri: collection.imageUri }} 
+            style={styles.collectionImage}
+            resizeMode="cover"
+          />
+          <View style={styles.collectionOverlay}>
+            <Text style={styles.collectionTitle}>{collection.title}</Text>
+            {collection.description && (
+              <Text style={styles.collectionDescription}>{collection.description}</Text>
+            )}
+          </View>
         </View>
       ))}
     </ScrollView>
@@ -119,6 +148,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#888",
     textAlign: "center",
+    width: 100,
+    overflow: "hidden",
   },
 
   brandLabelActive: {
@@ -128,13 +159,40 @@ const styles = StyleSheet.create({
 
   /* Collections */
   collectionCard: {
-    height: 140,
+    height: 200,
     marginHorizontal: 16,
     marginBottom: 16,
     backgroundColor: "#F2F2F2",
     borderRadius: 32,
-    justifyContent: "center",
-    alignItems: "center",
+    overflow: "hidden",
+    position: "relative",
+  },
+
+  collectionImage: {
+    width: "100%",
+    height: "100%",
+  },
+
+  collectionOverlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    padding: 16,
+  },
+
+  collectionTitle: {
+    color: "#FFF",
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+
+  collectionDescription: {
+    color: "#FFF",
+    fontSize: 14,
+    opacity: 0.9,
   },
 
   collectionText: {
