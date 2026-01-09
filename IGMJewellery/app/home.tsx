@@ -21,6 +21,7 @@ import { useSelector } from "react-redux";
 import EventCard from "@/components/eventCard";
 import HashtagComponent from "@/components/hashtagComponent";
 import { useRouter } from 'expo-router';
+import { useGetProductsQuery } from "@/store/apis/product";
 
 
 
@@ -28,7 +29,7 @@ import { useRouter } from 'expo-router';
 export default function HomeScreen() {
     const [expanded, setExpanded] = useState(false);
     const [firstRowHeight, setFirstRowHeight] = useState<number | null>(60);
-    const products = useSelector(selectProducts)
+    const { data: products = [], isLoading, isError, error, refetch } = useGetProductsQuery({});
     const router = useRouter();
     const [inputChip, setInputChip] = useState<string>("");
     const handleSubmit = () => {

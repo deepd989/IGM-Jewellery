@@ -5,13 +5,14 @@ import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { Product } from "@/interfaces/product.interface";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import EarringIcon from "./ui/earingsComponentSvg";
-import { selectProducts } from "@/store/productSlice";
-import { useSelector } from "react-redux";
 import { ProductType } from "@/enums/productType.enum";
+import { useSelector } from "react-redux";
+import { selectProducts } from "@/store/productSlice";
+import { useGetProductsQuery } from "@/store/apis/product";
 
 
 export default function HomePageCard() {
-    const products = useSelector(selectProducts);   
+     const { data: products = [], isLoading, isError, error, refetch } = useGetProductsQuery({});
     const [cardTitle, setCardTitle] = React.useState<ProductType>(ProductType.Necklace);
     return (
         <View style={{backgroundColor: "#F8F8F8", paddingTop: 6, marginTop: 100, borderRadius: 8, paddingHorizontal: 12, borderColor:"grey", borderWidth:2,marginBottom:40}}>
