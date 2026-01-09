@@ -1,3 +1,4 @@
+import { Gender } from '@/constants/genderEnum';
 import { Brand } from '@/enums/brand.enum';
 import { ProductType } from '@/enums/productType.enum';
 import { Product } from '@/interfaces/product.interface';
@@ -22,7 +23,9 @@ const MOCK_PRODUCTS: Product[] = [
     ],
     isNew: true,
     rating: 4.5,
-    sku: 'DR001-24K'
+    sku: 'DR001-24K',
+    occaision: [],
+    gender: Gender.male
   },
   {
     id: '2',
@@ -40,7 +43,9 @@ const MOCK_PRODUCTS: Product[] = [
     ],
     isNew: true,
     rating: 5.0,
-    sku: 'GR002-GP'
+    sku: 'GR002-GP',
+    occaision: [],
+    gender: Gender.female
   },
   {
     id: '3',
@@ -59,7 +64,9 @@ const MOCK_PRODUCTS: Product[] = [
     ],
     isNew: false,
     rating: 4.8,
-    sku: 'ER003-EMR'
+    sku: 'ER003-EMR',
+    occaision: [],
+    gender: Gender.unisex
   },
   {
     id: '4',
@@ -76,7 +83,9 @@ const MOCK_PRODUCTS: Product[] = [
     ],
     isNew: true,
     rating: 4.6,
-    sku: 'PN004-CP'
+    sku: 'PN004-CP',
+    occaision: [],
+    gender: Gender.female
   },
   {
     id: '5',
@@ -93,7 +102,9 @@ const MOCK_PRODUCTS: Product[] = [
     ],
     isNew: false,
     rating: 4.9,
-    sku: 'DB005-SW'
+    sku: 'DB005-SW',
+    occaision: [],
+    gender: Gender.unisex
   },
   {
     id: "prod-001",
@@ -111,6 +122,8 @@ const MOCK_PRODUCTS: Product[] = [
       "https://example.com/images/necklace-001-1.jpg",
       "https://example.com/images/necklace-001-2.jpg",
     ],
+    occaision: [],
+    gender: Gender.female
   },
   {
     id: "prod-002",
@@ -126,6 +139,8 @@ const MOCK_PRODUCTS: Product[] = [
       "https://example.com/images/earrings-002-1.jpg",
       "https://example.com/images/earrings-002-2.jpg",
     ],
+    occaision: [],
+    gender: Gender.female
   },
   {
     id: "prod-003",
@@ -140,6 +155,8 @@ const MOCK_PRODUCTS: Product[] = [
     thumbnailUrls: [
       "https://example.com/images/bracelet-003-1.jpg",
     ],
+    occaision: [],
+    gender: Gender.unisex
   },
   {
     id: "prod-004",
@@ -155,6 +172,8 @@ const MOCK_PRODUCTS: Product[] = [
       "https://example.com/images/ring-004-1.jpg",
       "https://example.com/images/ring-004-2.jpg",
     ],
+    occaision: [],
+    gender: Gender.male
   },
   {
     id: "prod-005",
@@ -172,7 +191,9 @@ const MOCK_PRODUCTS: Product[] = [
     ],
     isNew: true,
     rating: 4.5,
-    sku: 'DR001-22K'
+    sku: 'DR001-22K',
+    occaision: [],
+    gender: Gender.female
   },
   {
     id: "prod-006",
@@ -190,7 +211,9 @@ const MOCK_PRODUCTS: Product[] = [
     ],
     isNew: true,
     rating: 4.2,
-    sku: 'DR001-21K'
+    sku: 'DR001-21K',
+    occaision: [],
+    gender: Gender.female
   },
 
   {
@@ -209,7 +232,9 @@ const MOCK_PRODUCTS: Product[] = [
     ],
     isNew: true,
     rating: 4.5,
-    sku: 'DR001-22K'
+    sku: 'DR001-22K',
+    occaision: [],
+    gender: Gender.female
   },
 ];
 
