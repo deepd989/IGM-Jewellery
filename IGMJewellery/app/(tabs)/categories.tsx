@@ -1,22 +1,25 @@
 import { Department, SidebarCategory, SubCategory } from '@/interfaces/category.interface';
-import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import {
-    Dimensions,
-    FlatList,
-    Image,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
-} from 'react-native';
-import { COLORS, SPACING } from '../../constants/theme';
-import { useCategories } from '../../hooks/useCategories';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
-const { width, height } = Dimensions.get('window');
+import { useGetCategoriesByDepartmentQuery, useGetDepartmentsQuery, useGetSubCategoriesQuery } from '@/store/apis/categories';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { COLORS, SPACING } from '../../constants/theme';
+
+const { width } = Dimensions.get('window');
 
 // --- COMPONENTS ---
 
@@ -64,8 +67,17 @@ const SidebarItem = ({ item, isActive, onPress }: { item: SidebarCategory, isAct
 );
 
 // 3. Grid Item (Right Content)
-const GridItem = ({ item }: { item: SubCategory }) => (
-  <View style={styles.gridItemContainer}>
+interface GridItemProps {
+  item: SubCategory;
+  onPress: (subCategory: SubCategory) => void;
+}
+
+const GridItem = ({ item, onPress }: GridItemProps) => (
+  <TouchableOpacity 
+    style={styles.gridItemContainer}
+    onPress={() => onPress(item)}
+    activeOpacity={0.7}
+  >
     <View style={styles.gridItemBox}>
       {item.imageUrl ? (
         <Image 
@@ -78,18 +90,80 @@ const GridItem = ({ item }: { item: SubCategory }) => (
       )}
     </View>
     <Text style={styles.gridItemText}>{item.name}</Text>
-  </View>
+  </TouchableOpacity>
 );
 
 export default function CategoriesScreen() {
-  const { 
-    departments, 
-    activeDepartment, 
-    setActiveDepartmentId, 
-    activeCategory, 
-    setActiveCategoryId,
-    subCategories 
-  } = useCategories();
+  const router = useRouter();
+  const [activeDepartmentId, setActiveDepartmentId] = useState<string>('womens');
+  const [activeCategoryId, setActiveCategoryId] = useState<string>('w-rings');
+
+  // Fetch departments
+  const { data: departments = [], isLoading: isDepartmentsLoading } = useGetDepartmentsQuery();
+
+  // Fetch categories for active department
+  const { data: categories = [], isLoading: isCategoriesLoading } = useGetCategoriesByDepartmentQuery(
+    activeDepartmentId,
+    { skip: !activeDepartmentId }
+  );
+
+  // Fetch subcategories for active category
+  const { data: subCategories = [], isLoading: isSubCategoriesLoading } = useGetSubCategoriesQuery(
+    { departmentId: activeDepartmentId, categoryId: activeCategoryId },
+    { skip: !activeDepartmentId || !activeCategoryId }
+  );
+
+  // Initialize first category when department changes
+  useEffect(() => {
+    if (categories.length > 0 && !categories.find(c => c.id === activeCategoryId)) {
+      setActiveCategoryId(categories[0].id);
+    }
+  }, [categories, activeCategoryId]);
+
+  // Navigate to listing page with filters
+  const handleSubCategoryPress = (subCategory: SubCategory) => {
+    // Get current category name for the title
+    const currentCategory = categories.find(c => c.id === activeCategoryId);
+    
+    router.push({
+      pathname: '/product-list',
+      params: {
+        departmentId: activeDepartmentId,
+        categoryId: activeCategoryId,
+        subCategoryId: subCategory.id,
+        categoryName: currentCategory?.name || 'Products',
+        subCategoryName: subCategory.name,
+      }
+    });
+  };
+
+  const handleCategoryPress = (category: SidebarCategory) => {
+    setActiveCategoryId(category.id);
+    
+    // Navigate to listing page for this category
+    router.push({
+      pathname: '/listing',
+      params: {
+        departmentId: activeDepartmentId,
+        categoryId: category.id,
+        categoryName: category.name,
+      }
+    });
+  };
+
+  // Loading state
+  if (isDepartmentsLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.centerContent}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Loading categories...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const activeDepartment = departments.find(d => d.id === activeDepartmentId) || departments[0];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -100,7 +174,7 @@ export default function CategoriesScreen() {
           <TouchableOpacity style={styles.iconBtn}>
             <Ionicons name="heart-outline" size={24} color={COLORS.primary} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn}>
+          <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/cart')}>
             <Ionicons name="bag-outline" size={24} color={COLORS.primary} />
           </TouchableOpacity>
         </View>
@@ -112,13 +186,9 @@ export default function CategoriesScreen() {
           <DepartmentTab 
             key={dept.id} 
             item={dept} 
-            isActive={dept.id === activeDepartment.id}
+            isActive={dept.id === activeDepartmentId}
             onPress={() => {
               setActiveDepartmentId(dept.id);
-              // Reset category to first in new dept
-              if (dept.categories.length > 0) {
-                setActiveCategoryId(dept.categories[0].id);
-              }
             }}
           />
         ))}
@@ -131,42 +201,61 @@ export default function CategoriesScreen() {
         
         {/* Left Sidebar */}
         <View style={styles.sidebar}>
-          <FlatList
-            data={activeDepartment.categories}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <SidebarItem 
-                item={item} 
-                isActive={item.id === activeCategory?.id} 
-                onPress={() => setActiveCategoryId(item.id)}
-              />
-            )}
-            contentContainerStyle={{ paddingBottom: 100 }}
-          />
+          {isCategoriesLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="small" color={COLORS.primary} />
+            </View>
+          ) : (
+            <FlatList
+              data={categories}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <SidebarItem 
+                  item={item} 
+                  isActive={item.id === activeCategoryId} 
+                  onPress={() => handleCategoryPress(item)}
+                />
+              )}
+              contentContainerStyle={{ paddingBottom: 100 }}
+            />
+          )}
         </View>
 
         {/* Right Grid Content */}
         <View style={styles.mainContent}>
-          {/* Header for the selected category inside the grid view if needed */}
-          <View style={styles.gridHeader}>
-             {/* Optional: Add a breadcrumb or title here if desired, e.g. <Text>Rings</Text> */}
-          </View>
-
-          <FlatList
-            data={subCategories}
-            keyExtractor={(item) => item.id}
-            numColumns={3}
-            showsVerticalScrollIndicator={false}
-            columnWrapperStyle={styles.gridRow}
-            contentContainerStyle={styles.gridContainer}
-            renderItem={({ item }) => <GridItem item={item} />}
-            ListEmptyComponent={
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyText}>No subcategories found</Text>
-              </View>
-            }
-          />
+          {isSubCategoriesLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="small" color={COLORS.primary} />
+            </View>
+          ) : (
+            <FlatList
+              data={subCategories}
+              keyExtractor={(item) => item.id}
+              numColumns={3}
+              showsVerticalScrollIndicator={false}
+              columnWrapperStyle={styles.gridRow}
+              contentContainerStyle={styles.gridContainer}
+              renderItem={({ item }) => (
+                <GridItem 
+                  item={item} 
+                  onPress={handleSubCategoryPress}
+                />
+              )}
+              ListEmptyComponent={
+                <View style={styles.emptyState}>
+                  <Ionicons name="cube-outline" size={48} color={COLORS.textSecondary} />
+                  <Text style={styles.emptyText}>No subcategories available</Text>
+                  <TouchableOpacity 
+                    style={styles.browseAllBtn}
+                    onPress={() => router.push('/product-list')}
+                  >
+                    <Text style={styles.browseAllText}>Browse All Products</Text>
+                  </TouchableOpacity>
+                </View>
+              }
+            />
+          )}
         </View>
 
       </View>
@@ -177,7 +266,7 @@ export default function CategoriesScreen() {
           <Ionicons name="search-outline" size={20} color={COLORS.primary} />
           <TextInput 
             style={styles.searchInput}
-            placeholder="Search"
+            placeholder="Search categories"
             placeholderTextColor={COLORS.textSecondary}
           />
         </View>
@@ -192,6 +281,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
     paddingTop: Platform.OS === 'android' ? 30 : 0,
+  },
+  centerContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: SPACING.m,
+    fontSize: 16,
+    color: COLORS.textSecondary,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: SPACING.xl,
   },
   
   // Header
@@ -229,7 +334,7 @@ const styles = StyleSheet.create({
   },
   deptImageContainer: {
     marginBottom: 8,
-    height: 50, // Fixed height for image area
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -271,7 +376,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.primary,
     transform: [{ rotate: '45deg' }],
-    marginHorizontal: -3, // Overlap slightly
+    marginHorizontal: -3,
     zIndex: 1,
   },
 
@@ -328,12 +433,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingHorizontal: SPACING.s,
   },
-  gridHeader: {
-    marginTop: SPACING.s,
-  },
   gridContainer: {
     paddingTop: SPACING.m,
-    paddingBottom: 100, // Space for search bar
+    paddingBottom: 100,
   },
   gridRow: {
     justifyContent: 'flex-start',
@@ -366,11 +468,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   emptyState: {
-    padding: SPACING.m,
+    padding: SPACING.xl,
     alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: SPACING.xl,
   },
   emptyText: {
     color: COLORS.textSecondary,
+    marginTop: SPACING.m,
+    fontSize: 14,
+  },
+  browseAllBtn: {
+    marginTop: SPACING.l,
+    paddingHorizontal: SPACING.l,
+    paddingVertical: SPACING.m,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+  },
+  browseAllText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
 
   // Search Bar

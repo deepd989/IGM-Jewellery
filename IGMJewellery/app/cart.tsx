@@ -133,7 +133,7 @@ export default function CartScreen() {
               <Text style={styles.footerLink}>View details</Text>
             </>
           ) : (
-            <TouchableOpacity style={styles.browseBtn} onPress={() => router.push('/listing')}>
+            <TouchableOpacity style={styles.browseBtn} onPress={() => router.push('/product-list')}>
                <Text style={styles.browseText}>Browse trial designs</Text>
             </TouchableOpacity>
           )}

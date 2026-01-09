@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { categoryApiService } from './apis/categories';
 import { productApiService } from './apis/product';
 import { profileApiService } from './apis/profile';
 import userReducer from './userSlice';
@@ -8,9 +9,10 @@ export const store = configureStore({
     products: productApiService.reducer,
     user: userReducer,
     profile: profileApiService.reducer,
+     [categoryApiService.reducerPath]: categoryApiService.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(profileApiService.middleware, productApiService.middleware),
+    getDefaultMiddleware().concat(profileApiService.middleware, productApiService.middleware, categoryApiService.middleware),
 });
 
 
