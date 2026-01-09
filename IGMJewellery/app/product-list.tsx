@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -28,6 +28,7 @@ import { selectProducts } from '@/store/productSlice';
 // --- MOCK DATA ---
 
 
+import { useGetCategoryHierarchyQuery } from '@/store/apis/categories';
 import { useGetProductsQuery } from '@/store/apis/product';
 
 const FILTER_CHIPS = ['All', 'Latest', 'Best Sellers', 'Express Delivery', 'Store Pick-up'];
@@ -35,6 +36,15 @@ const MENU_ITEMS = ['Bespoke Jewellery', 'Our Brands', 'Call an expert', 'Chat w
 
 export default function ListingScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  
+  // Extract category params from navigation
+  const departmentId = params.departmentId as string | undefined;
+  const categoryId = params.categoryId as string | undefined;
+  const subCategoryId = params.subCategoryId as string | undefined;
+  const categoryName = params.categoryName as string | undefined;
+  const subCategoryName = params.subCategoryName as string | undefined;
+
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -47,6 +57,40 @@ export default function ListingScreen() {
   // Filtering State
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
+
+  // Get category hierarchy for breadcrumbs
+  const { data: hierarchy } = useGetCategoryHierarchyQuery(
+    { departmentId, categoryId, subCategoryId },
+    { skip: !departmentId && !categoryId }
+  );
+
+  // Initialize filters based on category navigation
+  useEffect(() => {
+    const newFilters: Record<string, string[]> = { ...activeFilters };
+
+    // If coming from categories, set the product type filter
+    if (categoryId) {
+      const categoryProductType = getCategoryProductType(categoryId);
+      if (categoryProductType) {
+        newFilters.productType = [categoryProductType];
+      }
+    }
+
+    // Update filters if they changed
+    if (JSON.stringify(newFilters) !== JSON.stringify(activeFilters)) {
+      setActiveFilters(newFilters);
+    }
+  }, [categoryId]);
+
+  // Helper to map category to product type
+  const getCategoryProductType = (catId: string): string | null => {
+    if (catId.includes('rings')) return 'ring';
+    if (catId.includes('necklace') || catId.includes('chains')) return 'necklace';
+    if (catId.includes('earring')) return 'earring';
+    if (catId.includes('bracelet')) return 'bracelet';
+    if (catId.includes('pendant')) return 'pendant';
+    return null;
+  };
 
   // Fetch products from Redux API with filters and sorting
   const { data: products = [], isLoading, isError, error, refetch } = useGetProductsQuery({
@@ -76,9 +120,7 @@ export default function ListingScreen() {
   };
 
   const handleApplyFilters = (filters: Record<string, string[]>) => {
-    console.log('Applying Filters:', filters);
     setActiveFilters(filters);
-    // The query will automatically refetch with new filters due to RTK Query
   };
 
   const handleClearFilters = () => {
@@ -87,7 +129,24 @@ export default function ListingScreen() {
 
   const handleSortSelect = (sort: string) => {
     setSelectedSort(sort);
-    // The query will automatically refetch with new sort due to RTK Query
+  };
+
+  // Generate page title based on navigation
+  const getPageTitle = () => {
+    if (subCategoryName) return subCategoryName;
+    if (categoryName) return categoryName;
+    if (hierarchy?.category) return hierarchy.category.name;
+    return 'Products';
+  };
+
+  // Generate breadcrumb
+  const getBreadcrumb = () => {
+    const parts = [];
+    if (hierarchy?.department) parts.push(hierarchy.department.name);
+    if (hierarchy?.category && !categoryName) parts.push(hierarchy.category.name);
+    if (categoryName) parts.push(categoryName);
+    if (subCategoryName) parts.push(subCategoryName);
+    return parts.join(' / ');
   };
 
   const renderHeader = () => (
@@ -111,6 +170,13 @@ export default function ListingScreen() {
         </View>
       </View>
 
+      {/* Breadcrumb */}
+      {(departmentId || categoryId) && (
+        <View style={styles.breadcrumbContainer}>
+          <Text style={styles.breadcrumbText}>{getBreadcrumb()}</Text>
+        </View>
+      )}
+
       {/* Category Icon & Title */}
       <View style={styles.titleSection}>
         <View style={styles.categoryIconCircle}>
@@ -119,7 +185,7 @@ export default function ListingScreen() {
             style={styles.categoryImage}
           />
         </View>
-        <Text style={styles.pageTitle}>[Rings]</Text>
+        <Text style={styles.pageTitle}>{getPageTitle()}</Text>
         <Text style={styles.resultsCount}>
           {products.length} {products.length === 1 ? 'Product' : 'Products'}
         </Text>
@@ -195,13 +261,19 @@ export default function ListingScreen() {
           <Ionicons name="search-outline" size={64} color={COLORS.textSecondary} />
           <Text style={styles.emptyText}>No products found</Text>
           <Text style={styles.emptySubtext}>
-            Try adjusting your filters or search criteria
+            Try adjusting your filters or browse different categories
           </Text>
           {activeFilterCount > 0 && (
             <TouchableOpacity style={styles.clearButton} onPress={handleClearFilters}>
               <Text style={styles.clearButtonText}>Clear Filters</Text>
             </TouchableOpacity>
           )}
+          <TouchableOpacity 
+            style={[styles.clearButton, { marginTop: SPACING.m }]} 
+            onPress={handleCategoriesPress}
+          >
+            <Text style={styles.clearButtonText}>Browse Categories</Text>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     );
@@ -397,9 +469,19 @@ const styles = StyleSheet.create({
     padding: 4,
     marginLeft: 12,
   },
+  breadcrumbContainer: {
+    paddingHorizontal: SPACING.m,
+    paddingVertical: SPACING.xs,
+    backgroundColor: '#F9F9F9',
+  },
+  breadcrumbText: {
+    fontSize: 11,
+    color: COLORS.textSecondary,
+  },
   titleSection: {
     alignItems: 'center',
     marginBottom: SPACING.m,
+    marginTop: SPACING.s,
   },
   categoryIconCircle: {
     width: 60,
