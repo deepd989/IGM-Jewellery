@@ -261,7 +261,7 @@ export default function CategoriesScreen() {
       </View>
 
       {/* --- BOTTOM SEARCH BAR --- */}
-      <View style={styles.searchWrapper}>
+      {/* <View style={styles.searchWrapper}>
         <View style={styles.searchBar}>
           <Ionicons name="search-outline" size={20} color={COLORS.primary} />
           <TextInput 
@@ -270,7 +270,7 @@ export default function CategoriesScreen() {
             placeholderTextColor={COLORS.textSecondary}
           />
         </View>
-      </View>
+      </View> */}
 
     </SafeAreaView>
   );

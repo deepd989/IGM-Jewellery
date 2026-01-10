@@ -29,7 +29,6 @@ import { RouteParam } from '@/constants/routeNavigationConstants';
 
 type ListingScreenProps = {
   filters?: Record<string, string[]>;
-  route?: RouteProp<RouteParam, 'product-list'>;
 };
 
 const FILTER_CHIPS = ['All', 'Latest', 'Best Sellers', 'Express Delivery', 'Store Pick-up'];
@@ -37,18 +36,19 @@ const MENU_ITEMS = ['Bespoke Jewellery', 'Our Brands', 'Call an expert', 'Chat w
 
 
 
-export default function ListingScreen({ filters,route }: ListingScreenProps) {
-  console.log("FILTERS",route);
+export default function ListingScreen({ filters }: ListingScreenProps) {
   const router = useRouter(); 
   const params = useLocalSearchParams();
-  
   // Extract category params from navigation
   const departmentId = params.departmentId as string | undefined;
   const categoryId = params.categoryId as string | undefined;
   const subCategoryId = params.subCategoryId as string | undefined;
   const categoryName = params.categoryName as string | undefined;
   const subCategoryName = params.subCategoryName as string | undefined;
-
+  const gender = params.gender as string | undefined;
+  const occasion = params.occasion as string | undefined;
+  const productType = params.productType as string | undefined;
+ //TODO: add the above 3 to filters if 
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
