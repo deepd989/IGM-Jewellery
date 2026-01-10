@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 
 import { Sparkles, Mic, AudioWaveform, Send } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AiChatComponent from '../components/exploreAi/aiChat';
+import BottomNavBar from '@/components/bottomNavBar';
 
 export default function ChatInterface() {
   const [inputText, setInputText] = useState('');
@@ -98,6 +99,7 @@ export default function ChatInterface() {
           </View>
         </ScrollView>
       </View>
+      <BottomNavBar activeTab='AiDiscover'></BottomNavBar>
     </SafeAreaView>
   );
 }
