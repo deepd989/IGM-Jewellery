@@ -20,12 +20,8 @@ import { SortModal } from '@/components/products/SortModal';
 import { Product } from '@/interfaces/product.interface';
 import { useGetCategoryHierarchyQuery } from '@/store/apis/categories';
 import { useGetProductsQuery } from '@/store/apis/product';
-import { selectProducts } from '@/store/productSlice';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useSelector } from 'react-redux';
 import { COLORS, SPACING } from '../constants/theme';
-import { RouteProp } from '@react-navigation/native';
-import { RouteParam } from '@/constants/routeNavigationConstants';
 
 type ListingScreenProps = {
   filters?: Record<string, string[]>;
@@ -34,23 +30,24 @@ type ListingScreenProps = {
 const FILTER_CHIPS = ['All', 'Latest', 'Best Sellers', 'Express Delivery', 'Store Pick-up'];
 const MENU_ITEMS = ['Bespoke Jewellery', 'Our Brands', 'Call an expert', 'Chat with Sonar'];
 
-
-
 export default function ListingScreen({ filters }: ListingScreenProps) {
   const router = useRouter(); 
   const params = useLocalSearchParams();
-  // Extract category params from navigation
+  
+  // Extract all possible filter params from navigation
   const departmentId = params.departmentId as string | undefined;
   const categoryId = params.categoryId as string | undefined;
   const subCategoryId = params.subCategoryId as string | undefined;
   const categoryName = params.categoryName as string | undefined;
   const subCategoryName = params.subCategoryName as string | undefined;
+  
+  // Additional filter parameters
   const gender = params.gender as string | undefined;
   const occasion = params.occasion as string | undefined;
   const productType = params.productType as string | undefined;
-  const brand= params.brand as string | undefined;
-  const collection= params.collection as string | undefined;
- //TODO: add the above 5 to filters the data.
+  const brand = params.brand as string | undefined;
+  const collection = params.collection as string | undefined;
+  
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -69,20 +66,11 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     { skip: !departmentId && !categoryId }
   );
 
+  // Initialize filters from navigation params and props
   useEffect(() => {
-    if (!filters || Object.keys(filters).length === 0) return;
+    const newFilters: Record<string, string[]> = {};
 
-    setActiveFilters(prev => ({
-      ...prev,
-      ...filters,
-    }));
-}, []);
-
-  // Initialize filters based on category navigation
-  useEffect(() => {
-    const newFilters: Record<string, string[]> = { ...activeFilters };
-
-    // If coming from categories, set the product type filter
+    // Handle category-based filters
     if (categoryId) {
       const categoryProductType = getCategoryProductType(categoryId);
       if (categoryProductType) {
@@ -90,19 +78,68 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       }
     }
 
-    // Update filters if they changed
+    // Handle direct productType param (overrides category mapping)
+    if (productType) {
+      newFilters.productType = [productType];
+    }
+
+    // Handle occasion filter
+    if (occasion) {
+      newFilters.occasion = Array.isArray(occasion) ? occasion : [occasion];
+    }
+
+    // Handle brand filter
+    if (brand) {
+      newFilters.brand = Array.isArray(brand) ? brand : [brand];
+    }
+
+    // Handle collection filter
+    if (collection) {
+      newFilters.collection = Array.isArray(collection) ? collection : [collection];
+    }
+
+    // Handle gender filter
+    if (gender) {
+      newFilters.gender = Array.isArray(gender) ? gender : [gender];
+    }
+
+    // Merge with filters passed as props
+    if (filters && Object.keys(filters).length > 0) {
+      Object.keys(filters).forEach(key => {
+        if (filters[key] && filters[key].length > 0) {
+          newFilters[key] = [...(newFilters[key] || []), ...filters[key]];
+          // Remove duplicates
+          newFilters[key] = [...new Set(newFilters[key])];
+        }
+      });
+    }
+
+    // Only update if filters actually changed
     if (JSON.stringify(newFilters) !== JSON.stringify(activeFilters)) {
       setActiveFilters(newFilters);
     }
-  }, [categoryId]);
+  }, [
+    categoryId, 
+    productType, 
+    occasion, 
+    brand, 
+    collection, 
+    gender, 
+    filters
+  ]);
 
   // Helper to map category to product type
   const getCategoryProductType = (catId: string): string | null => {
-    if (catId.includes('rings')) return 'ring';
-    if (catId.includes('necklace') || catId.includes('chains')) return 'necklace';
-    if (catId.includes('earring')) return 'earring';
-    if (catId.includes('bracelet')) return 'bracelet';
-    if (catId.includes('pendant')) return 'pendant';
+    const lowerCatId = catId.toLowerCase();
+    if (lowerCatId.includes('rings')) return 'ring';
+    if (lowerCatId.includes('necklace') || lowerCatId.includes('chains')) return 'necklace';
+    if (lowerCatId.includes('earring')) return 'earring';
+    if (lowerCatId.includes('bracelet')) return 'bracelet';
+    if (lowerCatId.includes('pendant')) return 'pendant';
+    if (lowerCatId.includes('bangle')) return 'bangle';
+    if (lowerCatId.includes('anklet')) return 'anklet';
+    if (lowerCatId.includes('mangalsutra')) return 'mangalsutra';
+    if (lowerCatId.includes('nose-pin')) return 'nose-pin';
     return null;
   };
 
@@ -145,22 +182,51 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     setSelectedSort(sort);
   };
 
-  // Generate page title based on navigation
+  // Generate page title based on navigation context
   const getPageTitle = () => {
+    // Priority order for title
     if (subCategoryName) return subCategoryName;
     if (categoryName) return categoryName;
+    if (occasion) return `${occasion.charAt(0).toUpperCase() + occasion.slice(1)} Collection`;
+    if (brand) return brand;
+    if (collection) return `${collection} Collection`;
+    if (gender) return `${gender.charAt(0).toUpperCase() + gender.slice(1)}'s Jewellery`;
     if (hierarchy?.category) return hierarchy.category.name;
+    if (productType) return `${productType.charAt(0).toUpperCase() + productType.slice(1)}s`;
     return 'Products';
   };
 
   // Generate breadcrumb
   const getBreadcrumb = () => {
     const parts = [];
+    
     if (hierarchy?.department) parts.push(hierarchy.department.name);
     if (hierarchy?.category && !categoryName) parts.push(hierarchy.category.name);
     if (categoryName) parts.push(categoryName);
     if (subCategoryName) parts.push(subCategoryName);
+    
+    // Add filter-based breadcrumbs if no category hierarchy
+    if (parts.length === 0) {
+      if (gender) parts.push(gender.charAt(0).toUpperCase() + gender.slice(1));
+      if (occasion) parts.push(occasion.charAt(0).toUpperCase() + occasion.slice(1));
+      if (brand) parts.push(brand);
+      if (collection) parts.push(collection);
+    }
+    
     return parts.join(' / ');
+  };
+
+  // Get active filter tags for display
+  const getActiveFilterTags = () => {
+    const tags: string[] = [];
+    
+    Object.entries(activeFilters).forEach(([key, values]) => {
+      values.forEach(value => {
+        tags.push(`${key}: ${value}`);
+      });
+    });
+    
+    return tags;
   };
 
   const renderHeader = () => (
@@ -185,7 +251,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       </View>
 
       {/* Breadcrumb */}
-      {(departmentId || categoryId) && (
+      {(departmentId || categoryId || occasion || brand || collection || gender) && (
         <View style={styles.breadcrumbContainer}>
           <Text style={styles.breadcrumbText}>{getBreadcrumb()}</Text>
         </View>
@@ -226,13 +292,42 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
 
       {/* Active Filters Summary */}
       {activeFilterCount > 0 && (
-        <View style={styles.activeFiltersBar}>
-          <Text style={styles.activeFiltersText}>
-            {activeFilterCount} {activeFilterCount === 1 ? 'filter' : 'filters'} applied
-          </Text>
-          <TouchableOpacity onPress={handleClearFilters}>
-            <Text style={styles.clearFiltersText}>Clear All</Text>
-          </TouchableOpacity>
+        <View style={styles.activeFiltersContainer}>
+          <View style={styles.activeFiltersBar}>
+            <Text style={styles.activeFiltersText}>
+              {activeFilterCount} {activeFilterCount === 1 ? 'filter' : 'filters'} applied
+            </Text>
+            <TouchableOpacity onPress={handleClearFilters}>
+              <Text style={styles.clearFiltersText}>Clear All</Text>
+            </TouchableOpacity>
+          </View>
+          
+          {/* Active Filter Tags */}
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.filterTagsContainer}
+          >
+            {getActiveFilterTags().map((tag, index) => (
+              <View key={index} style={styles.filterTag}>
+                <Text style={styles.filterTagText}>{tag}</Text>
+                <TouchableOpacity 
+                  onPress={() => {
+                    const [filterKey, filterValue] = tag.split(': ');
+                    const newFilters = { ...activeFilters };
+                    newFilters[filterKey] = newFilters[filterKey].filter(v => v !== filterValue);
+                    if (newFilters[filterKey].length === 0) {
+                      delete newFilters[filterKey];
+                    }
+                    setActiveFilters(newFilters);
+                  }}
+                  style={styles.filterTagClose}
+                >
+                  <Ionicons name="close" size={14} color={COLORS.text} />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
         </View>
       )}
     </View>
@@ -548,16 +643,18 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '600',
   },
+  activeFiltersContainer: {
+    backgroundColor: '#F9F9F9',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#E5E5EA',
+  },
   activeFiltersBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: SPACING.m,
     paddingVertical: SPACING.s,
-    backgroundColor: '#F9F9F9',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: '#E5E5EA',
   },
   activeFiltersText: {
     fontSize: 13,
@@ -568,6 +665,30 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLORS.primary,
     fontWeight: '600',
+  },
+  filterTagsContainer: {
+    paddingHorizontal: SPACING.m,
+    paddingBottom: SPACING.s,
+  },
+  filterTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    paddingVertical: 6,
+    paddingLeft: 12,
+    paddingRight: 8,
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: '#E5E5EA',
+  },
+  filterTagText: {
+    fontSize: 12,
+    color: COLORS.text,
+    marginRight: 6,
+  },
+  filterTagClose: {
+    padding: 2,
   },
   listContent: {
     paddingHorizontal: SPACING.m,
