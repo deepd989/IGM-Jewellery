@@ -1,7 +1,7 @@
-import { DUMMY_CART_ITEMS } from "@/dummyData/cart-item";
+import { useGetCartQuery } from "@/store/apis/cart";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import React, { useMemo } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useMemo } from "react";
 import {
   Dimensions,
   Image,
@@ -19,34 +19,57 @@ const { width } = Dimensions.get("window");
 
 export default function ConfirmationScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
 
-  // --- DYNAMIC CALCULATIONS ---
+  const orderId = params.orderId as string;
+  const orderDisplayId =
+    (params.orderDisplayId as string) ||
+    `#${Math.floor(10000 + Math.random() * 90000)}`;
+
+  // Get cart data for order items (in production, this would come from order API)
+  const { data: cartData } = useGetCartQuery();
+
   const orderInfo = useMemo(() => {
-    const totalItems = DUMMY_CART_ITEMS.reduce(
+    if (!cartData?.items) {
+      return {
+        totalItems: 0,
+        finalTotal: 0,
+        orderId: orderDisplayId,
+        items: [],
+      };
+    }
+
+    const totalItems = cartData.items.reduce(
       (acc, item) => acc + item.quantity,
       0
     );
-    const sellingPrice = DUMMY_CART_ITEMS.reduce(
+    const sellingPrice = cartData.items.reduce(
       (acc, item) => acc + item.product.discountedPrice * item.quantity,
       0
     );
     const platformFee = 220;
-    const couponDiscount = 20;
-    const finalTotal = sellingPrice + platformFee - couponDiscount;
+    const giftAddonsCost =
+      cartData.giftAddons
+        ?.filter((addon) => addon.isChecked)
+        .reduce((sum, addon) => sum + addon.price, 0) || 0;
 
-    // Random Order ID for realism
-    const orderId = Math.floor(10000 + Math.random() * 90000);
+    const finalTotal = sellingPrice + platformFee + giftAddonsCost;
 
     return {
       totalItems,
       finalTotal,
-      orderId: `#${orderId}`,
+      orderId: orderDisplayId,
+      items: cartData.items,
     };
+  }, [cartData, orderDisplayId]);
+
+  // In production, you might want to clear the cart here or in the payment screen
+  useEffect(() => {
+    // Optional: Show a success toast or animation
   }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => router.replace("/(tabs)/categories")}
@@ -65,18 +88,27 @@ export default function ConfirmationScreen() {
         {/* Success Banner */}
         <View style={styles.successBox}>
           <View style={styles.iconContainer}>
-            <Image
-              source={{ uri: DUMMY_CART_ITEMS[0].product.thumbnailUrls[0] }}
-              style={styles.successImage}
-            />
-            <View style={styles.checkCircle}>
-              <Ionicons name="checkmark" size={24} color="#FFF" />
-            </View>
+            {orderInfo.items.length > 0 ? (
+              <>
+                <Image
+                  source={{ uri: orderInfo.items[0].product.thumbnailUrls[0] }}
+                  style={styles.successImage}
+                />
+                <View style={styles.checkCircle}>
+                  <Ionicons name="checkmark" size={24} color="#FFF" />
+                </View>
+              </>
+            ) : (
+              <View style={styles.checkCircle}>
+                <Ionicons name="checkmark" size={24} color="#FFF" />
+              </View>
+            )}
           </View>
 
           <Text style={styles.congrats}>Congratulations!</Text>
           <Text style={styles.subtext}>
-            Your order has been placed. Please wait for our further updates.
+            Your order has been placed successfully. You'll receive updates via
+            email and SMS.
           </Text>
 
           <View style={styles.orderIdRow}>
@@ -87,48 +119,52 @@ export default function ConfirmationScreen() {
           </View>
         </View>
 
-        {/* Dynamic Summary Section */}
-        <View style={styles.summarySection}>
-          <View style={styles.summaryHeader}>
-            <Text style={styles.summaryTitle}>
-              Order Summary{" "}
-              <Text style={{ fontWeight: "800" }}>
-                ₹{orderInfo.finalTotal.toLocaleString()}
+        {/* Order Summary Section */}
+        {orderInfo.items.length > 0 && (
+          <View style={styles.summarySection}>
+            <View style={styles.summaryHeader}>
+              <Text style={styles.summaryTitle}>
+                Order Summary{" "}
+                <Text style={{ fontWeight: "800" }}>
+                  ₹{orderInfo.finalTotal.toLocaleString()}
+                </Text>
               </Text>
-            </Text>
-            <Text style={styles.itemsCount}>
-              {orderInfo.totalItems}{" "}
-              {orderInfo.totalItems === 1 ? "item" : "items"}
-            </Text>
-          </View>
+              <Text style={styles.itemsCount}>
+                {orderInfo.totalItems}{" "}
+                {orderInfo.totalItems === 1 ? "item" : "items"}
+              </Text>
+            </View>
 
-          <ScrollView
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            style={styles.carousel}
-            snapToInterval={width - 32}
-            decelerationRate="fast"
-          >
-            {DUMMY_CART_ITEMS.map((item) => (
-              <OrderItemCard
-                key={item.product.id}
-                item={item}
-                style={styles.productCard}
-              />
-            ))}
-          </ScrollView>
+            <ScrollView
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              style={styles.carousel}
+              snapToInterval={width - 32}
+              decelerationRate="fast"
+            >
+              {orderInfo.items.map((item) => (
+                <OrderItemCard
+                  key={item.product.id}
+                  item={item}
+                  style={styles.productCard}
+                />
+              ))}
+            </ScrollView>
 
-          {/* Dynamic Pagination Dots based on array length */}
-          <View style={styles.paginationDots}>
-            {DUMMY_CART_ITEMS.map((_, index) => (
-              <View
-                key={index}
-                style={index === 0 ? styles.dotActive : styles.dotInactive}
-              />
-            ))}
+            {/* Pagination Dots */}
+            {orderInfo.items.length > 1 && (
+              <View style={styles.paginationDots}>
+                {orderInfo.items.map((_, index) => (
+                  <View
+                    key={index}
+                    style={index === 0 ? styles.dotActive : styles.dotInactive}
+                  />
+                ))}
+              </View>
+            )}
           </View>
-        </View>
+        )}
 
         {/* Action Buttons */}
         <View style={styles.actionSection}>
@@ -138,9 +174,47 @@ export default function ConfirmationScreen() {
           >
             <Text style={styles.primaryBtnText}>Continue Shopping</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryBtn}>
-            <Text style={styles.secondaryBtnText}>Review your order</Text>
+          <TouchableOpacity
+            style={styles.secondaryBtn}
+            onPress={() => router.push("/orders")}
+          >
+            <Text style={styles.secondaryBtnText}>View your orders</Text>
           </TouchableOpacity>
+        </View>
+
+        {/* Additional Info */}
+        <View style={styles.infoSection}>
+          <View style={styles.infoCard}>
+            <Ionicons name="time-outline" size={24} color={COLORS.primary} />
+            <View style={styles.infoTextContainer}>
+              <Text style={styles.infoTitle}>Estimated Delivery</Text>
+              <Text style={styles.infoText}>3-5 business days</Text>
+            </View>
+          </View>
+
+          <View style={styles.infoCard}>
+            <Ionicons
+              name="shield-checkmark-outline"
+              size={24}
+              color={COLORS.primary}
+            />
+            <View style={styles.infoTextContainer}>
+              <Text style={styles.infoTitle}>Secure Payment</Text>
+              <Text style={styles.infoText}>Your transaction is secure</Text>
+            </View>
+          </View>
+
+          <View style={styles.infoCard}>
+            <Ionicons
+              name="return-up-back-outline"
+              size={24}
+              color={COLORS.primary}
+            />
+            <View style={styles.infoTextContainer}>
+              <Text style={styles.infoTitle}>Easy Returns</Text>
+              <Text style={styles.infoText}>15-day return policy</Text>
+            </View>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -298,5 +372,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     color: "#8E8E93",
+  },
+  infoSection: {
+    padding: SPACING.m,
+    gap: SPACING.m,
+  },
+  infoCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: SPACING.m,
+    backgroundColor: "#F9F9F9",
+    borderRadius: 8,
+  },
+  infoTextContainer: {
+    marginLeft: SPACING.m,
+    flex: 1,
+  },
+  infoTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: COLORS.text,
+    marginBottom: 2,
+  },
+  infoText: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
   },
 });

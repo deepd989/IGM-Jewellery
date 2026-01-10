@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Platform,
   SafeAreaView,
   StyleSheet,
@@ -22,6 +23,7 @@ import {
   useToggleGiftAddonMutation,
   useUpdateQuantityMutation,
 } from "@/store/apis/cart";
+import { useInitializeCheckoutMutation } from "@/store/apis/checkout";
 import { BagTabContent } from "../components/cart/BagTabContent";
 import { RemoveConfirmationModal } from "../components/cart/RemoveConfirmationModal";
 
@@ -39,6 +41,8 @@ export default function CartScreen() {
   const [removeFromTrial] = useRemoveFromTrialMutation();
   const [toggleGiftAddon] = useToggleGiftAddonMutation();
   const [moveToWishlist] = useMoveToWishlistMutation();
+  const [initializeCheckout, { isLoading: isInitializingCheckout }] =
+    useInitializeCheckoutMutation();
 
   const cart = cartData?.items || [];
   const trialList = cartData?.trialItems || [];
@@ -47,9 +51,15 @@ export default function CartScreen() {
   const handleUpdateQuantity = (id: string, delta: number) => {
     const item = cart.find((i) => i.product.id === id);
     if (item) {
+      const newQuantity = item.quantity + delta;
+      if (newQuantity < 1) {
+        // Trigger remove confirmation instead of allowing 0
+        setRemovingItem(item.product);
+        return;
+      }
       updateQuantity({
         productId: id,
-        quantity: item.quantity + delta,
+        quantity: newQuantity,
       });
     }
   };
@@ -93,6 +103,38 @@ export default function CartScreen() {
       moveToWishlist(removingItem.id);
       setRemovingItem(null);
     }
+  };
+
+  const handleCheckout = async () => {
+    if (cart.length === 0) {
+      Alert.alert(
+        "Empty Cart",
+        "Please add items to your cart before checkout"
+      );
+      return;
+    }
+
+    try {
+      // Initialize checkout session from current cart
+      await initializeCheckout().unwrap();
+
+      // Navigate to address screen
+      router.push("/checkout/address");
+    } catch (error: any) {
+      Alert.alert(
+        "Error",
+        error?.data || "Failed to start checkout. Please try again.",
+        [{ text: "OK" }]
+      );
+    }
+  };
+
+  const handleScheduleTrial = () => {
+    if (trialList.length === 0) {
+      Alert.alert("No Items", "Please add items to trial list");
+      return;
+    }
+    router.push("/trial/schedule");
   };
 
   const isBag = activeTab === "bag";
@@ -247,16 +289,20 @@ export default function CartScreen() {
             )}
           </View>
           <TouchableOpacity
-            style={styles.mainBtn}
-            onPress={() =>
-              isBag
-                ? router.push("/checkout/address")
-                : router.push("/trial/schedule")
-            }
+            style={[
+              styles.mainBtn,
+              isInitializingCheckout && styles.mainBtnDisabled,
+            ]}
+            onPress={isBag ? handleCheckout : handleScheduleTrial}
+            disabled={isInitializingCheckout}
           >
-            <Text style={styles.mainBtnText}>
-              {isBag ? "CHECKOUT" : "Schedule trial"}
-            </Text>
+            {isInitializingCheckout ? (
+              <ActivityIndicator color="#FFF" size="small" />
+            ) : (
+              <Text style={styles.mainBtnText}>
+                {isBag ? "CHECKOUT" : "Schedule trial"}
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
       )}
@@ -417,6 +463,9 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     minWidth: 140,
     alignItems: "center",
+  },
+  mainBtnDisabled: {
+    opacity: 0.6,
   },
   mainBtnText: {
     color: "#FFF",

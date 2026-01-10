@@ -1,4 +1,10 @@
-import { CartItem, OrderDetails } from "@/interfaces/order-details.interface";
+import {
+  useGetCheckoutSessionQuery,
+  useGetSavedAddressesQuery,
+  useInitializeCheckoutMutation,
+  useUpdateBillingAddressMutation,
+  useUpdateDeliveryAddressMutation,
+} from "@/store/apis/checkout";
 import {
   AddressFormData,
   addressSchema,
@@ -6,9 +12,11 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
+  ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -22,66 +30,176 @@ import { CheckoutStepper } from "../../components/checkout/CheckoutStepper";
 import { CheckoutSummary } from "../../components/checkout/CheckoutSummary";
 import { AddressCard } from "../../components/shared/AddressCard";
 import { AddressFields } from "../../components/shared/AddressFields";
-import { COLORS } from "../../constants/theme";
-import { Brand } from "../../enums/brand.enum";
-
-const DUMMY_CART_ITEMS: CartItem[] = [
-  {
-    product: {
-      id: "1",
-      title: "24K Diamond Ring",
-      discountedPrice: 20000,
-      givenPrice: 25000,
-      brand: Brand.Kalyan,
-      thumbnailUrls: [
-        "https://images.unsplash.com/photo-1605100804763-eb2fc645a382?q=80&w=400",
-      ],
-    } as any,
-    quantity: 1,
-  },
-];
+import { COLORS, SPACING } from "../../constants/theme";
+import {
+  BillingAddress,
+  DeliveryAddress,
+} from "../../interfaces/address.interface";
 
 export default function AddressScreen() {
   const router = useRouter();
   const [useSaved, setUseSaved] = useState(true);
   const [sameAsBilling, setSameAsBilling] = useState(true);
 
-  const orderDetails = useMemo<OrderDetails>(
-    () => ({
-      items: DUMMY_CART_ITEMS,
-      subtotal: 25000,
-      savings: 5000,
-      platformFee: 220,
-      total: 20220,
-    }),
-    []
-  );
+  // Initialize checkout session
+  const [initializeCheckout, { isLoading: isInitializing }] =
+    useInitializeCheckoutMutation();
+  const {
+    data: checkoutSession,
+    isLoading: isLoadingSession,
+    refetch,
+  } = useGetCheckoutSessionQuery();
+  const { data: savedAddresses = [], isLoading: isLoadingAddresses } =
+    useGetSavedAddressesQuery();
+
+  const [updateDeliveryAddress] = useUpdateDeliveryAddressMutation();
+  const [updateBillingAddress] = useUpdateBillingAddressMutation();
+
+  const defaultAddress = savedAddresses.find((addr) => addr.isDefault);
+
+  useEffect(() => {
+    if (defaultAddress) {
+      shippingForm.reset({
+        firstName: defaultAddress.firstName,
+        lastName: defaultAddress.lastName,
+        street: defaultAddress.street,
+        landmark: defaultAddress.landmark || "",
+        city: defaultAddress.city,
+        pincode: defaultAddress.pincode,
+        state: defaultAddress.state,
+        country: defaultAddress.country,
+        phone: defaultAddress.phone,
+        email: defaultAddress.email,
+      });
+    }
+  }, [defaultAddress]);
+
+  // Initialize checkout on mount if no session exists
+  useEffect(() => {
+    const initSession = async () => {
+      if (!checkoutSession && !isLoadingSession) {
+        try {
+          await initializeCheckout().unwrap();
+        } catch (error: any) {
+          Alert.alert(
+            "Error",
+            error?.data || "Failed to initialize checkout. Please try again.",
+            [
+              {
+                text: "Go to Cart",
+                onPress: () => router.replace("/cart"),
+              },
+            ]
+          );
+        }
+      }
+    };
+
+    initSession();
+  }, []);
 
   const shippingForm = useForm<AddressFormData>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
+      firstName: "",
+      lastName: "",
+      street: "",
+      landmark: "",
       city: "Mumbai",
       pincode: "400066",
       state: "Maharashtra",
       country: "India",
+      phone: "",
+      email: "",
     },
   });
 
   const billingForm = useForm<AddressFormData>({
     resolver: zodResolver(addressSchema),
     defaultValues: {
+      firstName: "",
+      lastName: "",
+      street: "",
+      landmark: "",
       city: "Mumbai",
       pincode: "400066",
       state: "Maharashtra",
       country: "India",
+      phone: "",
+      email: "",
     },
   });
 
-  const onSubmit = () => {
-    // If not using saved, validate shipping form
-    // In real app, we handle nested validations
-    router.push("/checkout/gifting");
+  const onSubmit = async () => {
+    try {
+      let deliveryAddress: DeliveryAddress;
+
+      if (useSaved && defaultAddress) {
+        deliveryAddress = defaultAddress;
+      } else {
+        const valid = await shippingForm.trigger();
+        if (!valid) return;
+
+        deliveryAddress = shippingForm.getValues();
+      }
+
+      await updateDeliveryAddress(deliveryAddress).unwrap();
+
+      let billingAddress: BillingAddress;
+
+      if (sameAsBilling) {
+        billingAddress = {
+          ...deliveryAddress,
+          sameAsDelivery: true,
+        };
+      } else {
+        const valid = await billingForm.trigger();
+        if (!valid) return;
+
+        billingAddress = {
+          ...billingForm.getValues(),
+          sameAsDelivery: false,
+        };
+      }
+
+      await updateBillingAddress(billingAddress).unwrap();
+      router.push("/checkout/gifting");
+    } catch {
+      Alert.alert("Error", "Failed to save address");
+    }
   };
+
+  if (isInitializing || isLoadingSession || isLoadingAddresses) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Loading checkout...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!checkoutSession) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Ionicons
+            name="alert-circle-outline"
+            size={64}
+            color={COLORS.error}
+          />
+          <Text style={styles.errorText}>Unable to load checkout</Text>
+          <TouchableOpacity
+            style={styles.retryButton}
+            onPress={() => router.replace("/cart")}
+          >
+            <Text style={styles.retryButtonText}>Back to Cart</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -106,19 +224,23 @@ export default function AddressScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scroll}
         >
-          <CheckoutSummary order={orderDetails} />
+          <CheckoutSummary order={checkoutSession.orderDetails} />
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Delivery Address</Text>
 
-            <AddressCard
-              style={{ marginTop: 12 }}
-              title="Deliver to Saved Address"
-              address="Shop Number 201, Avon Enclave, Andheri East, Mumbai 400 066"
-              contact="+91 9870951994    emailid@gmail.com"
-              isSelected={useSaved}
-              onSelect={() => setUseSaved(true)}
-            />
+            {defaultAddress && (
+              <AddressCard
+                style={{ marginTop: 12 }}
+                title="Deliver to Saved Address"
+                address={`${defaultAddress.street}, ${
+                  defaultAddress.landmark || ""
+                }, ${defaultAddress.city} ${defaultAddress.pincode}`}
+                contact={`${defaultAddress.phone}    ${defaultAddress.email}`}
+                isSelected={useSaved}
+                onSelect={() => setUseSaved(true)}
+              />
+            )}
 
             <TouchableOpacity
               style={[styles.addNewRow, !useSaved && styles.addNewRowActive]}
@@ -142,7 +264,6 @@ export default function AddressScreen() {
 
             <View style={styles.divider} />
 
-            {/* BILLING ADDRESS SECTION */}
             <View style={styles.billingHeader}>
               <Text style={styles.sectionTitle}>Billing Address</Text>
               <TouchableOpacity
@@ -174,7 +295,9 @@ export default function AddressScreen() {
 
         <View style={styles.footer}>
           <View>
-            <Text style={styles.footerPrice}>₹20,220</Text>
+            <Text style={styles.footerPrice}>
+              ₹{checkoutSession.orderDetails.total.toLocaleString()}
+            </Text>
             <Text style={styles.summaryLink}>VIEW ORDER SUMMARY</Text>
           </View>
           <TouchableOpacity style={styles.btn} onPress={onSubmit}>
@@ -188,6 +311,40 @@ export default function AddressScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FFF" },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: SPACING.m,
+    fontSize: 16,
+    color: COLORS.textSecondary,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: SPACING.xl,
+  },
+  errorText: {
+    marginTop: SPACING.m,
+    fontSize: 18,
+    fontWeight: "600",
+    color: COLORS.text,
+  },
+  retryButton: {
+    marginTop: SPACING.l,
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.m,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",

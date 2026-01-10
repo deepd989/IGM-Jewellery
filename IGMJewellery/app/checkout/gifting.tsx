@@ -1,12 +1,17 @@
-import { DUMMY_CART_ITEMS } from "@/dummyData/cart-item";
 import { GIFT_WRAPS, RECIPIENT_TAGS } from "@/dummyData/gifting";
-import { OrderDetails } from "@/interfaces/order-details.interface";
+import { useGetCartQuery } from "@/store/apis/cart";
+import {
+  useGetCheckoutSessionQuery,
+  useUpdateGiftingOptionsMutation,
+} from "@/store/apis/checkout";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
-import React, { useMemo } from "react";
+import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
+  ActivityIndicator,
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -21,9 +26,8 @@ import {
 import * as z from "zod";
 import { CheckoutStepper } from "../../components/checkout/CheckoutStepper";
 import { CheckoutSummary } from "../../components/checkout/CheckoutSummary";
-import { SPACING } from "../../constants/theme";
+import { COLORS, SPACING } from "../../constants/theme";
 
-// --- ZOD VALIDATION SCHEMA ---
 const giftingSchema = z.object({
   giftWrapId: z.string().optional(),
   note: z.string().max(500, "Note cannot exceed 500 characters").optional(),
@@ -35,43 +39,87 @@ type GiftingFormData = z.infer<typeof giftingSchema>;
 export default function GiftingScreen() {
   const router = useRouter();
 
-  const orderDetails = useMemo<OrderDetails>(() => {
-    const sellingPrice = DUMMY_CART_ITEMS.reduce(
-      (acc, item) => acc + item.product.discountedPrice * item.quantity,
-      0
-    );
-    const subtotal = DUMMY_CART_ITEMS.reduce(
-      (acc, item) => acc + item.product.givenPrice * item.quantity,
-      0
-    );
-    const platformFee = 220;
-    const total = sellingPrice + platformFee;
-
-    return {
-      items: DUMMY_CART_ITEMS,
-      subtotal,
-      savings: subtotal - sellingPrice,
-      platformFee,
-      total,
-    };
-  }, []);
+  const { data: checkoutSession, isLoading: isLoadingSession } =
+    useGetCheckoutSessionQuery();
+  const { data: cartData } = useGetCartQuery();
+  const [updateGiftingOptions] = useUpdateGiftingOptionsMutation();
 
   const { control, handleSubmit, watch, setValue } = useForm<GiftingFormData>({
     resolver: zodResolver(giftingSchema),
     defaultValues: {
-      giftWrapId: "3",
-      note: "",
-      recipientType: "Sister",
+      giftWrapId:
+        checkoutSession?.checkoutState.giftingOptions?.giftWrapId || "",
+      note: checkoutSession?.checkoutState.giftingOptions?.note || "",
+      recipientType:
+        checkoutSession?.checkoutState.giftingOptions?.recipientType || "",
     },
   });
+
+  // Update form when session loads
+  useEffect(() => {
+    if (checkoutSession?.checkoutState.giftingOptions) {
+      const { giftWrapId, note, recipientType } =
+        checkoutSession.checkoutState.giftingOptions;
+      if (giftWrapId) setValue("giftWrapId", giftWrapId);
+      if (note) setValue("note", note);
+      if (recipientType) setValue("recipientType", recipientType);
+    }
+  }, [checkoutSession]);
 
   const selectedWrapId = watch("giftWrapId");
   const selectedRecipient = watch("recipientType");
   const noteContent = watch("note") || "";
 
-  const onSubmit = (data: GiftingFormData) => {
-    console.log("Gifting Data Saved:", data);
-    router.push("/checkout/payment");
+  const onSubmit = async (data: GiftingFormData) => {
+    try {
+      await updateGiftingOptions(data).unwrap();
+      router.push("/checkout/payment");
+    } catch (error: any) {
+      Alert.alert("Error", error?.data || "Failed to save gifting options");
+    }
+  };
+
+  if (isLoadingSession) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!checkoutSession) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Ionicons
+            name="alert-circle-outline"
+            size={64}
+            color={COLORS.error}
+          />
+          <Text style={styles.errorText}>Checkout session not found</Text>
+          <TouchableOpacity
+            style={styles.retryButton}
+            onPress={() => router.replace("/cart")}
+          >
+            <Text style={styles.retryButtonText}>Back to Cart</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Calculate total with selected gift addons
+  const giftAddonsCost =
+    cartData?.giftAddons
+      ?.filter((addon) => addon.isChecked)
+      .reduce((sum, addon) => sum + addon.price, 0) || 0;
+
+  const orderDetails = {
+    ...checkoutSession.orderDetails,
+    total: checkoutSession.orderDetails.total + giftAddonsCost,
   };
 
   return (
@@ -80,7 +128,6 @@ export default function GiftingScreen() {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
       >
-        {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => router.back()}
@@ -139,7 +186,7 @@ export default function GiftingScreen() {
             </ScrollView>
           </View>
 
-          {/* Personalised Note Section */}
+          {/* Personalized Note Section */}
           <View style={styles.section}>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>Add a Personalised Note</Text>
@@ -226,7 +273,7 @@ export default function GiftingScreen() {
                 ₹{orderDetails.total.toLocaleString()}
               </Text>
               <Text style={styles.oldPayable}>
-                ₹{orderDetails.subtotal.toLocaleString()}
+                ₹{checkoutSession.orderDetails.subtotal.toLocaleString()}
               </Text>
             </View>
             <TouchableOpacity>
@@ -249,6 +296,40 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: SPACING.m,
+    fontSize: 16,
+    color: COLORS.textSecondary,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: SPACING.xl,
+  },
+  errorText: {
+    marginTop: SPACING.m,
+    fontSize: 18,
+    fontWeight: "600",
+    color: COLORS.text,
+  },
+  retryButton: {
+    marginTop: SPACING.l,
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.m,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
   },
   header: {
     flexDirection: "row",
@@ -303,9 +384,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.m,
     position: "relative",
   },
-  wrapCardActive: {
-    // maybe a subtle border or scaling
-  },
+  wrapCardActive: {},
   wrapImage: {
     width: 120,
     height: 160,
