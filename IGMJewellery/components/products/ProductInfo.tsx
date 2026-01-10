@@ -1,9 +1,11 @@
 import { Product } from '@/interfaces/product.interface';
-import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { COLORS, SPACING } from '../../constants/theme';
 
+import { useAddToCartMutation, useAddToTrialMutation } from '@/store/apis/cart';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { COLORS, SPACING } from '../../constants/theme';
 
 interface ProductInfoProps {
   product: Product;
@@ -13,6 +15,42 @@ interface ProductInfoProps {
 const SPEC_CHIPS = ['14 KT', 'Yellow Gold', '0.00 g', '0.880 g', '0.024 C', 'FG SI'];
 
 export const ProductInfo: React.FC<ProductInfoProps> = ({ product, onCustomize }) => {
+  const router = useRouter();
+  const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const handleAddToCart = async () => {
+    try {
+      await addToCart({ product, quantity: 1 }).unwrap();
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 2000);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to add item to cart');
+    }
+  };
+
+  const handleBuyNow = async () => {
+    try {
+      await addToCart({ product, quantity: 1 }).unwrap();
+      router.push('/cart');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to proceed to checkout');
+    }
+  };
+
+  const handleTryAtHome = async () => {
+    try {
+      await addToTrial(product).unwrap();
+      Alert.alert('Success', 'Added to trial list!', [
+        { text: 'View Trial', onPress: () => router.push('/cart') },
+        { text: 'OK' }
+      ]);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to add item to trial');
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Header Row */}
@@ -23,7 +61,9 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product, onCustomize }
         </View>
         <View style={styles.priceCol}>
           <Text style={styles.discountPrice}>₹{product.discountedPrice.toLocaleString()}</Text>
-          <Text style={styles.originalPrice}>₹{product.givenPrice.toLocaleString()}</Text>
+          {product.givenPrice && (
+            <Text style={styles.originalPrice}>₹{product.givenPrice.toLocaleString()}</Text>
+          )}
           <Text style={styles.taxText}>(tax inclusive)</Text>
         </View>
       </View>
@@ -48,7 +88,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product, onCustomize }
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Action Buttons */}
+      {/* Action Buttons Row 1 */}
       <View style={styles.actionsRow}>
         <TouchableOpacity style={styles.actionBtn}>
           <Text style={styles.actionBtnText}>Try On</Text>
@@ -59,6 +99,57 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product, onCustomize }
           <Ionicons name="sparkles" size={14} color={COLORS.text} style={{ marginRight: 6 }} />
           <Text style={styles.actionBtnText}>Customize</Text>
         </TouchableOpacity>
+      </View>
+
+      {/* NEW: Cart Action Buttons */}
+      <View style={styles.cartActionsContainer}>
+        {/* Try at Home Button */}
+        <TouchableOpacity 
+          style={styles.tryHomeFullBtn}
+          onPress={handleTryAtHome}
+          disabled={isAddingToTrial}
+        >
+          <Ionicons name="home-outline" size={18} color={COLORS.primary} />
+          <Text style={styles.tryHomeFullText}>Try at Home</Text>
+          {isAddingToTrial && (
+            <ActivityIndicator size="small" color={COLORS.primary} style={{ marginLeft: 8 }} />
+          )}
+        </TouchableOpacity>
+
+        {/* Add to Cart & Buy Now */}
+        <View style={styles.purchaseRow}>
+          <TouchableOpacity 
+            style={[styles.addToCartBtn, showSuccess && styles.addToCartBtnSuccess]}
+            onPress={handleAddToCart}
+            disabled={isAddingToCart}
+          >
+            {isAddingToCart ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : showSuccess ? (
+              <>
+                <Ionicons name="checkmark-circle" size={18} color="#FFFFFF" />
+                <Text style={styles.addToCartText}>Added!</Text>
+              </>
+            ) : (
+              <>
+                <Ionicons name="bag-add-outline" size={18} color="#FFFFFF" />
+                <Text style={styles.addToCartText}>ADD TO CART</Text>
+              </>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.buyNowBtn}
+            onPress={handleBuyNow}
+            disabled={isAddingToCart}
+          >
+            {isAddingToCart ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text style={styles.buyNowText}>BUY NOW</Text>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -126,7 +217,7 @@ const styles = StyleSheet.create({
   },
   chipScroll: {
     flexDirection: 'row',
-    marginBottom: SPACING.l,
+    marginBottom: SPACING.m,
   },
   chip: {
     backgroundColor: '#F9F9F9',
@@ -160,6 +251,7 @@ const styles = StyleSheet.create({
   actionsRow: {
     flexDirection: 'row',
     gap: 12,
+    marginBottom: SPACING.m,
   },
   actionBtn: {
     flex: 1,
@@ -177,5 +269,64 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: COLORS.text,
     marginRight: 4,
+  },
+
+  // NEW: Cart Actions
+  cartActionsContainer: {
+    marginTop: SPACING.s,
+  },
+  tryHomeFullBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 48,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    marginBottom: SPACING.s,
+    gap: 8,
+  },
+  tryHomeFullText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.primary,
+  },
+  purchaseRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  addToCartBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 50,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+    gap: 6,
+  },
+  addToCartBtnSuccess: {
+    backgroundColor: '#4CAF50',
+  },
+  addToCartText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+  },
+  buyNowBtn: {
+    flex: 1,
+    height: 50,
+    backgroundColor: '#000000',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buyNowText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
   },
 });

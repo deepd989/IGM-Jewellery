@@ -1,59 +1,72 @@
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { CouponCard } from "@/components/cart/CouponCard";
 import {
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
-} from 'react-native';
-import { CouponCard } from '../components/cart/CouponCard';
-import { COLORS, SPACING } from '../constants/theme';
-
-const MOCK_COUPONS = [
-  {
-    id: '1',
-    code: 'EXTRA20OFF',
-    discount: '20% OFF',
-    description: '20 % OFF Only on orders above 50,000 on cart value',
-    validUntil: 'Jan 31, 026',
-    isAvailable: true,
-  },
-  {
-    id: '2',
-    code: 'EXTRA20OFF',
-    discount: '20% OFF',
-    description: '20 % OFF Only on orders above 50,000 on cart value',
-    validUntil: 'Jan 31, 026',
-    isAvailable: false,
-  },
-  {
-    id: '3',
-    code: 'EXTRA20OFF',
-    discount: '20% OFF',
-    description: '20 % OFF Only on orders above 50,000 on cart value',
-    validUntil: 'Jan 31, 026',
-    isAvailable: false,
-  },
-];
+  useApplyCouponMutation,
+  useGetCheckoutSessionQuery,
+  useGetCouponsQuery,
+  useRemoveCouponMutation,
+} from "@/store/apis/checkout";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { COLORS, SPACING } from "../constants/theme";
 
 export default function CouponsScreen() {
   const router = useRouter();
-  const [couponInput, setCouponInput] = useState('');
 
-  const handleApplyCoupon = (code: string) => {
-    console.log("Applying Coupon:", code);
-    // In a real app, you'd pass this back via a global state or a callback
-    router.back();
+  const { data: coupons = [], isLoading: isLoadingCoupons } =
+    useGetCouponsQuery();
+  const { data: checkoutSession } = useGetCheckoutSessionQuery();
+  const [applyCoupon, { isLoading: isApplying }] = useApplyCouponMutation();
+  const [removeCoupon, { isLoading: isRemoving }] = useRemoveCouponMutation();
+
+  const appliedCouponCode = checkoutSession?.checkoutState.appliedCouponCode;
+
+  const handleApplyCoupon = async (code: string) => {
+    try {
+      await applyCoupon(code).unwrap();
+      Alert.alert("Success", `Coupon ${code} applied successfully!`, [
+        {
+          text: "OK",
+          onPress: () => router.back(),
+        },
+      ]);
+    } catch (error: any) {
+      Alert.alert("Error", error?.data || "Failed to apply coupon");
+    }
   };
+
+  const handleRemoveCoupon = async () => {
+    try {
+      await removeCoupon().unwrap();
+      Alert.alert("Success", "Coupon removed");
+    } catch (error: any) {
+      Alert.alert("Error", error?.data || "Failed to remove coupon");
+    }
+  };
+
+  if (isLoadingCoupons) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Loading coupons...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={24} color={COLORS.text} />
@@ -62,45 +75,64 @@ export default function CouponsScreen() {
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView 
-        showsVerticalScrollIndicator={false} 
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* Input Area */}
-        <View style={styles.inputSection}>
-          <View style={styles.inputContainer}>
-            <TextInput 
-              style={styles.input}
-              placeholder="Enter Coupon Code"
-              placeholderTextColor={COLORS.textSecondary}
-              value={couponInput}
-              onChangeText={setCouponInput}
-              autoCapitalize="characters"
+      {appliedCouponCode && (
+        <View style={styles.appliedBanner}>
+          <View style={styles.appliedContent}>
+            <Ionicons
+              name="checkmark-circle"
+              size={20}
+              color={COLORS.success}
             />
-            <TouchableOpacity 
-              style={styles.applyBtn}
-              onPress={() => handleApplyCoupon(couponInput)}
-            >
-              <Text style={styles.applyBtnText}>APPLY</Text>
-            </TouchableOpacity>
+            <Text style={styles.appliedText}>
+              Coupon <Text style={styles.appliedCode}>{appliedCouponCode}</Text>{" "}
+              applied
+            </Text>
           </View>
+          <TouchableOpacity onPress={handleRemoveCoupon} disabled={isRemoving}>
+            {isRemoving ? (
+              <ActivityIndicator size="small" color={COLORS.error} />
+            ) : (
+              <Text style={styles.removeText}>Remove</Text>
+            )}
+          </TouchableOpacity>
         </View>
+      )}
 
-        {/* List Title */}
-        <Text style={styles.listTitle}>Other offers you can avail:</Text>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <Text style={styles.sectionTitle}>Available Coupons</Text>
 
-        {/* Coupons List */}
-        <View style={styles.list}>
-          {MOCK_COUPONS.map(coupon => (
-            <CouponCard 
-              key={coupon.id} 
-              coupon={coupon} 
-              onApply={handleApplyCoupon}
+        {coupons.map((coupon) => (
+          <CouponCard
+            key={coupon.id}
+            coupon={coupon}
+            onApply={handleApplyCoupon}
+          />
+        ))}
+
+        {coupons.length === 0 && (
+          <View style={styles.emptyState}>
+            <Ionicons
+              name="pricetag-outline"
+              size={64}
+              color={COLORS.textSecondary}
             />
-          ))}
-        </View>
+            <Text style={styles.emptyText}>No coupons available</Text>
+            <Text style={styles.emptySubtext}>
+              Check back later for new offers
+            </Text>
+          </View>
+        )}
       </ScrollView>
+
+      {isApplying && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingOverlayText}>Applying coupon...</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -108,71 +140,106 @@ export default function CouponsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    paddingTop: Platform.OS === 'android' ? 30 : 0,
+    backgroundColor: COLORS.background,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: SPACING.m,
+    fontSize: 16,
+    color: COLORS.textSecondary,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: SPACING.m,
     paddingVertical: SPACING.s,
+    backgroundColor: "#FFFFFF",
     borderBottomWidth: 1,
-    borderBottomColor: '#F5F5F5',
+    borderBottomColor: "#F5F5F5",
   },
   backBtn: {
     width: 40,
     height: 40,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#F0F0F0',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: "#F0F0F0",
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.text,
+  },
+  appliedBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#E8F5E9",
+    padding: SPACING.m,
+    borderBottomWidth: 1,
+    borderBottomColor: "#C8E6C9",
+  },
+  appliedContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  appliedText: {
+    fontSize: 14,
+    color: COLORS.text,
+    marginLeft: SPACING.s,
+  },
+  appliedCode: {
+    fontWeight: "700",
+  },
+  removeText: {
+    fontSize: 14,
+    color: COLORS.error,
+    fontWeight: "600",
   },
   scrollContent: {
     padding: SPACING.m,
   },
-  inputSection: {
-    marginBottom: SPACING.xl,
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: COLORS.text,
+    marginBottom: SPACING.m,
   },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F9F9F9',
-    borderRadius: 12,
-    paddingHorizontal: SPACING.m,
-    height: 60,
-    borderWidth: 1,
-    borderColor: '#F0F0F0',
-  },
-  input: {
+  emptyState: {
     flex: 1,
-    fontSize: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: SPACING.xl * 3,
+  },
+  emptyText: {
+    marginTop: SPACING.m,
+    fontSize: 18,
+    fontWeight: "600",
     color: COLORS.text,
-    fontWeight: '500',
   },
-  applyBtn: {
-    paddingHorizontal: 8,
-  },
-  applyBtnText: {
+  emptySubtext: {
+    marginTop: SPACING.s,
     fontSize: 14,
-    fontWeight: '700',
-    color: COLORS.text,
-    letterSpacing: 0.5,
+    color: COLORS.textSecondary,
+    textAlign: "center",
   },
-  listTitle: {
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingOverlayText: {
+    marginTop: SPACING.m,
     fontSize: 16,
-    fontWeight: '700',
-    color: '#000000',
-    textAlign: 'center',
-    marginBottom: SPACING.l,
-  },
-  list: {
-    paddingBottom: 40,
+    color: "#FFFFFF",
+    fontWeight: "600",
   },
 });

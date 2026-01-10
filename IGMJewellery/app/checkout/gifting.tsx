@@ -1,89 +1,138 @@
-import { DUMMY_CART_ITEMS } from '@/dummyData/cart-item';
-import { GIFT_WRAPS, RECIPIENT_TAGS } from '@/dummyData/gifting';
-import { OrderDetails } from '@/interfaces/order-details.interface';
-import { Ionicons } from '@expo/vector-icons';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'expo-router';
-import React, { useMemo } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { GIFT_WRAPS, RECIPIENT_TAGS } from "@/dummyData/gifting";
+import { useGetCartQuery } from "@/store/apis/cart";
 import {
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
-} from 'react-native';
-import * as z from 'zod';
-import { CheckoutStepper } from '../../components/checkout/CheckoutStepper';
-import { CheckoutSummary } from '../../components/checkout/CheckoutSummary';
-import { SPACING } from '../../constants/theme';
+  useGetCheckoutSessionQuery,
+  useUpdateGiftingOptionsMutation,
+} from "@/store/apis/checkout";
+import { Ionicons } from "@expo/vector-icons";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "expo-router";
+import React, { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import * as z from "zod";
+import { CheckoutStepper } from "../../components/checkout/CheckoutStepper";
+import { CheckoutSummary } from "../../components/checkout/CheckoutSummary";
+import { COLORS, SPACING } from "../../constants/theme";
 
-// --- ZOD VALIDATION SCHEMA ---
 const giftingSchema = z.object({
   giftWrapId: z.string().optional(),
-  note: z.string().max(500, 'Note cannot exceed 500 characters').optional(),
+  note: z.string().max(500, "Note cannot exceed 500 characters").optional(),
   recipientType: z.string().optional(),
 });
 
 type GiftingFormData = z.infer<typeof giftingSchema>;
 
-
-
-
-
-
-
 export default function GiftingScreen() {
   const router = useRouter();
 
-
-  const orderDetails = useMemo<OrderDetails>(() => {
-    const sellingPrice = DUMMY_CART_ITEMS.reduce((acc, item) => acc + (item.product.discountedPrice * item.quantity), 0);
-    const subtotal = DUMMY_CART_ITEMS.reduce((acc, item) => acc + (item.product.givenPrice * item.quantity), 0);
-    const platformFee = 220;
-    const total = sellingPrice + platformFee;
-
-    return {
-      items: DUMMY_CART_ITEMS,
-      subtotal,
-      savings: subtotal - sellingPrice,
-      platformFee,
-      total,
-    };
-  }, []);
+  const { data: checkoutSession, isLoading: isLoadingSession } =
+    useGetCheckoutSessionQuery();
+  const { data: cartData } = useGetCartQuery();
+  const [updateGiftingOptions] = useUpdateGiftingOptionsMutation();
 
   const { control, handleSubmit, watch, setValue } = useForm<GiftingFormData>({
     resolver: zodResolver(giftingSchema),
     defaultValues: {
-      giftWrapId: '3',
-      note: '',
-      recipientType: 'Sister',
-    }
+      giftWrapId:
+        checkoutSession?.checkoutState.giftingOptions?.giftWrapId || "",
+      note: checkoutSession?.checkoutState.giftingOptions?.note || "",
+      recipientType:
+        checkoutSession?.checkoutState.giftingOptions?.recipientType || "",
+    },
   });
 
-  const selectedWrapId = watch('giftWrapId');
-  const selectedRecipient = watch('recipientType');
-  const noteContent = watch('note') || '';
+  // Update form when session loads
+  useEffect(() => {
+    if (checkoutSession?.checkoutState.giftingOptions) {
+      const { giftWrapId, note, recipientType } =
+        checkoutSession.checkoutState.giftingOptions;
+      if (giftWrapId) setValue("giftWrapId", giftWrapId);
+      if (note) setValue("note", note);
+      if (recipientType) setValue("recipientType", recipientType);
+    }
+  }, [checkoutSession]);
 
-  const onSubmit = (data: GiftingFormData) => {
-    console.log('Gifting Data Saved:', data);
-    router.push('/checkout/payment');
+  const selectedWrapId = watch("giftWrapId");
+  const selectedRecipient = watch("recipientType");
+  const noteContent = watch("note") || "";
+
+  const onSubmit = async (data: GiftingFormData) => {
+    try {
+      await updateGiftingOptions(data).unwrap();
+      router.push("/checkout/payment");
+    } catch (error: any) {
+      Alert.alert("Error", error?.data || "Failed to save gifting options");
+    }
+  };
+
+  if (isLoadingSession) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!checkoutSession) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Ionicons
+            name="alert-circle-outline"
+            size={64}
+            color={COLORS.error}
+          />
+          <Text style={styles.errorText}>Checkout session not found</Text>
+          <TouchableOpacity
+            style={styles.retryButton}
+            onPress={() => router.replace("/cart")}
+          >
+            <Text style={styles.retryButtonText}>Back to Cart</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Calculate total with selected gift addons
+  const giftAddonsCost =
+    cartData?.giftAddons
+      ?.filter((addon) => addon.isChecked)
+      .reduce((sum, addon) => sum + addon.price, 0) || 0;
+
+  const orderDetails = {
+    ...checkoutSession.orderDetails,
+    total: checkoutSession.orderDetails.total + giftAddonsCost,
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined} 
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
       >
-        {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backBtn}
+          >
             <Ionicons name="chevron-back" size={24} color="#000" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Gifting</Text>
@@ -92,7 +141,10 @@ export default function GiftingScreen() {
 
         <CheckoutStepper currentStep="Gifting" />
 
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
           <CheckoutSummary order={orderDetails} />
 
           {/* Gift Wrap Section */}
@@ -101,17 +153,27 @@ export default function GiftingScreen() {
               <Text style={styles.sectionTitle}>Select Gift Wrap</Text>
               <Text style={styles.optionalLabel}>Optional</Text>
             </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalList}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.horizontalList}
+            >
               {GIFT_WRAPS.map((wrap) => {
                 const isSelected = wrap.id === selectedWrapId;
                 return (
-                  <TouchableOpacity 
-                    key={wrap.id} 
-                    style={[styles.wrapCard, isSelected && styles.wrapCardActive]}
-                    onPress={() => setValue('giftWrapId', wrap.id)}
+                  <TouchableOpacity
+                    key={wrap.id}
+                    style={[
+                      styles.wrapCard,
+                      isSelected && styles.wrapCardActive,
+                    ]}
+                    onPress={() => setValue("giftWrapId", wrap.id)}
                     activeOpacity={0.8}
                   >
-                    <Image source={{ uri: wrap.image }} style={styles.wrapImage} />
+                    <Image
+                      source={{ uri: wrap.image }}
+                      style={styles.wrapImage}
+                    />
                     {isSelected && (
                       <View style={styles.checkBadge}>
                         <Ionicons name="checkbox" size={20} color="#000" />
@@ -124,7 +186,7 @@ export default function GiftingScreen() {
             </ScrollView>
           </View>
 
-          {/* Personalised Note Section */}
+          {/* Personalized Note Section */}
           <View style={styles.section}>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>Add a Personalised Note</Text>
@@ -159,7 +221,8 @@ export default function GiftingScreen() {
               <View style={styles.recordHeader}>
                 <Ionicons name="mic-outline" size={22} color="#000" />
                 <Text style={styles.recordDesc}>
-                  Your personalised voice message will be sent to the recipient as a QR code to be scanned.{' '}
+                  Your personalised voice message will be sent to the recipient
+                  as a QR code to be scanned.{" "}
                   <Text style={styles.howItWorks}>How it works?</Text>
                 </Text>
               </View>
@@ -179,12 +242,19 @@ export default function GiftingScreen() {
               {RECIPIENT_TAGS.map((tag, index) => {
                 const isSelected = selectedRecipient === tag;
                 return (
-                  <TouchableOpacity 
-                    key={`${tag}-${index}`} 
+                  <TouchableOpacity
+                    key={`${tag}-${index}`}
                     style={[styles.chip, isSelected && styles.chipActive]}
-                    onPress={() => setValue('recipientType', tag)}
+                    onPress={() => setValue("recipientType", tag)}
                   >
-                    <Text style={[styles.chipText, isSelected && styles.chipTextActive]}>{tag}</Text>
+                    <Text
+                      style={[
+                        styles.chipText,
+                        isSelected && styles.chipTextActive,
+                      ]}
+                    >
+                      {tag}
+                    </Text>
                   </TouchableOpacity>
                 );
               })}
@@ -199,14 +269,21 @@ export default function GiftingScreen() {
         <View style={styles.footer}>
           <View style={styles.footerPriceCol}>
             <View style={styles.footerPriceRow}>
-              <Text style={styles.totalPayable}>₹{orderDetails.total.toLocaleString()}</Text>
-              <Text style={styles.oldPayable}>₹{orderDetails.subtotal.toLocaleString()}</Text>
+              <Text style={styles.totalPayable}>
+                ₹{orderDetails.total.toLocaleString()}
+              </Text>
+              <Text style={styles.oldPayable}>
+                ₹{checkoutSession.orderDetails.subtotal.toLocaleString()}
+              </Text>
             </View>
             <TouchableOpacity>
               <Text style={styles.viewSummaryText}>VIEW ORDER SUMMARY</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.saveBtn} onPress={handleSubmit(onSubmit)}>
+          <TouchableOpacity
+            style={styles.saveBtn}
+            onPress={handleSubmit(onSubmit)}
+          >
             <Text style={styles.saveBtnText}>Save & Continue</Text>
           </TouchableOpacity>
         </View>
@@ -218,29 +295,63 @@ export default function GiftingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: SPACING.m,
+    fontSize: 16,
+    color: COLORS.textSecondary,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: SPACING.xl,
+  },
+  errorText: {
+    marginTop: SPACING.m,
+    fontSize: 18,
+    fontWeight: "600",
+    color: COLORS.text,
+  },
+  retryButton: {
+    marginTop: SPACING.l,
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.m,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: SPACING.m,
     paddingVertical: SPACING.s,
     borderBottomWidth: 1,
-    borderBottomColor: '#F5F5F5',
+    borderBottomColor: "#F5F5F5",
   },
   backBtn: {
     width: 40,
     height: 40,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#F0F0F0',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: "#F0F0F0",
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   scrollContent: {
     paddingBottom: 150,
@@ -248,109 +359,107 @@ const styles = StyleSheet.create({
   section: {
     padding: SPACING.m,
     borderBottomWidth: 1,
-    borderBottomColor: '#F5F5F5',
+    borderBottomColor: "#F5F5F5",
   },
   sectionHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: SPACING.m,
   },
   sectionTitle: {
     fontSize: 14,
-    fontWeight: '700',
-    color: '#000',
+    fontWeight: "700",
+    color: "#000",
   },
   optionalLabel: {
     fontSize: 12,
-    color: '#8E8E93',
+    color: "#8E8E93",
     marginLeft: 8,
   },
   horizontalList: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   wrapCard: {
     width: 120,
     marginRight: SPACING.m,
-    position: 'relative',
+    position: "relative",
   },
-  wrapCardActive: {
-    // maybe a subtle border or scaling
-  },
+  wrapCardActive: {},
   wrapImage: {
     width: 120,
     height: 160,
     borderRadius: 8,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: "#F5F5F5",
     marginBottom: 8,
   },
   checkBadge: {
-    position: 'absolute',
+    position: "absolute",
     top: 8,
     right: 8,
     zIndex: 1,
   },
   wrapTitle: {
     fontSize: 13,
-    textAlign: 'center',
-    color: '#000',
-    fontWeight: '500',
+    textAlign: "center",
+    color: "#000",
+    fontWeight: "500",
   },
   noteContainer: {
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: "#E0E0E0",
     borderRadius: 8,
     padding: 12,
     height: 120,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: "#FAFAFA",
   },
   noteInput: {
     flex: 1,
     fontSize: 13,
-    color: '#000',
-    textAlignVertical: 'top',
+    color: "#000",
+    textAlignVertical: "top",
   },
   charCounter: {
     fontSize: 11,
-    color: '#8E8E93',
-    textAlign: 'right',
+    color: "#8E8E93",
+    textAlign: "right",
   },
   recordContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   recordHeader: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: SPACING.l,
   },
   recordDesc: {
     flex: 1,
     fontSize: 12,
-    color: '#8E8E93',
+    color: "#8E8E93",
     lineHeight: 18,
     marginLeft: 8,
   },
   howItWorks: {
-    textDecorationLine: 'underline',
+    textDecorationLine: "underline",
   },
   recordAction: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   micCircle: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#000",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 8,
   },
   recordText: {
     fontSize: 12,
-    fontWeight: '500',
-    color: '#000',
+    fontWeight: "500",
+    color: "#000",
   },
   chipsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
   },
   chip: {
@@ -358,20 +467,20 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
-    backgroundColor: '#FFF',
+    borderColor: "#E0E0E0",
+    backgroundColor: "#FFF",
   },
   chipActive: {
-    borderColor: '#000',
-    backgroundColor: '#F5F5F5',
+    borderColor: "#000",
+    backgroundColor: "#F5F5F5",
   },
   chipText: {
     fontSize: 12,
-    color: '#444',
+    color: "#444",
   },
   chipTextActive: {
-    fontWeight: '700',
-    color: '#000',
+    fontWeight: "700",
+    color: "#000",
   },
   chipMore: {
     paddingHorizontal: 12,
@@ -379,57 +488,57 @@ const styles = StyleSheet.create({
   },
   chipMoreText: {
     fontSize: 12,
-    color: '#8E8E93',
+    color: "#8E8E93",
   },
   footer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     padding: SPACING.m,
     borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingBottom: Platform.OS === 'ios' ? 30 : 20,
+    borderTopColor: "#F0F0F0",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingBottom: Platform.OS === "ios" ? 30 : 20,
   },
   footerPriceCol: {
     flex: 1,
   },
   footerPriceRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
+    flexDirection: "row",
+    alignItems: "baseline",
     marginBottom: 4,
   },
   totalPayable: {
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: "800",
     marginRight: 8,
   },
   oldPayable: {
     fontSize: 13,
-    color: '#8E8E93',
-    textDecorationLine: 'line-through',
+    color: "#8E8E93",
+    textDecorationLine: "line-through",
   },
   viewSummaryText: {
     fontSize: 11,
-    fontWeight: '700',
-    color: '#000',
-    textDecorationLine: 'underline',
+    fontWeight: "700",
+    color: "#000",
+    textDecorationLine: "underline",
   },
   saveBtn: {
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 6,
     minWidth: 160,
-    alignItems: 'center',
+    alignItems: "center",
   },
   saveBtnText: {
-    color: '#FFF',
-    fontWeight: '700',
+    color: "#FFF",
+    fontWeight: "700",
     fontSize: 14,
   },
 });

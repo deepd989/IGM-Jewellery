@@ -1,9 +1,10 @@
 import { Product } from '@/interfaces/product.interface';
-import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { COLORS, SPACING } from '../../constants/theme';
 
+import { useAddToCartMutation } from '@/store/apis/cart';
+import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { ActivityIndicator, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { COLORS, SPACING } from '../../constants/theme';
 
 interface ProductCardProps {
   product: Product;
@@ -14,8 +15,23 @@ interface ProductCardProps {
 const { width } = Dimensions.get('window');
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode, onPress }) => {
+  const [addToCart, { isLoading }] = useAddToCartMutation();
+  const [showSuccess, setShowSuccess] = useState(false);
+
   const isGrid = viewMode === 'grid';
   const cardWidth = isGrid ? (width - SPACING.m * 3) / 2 : width - SPACING.m * 2;
+
+  const handleAddToCart = async (e: any) => {
+    e.stopPropagation(); // Prevent card press
+    try {
+      console.log('Adding to cart:', product.id);
+      await addToCart({ product, quantity: 1 }).unwrap();
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 1500);
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+    }
+  };
 
   // Render Stars
   const renderStars = (rating: number) => {
@@ -59,6 +75,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode, onP
           <Ionicons name="heart-outline" size={20} color={COLORS.text} />
         </TouchableOpacity>
 
+        {/*  Add to Cart Icon */}
+        <TouchableOpacity 
+          style={[styles.cartIcon, showSuccess && styles.cartIconSuccess]}
+          onPress={handleAddToCart}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : showSuccess ? (
+            <Ionicons name="checkmark" size={18} color="#FFFFFF" />
+          ) : (
+            <Ionicons name="bag-add-outline" size={18} color="#FFFFFF" />
+          )}
+        </TouchableOpacity>
+
         {/* Delivery Tag */}
         <View style={styles.deliveryTag}>
           <Ionicons name="bus-outline" size={12} color={COLORS.text} />
@@ -71,7 +102,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode, onP
         {/* Price Row */}
         <View style={styles.priceRow}>
           <Text style={styles.discountPrice}>₹{product.discountedPrice.toLocaleString()}</Text>
-          <Text style={styles.originalPrice}>₹{product.givenPrice.toLocaleString()}</Text>
+          {product.givenPrice && (
+            <Text style={styles.originalPrice}>₹{product.givenPrice.toLocaleString()}</Text>
+          )}
         </View>
 
         {/* Title */}
@@ -80,7 +113,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode, onP
         {/* Brand & Rating */}
         <View style={styles.metaRow}>
           <Text style={styles.brandText}>{product.brand}</Text>
-          {renderStars(product.rating as number)}
+          {product.rating && renderStars(product.rating as number)}
         </View>
 
         {/* Action Buttons */}
@@ -103,7 +136,6 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFFFFF',
     marginBottom: SPACING.m,
-    // No shadow for clean flat look as per screenshot, or very subtle
     borderWidth: 1,
     borderColor: '#F5F5F5',
     borderRadius: 8,
@@ -111,7 +143,7 @@ const styles = StyleSheet.create({
   },
   imageWrapper: {
     width: '100%',
-    aspectRatio: 1, // Square-ish
+    aspectRatio: 1,
     backgroundColor: '#FAFAFA',
     position: 'relative',
   },
@@ -143,6 +175,26 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.8)',
     borderRadius: 20,
     padding: 4,
+  },
+  // NEW: Cart Icon Button
+  cartIcon: {
+    position: 'absolute',
+    top: 48,
+    right: 8,
+    backgroundColor: COLORS.primary,
+    borderRadius: 20,
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cartIconSuccess: {
+    backgroundColor: '#4CAF50',
   },
   deliveryTag: {
     position: 'absolute',
@@ -213,9 +265,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 6,
-    // borderWidth: 1,
-    // borderColor: COLORS.border,
-    // borderRadius: 4,
   },
   tryNowText: {
     fontSize: 12,
