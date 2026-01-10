@@ -1,5 +1,6 @@
 import { Department, SidebarCategory, SubCategory } from '@/interfaces/category.interface';
 
+import { CartBadge } from '@/components/cart/CardBadge';
 import { useGetCategoriesByDepartmentQuery, useGetDepartmentsQuery, useGetSubCategoriesQuery } from '@/store/apis/categories';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -174,9 +175,9 @@ export default function CategoriesScreen() {
           <TouchableOpacity style={styles.iconBtn}>
             <Ionicons name="heart-outline" size={24} color={COLORS.primary} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/cart')}>
-            <Ionicons name="bag-outline" size={24} color={COLORS.primary} />
-          </TouchableOpacity>
+           <View style={styles.iconBtn}>
+            <CartBadge iconSize={24} iconColor={COLORS.primary} />
+          </View>
         </View>
       </View>
 

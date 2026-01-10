@@ -4,7 +4,6 @@ import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { COLORS, SPACING } from '../../constants/theme';
 
-
 interface CartItemProps {
   product: Product;
   quantity: number;
@@ -20,6 +19,10 @@ export const CartItem: React.FC<CartItemProps> = ({
   onDecrement, 
   onRemove 
 }) => {
+  const discountPercent = product.givenPrice 
+    ? Math.round(((product.givenPrice - product.discountedPrice) / product.givenPrice) * 100)
+    : 0;
+
   return (
     <View style={styles.container}>
       {/* Delivery Tag */}
@@ -57,10 +60,12 @@ export const CartItem: React.FC<CartItemProps> = ({
         </View>
 
         <View style={styles.priceContainer}>
-          <View style={styles.savingsRow}>
-            <Text style={styles.savingsLabel}>Save 10% </Text>
-            <Text style={styles.originalPrice}>₹{product.givenPrice.toLocaleString()}</Text>
-          </View>
+          {discountPercent > 0 && (
+            <View style={styles.savingsRow}>
+              <Text style={styles.savingsLabel}>Save {discountPercent}% </Text>
+              <Text style={styles.originalPrice}>₹{product.givenPrice?.toLocaleString()}</Text>
+            </View>
+          )}
           <Text style={styles.finalPrice}>₹{product.discountedPrice.toLocaleString()}</Text>
         </View>
       </View>

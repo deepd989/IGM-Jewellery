@@ -14,18 +14,17 @@ import {
   View
 } from 'react-native';
 
+import { CartBadge } from '@/components/cart/CardBadge';
 import { FilterModal } from '@/components/products/FilterModal';
 import { ProductCard } from '@/components/products/ProductCard';
 import { SortModal } from '@/components/products/SortModal';
+import { RouteParam } from '@/constants/routeNavigationConstants';
 import { Product } from '@/interfaces/product.interface';
 import { useGetCategoryHierarchyQuery } from '@/store/apis/categories';
 import { useGetProductsQuery } from '@/store/apis/product';
-import { selectProducts } from '@/store/productSlice';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useSelector } from 'react-redux';
-import { COLORS, SPACING } from '../constants/theme';
 import { RouteProp } from '@react-navigation/native';
-import { RouteParam } from '@/constants/routeNavigationConstants';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { COLORS, SPACING } from '../constants/theme';
 
 type ListingScreenProps = {
   filters?: Record<string, string[]>;
@@ -176,9 +175,9 @@ export default function ListingScreen({ filters,route }: ListingScreenProps) {
           <TouchableOpacity style={styles.iconBtn}>
             <Ionicons name="heart-outline" size={22} color={COLORS.text} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/cart')}>
-            <Ionicons name="bag-outline" size={22} color={COLORS.text} />
-          </TouchableOpacity>
+          <View style={styles.iconBtn}>
+            <CartBadge iconSize={22} iconColor={COLORS.text} />
+          </View>
         </View>
       </View>
 

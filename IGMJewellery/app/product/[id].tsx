@@ -5,6 +5,7 @@ import { ProductImageGallery } from '@/components/products/ProductImageGallery';
 import { ProductInfo } from '@/components/products/ProductInfo';
 import { ReviewSection } from '@/components/products/ReviewSection';
 
+import { CartBadge } from '@/components/cart/CardBadge';
 import { useGetProductByIdQuery } from '@/store/apis/product';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -86,9 +87,10 @@ export default function ProductDetailScreen() {
            <TouchableOpacity style={styles.iconBtn}>
              <Ionicons name="heart-outline" size={22} color={COLORS.text} />
            </TouchableOpacity>
-           <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/cart')}>
+           {/* <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/cart')}>
              <Ionicons name="bag-outline" size={22} color={COLORS.text} />
-           </TouchableOpacity>
+           </TouchableOpacity> */}
+            <CartBadge iconSize={22} iconColor={COLORS.text} />
         </View>
       </View>
 

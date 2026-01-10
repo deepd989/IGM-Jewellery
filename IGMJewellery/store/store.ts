@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { brandsApiService } from './apis/brandsApi';
+import { cartApiService } from './apis/cart';
 import { categoryApiService } from './apis/categories';
 import { productApiService } from './apis/product';
 import { profileApiService } from './apis/profile';
@@ -12,9 +13,10 @@ export const store = configureStore({
     profile: profileApiService.reducer,
      [categoryApiService.reducerPath]: categoryApiService.reducer,
      brands: brandsApiService.reducer,
+     [cartApiService.reducerPath]: cartApiService.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(profileApiService.middleware, productApiService.middleware, categoryApiService.middleware,brandsApiService.middleware),
+    getDefaultMiddleware().concat(profileApiService.middleware, productApiService.middleware, categoryApiService.middleware,brandsApiService.middleware, cartApiService.middleware),
     
   },
 );
