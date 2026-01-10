@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS, SPACING } from '../../constants/theme';
+import BottomNavBar from '@/components/bottomNavBar';
 
 const { width } = Dimensions.get('window');
 
@@ -160,6 +161,7 @@ export default function CategoriesScreen() {
           <ActivityIndicator size="large" color={COLORS.primary} />
           <Text style={styles.loadingText}>Loading categories...</Text>
         </View>
+        <BottomNavBar></BottomNavBar>
       </SafeAreaView>
     );
   }
@@ -262,7 +264,7 @@ export default function CategoriesScreen() {
       </View>
 
       {/* --- BOTTOM SEARCH BAR --- */}
-      <View style={styles.searchWrapper}>
+      {/* <View style={styles.searchWrapper}>
         <View style={styles.searchBar}>
           <Ionicons name="search-outline" size={20} color={COLORS.primary} />
           <TextInput 
@@ -271,8 +273,8 @@ export default function CategoriesScreen() {
             placeholderTextColor={COLORS.textSecondary}
           />
         </View>
-      </View>
-
+      </View> */}
+    <BottomNavBar></BottomNavBar>
     </SafeAreaView>
   );
 }

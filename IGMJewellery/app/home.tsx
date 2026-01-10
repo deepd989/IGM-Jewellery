@@ -22,6 +22,7 @@ import EventCard from "@/components/eventCard";
 import HashtagComponent from "@/components/hashtagComponent";
 import { useRouter } from 'expo-router';
 import { useGetProductsQuery } from "@/store/apis/product";
+import BottomNavBar from "@/components/bottomNavBar";
 
 
 
@@ -150,6 +151,7 @@ export default function HomeScreen() {
 
 
     </ScrollView>
+    <BottomNavBar></BottomNavBar>
     </SafeAreaView>
   
   );

@@ -8,11 +8,13 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
+import { useRouter } from "expo-router";
 
 
 
 export default function LatestCollections() {
   const { data: brandsData = [], isLoading, isError, error, refetch } = useGetBrandsQuery({});
+  const router = useRouter();
   const [activeBrand, setActiveBrand] = useState<string | null>(null);
 
 useEffect(() => {
@@ -30,6 +32,17 @@ const activeBrandData = useMemo(
   () => brandsData.find((b) => b.businessName === activeBrand),
   [brandsData, activeBrand]
 );
+
+const handleRedirect = (collectionName:string) => {
+  const navigationData={
+    brand: activeBrand,
+    collection:collectionName
+  }
+  router.push({
+    pathname: "/product-list",
+    params: navigationData,
+  });
+}
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -76,7 +89,7 @@ const activeBrandData = useMemo(
 
       {/* Collection Cards */}
       {activeBrandData?.collections.map((collection, i) => (
-        <View key={i} style={styles.collectionCard}>
+        <TouchableOpacity key={i} style={styles.collectionCard} onPress={() => handleRedirect(collection.title)}>
           <Image 
             source={{ uri: collection.imageUri }} 
             style={styles.collectionImage}
@@ -88,7 +101,7 @@ const activeBrandData = useMemo(
               <Text style={styles.collectionDescription}>{collection.description}</Text>
             )}
           </View>
-        </View>
+        </TouchableOpacity>
       ))}
     </ScrollView>
   );

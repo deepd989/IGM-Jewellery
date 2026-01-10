@@ -16,11 +16,12 @@ import { RELATIONSHIPS } from "@/constants/relationships";
 import { OCCASIONS } from "@/constants/occasions";
 import { ProductTypes } from "@/constants/productTypes";
 import { RouteParam } from "@/constants/routeNavigationConstants";
+import { useRouter } from "expo-router";
 
 export default function GiftFinder() {
   const SCREEN_WIDTH = Dimensions.get("window").width;
   const navigation = useNavigation<NavigationProp<RouteParam>>();
-
+  const router = useRouter(); 
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedRelationship, setSelectedRelationship] = useState("");
   const [selectedOccasion, setSelectedOccasion] = useState("");
@@ -69,12 +70,15 @@ export default function GiftFinder() {
 
   const handleStartLooking = () => {
     const gender = getGenderFromRelationship(selectedRelationship);
-
-    navigation.navigate("product-list", {
+    const navigationData={
       categoryId: selectedCategory,
       gender: gender,
       occasion: selectedOccasion,
       productType: selectedCategory,
+    }
+    router.push({
+      pathname: "/product-list",
+      params: navigationData,
     });
   };
 
