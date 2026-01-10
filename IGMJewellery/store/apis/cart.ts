@@ -91,24 +91,26 @@ export const cartApiService = createApi({
       invalidatesTags: ["Cart"],
     }),
 
-    // Update item quantity
+    // Update item quantity ✅ FIXED
     updateQuantity: builder.mutation<
       CartState,
       { productId: string; quantity: number }
     >({
       queryFn: ({ productId, quantity }) => {
-        const item = currentState.items.find(
-          (item) => item.product.id === productId
-        );
-        if (item) {
-          item.quantity = Math.max(1, quantity);
-        }
-        return { data: { ...currentState } };
+        currentState = {
+          ...currentState,
+          items: currentState.items.map((item) =>
+            item.product.id === productId
+              ? { ...item, quantity: Math.max(1, quantity) }
+              : item
+          ),
+        };
+        return { data: currentState };
       },
       invalidatesTags: ["Cart"],
     }),
 
-    // Add to trial
+    // Add to trial ✅ FIXED
     addToTrial: builder.mutation<CartState, Product>({
       queryFn: (product) => {
         const exists = currentState.trialItems.some(
@@ -116,21 +118,27 @@ export const cartApiService = createApi({
         );
 
         if (!exists) {
-          currentState.trialItems.push({ product });
+          currentState = {
+            ...currentState,
+            trialItems: [...currentState.trialItems, { product }],
+          };
         }
 
-        return { data: { ...currentState } };
+        return { data: currentState };
       },
       invalidatesTags: ["Trial"],
     }),
 
-    // Remove from trial
+    // Remove from trial ✅ FIXED
     removeFromTrial: builder.mutation<CartState, string>({
       queryFn: (productId) => {
-        currentState.trialItems = currentState.trialItems.filter(
-          (item) => item.product.id !== productId
-        );
-        return { data: { ...currentState } };
+        currentState = {
+          ...currentState,
+          trialItems: currentState.trialItems.filter(
+            (item) => item.product.id !== productId
+          ),
+        };
+        return { data: currentState };
       },
       invalidatesTags: ["Trial"],
     }),
@@ -150,6 +158,7 @@ export const cartApiService = createApi({
       },
       invalidatesTags: ["GiftAddons"],
     }),
+
     // Clear cart
     clearCart: builder.mutation<CartState, void>({
       queryFn: () => {
@@ -161,7 +170,7 @@ export const cartApiService = createApi({
             isChecked: false,
           })),
         };
-        return { data: { ...currentState } };
+        return { data: currentState };
       },
       invalidatesTags: ["Cart", "GiftAddons"],
     }),
@@ -169,11 +178,13 @@ export const cartApiService = createApi({
     // Move to wishlist (placeholder - would integrate with wishlist service)
     moveToWishlist: builder.mutation<CartState, string>({
       queryFn: (productId) => {
-        currentState.items = currentState.items.filter(
-          (item) => item.product.id !== productId
-        );
-        // In real implementation, would add to wishlist here
-        return { data: { ...currentState } };
+        currentState = {
+          ...currentState,
+          items: currentState.items.filter(
+            (item) => item.product.id !== productId
+          ),
+        };
+        return { data: currentState };
       },
       invalidatesTags: ["Cart"],
     }),
