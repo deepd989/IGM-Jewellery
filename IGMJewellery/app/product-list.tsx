@@ -48,7 +48,9 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   const gender = params.gender as string | undefined;
   const occasion = params.occasion as string | undefined;
   const productType = params.productType as string | undefined;
- //TODO: add the above 3 to filters if 
+  const brand= params.brand as string | undefined;
+  const collection= params.collection as string | undefined;
+ //TODO: add the above 5 to filters the data.
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
