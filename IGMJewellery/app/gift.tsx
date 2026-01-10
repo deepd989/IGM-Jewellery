@@ -1,3 +1,4 @@
+import BottomNavBar from '@/components/bottomNavBar';
 import GiftExplore from '@/components/giftExplore';
 import GiftStepA from '@/components/gifting/giftStep1';
 import GiftCardScreen from '@/components/gifting/giftStep2';
@@ -41,6 +42,7 @@ export default function Gift() {
         <HorizontalRuleIGM/>
         <HashtagComponent/>
        </ScrollView>
+       <BottomNavBar activeTab='Gifting'></BottomNavBar>
     </SafeAreaView>
   );
 }

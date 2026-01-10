@@ -3,8 +3,11 @@ import { RootState } from '@/store/store';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Bot } from 'lucide-react-native';
+import BottomNavBar from '@/components/bottomNavBar';
 
 
 const PROFILE_STATS = [
@@ -139,6 +142,7 @@ export default function ProfileScreen() {
         </TouchableOpacity>
         <Text style={styles.version}>APP VERSION 1.1.0</Text>
       </ScrollView>
+    <BottomNavBar activeTab='Profile'></BottomNavBar>
     </SafeAreaView>
   );
 }
