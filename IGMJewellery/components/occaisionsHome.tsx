@@ -1,12 +1,22 @@
 import { SectionHeader } from "@/app/home";
-import { OCCASIONS } from "@/constants/occasions";
+import { OccasiomEnum, OCCASIONS } from "@/constants/occasions";
+import { useRouter } from "expo-router";
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 
 
 export default function OccasionCardList() {
+  const router=useRouter();
+
     const data= OCCASIONS
+  
+  const redirect = (occasion: OccasiomEnum ) => {
+    router.push({
+      pathname: "/product-list",
+      params: { occasion },
+    });
+  }
   return (
     <>
     <SectionHeader value="Shop by Occaision"/>
@@ -16,7 +26,7 @@ export default function OccasionCardList() {
           key={index}
           style={styles.card}
           activeOpacity={0.7}
-
+          onPress={() => redirect(item)}
         >
           <Text style={styles.label}>{item}</Text>
         </TouchableOpacity>
