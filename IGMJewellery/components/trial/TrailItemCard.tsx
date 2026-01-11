@@ -1,9 +1,8 @@
-import { Product } from '@/interfaces/product.interface';
-import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { COLORS } from '../../constants/theme';
-
+import { Product } from "@/interfaces/product.interface";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { COLORS } from "../../constants/theme";
 
 interface TrialItemCardProps {
   product: Product;
@@ -12,13 +11,24 @@ interface TrialItemCardProps {
   total: number;
 }
 
-export const TrialItemCard: React.FC<TrialItemCardProps> = ({ product, onRemove, index, total }) => {
+export const TrialItemCard: React.FC<TrialItemCardProps> = ({
+  product,
+  onRemove,
+  index,
+  total,
+}) => {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image source={{ uri: product.thumbnailUrls[0] }} style={styles.image} resizeMode="contain" />
+        <Image
+          source={{ uri: product.thumbnailUrls[0] }}
+          style={styles.image}
+          resizeMode="contain"
+        />
         <View style={styles.countBadge}>
-          <Text style={styles.countText}>{index + 1}/{total}</Text>
+          <Text style={styles.countText}>
+            {index + 1}/{total}
+          </Text>
         </View>
       </View>
 
@@ -35,13 +45,20 @@ export const TrialItemCard: React.FC<TrialItemCardProps> = ({ product, onRemove,
 
         <Text style={styles.brand}>{product.brand}</Text>
         <Text style={styles.title}>{product.title}</Text>
-        <Text style={styles.price}>₹{product.discountedPrice.toLocaleString()}</Text>
+        <Text style={styles.price}>
+          ₹{product.discountedPrice.toLocaleString()}
+        </Text>
 
         <View style={styles.footer}>
           <View style={styles.skuBox}>
-             <Text style={styles.skuText}>SKU: {product.sku || 'JE03H31-YGQ'}</Text>
+            <Text style={styles.skuText}>
+              SKU: {product.sku || "JE03H31-YGQ"}
+            </Text>
           </View>
-          <Text style={styles.availability}>Free trial available <Text style={{fontWeight: '800'}}>TODAY</Text></Text>
+          <Text style={styles.availability}>
+            Free trial available{" "}
+            <Text style={{ fontWeight: "800" }}>TODAY</Text>
+          </Text>
         </View>
       </View>
     </View>
@@ -50,10 +67,10 @@ export const TrialItemCard: React.FC<TrialItemCardProps> = ({ product, onRemove,
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    backgroundColor: '#FFF',
+    flexDirection: "row",
+    backgroundColor: "#FFF",
     borderWidth: 1,
-    borderColor: '#F0F0F0',
+    borderColor: "#F0F0F0",
     borderRadius: 8,
     padding: 12,
     marginBottom: 12,
@@ -61,50 +78,50 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: 100,
     height: 120,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: "#FAFAFA",
     borderRadius: 4,
-    position: 'relative',
+    position: "relative",
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   countBadge: {
-    position: 'absolute',
+    position: "absolute",
     top: 6,
     left: 6,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
     borderWidth: 0.5,
-    borderColor: '#E0E0E0',
+    borderColor: "#E0E0E0",
   },
   countText: {
     fontSize: 10,
-    color: '#666',
+    color: "#666",
   },
   details: {
     flex: 1,
     marginLeft: 16,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 4,
   },
   tag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F5F5F5',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 10,
   },
   tagText: {
     fontSize: 10,
-    color: '#666',
+    color: "#666",
     marginLeft: 4,
   },
   brand: {
@@ -114,32 +131,32 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 15,
-    fontWeight: '700',
-    color: '#000',
+    fontWeight: "700",
+    color: "#000",
     marginBottom: 4,
   },
   price: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
   },
   footer: {
-    marginTop: 'auto',
+    marginTop: "auto",
   },
   skuBox: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: "#F5F5F5",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     marginBottom: 6,
   },
   skuText: {
     fontSize: 10,
-    color: '#666',
+    color: "#666",
   },
   availability: {
     fontSize: 10,
-    color: '#8E8E93',
+    color: "#8E8E93",
   },
 });
