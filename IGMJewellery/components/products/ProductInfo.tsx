@@ -60,11 +60,19 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
   const handleTryAtHome = async () => {
     try {
       await addToTrial(product).unwrap();
-      Alert.alert("Success", "Added to trial list!", [
-        { text: "View Trial", onPress: () => router.push("/cart") },
-        { text: "OK" },
-      ]);
+      Alert.alert(
+        "Added to Trial",
+        `${product.title} has been added to your home trial list.`,
+        [
+          { text: "Continue Shopping", style: "cancel" },
+          {
+            text: "View Trial List",
+            onPress: () => router.push("/cart?tab=trial"), // ← Navigate to trial tab
+          },
+        ]
+      );
     } catch (error) {
+      console.error("Failed to add to trial:", error);
       Alert.alert("Error", "Failed to add item to trial");
     }
   };

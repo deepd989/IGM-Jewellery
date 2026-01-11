@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -29,7 +29,11 @@ import { RemoveConfirmationModal } from "../components/cart/RemoveConfirmationMo
 
 export default function CartScreen() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"bag" | "trial">("bag");
+  const params = useLocalSearchParams();
+
+  // Check if tab param is passed from navigation
+  const initialTab = params.tab === "trial" ? "trial" : "bag";
+  const [activeTab, setActiveTab] = useState<"bag" | "trial">(initialTab);
   const [removingItem, setRemovingItem] = useState<Product | null>(null);
 
   // Fetch cart data from Redux
@@ -48,12 +52,18 @@ export default function CartScreen() {
   const trialList = cartData?.trialItems || [];
   const giftAddons = cartData?.giftAddons || [];
 
+  // Update tab based on URL params
+  useEffect(() => {
+    if (params.tab === "trial") {
+      setActiveTab("trial");
+    }
+  }, [params.tab]);
+
   const handleUpdateQuantity = (id: string, delta: number) => {
     const item = cart.find((i) => i.product.id === id);
     if (item) {
       const newQuantity = item.quantity + delta;
       if (newQuantity < 1) {
-        // Trigger remove confirmation instead of allowing 0
         setRemovingItem(item.product);
         return;
       }
@@ -115,10 +125,7 @@ export default function CartScreen() {
     }
 
     try {
-      // Initialize checkout session from current cart
       await initializeCheckout().unwrap();
-
-      // Navigate to address screen
       router.push("/checkout/address");
     } catch (error: any) {
       Alert.alert(
@@ -134,6 +141,26 @@ export default function CartScreen() {
       Alert.alert("No Items", "Please add items to trial list");
       return;
     }
+
+    // Check if user has more than 5 items or items from multiple brands
+    if (trialList.length > 5) {
+      Alert.alert(
+        "Maximum Limit Exceeded",
+        "You can select maximum 5 items for home trial"
+      );
+      return;
+    }
+
+    // Check if all items are from the same brand
+    const brands = new Set(trialList.map((item) => item.product.brand));
+    if (brands.size > 1) {
+      Alert.alert(
+        "Multiple Brands",
+        "Home trial is available for items from 1 brand only. Please select items from the same brand."
+      );
+      return;
+    }
+
     router.push("/trial/schedule");
   };
 
@@ -249,6 +276,12 @@ export default function CartScreen() {
               color={COLORS.textSecondary}
             />
             <Text style={styles.emptyTabText}>Your shopping bag is empty</Text>
+            <TouchableOpacity
+              style={styles.browseButton}
+              onPress={() => router.push("/product-list")}
+            >
+              <Text style={styles.browseButtonText}>Browse Products</Text>
+            </TouchableOpacity>
           </View>
         )
       ) : trialList.length > 0 ? (
@@ -261,6 +294,15 @@ export default function CartScreen() {
             color={COLORS.textSecondary}
           />
           <Text style={styles.emptyTabText}>No trial items</Text>
+          <Text style={styles.emptyTabSubtext}>
+            Add items to your home trial list from product pages
+          </Text>
+          <TouchableOpacity
+            style={styles.browseButton}
+            onPress={() => router.push("/product-list")}
+          >
+            <Text style={styles.browseButtonText}>Browse Products</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -367,7 +409,15 @@ const styles = StyleSheet.create({
   emptyTabText: {
     marginTop: SPACING.m,
     fontSize: 16,
+    fontWeight: "600",
     color: COLORS.textSecondary,
+  },
+  emptyTabSubtext: {
+    marginTop: SPACING.s,
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    textAlign: "center",
+    paddingHorizontal: SPACING.l,
   },
   header: {
     flexDirection: "row",

@@ -1,10 +1,10 @@
 import { Product } from "@/interfaces/product.interface";
-
-import { useAddToCartMutation } from "@/store/apis/cart";
+import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Dimensions,
   Image,
   StyleSheet,
@@ -27,7 +27,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   viewMode,
   onPress,
 }) => {
-  const [addToCart, { isLoading }] = useAddToCartMutation();
+  const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
   const [showSuccess, setShowSuccess] = useState(false);
 
   const isGrid = viewMode === "grid";
@@ -36,18 +37,42 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     : width - SPACING.m * 2;
 
   const handleAddToCart = async (e: any) => {
-    e.stopPropagation(); // Prevent card press
+    e.stopPropagation();
     try {
-      console.log("Adding to cart:", product.id);
       await addToCart({ product, quantity: 1 }).unwrap();
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 1500);
     } catch (error) {
       console.error("Failed to add to cart:", error);
+      Alert.alert("Error", "Failed to add item to cart");
     }
   };
 
-  // Render Stars
+  const handleTryAtHome = async (e: any) => {
+    e.stopPropagation();
+    try {
+      await addToTrial(product).unwrap();
+      Alert.alert(
+        "Added to Trial",
+        `${product.title} has been added to your home trial list.`,
+        [
+          { text: "Continue Shopping", style: "cancel" },
+          {
+            text: "View Trial List",
+            onPress: () => {
+              // Navigate to cart with trial tab active
+              // You'll need to import useRouter
+              // router.push('/cart?tab=trial');
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      console.error("Failed to add to trial:", error);
+      Alert.alert("Error", "Failed to add item to trial");
+    }
+  };
+
   const renderStars = (rating: number) => {
     return (
       <View style={styles.starContainer}>
@@ -89,13 +114,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <Ionicons name="heart-outline" size={20} color={COLORS.text} />
         </TouchableOpacity>
 
-        {/*  Add to Cart Icon */}
+        {/* Add to Cart Icon */}
         <TouchableOpacity
           style={[styles.cartIcon, showSuccess && styles.cartIconSuccess]}
           onPress={handleAddToCart}
-          disabled={isLoading}
+          disabled={isAddingToCart}
         >
-          {isLoading ? (
+          {isAddingToCart ? (
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : showSuccess ? (
             <Ionicons name="checkmark" size={18} color="#FFFFFF" />
@@ -138,7 +163,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Action Buttons */}
         <View style={styles.actionRow}>
-          <TouchableOpacity style={styles.tryNowBtn}>
+          <TouchableOpacity
+            style={styles.tryNowBtn}
+            onPress={() => onPress(product)}
+          >
             <Ionicons
               name="sparkles-outline"
               size={14}
@@ -148,8 +176,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <Text style={styles.tryNowText}>Try Now</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.tryHomeBtn}>
-            <Text style={styles.tryHomeText}>Try at home</Text>
+          <TouchableOpacity
+            style={[
+              styles.tryHomeBtn,
+              isAddingToTrial && styles.tryHomeBtnDisabled,
+            ]}
+            onPress={handleTryAtHome}
+            disabled={isAddingToTrial}
+          >
+            {isAddingToTrial ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text style={styles.tryHomeText}>Try at home</Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -201,7 +240,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 4,
   },
-  // NEW: Cart Icon Button
   cartIcon: {
     position: "absolute",
     top: 48,
@@ -303,6 +341,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 6,
     borderRadius: 4,
+  },
+  tryHomeBtnDisabled: {
+    opacity: 0.6,
   },
   tryHomeText: {
     fontSize: 12,
