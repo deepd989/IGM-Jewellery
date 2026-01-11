@@ -1,9 +1,11 @@
+import { useGetCartQuery } from "@/store/apis/cart";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import React from "react";
 import { useForm } from "react-hook-form";
 import {
+  Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -40,15 +42,28 @@ const SLOTS = [
 
 export default function ScheduleTrialScreen() {
   const router = useRouter();
+  const { data: cartData } = useGetCartQuery();
+
   const { handleSubmit, watch, setValue } = useForm<ScheduleData>({
     resolver: zodResolver(scheduleSchema),
     defaultValues: { date: "Sun, 30 Nov", timeSlot: "4:00 PM" },
   });
 
+  const trialList = cartData?.trialItems || [];
   const selectedDate = watch("date");
   const selectedSlot = watch("timeSlot");
 
+  // Get brand name from first item (all items should be from same brand)
+  const brandName =
+    trialList.length > 0 ? trialList[0].product.brand : "Unknown";
+
   const onNext = (data: ScheduleData) => {
+    if (trialList.length === 0) {
+      Alert.alert("No Items", "Please add items to your trial list first");
+      router.back();
+      return;
+    }
+
     // Navigate to address page with the selected data
     router.push({
       pathname: "/trial/address",
@@ -92,25 +107,33 @@ export default function ScheduleTrialScreen() {
 
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Your designs (3)</Text>
-            <TouchableOpacity>
+            <Text style={styles.sectionTitle}>
+              Your designs ({trialList.length})
+            </Text>
+            <TouchableOpacity onPress={() => router.back()}>
               <Text style={styles.viewCart}>View Trial Cart</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.designGrid}>
-            {[1, 2, 3].map((i) => (
-              <View key={i} style={styles.designPlaceholder}>
-                <Ionicons
-                  name="close"
-                  size={14}
-                  color="#000"
+            {trialList.slice(0, 5).map((item, i) => (
+              <View key={item.product.id} style={styles.designPlaceholder}>
+                <TouchableOpacity
                   style={styles.removeDesign}
-                />
+                  onPress={() => {
+                    Alert.alert(
+                      "Remove Item",
+                      "Go back to cart to remove items",
+                      [{ text: "OK" }]
+                    );
+                  }}
+                >
+                  <Ionicons name="close" size={14} color="#000" />
+                </TouchableOpacity>
               </View>
             ))}
           </View>
           <Text style={styles.locationInfo}>
-            Kalyan Jewellers{" "}
+            {brandName}{" "}
             <Text style={{ color: "#8E8E93" }}>400 066, Mumbai</Text>
           </Text>
         </View>
@@ -251,7 +274,17 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     position: "relative",
   },
-  removeDesign: { position: "absolute", top: 4, right: 4 },
+  removeDesign: {
+    position: "absolute",
+    top: 4,
+    right: 4,
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    width: 18,
+    height: 18,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   locationInfo: { fontSize: 12, fontWeight: "700" },
   horizontalScroll: { flexDirection: "row" },
   dateCard: {
