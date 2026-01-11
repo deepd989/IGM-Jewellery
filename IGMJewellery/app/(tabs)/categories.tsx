@@ -171,7 +171,11 @@ export default function CategoriesScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* --- HEADER --- */}
+      
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}>
+                  <Ionicons name="chevron-back" size={24} color={COLORS.text} />
+                </TouchableOpacity>
         <Text style={styles.headerTitle}>Categories</Text>
         <View style={styles.headerIcons}>
           <TouchableOpacity style={styles.iconBtn}>

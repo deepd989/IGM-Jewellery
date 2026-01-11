@@ -25,6 +25,7 @@ export default function BrandDetailPage() {
 
       <BrandProfile
         header={{
+          brandNameKey: brand.businessNameKey,
           profileImageUri: brand.profileImageUri,
           businessName: brand.businessName,
           tagline: brand.tagline,
