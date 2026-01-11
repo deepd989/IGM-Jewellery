@@ -156,9 +156,9 @@ export default function EGiftCardScreen({ phoneNumber, amount, occasion,message 
             </TouchableOpacity>
 
             {/* Review Order Link */}
-            <TouchableOpacity onPress={handleReviewOrder}>
+            {/* <TouchableOpacity onPress={handleReviewOrder}>
               <Text style={styles.reviewLink}>Review your order</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
       </Modal>

@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import GiftStepA from "./giftStep1";
 import GiftCardScreen from "./giftStep2";
 import EGiftCardScreen from "./giftStep3";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GiftStepper() {
   const [step, setStep] = useState(0);
@@ -40,20 +41,24 @@ export default function GiftStepper() {
 
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View>
-        <TouchableOpacity onPress={back} style={styles.backBtn}>
+        {/* <TouchableOpacity onPress={back} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={22} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <View style={styles.container}>
         {step === 0 && (
           <View style={{ flex: 1 }}>
             <GiftStepA />
+            <TouchableOpacity style={[styles.secondaryBtn, styles.backMain]} onPress={()=>router.back()}>
+                <Ionicons name="chevron-back" color="black" size={16} />
+              </TouchableOpacity>
             <TouchableOpacity style={styles.nextBtn} onPress={next}>
               <Ionicons name="arrow-forward" color="#fff" size={16} />
             </TouchableOpacity>
+            
           </View>
         )}
 
@@ -92,7 +97,7 @@ export default function GiftStepper() {
           </View>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -104,10 +109,16 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#e5e5e5",
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 16,
   },
+  backMain: {
+    marginBottom: 14,
+    marginLeft: 16,
+
+  },
+
   navRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -124,6 +135,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   secondaryBtn: {
+    width: 48,
     backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#e5e5e5",

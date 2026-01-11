@@ -12,26 +12,60 @@ import { useRouter } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
-export default function GiftingCard() {
+export default function GiftingCard({showExploreButton=false,showHeader=false,amount,description,sendAGiftButton}: {showExploreButton?: boolean,showHeader?: boolean,amount?: number,description?: string,sendAGiftButton?: boolean}) {
     const router = useRouter();
   return (
     <View style={styles.container}>
       {/* Heading */}
-      <Text style={styles.title}>Gifting made easy</Text>
-      <Text style={styles.subtitle}>
-        Pick, curate, customise & deliver
-      </Text>
+      {showHeader &&
+      <View>
+        <Text style={styles.title}>Gifting made easy</Text>
+        <Text style={styles.subtitle}>
+          Pick, curate, customise & deliver
+        </Text>
+      </View>
+      }
 
       {/* Card */}
         <RibbonGiftCard/>
 
+        {amount && amount>0 &&
+        <Text style={{ 
+          fontSize: 24,
+          fontWeight: "600",
+          marginRight: 10,
+          position: "absolute",
+          right: 0,
+          bottom: 126,
+        }}> ₹ {amount.toLocaleString('en-IN')}</Text>
+        }
+
+        {description &&
+        <Text style={{ 
+          fontSize: 24,
+          fontWeight: "600",
+          position: "absolute",
+          right: -10,
+          bottom: 176,
+          marginRight: 10}}>{description}</Text>
+        }
+
         {/* CTA Button */}
+        {showExploreButton &&
         <Pressable style={styles.button} onPress={() => router.push('/gift')}>
           <Text style={styles.buttonText}>Explore gifting</Text>
           <View style={styles.iconCircle}>
             <Ionicons name="arrow-forward" size={18} color="#000" />
           </View>
-        </Pressable>
+        </Pressable>}
+
+        {sendAGiftButton &&
+        <Pressable style={styles.button} onPress={() => router.push('/giftStepperPage')}>
+          <Text style={styles.buttonText}>Send A Gift</Text>
+          <View style={styles.iconCircle}>
+            <Ionicons name="arrow-forward" size={18} color="#000" />
+          </View>
+        </Pressable>}
     </View>
   );
 }

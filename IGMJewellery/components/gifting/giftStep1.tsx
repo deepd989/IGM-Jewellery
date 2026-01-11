@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import RibbonGiftCard from './ribbonGiftCard';
 
 const GiftStepA = () => {
   const steps = [
@@ -29,7 +30,8 @@ const GiftStepA = () => {
     <ScrollView style={styles.container}>
       <View style={styles.content}>
         {/* Header Image Placeholder */}
-        <View style={styles.imageContainer} />
+        {/* <View style={styles.imageContainer} /> */}
+        <RibbonGiftCard/>
 
         {/* Title Section */}
         <Text style={styles.title}>Send a Gift Card!</Text>
@@ -57,13 +59,7 @@ const GiftStepA = () => {
           ))}
         </View>
 
-        {/* CTA Button */}
-        <TouchableOpacity 
-          style={styles.button}
-          onPress={() => console.log('Send Gift Card pressed')}
-        >
-          <Text style={styles.buttonText}>Send A Gift Card →</Text>
-        </TouchableOpacity>
+
       </View>
     </ScrollView>
   );

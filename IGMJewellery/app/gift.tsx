@@ -1,4 +1,5 @@
 import BottomNavBar from '@/components/bottomNavBar';
+import BottomRightButton from '@/components/bottomRightButton';
 import GiftExplore from '@/components/giftExplore';
 import GiftStepA from '@/components/gifting/giftStep1';
 import GiftCardScreen from '@/components/gifting/giftStep2';
@@ -14,12 +15,17 @@ import { useGetProductsQuery } from '@/store/apis/product';
 import { selectProducts } from '@/store/productSlice';
 import { useRouter } from 'expo-router';
 import { Scroll } from 'lucide-react-native';
+import { on } from 'node:cluster';
 import React from 'react';
 import { Text, StyleSheet ,ScrollView, Pressable} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 
 export default function Gift() {
+  const giftOptions=[
+        { id: 1, icon: 'gift', label: 'Send a gift', route: "/giftStepperPage" },
+        { id: 2, icon: 'gift', label: 'Redeem a gift', route: "/redeemGiftStep1" },
+      ]
     const router = useRouter();
     const { data: products=[], isLoading, error } = useGetProductsQuery({});
   return (
@@ -34,14 +40,17 @@ export default function Gift() {
               <Text style={styles.backText}>‹</Text>
             </Pressable>
        <ScrollView >
-        <GiftExplore/>
+       <GiftExplore/>
        <HorizontalRuleIGM/>
        <TopPicks products={products}/>
+       <HorizontalRuleIGM/>
+       <GiftingCard sendAGiftButton={true}/>
        <HorizontalRuleIGM/>
         <LatestCollections/>
         <HorizontalRuleIGM/>
         <HashtagComponent/>
        </ScrollView>
+       <BottomRightButton options={giftOptions} ></BottomRightButton>
        <BottomNavBar activeTab='Gifting'></BottomNavBar>
     </SafeAreaView>
   );
