@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import React from "react";
 import {
   View,
@@ -19,13 +20,15 @@ export default function EventCard() {
       {/* Image Section */}
       <ImageBackground
         source={{
-          uri: "https://picsum.photos/200/300", 
+          uri: "https://drive.google.com/uc?export=download&id=1dQk3phA6_k6IyxSxfXP9lWpZuIBtelAT", 
         }}
         style={styles.image}
         imageStyle={styles.imageRadius}
       >
         {/* Overlay Button */}
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => {
+          router.push({pathname:'/product-list'});
+        }}>
           <Text style={styles.buttonText}>Shop products →</Text>
         </TouchableOpacity>
       </ImageBackground>

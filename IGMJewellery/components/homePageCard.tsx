@@ -9,6 +9,7 @@ import { ProductType } from "@/enums/productType.enum";
 import { useSelector } from "react-redux";
 import { selectProducts } from "@/store/productSlice";
 import { useGetProductsQuery } from "@/store/apis/product";
+import { router } from "expo-router";
 
 
 export default function HomePageCard() {
@@ -35,16 +36,17 @@ export default function HomePageCard() {
                 }}
                 />
           {/* Necklace Section */}
-          <View style={styles.sectionHeader}>
+          {/* <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>{cardTitle}</Text>
             <Ionicons name="chevron-forward" size={18} />
-          </View>
+          </View> */}
     
           {/* Product Card */}
           <NecklaceCard
               productType={cardTitle}
                product={products.filter(p=>p.productType===cardTitle)[0]}
                onTryOn={() => {
+                router.push({pathname:'/underDev',params:{featureName:'Try-On Feature'}});
                 // Handle try-on action
                }}
                deliveryDate="Delivery by Sep 25"
@@ -89,17 +91,19 @@ export const NecklaceCard: React.FC<Props> = ({
   onTryOn,
 }) => {
   const defaultImages: Record<ProductType, any> = {
-    "Earring": require('../assets/images/dummyImages/dummyEarring.png'),
-    "Necklace": require('../assets/images/dummyImages/dummyNecklace.png'),
-    "Ring": require('../assets/images/dummyImages/dummyRing.png'),
-    "Bracelet": require('../assets/images/dummyImages/dummyBracelete.png'),
+    "Earring": "https://drive.google.com/uc?export=download&id=1oxG-8ZQuAcMs79DPFmdsg-OE2XJ0oOyY",
+    "Necklace": 'https://drive.google.com/uc?export=download&id=117WAh5AmHHGS255bC_kR6rP4gcdcQWJW',
+    "Ring":  'https://drive.google.com/uc?export=download&id=1NpEwC0OOIWeeyVGNP4a7SYtkhyAKZxS6',
+    "Bracelet":  "https://drive.google.com/uc?export=download&id=1cv1HV0_u8E6u7mAQW9IdDcvFA39xlVev",
     "Gold": require('../assets/images/dummyImages/dummyGold.png'),
     "Gift": require('../assets/images/dummyImages/dummyGift.jpg'),
     "Diamond Stone": require('../assets/images/dummyImages/dummyDiamond.png'),
   };
   return (
     <View style={necklaceCardStyle.wrapper}>
-      <TouchableOpacity style={necklaceCardStyle.card} activeOpacity={0.9}>
+      <TouchableOpacity style={necklaceCardStyle.card} activeOpacity={0.9} onPress={() => {
+        router.push({pathname:'/product-list'});
+      }}>
         {/* Product Image */}
          
         <View style={necklaceCardStyle.imageWrapper}>
@@ -107,10 +111,10 @@ export const NecklaceCard: React.FC<Props> = ({
       source={defaultImages[productType]}
   style={necklaceCardStyle.image}
 />
-          { product &&
+          {/* { product &&
           <TouchableOpacity style={necklaceCardStyle.wishlistButton}>
             <AntDesign name="heart" size={22} color="#000" />
-          </TouchableOpacity>}
+          </TouchableOpacity>} */}
         { product &&
           <View style={necklaceCardStyle.deliveryTag}>
             <AntDesign name="truck" size={14} color="#555" />

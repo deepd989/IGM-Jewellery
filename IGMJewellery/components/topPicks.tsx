@@ -1,6 +1,7 @@
 import { FlatList } from "react-native";
 import ProductCard from "./productCard";
 import { Product } from "@/interfaces/product.interface";
+import { SectionHeader } from "@/app/home";
 
 type TopPicksProps = {
   products: Product[];
@@ -8,6 +9,8 @@ type TopPicksProps = {
 
 export function TopPicks({ products }: TopPicksProps) {
   return (
+    <>
+    <SectionHeader value="Top Picks"/>
     <FlatList
       horizontal
       data={products}
@@ -21,5 +24,6 @@ export function TopPicks({ products }: TopPicksProps) {
       keyExtractor={(item) => item.id}
       showsHorizontalScrollIndicator={false}
     />
+    </>
   );
 }

@@ -1,8 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { Product } from "@/interfaces/product.interface";
 import type { StyleProp, ViewStyle } from "react-native";
+import { Image } from "react-native";
+import { router } from "expo-router";
+import { useAddToTrialMutation } from "@/store/apis/cart";
 
 interface ProductCardProps {
   product: Product,
@@ -21,6 +24,55 @@ const ProductCard: React.FC<ProductCardProps> = ({
   label1Text="Try Now",
   label2Text="Try at home",
 }) => {
+     const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
+    const handleTryAtHome = async (e: any) => {
+      e.stopPropagation();
+      console.log("Try at home clicked for:", product.title);
+  
+      try {
+        await addToTrial(product).unwrap();
+        console.log("Successfully added to trial");
+  
+        Alert.alert(
+          "Added to Trial List",
+          `${product.title} has been added to your home trial list.`,
+          [
+            {
+              text: "Continue Shopping",
+              style: "cancel",
+              onPress: () => console.log("Continue shopping pressed"),
+            },
+            {
+              text: "View Trial List",
+              onPress: () => {
+                console.log("Navigating to trial tab");
+                router.push("/cart?tab=trial");
+              },
+            },
+          ]
+        );
+      } catch (error: any) {
+        console.error("Failed to add to trial:", error);
+  
+        // Check if item already in trial
+        if (error?.data === "Item already in trial list") {
+          Alert.alert(
+            "Already in Trial",
+            "This item is already in your trial list.",
+            [
+              { text: "OK", style: "cancel" },
+              {
+                text: "View Trial List",
+                onPress: () => router.push("/cart?tab=trial"),
+              },
+            ]
+          );
+        } else {
+          Alert.alert("Error", "Failed to add item to trial. Please try again.");
+        }
+      }
+    }
+    
   if (!product) {
     return (
       <View style={[styles.card, { width }]}>
@@ -39,14 +91,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <Text style={styles.newText}>New</Text>
           </View>
         )}
-        <TouchableOpacity>
+        {/* <TouchableOpacity>
           <FontAwesome name="heart-o" size={20} color="black" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       {/* Image placeholder */}
       <View style={styles.imagePlaceholder}>
-        <Text style={{ color: "#ccc" }}>Image</Text>
+         <Image  source={{ uri: product.thumbnailUrls[0] }}
+                  style={styles.image}
+                  resizeMode="cover"/>
+        
       </View>
 
       {/* Delivery badge */}
@@ -79,10 +134,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Buttons */}
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={[styles.button, styles.tryNow]}>
+        <TouchableOpacity style={[styles.button, styles.tryNow]} onPress={() => {
+          router.push({pathname:'/underDev',params:{featureName:'Try-On Feature'}});
+        }}>
           <Text style={styles.tryNowText}>{label1Text}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.tryAtHome]}>
+        <TouchableOpacity style={[styles.button, styles.tryAtHome]} onPress={(event) => {handleTryAtHome(event)}}>
           <Text style={styles.tryAtHomeText}>{label2Text}</Text>
         </TouchableOpacity>
       </View>
@@ -97,6 +154,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     margin: 10,
     elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
   },
   topRow: {
     flexDirection: "row",
@@ -192,6 +253,10 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
   },
 });
 

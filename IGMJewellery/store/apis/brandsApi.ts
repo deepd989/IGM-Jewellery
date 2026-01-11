@@ -34,7 +34,7 @@ export interface BrandCollection {
 // Mock brands data
 const MOCK_BRANDS: Brand[] = [
   {
-    profileImageUri: 'https://example.com/images/brands/malabar.jpg',
+    profileImageUri: 'https://drive.google.com/uc?export=download&id=1BndyDIunNUIrWRbsrm1Sp-83t5o2jd_n',
     businessNameKey: 'malabar',
     businessName: 'Malabar Gold & Diamonds',
     tagline: 'Purity. Transparency. Trust.',
@@ -75,7 +75,7 @@ const MOCK_BRANDS: Brand[] = [
     }]
   }
 ,{
-  profileImageUri: 'https://example.com/images/brands/pcj.jpg',
+  profileImageUri: 'https://drive.google.com/uc?export=download&id=1uyqHO1IyKNvBMI2wNDLrCdOfB8uPKGap',
   businessNameKey: 'pcj',
   businessName: 'PC Jeweller',
   tagline: 'Celebrating trust and timeless beauty',
@@ -116,7 +116,7 @@ const MOCK_BRANDS: Brand[] = [
   },]
 },
   {
-    profileImageUri: 'https://example.com/images/brands/kalyan.jpg',
+    profileImageUri: 'https://drive.google.com/uc?export=download&id=113Cwm5g8GE6YO3rLKFAx_92uRd8uWc7C',
     businessNameKey: 'kalyan_jewellers',
     businessName: 'Kalyan Jewellers',
     tagline: 'Trusted legacy in gold and diamonds',
@@ -159,7 +159,7 @@ const MOCK_BRANDS: Brand[] = [
   },
   {
     businessNameKey: 'tanishq',
-    profileImageUri: 'https://example.com/images/brands/tanishq.jpg',
+    profileImageUri: 'https://drive.google.com/uc?export=download&id=1WoeWEPUu68OhUhuGb7IHa10ov856wW78',
     businessName: 'Tanishq',
     tagline: 'Elegance for every moment',
     ratingText: '4.8 · 18k reviews',
@@ -181,13 +181,13 @@ const MOCK_BRANDS: Brand[] = [
     collections:[{
       title: 'Statement Pieces',
       description: 'Bold designs that turn heads and start conversations.',
-      imageUri: 'https://example.com/images/brands/statement_pieces.jpg',
+      imageUri: '1WoeWEPUu68OhUhuGb7IHa10ov856wW78',
       productIds: ['prod25', 'prod26', 'prod27'],
     }]
   },
   {
     businessNameKey: 'caratlane',
-    profileImageUri: 'https://example.com/images/brands/caratlane.jpg',
+    profileImageUri: 'https://drive.google.com/uc?export=download&id=1I0py7pF-1sl2LlSrsXrseMN91zTcjmFP',
     businessName: 'CaratLane',
     tagline: 'Everyday fine jewelry',
     ratingText: '4.6 · 9k reviews',

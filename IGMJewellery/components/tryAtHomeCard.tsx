@@ -9,6 +9,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import EarringIcon from "./ui/earingsComponentSvg";
+import { router } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -34,7 +35,7 @@ export default function TryAtHomeCard() {
             </Text>
           </View>
 
-          <Pressable style={styles.arrowButton}>
+          <Pressable style={styles.arrowButton} onPress={() => {router.push({pathname:'/underDev',params:{featureName:'Try at Home Feature'}});}}>
             <Ionicons name="arrow-forward" size={22} color="#000" />
           </Pressable>
         </View>

@@ -9,6 +9,7 @@ import {
   Image,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { PlayCircle } from "lucide-react-native";
 
 
 
@@ -72,6 +73,9 @@ const handleRedirect = (collectionName:string) => {
                 ]}
               >
                 {isActive && <View style={styles.diamond} />}
+                 <Image  source={{ uri: brandsData.find(b => b.businessName === brand)?.profileImageUri }}
+                                  style={styles.image}
+                                  resizeMode="cover"/>
               </View>
 
               <Text
@@ -90,11 +94,12 @@ const handleRedirect = (collectionName:string) => {
       {/* Collection Cards */}
       {activeBrandData?.collections.map((collection, i) => (
         <TouchableOpacity key={i} style={styles.collectionCard} onPress={() => handleRedirect(collection.title)}>
-          <Image 
+          {/* <Image 
             source={{ uri: collection.imageUri }} 
             style={styles.collectionImage}
             resizeMode="cover"
-          />
+          /> */}
+          <Text style={styles.placeholder}> Insert Collection Display Cover Here</Text>
           <View style={styles.collectionOverlay}>
             <Text style={styles.collectionTitle}>{collection.title}</Text>
             {collection.description && (
@@ -112,7 +117,12 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     backgroundColor: "#fff",
   },
-
+placeholder:{
+  color: "#AAA",
+  fontSize:16,
+  textAlign:"center",
+  marginTop:80,
+},
   title: {
     fontSize: 20,
     fontWeight: "600",
@@ -130,6 +140,11 @@ const styles = StyleSheet.create({
   brandItem: {
     alignItems: "center",
     marginRight: 24,
+  },
+  image:{
+    width: "100%",
+    height: "100%",
+    padding:10,
   },
 
   brandCircle: {

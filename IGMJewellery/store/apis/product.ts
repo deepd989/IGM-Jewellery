@@ -18,9 +18,9 @@ const MOCK_PRODUCTS: Product[] = [
     brand: Brand.Kalyan,
     tags: ['new', 'diamond'],
     thumbnailUrls: [
-      'https://images.unsplash.com/photo-1605100804763-eb2fc645a382?q=80&w=600',
-      'https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=600',
-      'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?q=80&w=600'
+      'https://drive.google.com/uc?export=download&id=17ZW_TXQetl0TzqUYUChTmEMxZ5pAKpob',
+      'https://drive.google.com/uc?export=download&id=1ZdJeI0qgXFT3lMCZWKxKl0hpB9s5iq0K',
+      'https://drive.google.com/uc?export=download&id=1Hfl3dKi8FGlHPEX8_FoLqNA02VKEOp8F'
     ],
     isNew: true,
     rating: 4.5,
@@ -39,8 +39,8 @@ const MOCK_PRODUCTS: Product[] = [
     brand: Brand.Malabar,
     tags: ['gold', 'sale'],
     thumbnailUrls: [
-      'https://images.unsplash.com/photo-1626784215021-2e39ccf971cd?q=80&w=600',
-      'https://images.unsplash.com/photo-1605100804763-eb2fc645a382?q=80&w=600'
+      'https://drive.google.com/uc?export=download&id=1K9c5crpHKYy55Y8TZMYqBwqQQB6-i5ck',
+      'https://drive.google.com/uc?export=download&id=1xbX6sppoa6pbGthVdWfxIP0FhCkJDc2P'
     ],
     isNew: true,
     rating: 5.0,
@@ -50,7 +50,7 @@ const MOCK_PRODUCTS: Product[] = [
   },
   {
     id: '3',
-    title: 'Emerald Cut Ring',
+    title: 'Diamond Studded Ring',
     name: 'Green Glory',
     description: 'Stunning emerald cut ring featuring a magnificent green gemstone set in premium gold.',
     productType: ProductType.Ring,
@@ -59,9 +59,9 @@ const MOCK_PRODUCTS: Product[] = [
     brand: Brand.Tanishq,
     tags: ['gemstone', 'premium'],
     thumbnailUrls: [
-      'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?q=80&w=600',
-      'https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=600',
-      'https://images.unsplash.com/photo-1605100804763-eb2fc645a382?q=80&w=600'
+      'https://drive.google.com/uc?export=download&id=1NpEwC0OOIWeeyVGNP4a7SYtkhyAKZxS6',
+      'https://drive.google.com/uc?export=download&id=11ngEf8XGAblEn1DKQG4NpQ04oLgiNJCq',
+      'https://drive.google.com/uc?export=download&id=1GWgwnPLGs18P4u-ILTw9pxLdtd8fFX0s'
     ],
     isNew: false,
     rating: 4.8,
@@ -80,7 +80,10 @@ const MOCK_PRODUCTS: Product[] = [
     brand: Brand.Kalyan,
     tags: ['pearl', 'set'],
     thumbnailUrls: [
-      'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?q=80&w=600'
+      'https://drive.google.com/uc?export=download&id=117WAh5AmHHGS255bC_kR6rP4gcdcQWJW',
+      'https://drive.google.com/uc?export=download&id=1U-Pu_KD-LbhdqvkY9O3U6XFPaXuRd9f',
+      'https://drive.google.com/uc?export=download&id=1t-U2dSER6RylFRLeJ_w1a5R1pyqoRarP',
+
     ],
     isNew: true,
     rating: 4.6,
@@ -90,16 +93,18 @@ const MOCK_PRODUCTS: Product[] = [
   },
   {
     id: '5',
-    title: 'Diamond Bracelet',
+    title: 'Diamond Necklace',
     name: 'Sparkle Wrist',
-    description: 'Elegant diamond bracelet that adds sparkle to any outfit.',
-    productType: ProductType.Bracelet,
+    description: 'Elegant diamond necklace that adds sparkle to any outfit.',
+    productType: ProductType.Necklace,
     givenPrice: 55000,
     discountedPrice: 48000,
     brand: Brand.Tanishq,
     tags: ['diamond', 'luxury'],
     thumbnailUrls: [
-      'https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=600'
+      'https://drive.google.com/uc?export=download&id=1XhYqQUVwV_mfpaY7q-1gyKVTX91pXtTE',
+      'https://drive.google.com/uc?export=download&id=1rb-ON1-lmrmQIEJ6t9cQqxJD4feWbcG6',
+      'https://drive.google.com/uc?export=download&id=1XhYqQUVwV_mfpaY7q-1gyKVTX91pXtTE'
     ],
     isNew: false,
     rating: 4.9,
@@ -120,8 +125,8 @@ const MOCK_PRODUCTS: Product[] = [
     isNew: true,
     rating: 5,
     thumbnailUrls: [
-      "https://example.com/images/necklace-001-1.jpg",
-      "https://example.com/images/necklace-001-2.jpg",
+      "https://drive.google.com/uc?export=download&id=1IwTBfESPsETRszWL_MI60Q01LGxnihoc",
+      "https://drive.google.com/uc?export=download&id=1oTkolVaMA0uREyTECsP_4igyVcuSuLvq",
     ],
     occaision: [],
     gender: Gender.female
@@ -137,8 +142,8 @@ const MOCK_PRODUCTS: Product[] = [
     brand: Brand.Tanishq,
     tags: ["diamond", "earrings", "stud", "white-gold"],
     thumbnailUrls: [
-      "https://example.com/images/earrings-002-1.jpg",
-      "https://example.com/images/earrings-002-2.jpg",
+      "https://drive.google.com/uc?export=download&id=1cv1HV0_u8E6u7mAQW9IdDcvFA39xlVev",
+      "https://drive.google.com/uc?export=download&id=1NmFTKD_RWCSFxHGnkwyMwdtOE1-BoHMs",
     ],
     occaision: [],
     gender: Gender.female
@@ -154,7 +159,7 @@ const MOCK_PRODUCTS: Product[] = [
     brand: Brand.KalyanJewellers,
     tags: ["silver", "bracelet", "charms", "sterling"],
     thumbnailUrls: [
-      "https://example.com/images/bracelet-003-1.jpg",
+      "https://drive.google.com/uc?export=download&id=1cv1HV0_u8E6u7mAQW9IdDcvFA39xlVev",
     ],
     occaision: [],
     gender: Gender.unisex
@@ -170,8 +175,8 @@ const MOCK_PRODUCTS: Product[] = [
     brand: Brand.Tanishq,
     tags: ["ruby", "ring", "gemstone", "statement"],
     thumbnailUrls: [
-      "https://example.com/images/ring-004-1.jpg",
-      "https://example.com/images/ring-004-2.jpg",
+      "https://drive.google.com/uc?export=download&id=1h9rVj4JHKodi3wYOkYCbAnKRNMb2jRvO",
+      "https://drive.google.com/uc?export=download&id=1AkLvQOh50d8gWhHa6y8b5ePI4kksrPyv",
     ],
     occaision: [],
     gender: Gender.male
@@ -187,8 +192,8 @@ const MOCK_PRODUCTS: Product[] = [
     brand: Brand.Tanishq,
     tags: ["ruby", "ring", "gemstone", "statement"],
     thumbnailUrls: [
-      "https://example.com/images/ring-004-1.jpg",
-      "https://example.com/images/ring-004-2.jpg",
+      "https://drive.google.com/uc?export=download&id=1oxG-8ZQuAcMs79DPFmdsg-OE2XJ0oOyY",
+      "https://drive.google.com/uc?export=download&id=1n4AbwR6sZxAmituiG5_e8q_QUxQhBAjc",
     ],
     isNew: true,
     rating: 4.5,
@@ -207,8 +212,8 @@ const MOCK_PRODUCTS: Product[] = [
     brand: Brand.CaratLane,
     tags: ["diamond", "earrings", "stud", "white-gold"],
     thumbnailUrls: [
-      "https://example.com/images/earrings-002-1.jpg",
-      "https://example.com/images/earrings-002-2.jpg",
+      "https://drive.google.com/uc?export=download&id=1U-Pu_KD-LbhdqvkY9O3U6XFPaXuRd9fv",
+      "https://drive.google.com/uc?export=download&id=117WAh5AmHHGS255bC_kR6rP4gcdcQWJW",
     ],
     isNew: true,
     rating: 4.2,
@@ -228,8 +233,8 @@ const MOCK_PRODUCTS: Product[] = [
     brand: Brand.CaratLane,
     tags: ["diamond", "earrings", "stud", "white-gold"],
     thumbnailUrls: [
-      "https://example.com/images/earrings-002-1.jpg",
-      "https://example.com/images/earrings-002-2.jpg",
+      "https://drive.google.com/uc?export=download&id=1hPfa-ZeOObHTkcDcGpNAKTcv2cnKaMNM",
+      "https://drive.google.com/uc?export=download&id=14ONAJ3nuOqnd1yBSNjKfJ5KZpQYMbuET",
     ],
     isNew: true,
     rating: 4.5,

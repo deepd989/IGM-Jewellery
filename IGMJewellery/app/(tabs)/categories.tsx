@@ -178,9 +178,9 @@ export default function CategoriesScreen() {
                 </TouchableOpacity>
         <Text style={styles.headerTitle}>Categories</Text>
         <View style={styles.headerIcons}>
-          <TouchableOpacity style={styles.iconBtn}>
+          {/* <TouchableOpacity style={styles.iconBtn}>
             <Ionicons name="heart-outline" size={24} color={COLORS.primary} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
            <View style={styles.iconBtn}>
             <CartBadge iconSize={24} iconColor={COLORS.primary} />
           </View>
