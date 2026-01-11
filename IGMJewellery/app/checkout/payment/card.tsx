@@ -1,5 +1,9 @@
-import { useGetCartQuery } from "@/store/apis/cart";
-import { useGetCheckoutSessionQuery } from "@/store/apis/checkout";
+import { useClearCartMutation, useGetCartQuery } from "@/store/apis/cart";
+import {
+  useClearCheckoutSessionMutation,
+  useCreateOrderMutation,
+  useGetCheckoutSessionQuery,
+} from "@/store/apis/checkout";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -41,6 +45,10 @@ export default function CardDetailsScreen() {
   const { data: checkoutSession, isLoading: isLoadingSession } =
     useGetCheckoutSessionQuery();
   const { data: cartData } = useGetCartQuery();
+  const [createOrder] = useCreateOrderMutation();
+  const [clearCart] = useClearCartMutation();
+  const [clearCheckoutSession] = useClearCheckoutSessionMutation();
+
   const [isProcessing, setIsProcessing] = useState(false);
 
   const {
@@ -80,27 +88,48 @@ export default function CardDetailsScreen() {
   }, [checkoutSession, cartData]);
 
   const onSubmit = async (data: CardFormData) => {
-    if (!orderId) {
-      Alert.alert("Error", "Order ID not found");
+    if (!checkoutSession) {
+      Alert.alert("Error", "Checkout session not found");
       return;
     }
 
     setIsProcessing(true);
 
-    // Simulate payment processing
-    setTimeout(() => {
-      console.log("Card Data:", data);
-      console.log("Order ID:", orderId);
-      setIsProcessing(false);
+    try {
+      // Create the order
+      const orderRequest = {
+        deliveryAddress: checkoutSession.checkoutState.deliveryAddress!,
+        billingAddress: checkoutSession.checkoutState.billingAddress!,
+        giftingOptions: checkoutSession.checkoutState.giftingOptions,
+        paymentMethod: "credit_card",
+        couponCode: checkoutSession.checkoutState.appliedCouponCode,
+      };
 
+      const orderResponse = await createOrder(orderRequest).unwrap();
+
+      // Clear cart and checkout session after successful order creation
+      await clearCart().unwrap();
+      await clearCheckoutSession().unwrap();
+
+      console.log("Card Data:", data);
+      console.log("Order Created:", orderResponse);
+
+      // Navigate to confirmation
       router.push({
         pathname: "/checkout/confirmation",
         params: {
-          orderId: orderId,
-          orderDisplayId: `#${Math.floor(10000 + Math.random() * 90000)}`,
+          orderId: orderResponse.orderId,
+          orderDisplayId: orderResponse.orderDisplayId,
         },
       });
-    }, 2000);
+    } catch (error: any) {
+      Alert.alert(
+        "Payment Failed",
+        error?.data || "Failed to process payment. Please try again."
+      );
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   if (isLoadingSession) {

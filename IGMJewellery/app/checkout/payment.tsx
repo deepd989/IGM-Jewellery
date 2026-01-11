@@ -1,8 +1,6 @@
 import { PriceBreakdown } from "@/components/checkout/PriceBreakdown";
-import { useClearCartMutation } from "@/store/apis/cart";
+import { useGetCartQuery } from "@/store/apis/cart";
 import {
-  useClearCheckoutSessionMutation,
-  useCreateOrderMutation,
   useGetCheckoutSessionQuery,
   useUpdatePaymentMethodMutation,
 } from "@/store/apis/checkout";
@@ -55,11 +53,8 @@ export default function PaymentScreen() {
 
   const { data: checkoutSession, isLoading: isLoadingSession } =
     useGetCheckoutSessionQuery();
+  const { data: cartData } = useGetCartQuery();
   const [updatePaymentMethod] = useUpdatePaymentMethodMutation();
-  const [createOrder, { isLoading: isCreatingOrder }] =
-    useCreateOrderMutation();
-  const [clearCheckoutSession] = useClearCheckoutSessionMutation();
-  const [clearCart] = useClearCartMutation();
 
   const [selectedMethod, setSelectedMethod] = useState(
     checkoutSession?.checkoutState.selectedPaymentMethod || "google_pay"
@@ -92,50 +87,33 @@ export default function PaymentScreen() {
       return;
     }
 
+    // Update payment method before proceeding
     try {
-      const orderRequest = {
-        deliveryAddress: checkoutSession.checkoutState.deliveryAddress,
-        billingAddress: checkoutSession.checkoutState.billingAddress,
-        giftingOptions: checkoutSession.checkoutState.giftingOptions,
-        paymentMethod: selectedMethod,
-        couponCode: checkoutSession.checkoutState.appliedCouponCode,
-      };
+      await updatePaymentMethod(selectedMethod).unwrap();
+    } catch (error) {
+      console.error("Failed to update payment method:", error);
+    }
 
-      const orderResponse = await createOrder(orderRequest).unwrap();
+    // Generate temporary order ID for the payment screens
+    const tempOrderId = `temp_ord_${Date.now()}`;
 
-      // Clear cart and checkout session
-      await clearCart().unwrap();
-      await clearCheckoutSession().unwrap();
-
-      // Navigate based on payment method
-      if (selectedMethod === "google_pay") {
-        router.push({
-          pathname: "/checkout/payment/upi",
-          params: { orderId: orderResponse.orderId },
-        });
-      } else if (
-        selectedMethod === "credit_card" ||
-        selectedMethod === "debit_card"
-      ) {
-        router.push({
-          pathname: "/checkout/payment/card",
-          params: { orderId: orderResponse.orderId },
-        });
-      } else {
-        // For COD and Net Banking, go directly to confirmation
-        router.push({
-          pathname: "/checkout/confirmation",
-          params: {
-            orderId: orderResponse.orderId,
-            orderDisplayId: orderResponse.orderDisplayId,
-          },
-        });
-      }
-    } catch (error: any) {
-      Alert.alert(
-        "Error",
-        error?.data || "Failed to create order. Please try again."
-      );
+    // Navigate based on payment method WITHOUT clearing session
+    if (selectedMethod === "google_pay") {
+      router.push({
+        pathname: "/checkout/payment/upi",
+        params: { orderId: tempOrderId },
+      });
+    } else if (
+      selectedMethod === "credit_card" ||
+      selectedMethod === "debit_card"
+    ) {
+      router.push({
+        pathname: "/checkout/payment/card",
+        params: { orderId: tempOrderId },
+      });
+    } else {
+      // For COD and Net Banking, create order directly
+      router.push("/checkout/confirmation");
     }
   };
 
@@ -174,6 +152,17 @@ export default function PaymentScreen() {
   const { orderDetails, checkoutState } = checkoutSession;
   const appliedDiscount = checkoutState.appliedCouponDiscount || 0;
 
+  // Calculate total with gift addons
+  const giftAddonsCost =
+    cartData?.giftAddons
+      ?.filter((addon) => addon.isChecked)
+      .reduce((sum, addon) => sum + addon.price, 0) || 0;
+
+  const finalOrderDetails = {
+    ...orderDetails,
+    total: orderDetails.total + giftAddonsCost,
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -190,7 +179,7 @@ export default function PaymentScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <CheckoutSummary order={orderDetails} />
+        <CheckoutSummary order={finalOrderDetails} />
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Preferred Payment Options</Text>
@@ -266,28 +255,20 @@ export default function PaymentScreen() {
         <View style={styles.finalSummary}>
           <Text style={styles.summaryTitle}>Order Summary</Text>
           <PriceBreakdown
-            subtotal={orderDetails.subtotal}
-            savings={orderDetails.savings}
-            platformFee={orderDetails.platformFee}
+            subtotal={finalOrderDetails.subtotal}
+            savings={finalOrderDetails.savings}
+            platformFee={finalOrderDetails.platformFee}
             couponApplied={appliedDiscount}
-            total={orderDetails.total}
+            total={finalOrderDetails.total}
           />
         </View>
       </ScrollView>
 
       <View style={styles.footer}>
-        <TouchableOpacity
-          style={[styles.payBtn, isCreatingOrder && styles.payBtnDisabled]}
-          onPress={handleProceedToPay}
-          disabled={isCreatingOrder}
-        >
-          {isCreatingOrder ? (
-            <ActivityIndicator color="#FFF" />
-          ) : (
-            <Text style={styles.payBtnText}>
-              Proceed to Pay ₹{orderDetails.total.toLocaleString()}
-            </Text>
-          )}
+        <TouchableOpacity style={styles.payBtn} onPress={handleProceedToPay}>
+          <Text style={styles.payBtnText}>
+            Proceed to Pay ₹{finalOrderDetails.total.toLocaleString()}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
