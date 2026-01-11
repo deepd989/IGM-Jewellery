@@ -41,11 +41,12 @@ let currentState: CartState = { ...INITIAL_STATE };
 export const cartApiService = createApi({
   reducerPath: "cart",
   baseQuery: fetchBaseQuery({ baseUrl: "/" }),
-  tagTypes: ["Cart", "Trial", "GiftAddons"],
+  tagTypes: ["Cart"],
   endpoints: (builder) => ({
     // Get shopping cart
     getCart: builder.query<CartState, void>({
       queryFn: () => {
+        console.log("getCart called, current state:", currentState);
         return { data: currentState };
       },
       providesTags: ["Cart"],
@@ -70,6 +71,7 @@ export const cartApiService = createApi({
           ...currentState,
           items,
         };
+        console.log("addToCart - updated state:", currentState);
         return { data: currentState };
       },
       invalidatesTags: ["Cart"],
@@ -85,13 +87,13 @@ export const cartApiService = createApi({
           ...currentState,
           items,
         };
-
+        console.log("removeFromCart - updated state:", currentState);
         return { data: { ...currentState } };
       },
       invalidatesTags: ["Cart"],
     }),
 
-    // Update item quantity ✅ FIXED
+    // Update item quantity
     updateQuantity: builder.mutation<
       CartState,
       { productId: string; quantity: number }
@@ -105,42 +107,58 @@ export const cartApiService = createApi({
               : item
           ),
         };
+        console.log("updateQuantity - updated state:", currentState);
         return { data: currentState };
       },
       invalidatesTags: ["Cart"],
     }),
 
-    // Add to trial ✅ FIXED
+    // Add to trial - FIXED
     addToTrial: builder.mutation<CartState, Product>({
       queryFn: (product) => {
+        console.log("addToTrial called for product:", product.id);
+
         const exists = currentState.trialItems.some(
           (item) => item.product.id === product.id
         );
 
-        if (!exists) {
-          currentState = {
-            ...currentState,
-            trialItems: [...currentState.trialItems, { product }],
+        if (exists) {
+          console.log("Product already in trial list");
+          return {
+            error: {
+              status: 400,
+              data: "Item already in trial list",
+            },
           };
         }
 
+        currentState = {
+          ...currentState,
+          trialItems: [...currentState.trialItems, { product }],
+        };
+
+        console.log("addToTrial - updated state:", currentState);
         return { data: currentState };
       },
-      invalidatesTags: ["Trial"],
+      invalidatesTags: ["Cart"],
     }),
 
-    // Remove from trial ✅ FIXED
+    // Remove from trial - FIXED
     removeFromTrial: builder.mutation<CartState, string>({
       queryFn: (productId) => {
+        console.log("removeFromTrial called for:", productId);
+
         currentState = {
           ...currentState,
           trialItems: currentState.trialItems.filter(
             (item) => item.product.id !== productId
           ),
         };
+
+        console.log("removeFromTrial - updated state:", currentState);
         return { data: currentState };
       },
-      invalidatesTags: ["Trial"],
+      invalidatesTags: ["Cart"],
     }),
 
     // Toggle gift addon
@@ -154,9 +172,10 @@ export const cartApiService = createApi({
               : addon
           ),
         };
+        console.log("toggleGiftAddon - updated state:", currentState);
         return { data: currentState };
       },
-      invalidatesTags: ["GiftAddons"],
+      invalidatesTags: ["Cart"],
     }),
 
     // Clear cart
@@ -170,9 +189,10 @@ export const cartApiService = createApi({
             isChecked: false,
           })),
         };
+        console.log("clearCart - updated state:", currentState);
         return { data: currentState };
       },
-      invalidatesTags: ["Cart", "GiftAddons"],
+      invalidatesTags: ["Cart"],
     }),
 
     // Move to wishlist (placeholder - would integrate with wishlist service)
@@ -184,6 +204,7 @@ export const cartApiService = createApi({
             (item) => item.product.id !== productId
           ),
         };
+        console.log("moveToWishlist - updated state:", currentState);
         return { data: currentState };
       },
       invalidatesTags: ["Cart"],

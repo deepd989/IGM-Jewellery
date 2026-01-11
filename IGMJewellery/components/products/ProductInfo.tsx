@@ -1,5 +1,4 @@
 import { Product } from "@/interfaces/product.interface";
-
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -40,10 +39,12 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
 
   const handleAddToCart = async () => {
     try {
+      console.log("Adding to cart:", product.title);
       await addToCart({ product, quantity: 1 }).unwrap();
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);
     } catch (error) {
+      console.error("Add to cart error:", error);
       Alert.alert("Error", "Failed to add item to cart");
     }
   };
@@ -58,22 +59,49 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
   };
 
   const handleTryAtHome = async () => {
+    console.log("Try at home clicked for:", product.title);
+
     try {
       await addToTrial(product).unwrap();
+      console.log("Successfully added to trial");
+
       Alert.alert(
-        "Added to Trial",
+        "Added to Trial List",
         `${product.title} has been added to your home trial list.`,
         [
-          { text: "Continue Shopping", style: "cancel" },
+          {
+            text: "Continue Shopping",
+            style: "cancel",
+            onPress: () => console.log("Continue shopping"),
+          },
           {
             text: "View Trial List",
-            onPress: () => router.push("/cart?tab=trial"), // ← Navigate to trial tab
+            onPress: () => {
+              console.log("Navigating to trial tab");
+              router.push("/cart?tab=trial");
+            },
           },
         ]
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to add to trial:", error);
-      Alert.alert("Error", "Failed to add item to trial");
+
+      // Check if item already in trial
+      if (error?.data === "Item already in trial list") {
+        Alert.alert(
+          "Already in Trial",
+          "This item is already in your trial list.",
+          [
+            { text: "OK", style: "cancel" },
+            {
+              text: "View Trial List",
+              onPress: () => router.push("/cart?tab=trial"),
+            },
+          ]
+        );
+      } else {
+        Alert.alert("Error", "Failed to add item to trial. Please try again.");
+      }
     }
   };
 
@@ -145,7 +173,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
         </TouchableOpacity>
       </View>
 
-      {/* NEW: Cart Action Buttons */}
+      {/* Cart Action Buttons */}
       <View style={styles.cartActionsContainer}>
         {/* Try at Home Button */}
         <TouchableOpacity
@@ -322,7 +350,7 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
 
-  // NEW: Cart Actions
+  // Cart Actions
   cartActionsContainer: {
     marginTop: SPACING.s,
   },

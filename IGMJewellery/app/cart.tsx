@@ -144,6 +144,7 @@ export default function CartScreen() {
 
     // Check if user has more than 5 items or items from multiple brands
     if (trialList.length > 5) {
+      console.log("Trial list exceeds maximum limit:", trialList.length);
       Alert.alert(
         "Maximum Limit Exceeded",
         "You can select maximum 5 items for home trial"
@@ -154,6 +155,7 @@ export default function CartScreen() {
     // Check if all items are from the same brand
     const brands = new Set(trialList.map((item) => item.product.brand));
     if (brands.size > 1) {
+      console.log("Trial list exceeds maximum limit:", trialList.length);
       Alert.alert(
         "Multiple Brands",
         "Home trial is available for items from 1 brand only. Please select items from the same brand."

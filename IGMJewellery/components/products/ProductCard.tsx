@@ -1,6 +1,7 @@
 import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
@@ -27,6 +28,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   viewMode,
   onPress,
 }) => {
+  const router = useRouter();
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
   const [showSuccess, setShowSuccess] = useState(false);
@@ -39,6 +41,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const handleAddToCart = async (e: any) => {
     e.stopPropagation();
     try {
+      console.log("Adding to cart:", product.title);
       await addToCart({ product, quantity: 1 }).unwrap();
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 1500);
@@ -50,26 +53,49 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   const handleTryAtHome = async (e: any) => {
     e.stopPropagation();
+    console.log("Try at home clicked for:", product.title);
+
     try {
       await addToTrial(product).unwrap();
+      console.log("Successfully added to trial");
+
       Alert.alert(
-        "Added to Trial",
+        "Added to Trial List",
         `${product.title} has been added to your home trial list.`,
         [
-          { text: "Continue Shopping", style: "cancel" },
+          {
+            text: "Continue Shopping",
+            style: "cancel",
+            onPress: () => console.log("Continue shopping pressed"),
+          },
           {
             text: "View Trial List",
             onPress: () => {
-              // Navigate to cart with trial tab active
-              // You'll need to import useRouter
-              // router.push('/cart?tab=trial');
+              console.log("Navigating to trial tab");
+              router.push("/cart?tab=trial");
             },
           },
         ]
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to add to trial:", error);
-      Alert.alert("Error", "Failed to add item to trial");
+
+      // Check if item already in trial
+      if (error?.data === "Item already in trial list") {
+        Alert.alert(
+          "Already in Trial",
+          "This item is already in your trial list.",
+          [
+            { text: "OK", style: "cancel" },
+            {
+              text: "View Trial List",
+              onPress: () => router.push("/cart?tab=trial"),
+            },
+          ]
+        );
+      } else {
+        Alert.alert("Error", "Failed to add item to trial. Please try again.");
+      }
     }
   };
 
@@ -165,7 +191,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <View style={styles.actionRow}>
           <TouchableOpacity
             style={styles.tryNowBtn}
-            onPress={() => onPress(product)}
+            onPress={(e) => {
+              e.stopPropagation();
+              onPress(product);
+            }}
           >
             <Ionicons
               name="sparkles-outline"
