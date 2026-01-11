@@ -1,12 +1,14 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions, Image } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Dimensions, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 const COLUMN_WIDTH = (width - 40) / 4; // 4 columns layout
 
 export default function JewelryLanding() {
+  const router = useRouter();
   
   // Helper to render a tile (Brand or Product)
   const Tile = ({ children, style, isLogo }) => (
@@ -75,14 +77,33 @@ export default function JewelryLanding() {
           <Text style={styles.subtitle}>
             India's first AI-powered jewellery marketplace, where heritage meets high tech
           </Text>
+
+          {/* Auth Links */}
+          <View style={styles.authContainer}>
+            <TouchableOpacity 
+              style={styles.linkButton}
+              onPress={() => router.push('/signUp')}
+            >
+              <Text style={styles.linkText}>SignUp</Text>
+              {/* <View style={styles.linkUnderline} /> */}
+            </TouchableOpacity>
+
+            <View style={styles.linkSeparator} />
+
+            <TouchableOpacity 
+              style={styles.linkButton}
+              onPress={() => router.push('/login')}
+            >
+              <Text style={styles.linkText}>Login</Text>
+              {/* <View style={styles.linkUnderline} /> */}
+            </TouchableOpacity>
+          </View>
         </View>
 
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-// ... keep imports same
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -203,5 +224,33 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 20,
     fontWeight: '400',
+  },
+  authContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 50,
+    gap: 20,
+  },
+  linkButton: {
+    alignItems: 'center',
+  },
+  linkText: {
+    fontSize: 16,
+    color: 'black',
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  linkUnderline: {
+    height: 2,
+    width: '100%',
+    backgroundColor: '#385A54',
+    marginTop: 4,
+    borderRadius: 1,
+  },
+  linkSeparator: {
+    width: 1,
+    height: 20,
+    backgroundColor: '#E0E0E0',
   },
 });
