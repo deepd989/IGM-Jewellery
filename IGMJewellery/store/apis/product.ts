@@ -1,4 +1,5 @@
 import { Gender } from '@/constants/genderEnum';
+import { OccasiomEnum } from '@/constants/occasions';
 import { Brand } from '@/enums/brand.enum';
 import { ProductType } from '@/enums/productType.enum';
 import { Product } from '@/interfaces/product.interface';
@@ -24,7 +25,7 @@ const MOCK_PRODUCTS: Product[] = [
     isNew: true,
     rating: 4.5,
     sku: 'DR001-24K',
-    occaision: [],
+    occaision: [OccasiomEnum.Anniversary, OccasiomEnum.Birthday],
     gender: Gender.male
   },
   {
@@ -44,7 +45,7 @@ const MOCK_PRODUCTS: Product[] = [
     isNew: true,
     rating: 5.0,
     sku: 'GR002-GP',
-    occaision: [],
+    occaision: [OccasiomEnum.Anniversary, OccasiomEnum.Wedding],
     gender: Gender.female
   },
   {
@@ -65,7 +66,7 @@ const MOCK_PRODUCTS: Product[] = [
     isNew: false,
     rating: 4.8,
     sku: 'ER003-EMR',
-    occaision: [],
+    occaision: [OccasiomEnum.Anniversary, OccasiomEnum.Birthday],
     gender: Gender.unisex
   },
   {
@@ -84,7 +85,7 @@ const MOCK_PRODUCTS: Product[] = [
     isNew: true,
     rating: 4.6,
     sku: 'PN004-CP',
-    occaision: [],
+    occaision:  [OccasiomEnum.Diwali, OccasiomEnum.Wedding],
     gender: Gender.female
   },
   {
@@ -103,7 +104,7 @@ const MOCK_PRODUCTS: Product[] = [
     isNew: false,
     rating: 4.9,
     sku: 'DB005-SW',
-    occaision: [],
+    occaision:  [OccasiomEnum.Graduation],
     gender: Gender.unisex
   },
   {

@@ -16,6 +16,8 @@ import { Camera } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import VoiceVideoInterface from './aiVoice';
+import { useRouter } from 'expo-router';
+import { COLORS } from '@/constants/theme';
 
 interface IMessage {
   id: string;
@@ -24,14 +26,17 @@ interface IMessage {
   timestamp: Date;
 }
 
-export default function AiChatComponent({ initialMessage = '' }) {
+export default function AiChatComponent({ initialMessage = '', mode }: { initialMessage: string ,mode?:'voice'|'video'}) {
+  const router=useRouter();
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [recording, setRecording] = useState(null);
-  const [showVoiceInterface, setShowVoiceInterface] = useState(false);
-  const [interfaceMode, setInterfaceMode] = useState<'voice' | 'video'>('voice');
+  const [showVoiceVideoInterface, setShowVoiceVideoInterface] = useState(!!mode);
+  const [interfaceMode, setInterfaceMode] = useState<'voice' | 'video'>(mode || 'voice');
   const flatListRef = useRef(null);
+
+ 
 
   // Send initial message when component mounts
   useEffect(() => {
@@ -83,12 +88,12 @@ export default function AiChatComponent({ initialMessage = '' }) {
 
   const handleVoiceRecord = async () => {
     setInterfaceMode('voice');
-    setShowVoiceInterface(true);
+    setShowVoiceVideoInterface(true);
   };
 
   const handleVideoCapture = async () => {
     setInterfaceMode('video');
-    setShowVoiceInterface(true);
+    setShowVoiceVideoInterface(true);
   };
 
   const renderMessage = ({ item }) => {
@@ -122,6 +127,9 @@ export default function AiChatComponent({ initialMessage = '' }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}>
+              <Ionicons name="chevron-back" size={24} color={COLORS.text} />
+            </TouchableOpacity>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -184,15 +192,15 @@ export default function AiChatComponent({ initialMessage = '' }) {
 
       {/* Voice/Video Interface Modal */}
       <Modal
-        visible={showVoiceInterface}
+        visible={showVoiceVideoInterface}
         animationType="slide"
         presentationStyle="fullScreen"
-        onRequestClose={() => setShowVoiceInterface(false)}
+        onRequestClose={() => setShowVoiceVideoInterface(false)}
       >
         <SafeAreaView style={styles.modalContainer}>
           <TouchableOpacity
             style={styles.closeButton}
-            onPress={() => setShowVoiceInterface(false)}
+            onPress={() => setShowVoiceVideoInterface(false)}
             activeOpacity={0.7}
           >
             <Ionicons name="close" size={28} color="#000" />
@@ -353,5 +361,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  iconBtn: {
+    padding: 4,
+    marginLeft: 12,
   },
 });

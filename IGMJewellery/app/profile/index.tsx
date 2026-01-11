@@ -137,7 +137,7 @@ export default function ProfileScreen() {
            ))}
         </View>
 
-        <TouchableOpacity style={styles.logoutBtn}>
+        <TouchableOpacity style={styles.logoutBtn} onPress={() => {router.push('/')}}>
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
         <Text style={styles.version}>APP VERSION 1.1.0</Text>

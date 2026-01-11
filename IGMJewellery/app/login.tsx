@@ -81,9 +81,9 @@ export default function PhoneLoginScreen() {
             <Text style={styles.buttonText}>Get OTP</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          {/* <TouchableOpacity>
             <Text style={styles.guest}>Browse as guest</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </SafeAreaView>

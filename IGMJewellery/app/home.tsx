@@ -13,7 +13,7 @@ import { TopPicks } from "@/components/topPicks";
 import TryAtHomeCard from "@/components/tryAtHomeCard";
 import { selectProducts } from "@/store/productSlice";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import { AudioLines } from 'lucide-react-native';
+import { AudioLines, Sparkles } from 'lucide-react-native';
 import React, { useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -27,16 +27,17 @@ import BottomNavBar from "@/components/bottomNavBar";
 
 
 
+
 export default function HomeScreen() {
     const [expanded, setExpanded] = useState(false);
     const [firstRowHeight, setFirstRowHeight] = useState<number | null>(60);
     const { data: products = [], isLoading, isError, error, refetch } = useGetProductsQuery({});
     const router = useRouter();
-    const [inputChip, setInputChip] = useState<string>("");
+    const [textInput, setInputChip] = useState<string>("");
     const handleSubmit = () => {
       router.push({
-        pathname: '/product-list',
-        params: { value: inputChip },
+        pathname: '/exploreAi',
+        params: { value: textInput },
       });
     };
   return (
@@ -54,69 +55,85 @@ export default function HomeScreen() {
       {/* Search Row */}
      <SearchBar />
       {/* Center Graphic */}
-      <View style={styles.centerBox}>
-        <Feather name="star" size={32} color="#bbb" />
-        <Text style={styles.hey}>Hey there!</Text>
-        <Text style={styles.sparkle}>What sparkle are we looking for today?</Text>
-      </View>
-
-      {/* Voice Search Box */}
-      <View style={styles.voiceBox}>
-        <TextInput
-          placeholder="Sonar is listening"
-          placeholderTextColor="#999"
-          style={styles.input}
-          value={inputChip}
-          onChangeText={setInputChip}
-          returnKeyType="send"          // or "done", "go", "search"
-          onSubmitEditing={handleSubmit}
-        />
-        <Ionicons name="mic-outline" size={22} />
-        <View style={{ borderRadius:50, height:30, width:30, alignItems:"center", justifyContent:"center", backgroundColor:"#EBEBEB"}}>
-            <AudioLines />
-        </View>
-      </View>
 
       <View>
-  <View
-    style={[
-      styles.chipsRow,
-      !expanded && firstRowHeight !== null
-        ? { height: firstRowHeight, overflow: "hidden" }
-        : {}
-    ]}
-    onLayout={(e) => {
-      if (firstRowHeight === null) {
-        setFirstRowHeight(e.nativeEvent.layout.height);
-      }
-    }}
-  >
-    {[
-      "Ai powered",
-      "TBZ latest collection",
-      "Rings",
-      "Wedding",
-      "Men’s gifting",
-      "Mom’s gift",
-      "Anniversary",
-      "Ai powered",
-      "TBZ latest collection",
-      "Rings",
-      "Wedding",
-      "Men’s gifting",
-      "Mom’s gift",
-      "Anniversary",
-    ].map((chip, idx) => (
-      <TouchableOpacity onPress={()=>{setInputChip(chip)}} key={idx} style={styles.chip}>
-        <Text style={styles.chipText}>{chip}</Text>
-      </TouchableOpacity>
-    ))}
-  </View>
+          <View style={styles.centerBox}>
+          <View style={styles.iconContainer}>
+          <Sparkles size={48} color="#d4d4d4" strokeWidth={1.5} />
+        </View>
 
-  <TouchableOpacity onPress={() => setExpanded(!expanded)}>
-    <Text style={styles.moreText}>{expanded ? "Show less" : "More"}</Text>
-  </TouchableOpacity>
-</View>
+        {/* Greeting Text */}
+        <Text style={styles.greetingBold}>Hey there!</Text>
+        <Text style={styles.greetingLight}>What sparkle</Text>
+        <Text style={styles.greetingLight}>are we looking for today?</Text>
+          </View>
+
+          {/* Voice Search Box */}
+          <View style={styles.voiceBox}>
+            <TextInput
+              placeholder="Sonar is listening"
+              placeholderTextColor="#999"
+              style={styles.input}
+              value={textInput}
+              onChangeText={setInputChip}
+              returnKeyType="send"          // or "done", "go", "search"
+              onSubmitEditing={handleSubmit}
+            />
+            <TouchableOpacity onPress={()=>{router.push({
+              pathname: '/exploreAi',
+              params: { mode: 'voice' },
+            })}}>
+              <Ionicons name="mic-outline" size={22} />
+            </TouchableOpacity>
+            <TouchableOpacity style={{ borderRadius:50, height:30, width:30, alignItems:"center", justifyContent:"center", backgroundColor:"#EBEBEB"}} onPress={()=>{router.push({
+              pathname: '/exploreAi',
+              params: { mode: 'video' },
+            })}}>
+                <AudioLines />
+            </TouchableOpacity>
+          </View>
+
+        <View>
+            <View
+              style={[
+                styles.chipsRow,
+                !expanded && firstRowHeight !== null
+                  ? { height: firstRowHeight, overflow: "hidden" }
+                  : {}
+              ]}
+              onLayout={(e) => {
+                if (firstRowHeight === null) {
+                  setFirstRowHeight(e.nativeEvent.layout.height);
+                }
+              }}
+            >
+              {[
+                "Ai powered",
+                "TBZ latest collection",
+                "Rings",
+                "Wedding",
+                "Men’s gifting",
+                "Mom’s gift",
+                "Anniversary",
+                "Ai powered",
+                "TBZ latest collection",
+                "Rings",
+                "Wedding",
+                "Men’s gifting",
+                "Mom’s gift",
+                "Anniversary",
+              ].map((chip, idx) => (
+                <TouchableOpacity onPress={()=>{setInputChip(chip)}} key={idx} style={styles.chip}>
+                  <Text style={styles.chipText}>{chip}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+              <TouchableOpacity onPress={() => setExpanded(!expanded)}>
+                <Text style={styles.moreText}>{expanded ? "Show less" : "More"}</Text>
+              </TouchableOpacity>
+        </View>
+    </View>
         {/* Featured Product Card */}
         <HomePageCard />
         <HorizontalRuleIGM/>
@@ -132,7 +149,7 @@ export default function HomeScreen() {
         <HorizontalRuleIGM/>
         <TryAtHomeCard/>
         <HorizontalRuleIGM/>
-        <GiftingCard/>
+        <GiftingCard showExploreButton={true} />
         <HorizontalRuleIGM/>
         <BestSellersSection/>
         <HorizontalRuleIGM/>
@@ -195,6 +212,23 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 8,
     marginVertical: 10,
+  },
+  iconContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  greetingBold: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  greetingLight: {
+    fontSize: 14,
+    fontWeight: '300',
+    color: '#666',
+    textAlign: 'center',
   },
   
   chip: {

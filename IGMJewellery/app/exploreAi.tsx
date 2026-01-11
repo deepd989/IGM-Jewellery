@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { Sparkles, Mic, AudioWaveform, Send } from 'lucide-react-native';
+import { Sparkles, Mic, AudioWaveform, Send, AudioLines } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AiChatComponent from '../components/exploreAi/aiChat';
 import BottomNavBar from '@/components/bottomNavBar';
+import { useLocalSearchParams } from 'expo-router';
 
 export default function ChatInterface() {
+  const params = useLocalSearchParams();
+  const searchQuery = (params.value as string) || '';
+  const [showVoiceVideoInterface,setShowVoiceVideoInterface]= useState(params.mode)
+
   const [inputText, setInputText] = useState('');
   const [showChat, setShowChat] = useState(false);
   const [userMessage, setUserMessage] = useState('');
@@ -41,6 +46,16 @@ export default function ChatInterface() {
     return <AiChatComponent initialMessage={userMessage} />;
   }
 
+  if(searchQuery && searchQuery!=""){
+    return <AiChatComponent initialMessage={searchQuery} />;
+  }
+
+  if(showVoiceVideoInterface){
+    return <AiChatComponent initialMessage={''} mode={showVoiceVideoInterface as 'voice'|'video'} />;
+  }
+
+
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <View style={styles.container}>
@@ -65,11 +80,11 @@ export default function ChatInterface() {
             onSubmitEditing={handleSend}
             returnKeyType="send"
           />
-          <TouchableOpacity style={styles.iconButton}>
+          <TouchableOpacity style={styles.iconButton} onPress={()=>{setShowVoiceVideoInterface('voice')}}>
             <Mic size={20} color="#333" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <AudioWaveform size={20} color="#333" />
+          <TouchableOpacity style={styles.iconButton} onPress={()=>{setShowVoiceVideoInterface('video')}}>
+             <AudioLines />
           </TouchableOpacity>
           {inputText.trim().length > 0 && (
             <TouchableOpacity 

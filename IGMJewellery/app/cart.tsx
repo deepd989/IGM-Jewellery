@@ -5,12 +5,12 @@ import {
   ActivityIndicator,
   Alert,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SPACING } from "../constants/theme";
 
 import { TrialTabContent } from "@/components/trial/TrailTabContent";
@@ -234,9 +234,10 @@ export default function CartScreen() {
         <Text style={styles.headerTitle}>
           {isBag ? "Shopping Bag" : "Home Trial"}
         </Text>
-        <TouchableOpacity>
+        <View></View>
+        {/* <TouchableOpacity>
           <Ionicons name="heart-outline" size={24} color={COLORS.text} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <View style={styles.tabs}>

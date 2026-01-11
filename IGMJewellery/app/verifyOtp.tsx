@@ -19,21 +19,22 @@ export default function OtpScreen() {
   const inputs = useRef<TextInput[]>([]);
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
+  // --- New Error State ---
+  const [error, setError] = useState<string | null>(null);
 
-  
   useEffect(() => {
     if (timeLeft === 0) return;
-
     const interval = setInterval(() => {
       setTimeLeft((t) => t - 1);
     }, 1000);
-
     return () => clearInterval(interval);
   }, [timeLeft]);
 
-  /* ---------------- OTP Handling ---------------- */
   const handleChange = (value: string, index: number) => {
     if (!/^\d?$/.test(value)) return;
+    
+    // Clear error when user starts typing again
+    if (error) setError(null);
 
     const newOtp = [...otp];
     newOtp[index] = value;
@@ -43,9 +44,7 @@ export default function OtpScreen() {
       inputs.current[index + 1]?.focus();
     }
 
-    // If OTP complete
     if (newOtp.every((digit) => digit !== "")) {
-      Keyboard.dismiss();
       verifyOtp(newOtp.join(""));
     }
   };
@@ -56,79 +55,79 @@ export default function OtpScreen() {
     }
   };
 
-  /* ---------------- OTP Validation ---------------- */
   const verifyOtp = (code: string) => {
-    //  Replace with API call
-    const isValid = code === "12345";
+    const isValid = code === "12345"; // Mock validation
 
     if (isValid) {
+      setError(null);
       router.replace("/home");
+    } else {
+      // --- Handle Invalid State ---
+      setError("The OTP provided is invalid. Please try again.");
+      Keyboard.dismiss();
     }
   };
 
-  /* ---------------- Resend ---------------- */
   const resendCode = () => {
     setOtp(Array(OTP_LENGTH).fill(""));
     setTimeLeft(TIMER_SECONDS);
+    setError(null);
     inputs.current[0]?.focus();
-    // Call resend OTP API here
   };
 
   return (
-    <SafeAreaView style={{flex:1}}>
-    <View style={styles.container}>
-      {/* Back */}
-      <TouchableOpacity onPress={() => router.back()} style={{ paddingVertical: 8 }}>
-        <Text style={{ color: "#000", fontSize: 16 }}>←</Text>
-      </TouchableOpacity>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <TouchableOpacity onPress={() => router.back()} style={{ paddingVertical: 8 }}>
+          <Text style={{ color: "#000", fontSize: 16 }}>←</Text>
+        </TouchableOpacity>
 
-      {/* Header */}
-      <Text style={styles.title}>Enter code</Text>
-      <Text style={styles.subtitle}>
-        We’ve sent an SMS with an activation code to your phone {phoneNumber ?? ""}
-      </Text>
-
-      {/* OTP Inputs */}
-      <View style={styles.otpContainer}>
-        {otp.map((digit, index) => (
-          <TextInput
-            key={index}
-            ref={(ref) => (inputs.current[index] = ref!)}
-            style={[
-              styles.input,
-              digit && styles.inputFilled,
-            ]}
-            keyboardType="number-pad"
-            maxLength={1}
-            value={digit}
-            onChangeText={(v) => handleChange(v, index)}
-            onKeyPress={({ nativeEvent }) => {
-              if (nativeEvent.key === "Backspace") {
-                handleBackspace(index);
-              }
-            }}
-            autoFocus={index === 0}
-          />
-        ))}
-      </View>
-
-      {/* Timer / Resend */}
-      <TouchableOpacity
-        disabled={timeLeft > 0}
-        onPress={resendCode}
-      >
-        <Text style={styles.timerText}>
-          {timeLeft > 0
-            ? `Send code again 00:${String(timeLeft).padStart(2, "0")}`
-            : "Send Again"}
+        <Text style={styles.title}>Enter code</Text>
+        <Text style={styles.subtitle}>
+          We’ve sent an SMS with an activation code to your phone {phoneNumber ?? ""}
         </Text>
-      </TouchableOpacity>
-    </View>
+
+        <View style={styles.otpContainer}>
+          {otp.map((digit, index) => (
+            <TextInput
+              key={index}
+              ref={(ref) => (inputs.current[index] = ref!)}
+              style={[
+                styles.input,
+                digit && styles.inputFilled,
+                error && styles.inputError, // --- Red border on error ---
+              ]}
+              keyboardType="number-pad"
+              maxLength={1}
+              value={digit}
+              onChangeText={(v) => handleChange(v, index)}
+              onKeyPress={({ nativeEvent }) => {
+                if (nativeEvent.key === "Backspace") {
+                  handleBackspace(index);
+                }
+              }}
+              autoFocus={index === 0}
+            />
+          ))}
+        </View>
+
+        {/* --- Error Message Display --- */}
+        {error && (
+          <Text style={styles.errorText}>{error}</Text>
+        )}
+
+        <TouchableOpacity disabled={timeLeft > 0} onPress={resendCode}>
+          <Text style={styles.timerText}>
+            {timeLeft > 0
+              ? `Send code again 00:${String(timeLeft).padStart(2, "0")}`
+              : "Send Again"}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
 
-/* ---------------- Styles ---------------- */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -149,15 +148,14 @@ const styles = StyleSheet.create({
   otpContainer: {
     flexDirection: "row",
     marginTop: 40,
-    justifyContent: "space-evenly",
+    justifyContent: "space-between",
   },
   input: {
-    width: 60   ,
+    width: 55,
     height: 70,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#E0E0E0",
-    marginRight: 10,
     textAlign: "center",
     fontSize: 20,
     fontWeight: "600",
@@ -165,8 +163,17 @@ const styles = StyleSheet.create({
   inputFilled: {
     borderColor: "#000",
   },
+  inputError: {
+    borderColor: "#FF3B30", // Red border
+  },
+  errorText: {
+    color: "#FF3B30",
+    fontSize: 13,
+    marginTop: 15,
+    textAlign: "center",
+  },
   timerText: {
-    marginTop: 40,
+    marginTop: 25,
     textAlign: "center",
     color: "#444",
     fontSize: 14,

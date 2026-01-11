@@ -260,29 +260,18 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
         </TouchableOpacity>
 
         <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.iconBtn}>
+          <TouchableOpacity style={styles.iconBtn} onPress={() => router.push("/searchPage")}>
             <Ionicons name="search-outline" size={22} color={COLORS.text} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn}>
+          {/* <TouchableOpacity style={styles.iconBtn}>
             <Ionicons name="heart-outline" size={22} color={COLORS.text} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <View style={styles.iconBtn}>
             <CartBadge iconSize={22} iconColor={COLORS.text} />
           </View>
         </View>
       </View>
 
-      {/* Breadcrumb */}
-      {(departmentId ||
-        categoryId ||
-        occasion ||
-        brand ||
-        collection ||
-        gender) && (
-        <View style={styles.breadcrumbContainer}>
-          <Text style={styles.breadcrumbText}>{getBreadcrumb()}</Text>
-        </View>
-      )}
 
       {/* Category Icon & Title */}
       <View style={styles.titleSection}>
@@ -654,7 +643,7 @@ const styles = StyleSheet.create({
   },
   iconBtn: {
     padding: 4,
-    marginLeft: 12,
+    marginLeft: 6,
   },
   breadcrumbContainer: {
     paddingHorizontal: SPACING.m,
