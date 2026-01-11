@@ -178,6 +178,18 @@ export const cartApiService = createApi({
       invalidatesTags: ["Cart"],
     }),
 
+    clearTrial: builder.mutation<CartState, void>({
+      queryFn: () => {
+        currentState = {
+          ...currentState,
+          trialItems: [],
+        };
+        console.log("clearTrial - updated state:", currentState);
+        return { data: currentState };
+      },
+      invalidatesTags: ["Cart"],
+    }),
+
     // Clear cart
     clearCart: builder.mutation<CartState, void>({
       queryFn: () => {
@@ -221,5 +233,6 @@ export const {
   useRemoveFromTrialMutation,
   useToggleGiftAddonMutation,
   useClearCartMutation,
+  useClearTrialMutation,
   useMoveToWishlistMutation,
 } = cartApiService;
