@@ -1,9 +1,13 @@
+import { useGetCartQuery } from "@/store/apis/cart";
+import { useGetCheckoutSessionQuery } from "@/store/apis/checkout";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "expo-router";
-import React from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
+  ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -15,9 +19,8 @@ import {
 } from "react-native";
 import * as z from "zod";
 import { CheckoutStepper } from "../../../components/checkout/CheckoutStepper";
-import { SPACING } from "../../../constants/theme";
+import { COLORS, SPACING } from "../../../constants/theme";
 
-// Fixed: Removed .default() to prevent type mismatch in zodResolver
 const upiSchema = z.object({
   upiId: z
     .string()
@@ -30,8 +33,14 @@ type UpiFormData = z.infer<typeof upiSchema>;
 
 export default function UpiDetailsScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const orderId = params.orderId as string;
 
-  // Fixed: Added defaultValues to handle initial state instead of schema defaults
+  const { data: checkoutSession, isLoading: isLoadingSession } =
+    useGetCheckoutSessionQuery();
+  const { data: cartData } = useGetCartQuery();
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -41,10 +50,81 @@ export default function UpiDetailsScreen() {
     defaultValues: { upiId: "", remember: true },
   });
 
-  const onSubmit = (data: UpiFormData) => {
-    console.log("UPI Data:", data);
-    router.push("/checkout/confirmation");
+  // Calculate totals
+  const orderDetails = React.useMemo(() => {
+    if (!checkoutSession) {
+      return { total: 0, itemCount: 0 };
+    }
+
+    const giftAddonsCost =
+      cartData?.giftAddons
+        ?.filter((addon) => addon.isChecked)
+        .reduce((sum, addon) => sum + addon.price, 0) || 0;
+
+    const total = checkoutSession.orderDetails.total + giftAddonsCost;
+    const itemCount = checkoutSession.orderDetails.items.reduce(
+      (acc, item) => acc + item.quantity,
+      0
+    );
+
+    return { total, itemCount };
+  }, [checkoutSession, cartData]);
+
+  const onSubmit = async (data: UpiFormData) => {
+    if (!orderId) {
+      Alert.alert("Error", "Order ID not found");
+      return;
+    }
+
+    setIsProcessing(true);
+
+    // Simulate UPI payment processing
+    setTimeout(() => {
+      console.log("UPI Data:", data);
+      console.log("Order ID:", orderId);
+      setIsProcessing(false);
+
+      router.push({
+        pathname: "/checkout/confirmation",
+        params: {
+          orderId: orderId,
+          orderDisplayId: `#${Math.floor(10000 + Math.random() * 90000)}`,
+        },
+      });
+    }, 2000);
   };
+
+  if (isLoadingSession) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Loading payment details...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!checkoutSession) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Ionicons
+            name="alert-circle-outline"
+            size={64}
+            color={COLORS.error}
+          />
+          <Text style={styles.errorText}>Session expired</Text>
+          <TouchableOpacity
+            style={styles.retryButton}
+            onPress={() => router.replace("/cart")}
+          >
+            <Text style={styles.retryButtonText}>Back to Cart</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -66,10 +146,14 @@ export default function UpiDetailsScreen() {
         <CheckoutStepper currentStep="Payment" />
 
         <View style={styles.content}>
-          {/* Summary Placeholder - In real app pass actual orderDetails */}
+          {/* Summary with dynamic data */}
           <View style={styles.summaryStub}>
             <Text style={styles.stubText}>Show Order Summary</Text>
-            <Text style={styles.stubValue}>4 items ₹20,000</Text>
+            <Text style={styles.stubValue}>
+              {orderDetails.itemCount}{" "}
+              {orderDetails.itemCount === 1 ? "item" : "items"} ₹
+              {orderDetails.total.toLocaleString()}
+            </Text>
           </View>
 
           <View style={styles.formSection}>
@@ -114,10 +198,20 @@ export default function UpiDetailsScreen() {
             />
 
             <TouchableOpacity
-              style={styles.submitBtn}
+              style={[
+                styles.submitBtn,
+                isProcessing && styles.submitBtnDisabled,
+              ]}
               onPress={handleSubmit(onSubmit)}
+              disabled={isProcessing}
             >
-              <Text style={styles.submitBtnText}>Verify & Pay ₹20,000</Text>
+              {isProcessing ? (
+                <ActivityIndicator color="#FFF" size="small" />
+              ) : (
+                <Text style={styles.submitBtnText}>
+                  Verify & Pay ₹{orderDetails.total.toLocaleString()}
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -130,6 +224,40 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: SPACING.m,
+    fontSize: 16,
+    color: COLORS.textSecondary,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: SPACING.xl,
+  },
+  errorText: {
+    marginTop: SPACING.m,
+    fontSize: 18,
+    fontWeight: "600",
+    color: COLORS.text,
+  },
+  retryButton: {
+    marginTop: SPACING.l,
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.m,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
   },
   header: {
     flexDirection: "row",
@@ -190,11 +318,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "red",
   },
-  errorText: {
-    color: "red",
-    fontSize: 12,
-    marginBottom: 12,
-  },
   checkboxRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -211,6 +334,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
+  },
+  submitBtnDisabled: {
+    opacity: 0.6,
   },
   submitBtnText: {
     color: "#FFF",
