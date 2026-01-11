@@ -1,20 +1,38 @@
-import { Product } from '@/interfaces/product.interface';
+import { Product } from "@/interfaces/product.interface";
 
-import { useAddToCartMutation, useAddToTrialMutation } from '@/store/apis/cart';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { COLORS, SPACING } from '../../constants/theme';
+import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { COLORS, SPACING } from "../../constants/theme";
 
 interface ProductInfoProps {
   product: Product;
   onCustomize?: () => void;
 }
 
-const SPEC_CHIPS = ['14 KT', 'Yellow Gold', '0.00 g', '0.880 g', '0.024 C', 'FG SI'];
+const SPEC_CHIPS = [
+  "14 KT",
+  "Yellow Gold",
+  "0.00 g",
+  "0.880 g",
+  "0.024 C",
+  "FG SI",
+];
 
-export const ProductInfo: React.FC<ProductInfoProps> = ({ product, onCustomize }) => {
+export const ProductInfo: React.FC<ProductInfoProps> = ({
+  product,
+  onCustomize,
+}) => {
   const router = useRouter();
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
@@ -26,28 +44,28 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product, onCustomize }
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);
     } catch (error) {
-      Alert.alert('Error', 'Failed to add item to cart');
+      Alert.alert("Error", "Failed to add item to cart");
     }
   };
 
   const handleBuyNow = async () => {
     try {
       await addToCart({ product, quantity: 1 }).unwrap();
-      router.push('/cart');
+      router.push("/cart");
     } catch (error) {
-      Alert.alert('Error', 'Failed to proceed to checkout');
+      Alert.alert("Error", "Failed to proceed to checkout");
     }
   };
 
   const handleTryAtHome = async () => {
     try {
       await addToTrial(product).unwrap();
-      Alert.alert('Success', 'Added to trial list!', [
-        { text: 'View Trial', onPress: () => router.push('/cart') },
-        { text: 'OK' }
+      Alert.alert("Success", "Added to trial list!", [
+        { text: "View Trial", onPress: () => router.push("/cart") },
+        { text: "OK" },
       ]);
     } catch (error) {
-      Alert.alert('Error', 'Failed to add item to trial');
+      Alert.alert("Error", "Failed to add item to trial");
     }
   };
 
@@ -60,9 +78,13 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product, onCustomize }
           <Text style={styles.brand}>{product.brand}</Text>
         </View>
         <View style={styles.priceCol}>
-          <Text style={styles.discountPrice}>₹{product.discountedPrice.toLocaleString()}</Text>
+          <Text style={styles.discountPrice}>
+            ₹{product.discountedPrice.toLocaleString()}
+          </Text>
           {product.givenPrice && (
-            <Text style={styles.originalPrice}>₹{product.givenPrice.toLocaleString()}</Text>
+            <Text style={styles.originalPrice}>
+              ₹{product.givenPrice.toLocaleString()}
+            </Text>
           )}
           <Text style={styles.taxText}>(tax inclusive)</Text>
         </View>
@@ -75,7 +97,11 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product, onCustomize }
       </View>
 
       {/* Spec Chips */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipScroll}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.chipScroll}
+      >
         {SPEC_CHIPS.map((chip, index) => (
           <View key={index} style={styles.chip}>
             <Text style={styles.chipText}>{chip}</Text>
@@ -84,7 +110,12 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product, onCustomize }
         {/* Size Dropdown Mimic */}
         <TouchableOpacity style={styles.sizeChip}>
           <Text style={styles.sizeText}>Size 12</Text>
-          <Ionicons name="chevron-down" size={14} color={COLORS.text} style={{ marginLeft: 4 }} />
+          <Ionicons
+            name="chevron-down"
+            size={14}
+            color={COLORS.text}
+            style={{ marginLeft: 4 }}
+          />
         </TouchableOpacity>
       </ScrollView>
 
@@ -94,9 +125,14 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product, onCustomize }
           <Text style={styles.actionBtnText}>Try On</Text>
           <Ionicons name="chevron-down" size={16} color={COLORS.text} />
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={styles.actionBtn} onPress={onCustomize}>
-          <Ionicons name="sparkles" size={14} color={COLORS.text} style={{ marginRight: 6 }} />
+          <Ionicons
+            name="sparkles"
+            size={14}
+            color={COLORS.text}
+            style={{ marginRight: 6 }}
+          />
           <Text style={styles.actionBtnText}>Customize</Text>
         </TouchableOpacity>
       </View>
@@ -104,7 +140,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product, onCustomize }
       {/* NEW: Cart Action Buttons */}
       <View style={styles.cartActionsContainer}>
         {/* Try at Home Button */}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.tryHomeFullBtn}
           onPress={handleTryAtHome}
           disabled={isAddingToTrial}
@@ -112,14 +148,21 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product, onCustomize }
           <Ionicons name="home-outline" size={18} color={COLORS.primary} />
           <Text style={styles.tryHomeFullText}>Try at Home</Text>
           {isAddingToTrial && (
-            <ActivityIndicator size="small" color={COLORS.primary} style={{ marginLeft: 8 }} />
+            <ActivityIndicator
+              size="small"
+              color={COLORS.primary}
+              style={{ marginLeft: 8 }}
+            />
           )}
         </TouchableOpacity>
 
         {/* Add to Cart & Buy Now */}
         <View style={styles.purchaseRow}>
-          <TouchableOpacity 
-            style={[styles.addToCartBtn, showSuccess && styles.addToCartBtnSuccess]}
+          <TouchableOpacity
+            style={[
+              styles.addToCartBtn,
+              showSuccess && styles.addToCartBtnSuccess,
+            ]}
             onPress={handleAddToCart}
             disabled={isAddingToCart}
           >
@@ -138,7 +181,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({ product, onCustomize }
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.buyNowBtn}
             onPress={handleBuyNow}
             disabled={isAddingToCart}
@@ -159,12 +202,12 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: SPACING.m,
     paddingBottom: SPACING.m,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: SPACING.s,
   },
   titleCol: {
@@ -173,7 +216,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.primary,
     marginBottom: 4,
   },
@@ -182,16 +225,16 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   priceCol: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   discountPrice: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.primary,
   },
   originalPrice: {
     fontSize: 13,
-    textDecorationLine: 'line-through',
+    textDecorationLine: "line-through",
     color: COLORS.textSecondary,
     marginTop: 2,
   },
@@ -200,10 +243,10 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   expressTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F5F5F5',
-    alignSelf: 'flex-start',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
+    alignSelf: "flex-start",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
@@ -213,29 +256,29 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: COLORS.text,
     marginLeft: 6,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   chipScroll: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: SPACING.m,
   },
   chip: {
-    backgroundColor: '#F9F9F9',
+    backgroundColor: "#F9F9F9",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: '#F0F0F0',
+    borderColor: "#F0F0F0",
   },
   chipText: {
     fontSize: 12,
     color: COLORS.text,
   },
   sizeChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
@@ -245,28 +288,28 @@ const styles = StyleSheet.create({
   },
   sizeText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.text,
   },
   actionsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
     marginBottom: SPACING.m,
   },
   actionBtn: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     height: 48,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: "#E0E0E0",
     borderRadius: 8,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   actionBtnText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: COLORS.text,
     marginRight: 4,
   },
@@ -276,57 +319,57 @@ const styles = StyleSheet.create({
     marginTop: SPACING.s,
   },
   tryHomeFullBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     height: 48,
     borderWidth: 1,
     borderColor: COLORS.primary,
     borderRadius: 8,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     marginBottom: SPACING.s,
     gap: 8,
   },
   tryHomeFullText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.primary,
   },
   purchaseRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
   },
   addToCartBtn: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     height: 50,
     backgroundColor: COLORS.primary,
     borderRadius: 8,
     gap: 6,
   },
   addToCartBtnSuccess: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
   },
   addToCartText: {
     fontSize: 14,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontWeight: "700",
+    color: "#FFFFFF",
     letterSpacing: 0.5,
   },
   buyNowBtn: {
     flex: 1,
     height: 50,
-    backgroundColor: '#000000',
+    backgroundColor: "#000000",
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   buyNowText: {
     fontSize: 14,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontWeight: "700",
+    color: "#FFFFFF",
     letterSpacing: 0.5,
   },
 });

@@ -1,35 +1,49 @@
-import { Product } from '@/interfaces/product.interface';
+import { Product } from "@/interfaces/product.interface";
 
-import { useAddToCartMutation } from '@/store/apis/cart';
-import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { ActivityIndicator, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { COLORS, SPACING } from '../../constants/theme';
+import { useAddToCartMutation } from "@/store/apis/cart";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { COLORS, SPACING } from "../../constants/theme";
 
 interface ProductCardProps {
   product: Product;
-  viewMode: 'grid' | 'list';
+  viewMode: "grid" | "list";
   onPress: (product: Product) => void;
 }
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode, onPress }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  viewMode,
+  onPress,
+}) => {
   const [addToCart, { isLoading }] = useAddToCartMutation();
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const isGrid = viewMode === 'grid';
-  const cardWidth = isGrid ? (width - SPACING.m * 3) / 2 : width - SPACING.m * 2;
+  const isGrid = viewMode === "grid";
+  const cardWidth = isGrid
+    ? (width - SPACING.m * 3) / 2
+    : width - SPACING.m * 2;
 
   const handleAddToCart = async (e: any) => {
     e.stopPropagation(); // Prevent card press
     try {
-      console.log('Adding to cart:', product.id);
+      console.log("Adding to cart:", product.id);
       await addToCart({ product, quantity: 1 }).unwrap();
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 1500);
     } catch (error) {
-      console.error('Failed to add to cart:', error);
+      console.error("Failed to add to cart:", error);
     }
   };
 
@@ -38,11 +52,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode, onP
     return (
       <View style={styles.starContainer}>
         {[1, 2, 3, 4, 5].map((star) => (
-          <Ionicons 
-            key={star} 
-            name={star <= rating ? "star" : "star-outline"} 
-            size={10} 
-            color={COLORS.textSecondary} 
+          <Ionicons
+            key={star}
+            name={star <= rating ? "star" : "star-outline"}
+            size={10}
+            color={COLORS.textSecondary}
           />
         ))}
       </View>
@@ -50,19 +64,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode, onP
   };
 
   return (
-    <TouchableOpacity 
-      style={[styles.card, { width: cardWidth }]} 
+    <TouchableOpacity
+      style={[styles.card, { width: cardWidth }]}
       onPress={() => onPress(product)}
       activeOpacity={0.9}
     >
       {/* Image Section */}
       <View style={[styles.imageWrapper, !isGrid && styles.listImageWrapper]}>
-        <Image 
-          source={{ uri: product.thumbnailUrls[0] }} 
-          style={styles.image} 
-          resizeMode="cover" 
+        <Image
+          source={{ uri: product.thumbnailUrls[0] }}
+          style={styles.image}
+          resizeMode="cover"
         />
-        
+
         {/* New Badge */}
         {product.isNew && (
           <View style={styles.badge}>
@@ -76,7 +90,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode, onP
         </TouchableOpacity>
 
         {/*  Add to Cart Icon */}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.cartIcon, showSuccess && styles.cartIconSuccess]}
           onPress={handleAddToCart}
           disabled={isLoading}
@@ -101,14 +115,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode, onP
       <View style={styles.details}>
         {/* Price Row */}
         <View style={styles.priceRow}>
-          <Text style={styles.discountPrice}>₹{product.discountedPrice.toLocaleString()}</Text>
+          <Text style={styles.discountPrice}>
+            ₹{product.discountedPrice.toLocaleString()}
+          </Text>
           {product.givenPrice && (
-            <Text style={styles.originalPrice}>₹{product.givenPrice.toLocaleString()}</Text>
+            <Text style={styles.originalPrice}>
+              ₹{product.givenPrice.toLocaleString()}
+            </Text>
           )}
         </View>
 
         {/* Title */}
-        <Text style={styles.title} numberOfLines={1}>{product.title}</Text>
+        <Text style={styles.title} numberOfLines={1}>
+          {product.title}
+        </Text>
 
         {/* Brand & Rating */}
         <View style={styles.metaRow}>
@@ -119,10 +139,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode, onP
         {/* Action Buttons */}
         <View style={styles.actionRow}>
           <TouchableOpacity style={styles.tryNowBtn}>
-            <Ionicons name="sparkles-outline" size={14} color={COLORS.primary} style={{ marginRight: 4 }} />
+            <Ionicons
+              name="sparkles-outline"
+              size={14}
+              color={COLORS.primary}
+              style={{ marginRight: 4 }}
+            />
             <Text style={styles.tryNowText}>Try Now</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.tryHomeBtn}>
             <Text style={styles.tryHomeText}>Try at home</Text>
           </TouchableOpacity>
@@ -134,79 +159,79 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode, onP
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     marginBottom: SPACING.m,
     borderWidth: 1,
-    borderColor: '#F5F5F5',
+    borderColor: "#F5F5F5",
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   imageWrapper: {
-    width: '100%',
+    width: "100%",
     aspectRatio: 1,
-    backgroundColor: '#FAFAFA',
-    position: 'relative',
+    backgroundColor: "#FAFAFA",
+    position: "relative",
   },
   listImageWrapper: {
     aspectRatio: 1.5,
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   badge: {
-    position: 'absolute',
+    position: "absolute",
     top: 8,
     left: 8,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: "#E0E0E0",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
   },
   badgeText: {
     fontSize: 10,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.text,
   },
   favIcon: {
-    position: 'absolute',
+    position: "absolute",
     top: 8,
     right: 8,
-    backgroundColor: 'rgba(255,255,255,0.8)',
+    backgroundColor: "rgba(255,255,255,0.8)",
     borderRadius: 20,
     padding: 4,
   },
   // NEW: Cart Icon Button
   cartIcon: {
-    position: 'absolute',
+    position: "absolute",
     top: 48,
     right: 8,
     backgroundColor: COLORS.primary,
     borderRadius: 20,
     width: 32,
     height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
   },
   cartIconSuccess: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
   },
   deliveryTag: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 8,
     right: 8,
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    flexDirection: 'row',
-    alignItems: 'center',
+    backgroundColor: "rgba(255,255,255,0.9)",
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
@@ -214,37 +239,37 @@ const styles = StyleSheet.create({
   deliveryText: {
     fontSize: 10,
     marginLeft: 4,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   details: {
     padding: SPACING.s,
   },
   priceRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
+    flexDirection: "row",
+    alignItems: "baseline",
     marginBottom: 4,
   },
   discountPrice: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.primary,
     marginRight: 8,
   },
   originalPrice: {
     fontSize: 12,
-    textDecorationLine: 'line-through',
+    textDecorationLine: "line-through",
     color: COLORS.textSecondary,
   },
   title: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: COLORS.text,
     marginBottom: 4,
   },
   metaRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: SPACING.m,
   },
   brandText: {
@@ -252,36 +277,36 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   starContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   actionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     gap: 8,
   },
   tryNowBtn: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 6,
   },
   tryNowText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.primary,
   },
   tryHomeBtn: {
     flex: 1,
     backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 6,
     borderRadius: 4,
   },
   tryHomeText: {
     fontSize: 12,
-    fontWeight: '600',
-    color: '#FFFFFF',
+    fontWeight: "600",
+    color: "#FFFFFF",
   },
 });
