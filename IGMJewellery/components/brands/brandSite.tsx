@@ -4,8 +4,10 @@ import { ProductCard } from '../products/ProductCard';
 import { useSelector } from 'react-redux';
 import { selectProducts } from '@/store/productSlice';
 import { BrandAboutSection, BrandStat } from '@/store/apis/brandsApi';
+import ListingScreen from '@/app/product-list';
 
 type ProfileHeaderProps = {
+  brandNameKey:string;
   profileImageUri: string;
   businessName: string;
   tagline: string;
@@ -135,7 +137,7 @@ export default function BrandProfile({
       {activeTab === 'Products' && (
         
         <View style={styles.productsContainer}>
-              <FlatList
+              {/* <FlatList
                 data={products}
                 keyExtractor={(item) => item.id}
                 numColumns={2}
@@ -147,7 +149,8 @@ export default function BrandProfile({
                   />
                 )}
                 showsVerticalScrollIndicator={false}
-              />
+              /> */}
+              <ListingScreen  filters={{"brand":[header.brandNameKey]}} />
               </View>
               
       )}

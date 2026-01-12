@@ -45,7 +45,8 @@ export default function ProfileScreen() {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.userSection}>
-          <View style={styles.avatarPlaceholder} />
+          <View  />
+          <Image source={{ uri: 'https://drive.google.com/uc?export=download&id=19-d6USaW7yMEDIqEEPWx-lfilvBiNBCF' } } style={styles.avatarPlaceholder} />
           <View style={styles.userInfo}>
             <Text style={styles.userName}>{profile.name}</Text>
             <Text style={styles.userPhone}>{profile.phone}</Text>
@@ -154,7 +155,7 @@ const styles = StyleSheet.create({
   pointsBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#EBEBEB', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
   pointsText: { fontSize: 12, fontWeight: '700', marginLeft: 4 },
   userSection: { flexDirection: 'row', alignItems: 'center', padding: 16, backgroundColor: '#FFF' },
-  avatarPlaceholder: { width: 50, height: 50, borderRadius: 25, backgroundColor: '#E0E0E0' },
+  avatarPlaceholder: { width: 50, height: 50  },
   userInfo: { flex: 1, marginLeft: 16 },
   userName: { fontSize: 16, fontWeight: '700' },
   userPhone: { fontSize: 12, color: '#888', marginTop: 2 },

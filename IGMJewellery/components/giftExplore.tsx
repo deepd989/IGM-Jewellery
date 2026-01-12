@@ -8,24 +8,26 @@ const cardWidth = Math.max(92,(width - 50) / 3);
 export default function GiftExplore() {
   const categories = [
     // Row 1 (partially hidden at top)
-    { id: 1, title: 'Premium Gifts', size: 'large' },
-    { id: 2, title: 'Luxury Items', size: 'medium' },
-    { id: 3, title: 'Special', size: 'large' },
+      { id: 1, title: '🎁 Premium Gifts', size: 'large' },
+      { id: 2, title: '💎 Luxury Items', size: 'medium' },
+      { id: 3, title: '✨ Special', size: 'large' },
     
-    // Row 2
-    { id: 4, title: 'Shop e-gifts', size: 'large' },
-    { id: 5, title: "Men's gifting", size: 'medium' },
-    { id: 6, title: 'Under 30k', size: 'large' },
+      // Row 2
+      { id: 4, title: '📧 Shop e-gifts', size: 'large' },
+      { id: 5, title: '🕴️ Men’s gifting', size: 'medium' },
+      { id: 6, title: '💸 Under 30k', size: 'large' },
     
-    // Row 3
-    { id: 7, title: 'Gifts for Wife', size: 'large' },
-    { id: 8, title: 'Quick delivery', size: 'medium' },
-    { id: 9, title: 'Personalised', size: 'large' },
+      // Row 3
+      { id: 7, title: '💖 Gifts for Wife', size: 'large' },
+      { id: 8, title: '🚚 Quick delivery', size: 'medium' },
+      { id: 9, title: '✍️ Personalised', size: 'large' },
     
-    // Row 4 (partially hidden at bottom)
-    { id: 10, title: 'Trending', size: 'large' },
-    { id: 11, title: 'Best Sellers', size: 'medium' },
-    { id: 12, title: 'New Arrivals', size: 'large' },
+      // Row 4
+      { id: 10, title: '🔥 Trending', size: 'large' },
+      { id: 11, title: '🏆 Best Sellers', size: 'medium' },
+      { id: 12, title: '🆕 New Arrivals', size: 'large' },
+    
+    
   ];
 
   const renderCard = (item) => {
@@ -162,9 +164,10 @@ const styles = StyleSheet.create({
     height: 120,
   },
   cardText: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
     color: '#1A1A1A',
+    textAlign:'center'
   },
   topGradient: {
     position: 'absolute',

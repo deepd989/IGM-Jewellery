@@ -160,7 +160,7 @@ export default function HomeScreen() {
         <EventCard/>
         <HorizontalRuleIGM/>
         <HashtagComponent/>
-        {/* <HorizontalRuleIGM/> */}
+        <HorizontalRuleIGM/>
 
         {/* Necklace Section */}
 

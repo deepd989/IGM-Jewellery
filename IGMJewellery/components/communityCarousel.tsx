@@ -84,14 +84,19 @@ export default function CommunityCarousel() {
               ]}
             >
               {/* Video */}
-              <Video
+              {/* <Video
                 source={{ uri: item.video }}
                 style={styles.video}
                 resizeMode={ResizeMode.COVER}
                 shouldPlay
                 isLooping
                 isMuted
-              />
+              /> */}
+              <View style={[styles.video, {justifyContent:'center',alignItems:'center'}]}>
+                <Text>
+                  Video Placeholder
+                </Text>
+              </View>
 
               {/* Footer */}
               <View style={styles.footer}>

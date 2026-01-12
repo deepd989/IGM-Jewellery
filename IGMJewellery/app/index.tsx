@@ -98,6 +98,14 @@ export default function JewelryLanding() {
               {/* <View style={styles.linkUnderline} /> */}
             </TouchableOpacity>
           </View>
+
+          <TouchableOpacity 
+              style={[styles.linkButton, styles.skip]}
+              onPress={() => router.push('/home')}
+            >
+              <Text style={styles.linkText}>Skip</Text>
+              {/* <View style={styles.linkUnderline} /> */}
+            </TouchableOpacity>
         </View>
 
       </ScrollView>
@@ -234,6 +242,9 @@ const styles = StyleSheet.create({
   },
   linkButton: {
     alignItems: 'center',
+  },
+  skip:{
+    marginTop:15
   },
   linkText: {
     fontSize: 16,
