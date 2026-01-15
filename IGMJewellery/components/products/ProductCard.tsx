@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
+import { getEstimatedDeliveryDate } from "../../utils/deliveryDate";
 
 interface ProductCardProps {
   product: Product;
@@ -142,8 +143,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Delivery Tag */}
         <View style={styles.deliveryTag}>
-          <Ionicons name="bus-outline" size={12} color={COLORS.text} />
-          <Text style={styles.deliveryText}>19th Nov</Text>
+          <Ionicons name="cube-outline" size={12} color={COLORS.text} />
+          <Text style={styles.deliveryText}>{getEstimatedDeliveryDate()}</Text>
         </View>
       </View>
 

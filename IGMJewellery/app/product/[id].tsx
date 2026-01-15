@@ -1,15 +1,15 @@
-import { CustomizationModal } from '@/components/products/CustomizationModal';
-import { DeliveryCheck } from '@/components/products/DeliveryCheck';
-import { ProductAccordion } from '@/components/products/ProductAccordion';
-import { ProductImageGallery } from '@/components/products/ProductImageGallery';
-import { ProductInfo } from '@/components/products/ProductInfo';
-import { ReviewSection } from '@/components/products/ReviewSection';
+import { CustomizationModal } from "@/components/products/CustomizationModal";
+import { DeliveryCheck } from "@/components/products/DeliveryCheck";
+import { ProductAccordion } from "@/components/products/ProductAccordion";
+import { ProductImageGallery } from "@/components/products/ProductImageGallery";
+import { ProductInfo } from "@/components/products/ProductInfo";
+import { ReviewSection } from "@/components/products/ReviewSection";
 
-import { CartBadge } from '@/components/cart/CardBadge';
-import { useGetProductByIdQuery } from '@/store/apis/product';
-import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { CartBadge } from "@/components/cart/CardBadge";
+import { useGetProductByIdQuery } from "@/store/apis/product";
+import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Platform,
@@ -18,24 +18,32 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
-} from 'react-native';
-import { COLORS, SPACING } from '../../constants/theme';
+  View,
+} from "react-native";
+import { COLORS, SPACING } from "../../constants/theme";
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const [isCustomizeVisible, setIsCustomizeVisible] = useState(false);
-  
+
   // Fetch product from Redux API
-  const { data: product, isLoading, isError, error } = useGetProductByIdQuery(id as string);
+  const {
+    data: product,
+    isLoading,
+    isError,
+    error,
+  } = useGetProductByIdQuery(id as string);
 
   // Loading state
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backBtn}
+          >
             <Ionicons name="chevron-back" size={24} color={COLORS.text} />
           </TouchableOpacity>
         </View>
@@ -52,17 +60,25 @@ export default function ProductDetailScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backBtn}
+          >
             <Ionicons name="chevron-back" size={24} color={COLORS.text} />
           </TouchableOpacity>
         </View>
         <View style={styles.centerContent}>
-          <Ionicons name="alert-circle-outline" size={64} color={COLORS.error} />
+          <Ionicons
+            name="alert-circle-outline"
+            size={64}
+            color={COLORS.error}
+          />
           <Text style={styles.errorText}>Product not found</Text>
           <Text style={styles.errorSubtext}>
-            {error?.toString() || 'The product you are looking for does not exist.'}
+            {error?.toString() ||
+              "The product you are looking for does not exist."}
           </Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.backButton}
             onPress={() => router.back()}
           >
@@ -81,27 +97,34 @@ export default function ProductDetailScreen() {
           <Ionicons name="chevron-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
         <View style={styles.headerRight}>
-           <TouchableOpacity style={styles.iconBtn}>
-             <Ionicons name="search-outline" size={22} color={COLORS.text} />
-           </TouchableOpacity>
-           <TouchableOpacity style={styles.iconBtn}>
-             <Ionicons name="heart-outline" size={22} color={COLORS.text} />
-           </TouchableOpacity>
-           {/* <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/cart')}>
-             <Ionicons name="bag-outline" size={22} color={COLORS.text} />
-           </TouchableOpacity> */}
+          <TouchableOpacity style={styles.iconWrapper}>
+            <Ionicons name="search-outline" size={22} color={COLORS.text} />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.iconWrapper}>
+            <Ionicons name="heart-outline" size={22} color={COLORS.text} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.iconWrapper}
+            onPress={() => router.push("/cart")}
+          >
             <CartBadge iconSize={22} iconColor={COLORS.text} />
+          </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* Gallery */}
         <ProductImageGallery images={product.thumbnailUrls} />
 
         {/* Info & Specs */}
         <View style={styles.infoWrapper}>
-          <ProductInfo 
-            product={product} 
+          <ProductInfo
+            product={product}
             onCustomize={() => setIsCustomizeVisible(true)}
           />
         </View>
@@ -117,7 +140,7 @@ export default function ProductDetailScreen() {
       </ScrollView>
 
       {/* Customization Bottom Sheet Modal */}
-      <CustomizationModal 
+      <CustomizationModal
         visible={isCustomizeVisible}
         onClose={() => setIsCustomizeVisible(false)}
         product={product}
@@ -129,23 +152,23 @@ export default function ProductDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    paddingTop: Platform.OS === 'android' ? 30 : 0,
+    backgroundColor: "#FFFFFF",
+    paddingTop: Platform.OS === "android" ? 30 : 0,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: SPACING.m,
     paddingVertical: SPACING.s,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     zIndex: 10,
   },
   backBtn: {
     padding: 4,
   },
   headerRight: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   iconBtn: {
     marginLeft: SPACING.m,
@@ -153,8 +176,8 @@ const styles = StyleSheet.create({
   },
   centerContent: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: SPACING.l,
   },
   loadingText: {
@@ -165,14 +188,14 @@ const styles = StyleSheet.create({
   errorText: {
     marginTop: SPACING.m,
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.text,
   },
   errorSubtext: {
     marginTop: SPACING.s,
     fontSize: 14,
     color: COLORS.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
     paddingHorizontal: SPACING.l,
   },
   backButton: {
@@ -183,14 +206,21 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   backButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   scrollContent: {
     paddingBottom: 40,
   },
   infoWrapper: {
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
+  },
+
+  iconWrapper: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
