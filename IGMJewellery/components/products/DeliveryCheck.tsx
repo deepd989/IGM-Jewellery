@@ -1,7 +1,14 @@
-import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { COLORS, SPACING } from '../../constants/theme';
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { COLORS, SPACING } from "../../constants/theme";
+import { getEstimatedDeliveryDate } from "../../utils/deliveryDate";
 
 export const DeliveryCheck: React.FC = () => {
   return (
@@ -14,15 +21,15 @@ export const DeliveryCheck: React.FC = () => {
         <View style={styles.headerTextCol}>
           <Text style={styles.title}>Delivery Details</Text>
           <Text style={styles.subtitle}>
-            Find if your locality is eligible for express delivery & look for stores nearby
+            Check delivery availability & look for stores nearby
           </Text>
         </View>
       </View>
 
       {/* Input */}
       <View style={styles.inputContainer}>
-        <TextInput 
-          placeholder="Enter pincode" 
+        <TextInput
+          placeholder="Enter pincode"
           style={styles.input}
           keyboardType="numeric"
           placeholderTextColor={COLORS.textSecondary}
@@ -30,7 +37,11 @@ export const DeliveryCheck: React.FC = () => {
         <TouchableOpacity>
           <Text style={styles.checkText}>Check</Text>
         </TouchableOpacity>
-        <Ionicons name="chevron-forward" size={16} color={COLORS.textSecondary} />
+        <Ionicons
+          name="chevron-forward"
+          size={16}
+          color={COLORS.textSecondary}
+        />
       </View>
 
       {/* Highlights */}
@@ -39,7 +50,12 @@ export const DeliveryCheck: React.FC = () => {
           <Ionicons name="time-outline" size={20} color={COLORS.primary} />
         </View>
         <View style={styles.highlightTextCol}>
-          <Text style={styles.highlightTitle}>Express delivery by <Text style={{fontWeight: '700'}}>19th Nov 3pm-9pm</Text></Text>
+          <Text style={styles.highlightTitle}>
+            Delivery by{" "}
+            <Text style={{ fontWeight: "700" }}>
+              {getEstimatedDeliveryDate()}
+            </Text>
+          </Text>
         </View>
       </View>
 
@@ -55,7 +71,7 @@ export const DeliveryCheck: React.FC = () => {
           <Text style={styles.tryBtnText}>Add to Try at Home</Text>
         </TouchableOpacity>
       </View>
-      
+
       {/* Offer Coupon */}
       <TouchableOpacity style={styles.couponContainer}>
         <View style={styles.couponIcon}>
@@ -63,7 +79,9 @@ export const DeliveryCheck: React.FC = () => {
         </View>
         <View style={styles.couponContent}>
           <Text style={styles.couponTitle}>Check Available Offers</Text>
-          <Text style={styles.couponSubtitle}>Save extra with coupons - check now!</Text>
+          <Text style={styles.couponSubtitle}>
+            Save extra with coupons - check now!
+          </Text>
         </View>
         <Ionicons name="chevron-forward" size={20} color={COLORS.text} />
       </TouchableOpacity>
@@ -71,14 +89,20 @@ export const DeliveryCheck: React.FC = () => {
       {/* Live Call */}
       <View style={styles.liveCallContainer}>
         <View style={styles.videoIcon}>
-           <Ionicons name="videocam" size={24} color={COLORS.primary} />
+          <Ionicons name="videocam" size={24} color={COLORS.primary} />
         </View>
         <Text style={styles.liveCallTitle}>WISH TO SEE THE PRODUCT LIVE?</Text>
         <Text style={styles.liveCallDesc}>
-          Celebrate every day in style with the subtle grace of these drop earrings crafted in 22 Karat Yellow Gold in a leaf design.
+          Celebrate every day in style with the subtle grace of these drop
+          earrings crafted in 22 Karat Yellow Gold in a leaf design.
         </Text>
         <TouchableOpacity style={styles.scheduleBtn}>
-          <Ionicons name="videocam-outline" size={18} color="#FFF" style={{ marginRight: 8 }} />
+          <Ionicons
+            name="videocam-outline"
+            size={18}
+            color="#FFF"
+            style={{ marginRight: 8 }}
+          />
           <Text style={styles.scheduleBtnText}>Schedule call</Text>
         </TouchableOpacity>
       </View>
@@ -89,21 +113,21 @@ export const DeliveryCheck: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     padding: SPACING.m,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderTopWidth: 8,
-    borderTopColor: '#F9F9F9', // Section separator
+    borderTopColor: "#F9F9F9", // Section separator
   },
   header: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: SPACING.m,
   },
   truckIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#F5F5F5',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#F5F5F5",
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: SPACING.m,
   },
   headerTextCol: {
@@ -111,7 +135,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.primary,
     marginBottom: 4,
   },
@@ -121,10 +145,10 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: "#E0E0E0",
     borderRadius: 8,
     paddingHorizontal: SPACING.m,
     height: 48,
@@ -140,12 +164,12 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     marginRight: 4,
   },
-  
+
   // Highlights
   highlightRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F9F9F9',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F9F9F9",
     padding: SPACING.m,
     borderRadius: 8,
     marginBottom: SPACING.s,
@@ -159,16 +183,16 @@ const styles = StyleSheet.create({
   highlightTitle: {
     fontSize: 13,
     color: COLORS.text,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   highlightSubtitle: {
     fontSize: 12,
     color: COLORS.text,
-    fontWeight: '700',
+    fontWeight: "700",
     marginTop: 2,
   },
   tryBtn: {
-    backgroundColor: '#E0E0E0',
+    backgroundColor: "#E0E0E0",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 4,
@@ -176,20 +200,20 @@ const styles = StyleSheet.create({
   tryBtnText: {
     fontSize: 12,
     color: COLORS.text,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 
   // Coupon
   couponContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: '#F0F0F0',
+    borderColor: "#F0F0F0",
     borderRadius: 8,
     padding: SPACING.m,
     marginTop: SPACING.m,
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#000",
     shadowOpacity: 0.02,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
@@ -198,10 +222,10 @@ const styles = StyleSheet.create({
   couponIcon: {
     width: 40,
     height: 40,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: "#F9F9F9",
     borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: SPACING.m,
   },
   couponContent: {
@@ -209,7 +233,7 @@ const styles = StyleSheet.create({
   },
   couponTitle: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.text,
   },
   couponSubtitle: {
@@ -221,42 +245,42 @@ const styles = StyleSheet.create({
   // Live Call
   liveCallContainer: {
     marginTop: SPACING.xl,
-    alignItems: 'center',
+    alignItems: "center",
   },
   videoIcon: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#F5F5F5',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#F5F5F5",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: SPACING.m,
   },
   liveCallTitle: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.text,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     marginBottom: SPACING.s,
   },
   liveCallDesc: {
     fontSize: 13,
     color: COLORS.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 20,
     marginBottom: SPACING.m,
   },
   scheduleBtn: {
-    flexDirection: 'row',
+    flexDirection: "row",
     backgroundColor: COLORS.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 24,
-    alignItems: 'center',
+    alignItems: "center",
   },
   scheduleBtnText: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

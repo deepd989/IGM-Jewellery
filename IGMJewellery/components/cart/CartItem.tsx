@@ -1,8 +1,24 @@
-import { Product } from '@/interfaces/product.interface';
-import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { COLORS, SPACING } from '../../constants/theme';
+import { Product } from "@/interfaces/product.interface";
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import {
+  Image,
+  LayoutAnimation,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  UIManager,
+  View,
+} from "react-native";
+import { COLORS, SPACING } from "../../constants/theme";
+
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 interface CartItemProps {
   product: Product;
@@ -12,15 +28,25 @@ interface CartItemProps {
   onRemove: () => void;
 }
 
-export const CartItem: React.FC<CartItemProps> = ({ 
-  product, 
-  quantity, 
-  onIncrement, 
-  onDecrement, 
-  onRemove 
+export const CartItem: React.FC<CartItemProps> = ({
+  product,
+  quantity,
+  onIncrement,
+  onDecrement,
+  onRemove,
 }) => {
-  const discountPercent = product.givenPrice 
-    ? Math.round(((product.givenPrice - product.discountedPrice) / product.givenPrice) * 100)
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
+  const toggleExpand = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setIsExpanded((prev) => !prev);
+  };
+
+  const discountPercent = product.givenPrice
+    ? Math.round(
+        ((product.givenPrice - product.discountedPrice) / product.givenPrice) *
+          100
+      )
     : 0;
 
   return (
@@ -37,14 +63,35 @@ export const CartItem: React.FC<CartItemProps> = ({
 
       <View style={styles.contentRow}>
         <View style={styles.imageContainer}>
-          <Image source={{ uri: product.thumbnailUrls[0] }} style={styles.image} resizeMode="contain" />
+          <Image
+            source={{ uri: product.thumbnailUrls[0] }}
+            style={styles.image}
+            resizeMode="contain"
+          />
         </View>
 
         <View style={styles.details}>
           <Text style={styles.brand}>{product.brand}</Text>
           <Text style={styles.title}>{product.title}</Text>
-          <Text style={styles.specs}>14 KT, Yellow Gold, 0.01 gm, Gem stone-Emerald, FG...</Text>
-          <Ionicons name="chevron-down" size={14} color={COLORS.text} style={styles.expandIcon} />
+          <TouchableOpacity
+            onPress={toggleExpand}
+            activeOpacity={0.7}
+            style={styles.specsContainer}
+          >
+            <Text
+              style={styles.specs}
+              numberOfLines={isExpanded ? undefined : 1}
+            >
+              {product.description}
+            </Text>
+
+            <Ionicons
+              name={isExpanded ? "chevron-up" : "chevron-down"}
+              size={14}
+              color={COLORS.text}
+              style={styles.expandIcon}
+            />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -63,10 +110,14 @@ export const CartItem: React.FC<CartItemProps> = ({
           {discountPercent > 0 && (
             <View style={styles.savingsRow}>
               <Text style={styles.savingsLabel}>Save {discountPercent}% </Text>
-              <Text style={styles.originalPrice}>₹{product.givenPrice?.toLocaleString()}</Text>
+              <Text style={styles.originalPrice}>
+                ₹{product.givenPrice?.toLocaleString()}
+              </Text>
             </View>
           )}
-          <Text style={styles.finalPrice}>₹{product.discountedPrice.toLocaleString()}</Text>
+          <Text style={styles.finalPrice}>
+            ₹{product.discountedPrice.toLocaleString()}
+          </Text>
         </View>
       </View>
     </View>
@@ -74,20 +125,29 @@ export const CartItem: React.FC<CartItemProps> = ({
 };
 
 const styles = StyleSheet.create({
+  specsContainer: {
+    marginTop: 4,
+  },
+
+  expandIcon: {
+    alignSelf: "flex-start",
+    marginTop: 2,
+  },
+
   container: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: '#F0F0F0',
+    borderColor: "#F0F0F0",
     borderRadius: 8,
     padding: SPACING.m,
     marginBottom: SPACING.m,
-    position: 'relative',
+    position: "relative",
   },
   deliveryTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F9F9F9',
-    alignSelf: 'flex-start',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F9F9F9",
+    alignSelf: "flex-start",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
@@ -97,28 +157,28 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: COLORS.text,
     marginLeft: 4,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   removeBtn: {
-    position: 'absolute',
+    position: "absolute",
     top: 12,
     right: 12,
     zIndex: 1,
   },
   contentRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: SPACING.m,
   },
   imageContainer: {
     width: 80,
     height: 80,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: "#FAFAFA",
     borderRadius: 4,
     marginRight: SPACING.m,
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   details: {
     flex: 1,
@@ -130,7 +190,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.text,
     marginBottom: 4,
   },
@@ -143,20 +203,20 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   footerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: '#F5F5F5',
+    borderTopColor: "#F5F5F5",
     paddingTop: SPACING.m,
   },
   quantityContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F9F9F9',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F9F9F9",
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#EFEFEF',
+    borderColor: "#EFEFEF",
   },
   qtyBtn: {
     padding: 8,
@@ -164,15 +224,15 @@ const styles = StyleSheet.create({
   qtyText: {
     paddingHorizontal: 12,
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.text,
   },
   priceContainer: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   savingsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   savingsLabel: {
     fontSize: 11,
@@ -180,12 +240,12 @@ const styles = StyleSheet.create({
   },
   originalPrice: {
     fontSize: 11,
-    textDecorationLine: 'line-through',
+    textDecorationLine: "line-through",
     color: COLORS.textSecondary,
   },
   finalPrice: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
     color: COLORS.text,
   },
 });

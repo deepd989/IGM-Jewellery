@@ -21,6 +21,13 @@ interface CartState {
   items: CartItem[];
   trialItems: TrialItem[];
   giftAddons: GiftAddon[];
+  freebie?: {
+    id: string;
+    title: string;
+    subtitle: string;
+    minOrderValue: number;
+    isVisible: boolean;
+  } | null;
 }
 
 // Mock initial state
@@ -33,6 +40,13 @@ const INITIAL_STATE: CartState = {
     { id: "3", title: "Record a message", price: 100, isChecked: false },
     { id: "4", title: "Deluxe Gift Box", price: 150, isChecked: false },
   ],
+  freebie: {
+    id: "freebie-1",
+    title: "Necklace Box",
+    subtitle: "Congratulations! Available on orders above ₹5,000",
+    minOrderValue: 5000,
+    isVisible: true,
+  },
 };
 
 // In-memory state for mock API
@@ -221,6 +235,25 @@ export const cartApiService = createApi({
       },
       invalidatesTags: ["Cart"],
     }),
+
+    dismissFreebie: builder.mutation<CartState, void>({
+      queryFn: () => {
+        if (!currentState.freebie) {
+          return { data: currentState };
+        }
+
+        currentState = {
+          ...currentState,
+          freebie: {
+            ...currentState.freebie,
+            isVisible: false,
+          },
+        };
+
+        return { data: currentState };
+      },
+      invalidatesTags: ["Cart"],
+    }),
   }),
 });
 
@@ -235,4 +268,5 @@ export const {
   useClearCartMutation,
   useClearTrialMutation,
   useMoveToWishlistMutation,
+  useDismissFreebieMutation,
 } = cartApiService;
