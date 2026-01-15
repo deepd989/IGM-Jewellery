@@ -140,21 +140,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <Ionicons name="heart-outline" size={20} color={COLORS.text} />
         </TouchableOpacity>
 
-        {/* Add to Cart Icon */}
-        <TouchableOpacity
-          style={[styles.cartIcon, showSuccess && styles.cartIconSuccess]}
-          onPress={handleAddToCart}
-          disabled={isAddingToCart}
-        >
-          {isAddingToCart ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-          ) : showSuccess ? (
-            <Ionicons name="checkmark" size={18} color="#FFFFFF" />
-          ) : (
-            <Ionicons name="bag-add-outline" size={18} color="#FFFFFF" />
-          )}
-        </TouchableOpacity>
-
         {/* Delivery Tag */}
         <View style={styles.deliveryTag}>
           <Ionicons name="bus-outline" size={12} color={COLORS.text} />
@@ -207,16 +192,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           <TouchableOpacity
             style={[
-              styles.tryHomeBtn,
-              isAddingToTrial && styles.tryHomeBtnDisabled,
+              styles.addToBagBtn,
+              isAddingToCart && styles.addToBagBtnDisabled,
             ]}
-            onPress={handleTryAtHome}
-            disabled={isAddingToTrial}
+            onPress={handleAddToCart}
+            disabled={isAddingToCart}
           >
-            {isAddingToTrial ? (
+            {isAddingToCart ? (
               <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : showSuccess ? (
+              <Ionicons name="checkmark" size={16} color="#FFFFFF" />
             ) : (
-              <Text style={styles.tryHomeText}>Try at home</Text>
+              <Text style={styles.addToBagText}>Add to Bag</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -226,6 +213,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 };
 
 const styles = StyleSheet.create({
+  addToBagBtn: {
+    flex: 1,
+    backgroundColor: COLORS.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 6,
+    borderRadius: 4,
+  },
+  addToBagBtnDisabled: {
+    opacity: 0.6,
+  },
+  addToBagText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#FFFFFF",
+  },
   card: {
     backgroundColor: "#FFFFFF",
     marginBottom: SPACING.m,
