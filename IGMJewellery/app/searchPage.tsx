@@ -12,6 +12,7 @@ import { OCCASIONS } from '@/constants/occasions';
     StyleSheet,
     Platform,
     } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
     const occasions = OCCASIONS
     const whoIsItFor = RELATIONSHIPS
@@ -47,6 +48,7 @@ import { OCCASIONS } from '@/constants/occasions';
     };
 
     return (
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F5F5' }}>
         <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
@@ -235,6 +237,7 @@ import { OCCASIONS } from '@/constants/occasions';
                 </TouchableOpacity>
     </View>
         </View>
+        </SafeAreaView>
     );
     }
 

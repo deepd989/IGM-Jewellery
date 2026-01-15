@@ -10,7 +10,6 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -20,6 +19,7 @@ import {
 import { CheckoutStepper } from "../../components/checkout/CheckoutStepper";
 import { CheckoutSummary } from "../../components/checkout/CheckoutSummary";
 import { COLORS, SPACING } from "../../constants/theme";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const PAYMENT_OPTIONS = [
   {

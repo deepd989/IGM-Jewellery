@@ -29,7 +29,7 @@ export default function EventCard() {
         <TouchableOpacity style={styles.button} onPress={() => {
           router.push({pathname:'/product-list'});
         }}>
-          <Text style={styles.buttonText}>Shop products →</Text>
+          <Text style={styles.buttonText}>Shop products</Text>
         </TouchableOpacity>
       </ImageBackground>
     </View>

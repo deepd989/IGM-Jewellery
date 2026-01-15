@@ -30,7 +30,7 @@ export const CartBadge: React.FC<CartBadgeProps> = ({
 
   return (
     <TouchableOpacity 
-      style={styles.container} 
+      // style={styles.container} 
       onPress={handlePress}
       activeOpacity={0.7}
     >

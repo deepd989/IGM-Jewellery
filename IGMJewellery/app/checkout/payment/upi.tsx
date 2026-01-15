@@ -14,7 +14,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
@@ -24,6 +23,7 @@ import {
 import * as z from "zod";
 import { CheckoutStepper } from "../../../components/checkout/CheckoutStepper";
 import { COLORS, SPACING } from "../../../constants/theme";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const upiSchema = z.object({
   upiId: z

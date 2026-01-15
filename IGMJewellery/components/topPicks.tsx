@@ -1,13 +1,21 @@
 import { FlatList } from "react-native";
-import ProductCard from "./productCard";
+import ProductCard2 from "./productCard";
 import { Product } from "@/interfaces/product.interface";
 import { SectionHeader } from "@/app/home";
+import { useRouter } from "expo-router";
 
 type TopPicksProps = {
   products: Product[];
 };
 
 export function TopPicks({ products }: TopPicksProps) {
+    const router = useRouter();
+  const handleProductPress = (product: Product) => {
+    router.push({
+      pathname: "/product/[id]",
+      params: { id: product.id },
+    });
+  };
   return (
     <>
     <SectionHeader value="Top Picks"/>
@@ -15,10 +23,11 @@ export function TopPicks({ products }: TopPicksProps) {
       horizontal
       data={products}
       renderItem={({ item }) => (
-        <ProductCard
+        <ProductCard2
           product={item}
           width={180}
           deliveryDate={"Delivery by Sep 25"}
+          onPress={()=>handleProductPress(item)}
         />
       )}
       keyExtractor={(item) => item.id}

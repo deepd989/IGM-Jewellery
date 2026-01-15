@@ -14,15 +14,20 @@ import TryAtHomeCard from "@/components/tryAtHomeCard";
 import { selectProducts } from "@/store/productSlice";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { AudioLines, Sparkles } from 'lucide-react-native';
-import React, { useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from "react-redux";
 import EventCard from "@/components/eventCard";
 import HashtagComponent from "@/components/hashtagComponent";
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { useGetProductsQuery } from "@/store/apis/product";
 import BottomNavBar from "@/components/bottomNavBar";
+import { BackHandler } from 'react-native';
+import * as Location from 'expo-location';
+import { Alert } from 'react-native';
+import { getUserPincode } from "@/scripts/location";
+import PaymentMethods from "@/components/paymentMethods";
 
 
 
@@ -30,16 +35,45 @@ import BottomNavBar from "@/components/bottomNavBar";
 
 export default function HomeScreen() {
     const [expanded, setExpanded] = useState(false);
-    const [firstRowHeight, setFirstRowHeight] = useState<number | null>(60);
+    const navigation = useNavigation();
+    const [firstRowHeight, setFirstRowHeight] = useState<number | null>(68);
     const { data: products = [], isLoading, isError, error, refetch } = useGetProductsQuery({});
     const router = useRouter();
     const [textInput, setInputChip] = useState<string>("");
+    const [pincode, setPincode] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      const pin = await getUserPincode();
+      setPincode(pin || 'Mumbai 400 999');
+    })();
+  }, []);
     const handleSubmit = () => {
       router.push({
         pathname: '/exploreAi',
         params: { value: textInput },
       });
     };
+
+    
+
+    useLayoutEffect(() => {
+      navigation.setOptions({
+        headerLeft: () => null,
+        gestureEnabled: false,
+      });
+    }, [navigation]);
+    
+    // Disable Android hardware back button
+    useEffect(() => {
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        () => true
+      );
+      return () => backHandler.remove();
+    }, []);
+
+    
   return (
     <SafeAreaView style={{flex:1}}>
     <ScrollView style={styles.container}>
@@ -47,9 +81,11 @@ export default function HomeScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.deliveryText}>
-          Deliver to <Text style={styles.bold}>Mumbai 400 999</Text>
+            Deliver to <Text style={{ fontWeight: 'bold' }}>
+              {pincode || 'Fetching...'}
         </Text>
-        <Ionicons name="chevron-down" size={18} />
+        </Text>
+
       </View>
 
       {/* Search Row */}
@@ -161,6 +197,20 @@ export default function HomeScreen() {
         <HorizontalRuleIGM/>
         <HashtagComponent/>
         <HorizontalRuleIGM/>
+        <View style={styles.contactSection}>
+                  <Text style={styles.contactTitle}>For any queries, feel free to contact us:</Text>
+                  <View style={styles.contactRow}>
+                    <TouchableOpacity style={styles.contactBtn}>
+                      <Ionicons name="call-outline" size={20} />
+                      <Text style={styles.contactBtnText}>Call Us</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.contactBtn}>
+                      <Ionicons name="chatbubble-outline" size={20} />
+                      <Text style={styles.contactBtnText}>Chat With Us</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <PaymentMethods />
 
         {/* Necklace Section */}
 
@@ -276,4 +326,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   tryButtonText: { color: "#fff", fontWeight: "600" },
+  contactSection: { alignItems: 'center', padding: 16 },
+  contactTitle: { fontSize: 13, color: '#333', marginBottom: 20 },
+  contactRow: { flexDirection: 'row', gap: 12 },
+  contactBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 50, borderWidth: 1, borderColor: '#DDD', borderRadius: 8, minWidth: 150, backgroundColor: '#FFF' },
+  contactBtnText: { marginLeft: 8, fontWeight: '600' },
 });

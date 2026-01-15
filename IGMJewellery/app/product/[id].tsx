@@ -13,7 +13,6 @@ import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -21,6 +20,7 @@ import {
   View
 } from 'react-native';
 import { COLORS, SPACING } from '../../constants/theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -90,7 +90,13 @@ export default function ProductDetailScreen() {
            {/* <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/cart')}>
              <Ionicons name="bag-outline" size={22} color={COLORS.text} />
            </TouchableOpacity> */}
+           <View style={{
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 4,
+  }}>
             <CartBadge iconSize={22} iconColor={COLORS.text} />
+            </View>
         </View>
       </View>
 

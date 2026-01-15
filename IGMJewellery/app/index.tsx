@@ -80,11 +80,11 @@ export default function JewelryLanding() {
 
           {/* Auth Links */}
           <View style={styles.authContainer}>
-            <TouchableOpacity 
-              style={styles.linkButton}
-              onPress={() => router.push('/signUp')}
-            >
-              <Text style={styles.linkText}>SignUp</Text>
+            
+          <TouchableOpacity 
+              style={[styles.linkButton]}
+              onPress={() => router.push('/home')}
+            > <Text style={styles.linkText}>Explore as guest</Text>
               {/* <View style={styles.linkUnderline} /> */}
             </TouchableOpacity>
 
@@ -98,14 +98,6 @@ export default function JewelryLanding() {
               {/* <View style={styles.linkUnderline} /> */}
             </TouchableOpacity>
           </View>
-
-          <TouchableOpacity 
-              style={[styles.linkButton, styles.skip]}
-              onPress={() => router.push('/home')}
-            >
-              <Text style={styles.linkText}>Skip</Text>
-              {/* <View style={styles.linkUnderline} /> */}
-            </TouchableOpacity>
         </View>
 
       </ScrollView>

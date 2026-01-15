@@ -65,7 +65,7 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab }) => {
   return (
     <View style={styles.navBar}>
       <NavItem iconName="home-outline" label="Home" route="/home" />
-      <NavItem iconName="grid-outline" label="Products" route="/product-list" />
+      <NavItem iconName="grid-outline" label="Categories" route="/categories" />
       <NavItem iconName="sparkles-outline" label="AiDiscover" isCenter route="/exploreAi" />
       <NavItem iconName="gift-outline" label="Gifting" route="/gift" />
       <NavItem iconName="person-outline" label="Profile" route="/profile" />

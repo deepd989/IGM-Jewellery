@@ -5,7 +5,6 @@ import React, { useEffect, useMemo } from "react";
 import {
   Dimensions,
   Image,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,6 +13,7 @@ import {
 } from "react-native";
 import { OrderItemCard } from "../../components/checkout/OrderItemCard";
 import { COLORS, SPACING } from "../../constants/theme";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 

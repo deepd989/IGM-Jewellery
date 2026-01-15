@@ -1,11 +1,12 @@
 
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, TextInput, Image, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 import { COLORS, SPACING } from '../../constants/theme';
 import { useGetOrdersQuery } from '@/store/apis/profile';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AllOrdersScreen() {
   const router = useRouter();
@@ -124,7 +125,7 @@ export default function AllOrdersScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8F8F8' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, backgroundColor: '#FFF' },
-  backBtn: { width: 40, height: 40, borderRadius: 8, borderWidth: 1, borderColor: '#F0F0F0', justifyContent: 'center', alignItems: 'center' },
+  backBtn: { width: 40, height: 40, borderColor: '#F0F0F0', justifyContent: 'center', alignItems: 'center' },
   headerTitle: { fontSize: 18, fontWeight: '700' },
   searchFilterRow: { flexDirection: 'row', padding: 16, backgroundColor: '#FFF', gap: 12 },
   searchBar: { flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#F9F9F9', borderRadius: 25, paddingHorizontal: 16, height: 48, borderWidth: 1, borderColor: '#EEE' },
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
   orderMeta: { flex: 1, marginLeft: 12 },
   orderId: { fontSize: 13 },
   orderDate: { fontSize: 11, color: '#888', marginTop: 2 },
-  orderPriceBox: { alignItems: 'flex-end' },
+  orderPriceBox: { alignItems: 'flex-end' },  
   orderPrice: { fontSize: 14, fontWeight: '700' },
   orderCount: { fontSize: 11, color: '#888' },
   statusBanner: { backgroundColor: '#F5F5F5', padding: 10, marginHorizontal: 16, borderRadius: 4 },

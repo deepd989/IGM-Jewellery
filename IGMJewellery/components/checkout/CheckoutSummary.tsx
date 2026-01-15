@@ -6,6 +6,7 @@ import { SPACING } from '../../constants/theme';
 import { OrderDetails } from '@/interfaces/order-details.interface';
 import { OrderItemCard } from './OrderItemCard';
 import { PriceBreakdown } from './PriceBreakdown';
+import { SafeAreaFrameContext, SafeAreaView } from 'react-native-safe-area-context';
 
 interface CheckoutSummaryProps {
   order: OrderDetails;
@@ -15,6 +16,7 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ order }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
+    <SafeAreaView>
     <View style={styles.container}>
       <TouchableOpacity 
         style={styles.header} 
@@ -53,6 +55,7 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ order }) => {
         </View>
       )}
     </View>
+    </SafeAreaView>
   );
 };
 
