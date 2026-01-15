@@ -461,6 +461,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
+    marginTop: SPACING.s,
   },
   chip: {
     paddingHorizontal: 16,
