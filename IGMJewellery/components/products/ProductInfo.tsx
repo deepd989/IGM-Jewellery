@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
+import { getEstimatedDeliveryDate } from "../../utils/deliveryDate";
 
 interface ProductInfoProps {
   product: Product;
@@ -126,10 +127,11 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
         </View>
       </View>
 
-      {/* Express Tag */}
       <View style={styles.expressTag}>
-        <Ionicons name="bus-outline" size={14} color={COLORS.text} />
-        <Text style={styles.expressText}>Express delivery by 19th Nov</Text>
+        <Ionicons name="cube-outline" size={14} color={COLORS.text} />
+        <Text style={styles.expressText}>
+          Delivery by {getEstimatedDeliveryDate()}
+        </Text>
       </View>
 
       {/* Spec Chips */}

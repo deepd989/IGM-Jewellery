@@ -51,6 +51,7 @@ export default function CartScreen() {
   const cart = cartData?.items || [];
   const trialList = cartData?.trialItems || [];
   const giftAddons = cartData?.giftAddons || [];
+  const freebie = cartData?.freebie || null;
 
   // Update tab based on URL params
   useEffect(() => {
@@ -270,6 +271,7 @@ export default function CartScreen() {
             giftAddons={giftAddons}
             toggleGiftAddon={handleToggleGiftAddon}
             calculateTotals={calculateTotals}
+            freebie={freebie}
           />
         ) : (
           <View style={styles.emptyTabContent}>

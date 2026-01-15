@@ -40,6 +40,7 @@ export default function AddressScreen() {
   const router = useRouter();
   const [useSaved, setUseSaved] = useState(true);
   const [sameAsBilling, setSameAsBilling] = useState(true);
+  const [billingMode, setBillingMode] = useState<"same" | "different">("same");
 
   // Initialize checkout session
   const [initializeCheckout, { isLoading: isInitializing }] =
@@ -147,7 +148,7 @@ export default function AddressScreen() {
 
       let billingAddress: BillingAddress;
 
-      if (sameAsBilling) {
+      if (billingMode === "same") {
         billingAddress = {
           ...deliveryAddress,
           sameAsDelivery: true,
@@ -266,22 +267,45 @@ export default function AddressScreen() {
 
             <View style={styles.billingHeader}>
               <Text style={styles.sectionTitle}>Billing Address</Text>
+
+              {/* Same as Shipping */}
               <TouchableOpacity
-                style={styles.checkboxRow}
-                onPress={() => setSameAsBilling(!sameAsBilling)}
+                style={styles.radioRow}
+                onPress={() => setBillingMode("same")}
               >
+                <Text style={styles.radioText}>Same as Shipping Address</Text>
                 <Ionicons
-                  name={sameAsBilling ? "checkbox" : "square-outline"}
+                  name={
+                    billingMode === "same"
+                      ? "radio-button-on"
+                      : "radio-button-off"
+                  }
                   size={22}
-                  color={sameAsBilling ? COLORS.primary : "#999"}
+                  color="#000"
                 />
-                <Text style={styles.checkboxText}>
-                  Same as delivery address
+              </TouchableOpacity>
+
+              {/* Different Billing Address */}
+              <TouchableOpacity
+                style={styles.radioRow}
+                onPress={() => setBillingMode("different")}
+              >
+                <Text style={styles.radioText}>
+                  Use a different billing address
                 </Text>
+                <Ionicons
+                  name={
+                    billingMode === "different"
+                      ? "radio-button-on"
+                      : "radio-button-off"
+                  }
+                  size={22}
+                  color="#000"
+                />
               </TouchableOpacity>
             </View>
 
-            {!sameAsBilling && (
+            {billingMode === "different" && (
               <View style={styles.form}>
                 <AddressFields
                   control={billingForm.control}
@@ -406,4 +430,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   btnText: { color: "#FFF", fontWeight: "700" },
+  radioRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 8,
+    marginTop: 12,
+  },
+
+  radioText: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#000",
+  },
 });
