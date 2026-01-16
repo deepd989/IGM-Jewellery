@@ -14,13 +14,13 @@ import TryAtHomeCard from "@/components/tryAtHomeCard";
 import { selectProducts } from "@/store/productSlice";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { AudioLines, Sparkles } from 'lucide-react-native';
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from "react-redux";
 import EventCard from "@/components/eventCard";
 import HashtagComponent from "@/components/hashtagComponent";
-import { useNavigation, useRouter } from 'expo-router';
+import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useGetProductsQuery } from "@/store/apis/product";
 import BottomNavBar from "@/components/bottomNavBar";
 import { BackHandler } from 'react-native';
@@ -65,13 +65,15 @@ export default function HomeScreen() {
     }, [navigation]);
     
     // Disable Android hardware back button
-    useEffect(() => {
-      const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress',
-        () => true
-      );
-      return () => backHandler.remove();
-    }, []);
+    useFocusEffect(
+      useCallback(() => {
+        const backHandler = BackHandler.addEventListener(
+          'hardwareBackPress',
+          () => true
+        );
+        return () => backHandler.remove();
+      }, [])
+    );
 
     
   return (
