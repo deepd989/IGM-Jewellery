@@ -43,6 +43,7 @@ export interface CreateOrderResponse {
   orderDisplayId: string;
   paymentUrl?: string;
   status: "pending" | "processing" | "completed" | "failed";
+  loyaltyPointsEarned?: number;
 }
 
 export interface Coupon {
@@ -140,13 +141,13 @@ export const checkoutApiService = createApi({
         const subtotal = cartData.items.reduce(
           (acc: number, item: any) =>
             acc + item.product.givenPrice * item.quantity,
-          0
+          0,
         );
 
         const sellingPrice = cartData.items.reduce(
           (acc: number, item: any) =>
             acc + item.product.discountedPrice * item.quantity,
-          0
+          0,
         );
 
         const savings = subtotal - sellingPrice;
@@ -156,7 +157,7 @@ export const checkoutApiService = createApi({
         const giftAddonsCost = cartData.giftAddons.reduce(
           (acc: number, addon: any) =>
             acc + (addon.isChecked ? addon.price : 0),
-          0
+          0,
         );
 
         const total = sellingPrice + platformFee + giftAddonsCost;
@@ -334,7 +335,7 @@ export const checkoutApiService = createApi({
         }
 
         const coupon = MOCK_COUPONS.find(
-          (c) => c.code === couponCode && c.isAvailable
+          (c) => c.code === couponCode && c.isAvailable,
         );
 
         if (!coupon) {
@@ -446,7 +447,7 @@ export const checkoutApiService = createApi({
 
     // Create order
     createOrder: builder.mutation<CreateOrderResponse, CreateOrderRequest>({
-      queryFn: async (request, { dispatch }) => {
+      queryFn: async (request, { dispatch, getState }) => {
         if (!checkoutSession) {
           return {
             error: {
@@ -476,10 +477,21 @@ export const checkoutApiService = createApi({
         const orderId = `ord_${Date.now()}`;
         const orderDisplayId = `#${Math.floor(10000 + Math.random() * 90000)}`;
 
+        const loyaltyPointsEarned = 200;
+
+        const state = getState() as any;
+        if (state.user?.profile) {
+          dispatch({
+            type: "user/addLoyaltyPoints",
+            payload: loyaltyPointsEarned,
+          });
+        }
+
         const response: CreateOrderResponse = {
           orderId,
           orderDisplayId,
           status: "completed",
+          loyaltyPointsEarned,
           paymentUrl:
             request.paymentMethod === "google_pay" ? "/payment/upi" : undefined,
         };
