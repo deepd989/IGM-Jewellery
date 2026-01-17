@@ -1,12 +1,11 @@
 import { useGetCartQuery } from "@/store/apis/cart";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   Dimensions,
   Image,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -21,12 +20,10 @@ export default function ConfirmationScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
 
-  const orderId = params.orderId as string;
   const orderDisplayId =
     (params.orderDisplayId as string) ||
     `#${Math.floor(10000 + Math.random() * 90000)}`;
 
-  // Get cart data for order items (in production, this would come from order API)
   const { data: cartData } = useGetCartQuery();
 
   const orderInfo = useMemo(() => {
@@ -34,42 +31,36 @@ export default function ConfirmationScreen() {
       return {
         totalItems: 0,
         finalTotal: 0,
-        orderId: orderDisplayId,
         items: [],
       };
     }
 
     const totalItems = cartData.items.reduce(
       (acc, item) => acc + item.quantity,
-      0
+      0,
     );
+
     const sellingPrice = cartData.items.reduce(
       (acc, item) => acc + item.product.discountedPrice * item.quantity,
-      0
+      0,
     );
+
     const platformFee = 220;
     const giftAddonsCost =
       cartData.giftAddons
         ?.filter((addon) => addon.isChecked)
         .reduce((sum, addon) => sum + addon.price, 0) || 0;
 
-    const finalTotal = sellingPrice + platformFee + giftAddonsCost;
-
     return {
       totalItems,
-      finalTotal,
-      orderId: orderDisplayId,
+      finalTotal: sellingPrice + platformFee + giftAddonsCost,
       items: cartData.items,
     };
-  }, [cartData, orderDisplayId]);
-
-  // In production, you might want to clear the cart here or in the payment screen
-  useEffect(() => {
-    // Optional: Show a success toast or animation
-  }, []);
+  }, [cartData]);
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => router.replace("/(tabs)/categories")}
@@ -81,99 +72,98 @@ export default function ConfirmationScreen() {
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Success Banner */}
-        <View style={styles.successBox}>
-          <View style={styles.iconContainer}>
-            {orderInfo.items.length > 0 ? (
-              <>
-                <Image
-                  source={{ uri: orderInfo.items[0].product.thumbnailUrls[0] }}
-                  style={styles.successImage}
-                />
+      {/* Content */}
+      <View style={styles.content}>
+        {/* Top Section */}
+        <View style={styles.topSection}>
+          {/* Success */}
+          <View style={styles.successBox}>
+            <View style={styles.iconContainer}>
+              {orderInfo.items.length > 0 ? (
+                <>
+                  <Image
+                    source={{
+                      uri: orderInfo.items[0].product.thumbnailUrls[0],
+                    }}
+                    style={styles.successImage}
+                  />
+                  <View style={styles.checkCircle}>
+                    <Ionicons name="checkmark" size={22} color="#FFF" />
+                  </View>
+                </>
+              ) : (
                 <View style={styles.checkCircle}>
-                  <Ionicons name="checkmark" size={24} color="#FFF" />
+                  <Ionicons name="checkmark" size={22} color="#FFF" />
                 </View>
-              </>
-            ) : (
-              <View style={styles.checkCircle}>
-                <Ionicons name="checkmark" size={24} color="#FFF" />
-              </View>
-            )}
+              )}
+            </View>
+
+            <Text style={styles.congrats}>Congratulations!</Text>
+            <Text style={styles.subtext}>
+              Your order has been placed successfully.
+            </Text>
+
+            <View style={styles.orderIdRow}>
+              <Text style={styles.orderId}>Order ID: {orderDisplayId}</Text>
+              <TouchableOpacity>
+                <Ionicons name="copy-outline" size={16} />
+              </TouchableOpacity>
+            </View>
           </View>
 
-          <Text style={styles.congrats}>Congratulations!</Text>
-          <Text style={styles.subtext}>
-            Your order has been placed successfully. You'll receive updates via
-            email and SMS.
-          </Text>
+          {/* Order Summary */}
+          {orderInfo.items.length > 0 && (
+            <View style={styles.summarySection}>
+              <View style={styles.summaryHeader}>
+                <Text style={styles.summaryTitle}>Order Summary</Text>
+                <Text style={styles.summaryAmount}>
+                  ₹{orderInfo.finalTotal.toLocaleString()}
+                </Text>
+              </View>
 
-          <View style={styles.orderIdRow}>
-            <Text style={styles.orderId}>Order ID: {orderInfo.orderId}</Text>
-            <TouchableOpacity style={styles.copyBtn}>
-              <Ionicons name="copy-outline" size={18} color="#000" />
-            </TouchableOpacity>
+              <OrderItemCard
+                item={orderInfo.items[0]}
+                style={styles.productCard}
+              />
+            </View>
+          )}
+
+          {/* Info Row */}
+          <View style={styles.infoRow}>
+            <View style={styles.infoCard}>
+              <Ionicons name="time-outline" size={20} color={COLORS.primary} />
+              <Text style={styles.infoText}>Delivery in 3–5 days</Text>
+            </View>
+
+            <View style={styles.infoCard}>
+              <Ionicons
+                name="shield-checkmark-outline"
+                size={20}
+                color={COLORS.primary}
+              />
+              <Text style={styles.infoText}>Secure Payment</Text>
+            </View>
+
+            <View style={styles.infoCard}>
+              <Ionicons
+                name="return-up-back-outline"
+                size={20}
+                color={COLORS.primary}
+              />
+              <Text style={styles.infoText}>15-day returns</Text>
+            </View>
           </View>
         </View>
 
-        {/* Order Summary Section */}
-        {orderInfo.items.length > 0 && (
-          <View style={styles.summarySection}>
-            <View style={styles.summaryHeader}>
-              <Text style={styles.summaryTitle}>
-                Order Summary{" "}
-                <Text style={{ fontWeight: "800" }}>
-                  ₹{orderInfo.finalTotal.toLocaleString()}
-                </Text>
-              </Text>
-              <Text style={styles.itemsCount}>
-                {orderInfo.totalItems}{" "}
-                {orderInfo.totalItems === 1 ? "item" : "items"}
-              </Text>
-            </View>
-
-            <ScrollView
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              style={styles.carousel}
-              snapToInterval={width - 32}
-              decelerationRate="fast"
-            >
-              {orderInfo.items.map((item) => (
-                <OrderItemCard
-                  key={item.product.id}
-                  item={item}
-                  style={styles.productCard}
-                />
-              ))}
-            </ScrollView>
-
-            {/* Pagination Dots */}
-            {orderInfo.items.length > 1 && (
-              <View style={styles.paginationDots}>
-                {orderInfo.items.map((_, index) => (
-                  <View
-                    key={index}
-                    style={index === 0 ? styles.dotActive : styles.dotInactive}
-                  />
-                ))}
-              </View>
-            )}
-          </View>
-        )}
-
-        {/* Action Buttons */}
-        <View style={styles.actionSection}>
+        {/* Bottom Section */}
+        <View style={styles.bottomSection}>
           <TouchableOpacity
             style={styles.primaryBtn}
             onPress={() => router.replace("/(tabs)/categories")}
           >
             <Text style={styles.primaryBtnText}>Continue Shopping</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.secondaryBtn}
             onPress={() => router.push("/orders")}
@@ -181,58 +171,26 @@ export default function ConfirmationScreen() {
             <Text style={styles.secondaryBtnText}>View your orders</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Additional Info */}
-        <View style={styles.infoSection}>
-          <View style={styles.infoCard}>
-            <Ionicons name="time-outline" size={24} color={COLORS.primary} />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoTitle}>Estimated Delivery</Text>
-              <Text style={styles.infoText}>3-5 business days</Text>
-            </View>
-          </View>
-
-          <View style={styles.infoCard}>
-            <Ionicons
-              name="shield-checkmark-outline"
-              size={24}
-              color={COLORS.primary}
-            />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoTitle}>Secure Payment</Text>
-              <Text style={styles.infoText}>Your transaction is secure</Text>
-            </View>
-          </View>
-
-          <View style={styles.infoCard}>
-            <Ionicons
-              name="return-up-back-outline"
-              size={24}
-              color={COLORS.primary}
-            />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoTitle}>Easy Returns</Text>
-              <Text style={styles.infoText}>15-day return policy</Text>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
 
+/* ================= STYLES ================= */
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FFF",
   },
+
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: SPACING.m,
-    paddingVertical: SPACING.s,
+    padding: SPACING.m,
   },
+
   backBtn: {
     width: 40,
     height: 40,
@@ -242,160 +200,145 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
   },
-  scrollContent: {
-    paddingBottom: 40,
+
+  content: {
+    flex: 1,
   },
+
+  topSection: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+
   successBox: {
     alignItems: "center",
-    padding: 40,
+    paddingVertical: 24,
   },
+
   iconContainer: {
-    width: 150,
-    height: 150,
-    position: "relative",
-    marginBottom: 30,
+    width: 110,
+    height: 110,
+    marginBottom: 12,
   },
+
   successImage: {
     width: "100%",
     height: "100%",
     borderRadius: 12,
     opacity: 0.15,
   },
+
   checkCircle: {
     position: "absolute",
     top: 0,
-    right: -10,
+    right: -8,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: "#000",
-    width: 40,
-    height: 40,
-    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 2,
   },
+
   congrats: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "800",
-    marginBottom: 8,
+    marginBottom: 6,
   },
+
   subtext: {
     fontSize: 14,
     color: "#8E8E93",
     textAlign: "center",
-    paddingHorizontal: 20,
-    lineHeight: 20,
-    marginBottom: 20,
+    marginBottom: 12,
   },
+
   orderIdRow: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 6,
   },
+
   orderId: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
-    marginRight: 8,
   },
-  copyBtn: {
-    padding: 4,
-  },
+
   summarySection: {
-    padding: 16,
-    backgroundColor: "#FFF",
-    borderTopWidth: 1,
-    borderTopColor: "#F5F5F5",
+    paddingHorizontal: SPACING.m,
   },
+
   summaryHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 16,
+    marginBottom: 8,
   },
+
   summaryTitle: {
     fontSize: 14,
-    color: COLORS.text,
-  },
-  itemsCount: {
-    fontSize: 14,
     fontWeight: "600",
-    color: COLORS.text,
   },
-  carousel: {
-    width: width - 32,
+
+  summaryAmount: {
+    fontSize: 14,
+    fontWeight: "800",
   },
+
   productCard: {
-    width: width - 32,
-    marginRight: 16,
+    width: width - SPACING.m * 2,
   },
-  paginationDots: {
+
+  infoRow: {
     flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 16,
+    justifyContent: "space-between",
+    padding: SPACING.m,
   },
-  dotActive: {
-    width: 20,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "#000",
-    marginHorizontal: 4,
+
+  infoCard: {
+    flex: 1,
+    alignItems: "center",
+    gap: 6,
   },
-  dotInactive: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "#E0E0E0",
-    marginHorizontal: 4,
+
+  infoText: {
+    fontSize: 11,
+    color: COLORS.textSecondary,
+    textAlign: "center",
   },
-  actionSection: {
-    padding: 16,
-    marginTop: 20,
+
+  bottomSection: {
+    padding: SPACING.m,
+    borderTopWidth: 1,
+    borderTopColor: "#F0F0F0",
   },
+
   primaryBtn: {
+    height: 52,
     backgroundColor: "#000",
-    height: 54,
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 12,
   },
+
   primaryBtnText: {
     color: "#FFF",
-    fontWeight: "700",
     fontSize: 16,
+    fontWeight: "700",
   },
+
   secondaryBtn: {
     alignItems: "center",
   },
+
   secondaryBtnText: {
     fontSize: 14,
     fontWeight: "600",
     color: "#8E8E93",
-  },
-  infoSection: {
-    padding: SPACING.m,
-    gap: SPACING.m,
-  },
-  infoCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: SPACING.m,
-    backgroundColor: "#F9F9F9",
-    borderRadius: 8,
-  },
-  infoTextContainer: {
-    marginLeft: SPACING.m,
-    flex: 1,
-  },
-  infoTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: COLORS.text,
-    marginBottom: 2,
-  },
-  infoText: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
   },
 });

@@ -72,7 +72,7 @@ export default function UpiDetailsScreen() {
     const total = checkoutSession.orderDetails.total + giftAddonsCost;
     const itemCount = checkoutSession.orderDetails.items.reduce(
       (acc, item) => acc + item.quantity,
-      0
+      0,
     );
 
     return { total, itemCount };
@@ -116,7 +116,7 @@ export default function UpiDetailsScreen() {
     } catch (error: any) {
       Alert.alert(
         "Payment Failed",
-        error?.data || "Failed to process payment. Please try again."
+        error?.data || "Failed to process payment. Please try again.",
       );
     } finally {
       setIsProcessing(false);
