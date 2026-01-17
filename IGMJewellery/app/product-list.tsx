@@ -28,13 +28,7 @@ type ListingScreenProps = {
   filters?: Record<string, string[]>;
 };
 
-const FILTER_CHIPS = [
-  "All",
-  "Latest",
-  "Best Sellers",
-  "Express Delivery",
-  "Store Pick-up",
-];
+const FILTER_CHIPS = ["All", "Latest", "Best Sellers", "Store Pick-up"];
 const MENU_ITEMS = [
   "Bespoke Jewellery",
   "Our Brands",
@@ -71,13 +65,13 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   // Filtering State
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(
-    {}
+    {},
   );
 
   // Get category hierarchy for breadcrumbs
   const { data: hierarchy } = useGetCategoryHierarchyQuery(
     { departmentId, categoryId, subCategoryId },
-    { skip: !departmentId && !categoryId }
+    { skip: !departmentId && !categoryId },
   );
 
   // Initialize filters from navigation params and props
@@ -167,7 +161,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   // Count active filters
   const activeFilterCount = Object.values(activeFilters).reduce(
     (total, options) => total + options.length,
-    0
+    0,
   );
 
   const toggleViewMode = () => {
@@ -260,7 +254,10 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
         </TouchableOpacity>
 
         <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.iconBtn} onPress={() => router.push("/searchPage")}>
+          <TouchableOpacity
+            style={styles.iconBtn}
+            onPress={() => router.push("/searchPage")}
+          >
             <Ionicons name="search-outline" size={22} color={COLORS.text} />
           </TouchableOpacity>
           {/* <TouchableOpacity style={styles.iconBtn}>
@@ -271,7 +268,6 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
           </View>
         </View>
       </View>
-
 
       {/* Category Icon & Title */}
       <View style={styles.titleSection}>
@@ -343,7 +339,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
                     const [filterKey, filterValue] = tag.split(": ");
                     const newFilters = { ...activeFilters };
                     newFilters[filterKey] = newFilters[filterKey].filter(
-                      (v) => v !== filterValue
+                      (v) => v !== filterValue,
                     );
                     if (newFilters[filterKey].length === 0) {
                       delete newFilters[filterKey];
