@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList } from 'react-native';
 import { ProductCard } from '../products/ProductCard';
 import { useSelector } from 'react-redux';
 import { selectProducts } from '@/store/productSlice';
 import { BrandAboutSection, BrandStat } from '@/store/apis/brandsApi';
 import ListingScreen from '@/app/product-list';
+import { SPACING } from '@/constants/theme';
+import { useGetProductsByBrandQuery, useGetProductsQuery } from '@/store/apis/product';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 
 type ProfileHeaderProps = {
   brandNameKey:string;
@@ -115,7 +119,21 @@ export default function BrandProfile({
   stats,
 }: BrandProfileProps) {
   const [activeTab, setActiveTab] = useState(initialActiveTab);
-  const products = useSelector(selectProducts);
+  const router = useRouter();
+   const {
+      data: products = [],
+      isLoading,
+      isError,
+      error,
+      refetch,
+    } = useGetProductsByBrandQuery(
+   header.brandNameKey as string,
+    );
+
+    useEffect(() => {
+      console.log('Fetched products for brand:', header.brandNameKey, products);
+    }, [products]);
+ 
 
   return (
     <>
@@ -135,23 +153,32 @@ export default function BrandProfile({
       )}
 
       {activeTab === 'Products' && (
-        
-        <View style={styles.productsContainer}>
-              {/* <FlatList
-                data={products}
-                keyExtractor={(item) => item.id}
-                numColumns={2}
-                renderItem={({ item }) => (
-                  <ProductCard 
-                    product={item} 
-                    viewMode={'grid'} 
-                    onPress={() => console.log('Product', item.id)} 
-                  />
-                )}
-                showsVerticalScrollIndicator={false}
-              /> */}
-              {/* <ListingScreen  filters={{"brand":[header.brandNameKey]}} /> */}
+         <SafeAreaView style={styles.container}>
+        <View >
+          <FlatList
+                  key={"grid"}
+                  data={products}
+                  keyExtractor={(item) => item.id}
+                  numColumns={2}
+                  renderItem={({ item }) => (
+                    <ProductCard
+                      product={item}
+                      viewMode={"grid"}
+                      onPress={() =>  router.push({
+                        pathname: "/product/[id]",
+                        params: { id: item.id },
+                      })
+                    }
+                    />
+                  )}
+                  columnWrapperStyle={
+                     styles.columnWrapper 
+                  }
+                  contentContainerStyle={styles.listContent}
+                  showsVerticalScrollIndicator={false}
+                />
               </View>
+              </SafeAreaView>
               
       )}
     </>
@@ -167,7 +194,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 40,
     paddingHorizontal: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
   },
   logoContainer: {
     position: 'absolute',
@@ -323,5 +350,12 @@ const styles = StyleSheet.create({
   productsContainer:{
     margin:10,
     alignItems:'center',
-  }
+  },
+    listContent: {
+      paddingHorizontal: SPACING.m,
+      paddingBottom: 100,
+    },
+    columnWrapper: {
+      justifyContent: "space-between",
+    },
 });

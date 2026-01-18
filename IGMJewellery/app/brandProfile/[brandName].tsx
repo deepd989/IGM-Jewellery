@@ -1,8 +1,11 @@
 import BrandProfile from '@/components/brands/brandSite';
+import { CartBadge } from '@/components/cart/CardBadge';
+import { COLORS, SPACING } from '@/constants/theme';
 import { useGetBrandByNameQuery } from '@/store/apis/brandsApi';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { View, Pressable, Text, StyleSheet } from 'react-native';
+import { View, Pressable, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function BrandDetailPage() {
   const router = useRouter();
@@ -13,16 +16,21 @@ export default function BrandDetailPage() {
   if (error || !brand) return <></>
 
   return (
-    <View style={{ flex: 1 }}>
-      <Pressable
-        onPress={() => router.back()}
-        style={styles.backButton}
-        hitSlop={10}
-        accessibilityRole="button"
-        accessibilityLabel="Go back"
-      >
-         <Ionicons name="chevron-back" size={24} color={"black"} />
-      </Pressable>
+    <SafeAreaView style={{ flex: 1 }}>
+       <View style={styles.header}>
+              <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}>
+                        <Ionicons name="chevron-back" size={24} color={COLORS.text} />
+                      </TouchableOpacity>
+              <Text style={styles.headerTitle}>Brands</Text>
+              <View style={styles.headerIcons}>
+                {/* <TouchableOpacity style={styles.iconBtn}>
+                  <Ionicons name="heart-outline" size={24} color={COLORS.primary} />
+                </TouchableOpacity> */}
+                 <View style={styles.iconBtn}>
+                  <CartBadge iconSize={24} iconColor={COLORS.primary} />
+                </View>
+              </View>
+            </View>
 
       <BrandProfile
         header={{
@@ -40,11 +48,32 @@ export default function BrandDetailPage() {
         aboutSections={brand.aboutSections}
         stats={brand.stats}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: SPACING.m,
+      paddingVertical: SPACING.s,
+      backgroundColor: COLORS.background,
+      paddingTop: SPACING.l,
+    },
+    headerTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: COLORS.primary,
+    },
+    headerIcons: {
+      flexDirection: 'row',
+    },
+    iconBtn: {
+      marginLeft: SPACING.m,
+    },
   backButton: {
     position: 'absolute',
     top: 50, // adjust for notch/status bar as needed

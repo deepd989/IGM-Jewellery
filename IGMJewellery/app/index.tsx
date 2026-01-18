@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { ScrollingColumn } from '@/components/scrollingColumn';
 
 const { width } = Dimensions.get('window');
 const COLUMN_WIDTH = (width - 40) / 4; // 4 columns layout
@@ -25,36 +26,44 @@ export default function JewelryLanding() {
         <View style={styles.gridContainer}>
           {/* Column 1 */}
           <View style={styles.column}>
+          <ScrollingColumn duration={10000}>
             <View style={{ height: 60 }} />
             <Tile style={styles.emptyTile} />
             <Tile isLogo><Text style={styles.logoText}>M</Text></Tile>
             <Tile><Text style={styles.placeholderImg}>💍</Text></Tile>
             <Tile style={styles.emptyTile} />
+            </ScrollingColumn>
           </View>
 
           {/* Column 2 */}
+          <ScrollingColumn duration={10000} reverse={true}>
           <View style={[styles.column, { marginTop: -40 }]}>
             <Tile style={styles.emptyTile} />
             <Tile style={styles.emptyTile} />
             <Tile><Text style={styles.placeholderImg}>💎</Text></Tile>
             <Tile isLogo><Text style={styles.logoTextSmall}>tbz</Text></Tile>
           </View>
+          </ScrollingColumn>
 
           {/* Column 3 */}
+          <ScrollingColumn duration={10000} >
           <View style={[styles.column, { marginTop: 20 }]}>
             <Tile style={styles.emptyTile} />
             <Tile isLogo><Text style={styles.logoTextSmall}>PCJ</Text></Tile>
             <Tile><Text style={styles.placeholderImg}>💚</Text></Tile>
             <Tile style={styles.emptyTile} />
           </View>
+          </ScrollingColumn>
 
           {/* Column 4 */}
+          <ScrollingColumn duration={10000} reverse={true}>
           <View style={[styles.column, { marginTop: -20 }]}>
             <Tile><Text style={styles.placeholderImg}>💍</Text></Tile>
             <Tile><Text style={styles.placeholderImg}>🔶</Text></Tile>
             <Tile isLogo><Text style={styles.logoTextSmall}>TANISHQ</Text></Tile>
             <Tile style={styles.emptyTile} />
           </View>
+          </ScrollingColumn>
 
           {/* Top Gradient Overlay for Fade-in effect */}
           <LinearGradient

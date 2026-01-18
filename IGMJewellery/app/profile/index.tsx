@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Bot } from 'lucide-react-native';
 import BottomNavBar from '@/components/bottomNavBar';
+import path from 'node:path';
 
 
 const PROFILE_STATS = [
@@ -20,8 +21,8 @@ const PROFILE_STATS = [
 const MENU_ITEMS = [
   { id: 'details', title: 'Profile Details', desc: 'Name, Phone Number, Email, Address', path: '/profile/details' },
   { id: 'bank', title: 'Add Bank/UPI details', desc: 'Bank Account details, PAN', path: '/profile/bank-details' },
-  { id: 'issue-gift', title: 'Issue IGM E-Gift Card', desc: 'Issue or redeem gift cards' },
-  { id: 'redeem-gift', title: 'Redeem E-Gift Card', desc: 'Issue or redeem gift cards' },
+  { id: 'issue-gift', title: 'Issue IGM E-Gift Card', desc: 'Issue gift cards', path: '/giftStepperPage' },
+  { id: 'redeem-gift', title: 'Redeem E-Gift Card', desc: 'redeem gift cards', path: '/redeemGiftStep1' },
   { id: 'wishlist', title: 'Wishlist', desc: 'Your most loved jewellery' },
   { id: 'loyalty', title: 'Loyalty Points', desc: 'Your most loved jewellery', path: '/profile/loyalty' },
   { id: 'language', title: 'Language & Currency', desc: 'Your most loved jewellery', path: '/profile/language-currency' },

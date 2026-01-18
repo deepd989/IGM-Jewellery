@@ -31,10 +31,10 @@ type ListingScreenProps = {
 
 const FILTER_CHIPS = ["All", "Latest", "Best Sellers", "Store Pick-up"];
 const MENU_ITEMS = [
-  "Bespoke Jewellery",
-  "Our Brands",
-  "Call an expert",
-  "Chat with Sonar",
+  {key:"Bespoke Jewellery",path:"/bespoke"},
+  {key:"Our Brands",path:"/brands"},
+  {key:"Call an expert", path:"/underDev"},
+  {key:"Chat with Sonar", path:"/exploreAi"},
 ];
 
 export default function ListingScreen({ filters }: ListingScreenProps) {
@@ -556,8 +556,10 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       {isMenuOpen && (
         <View style={styles.menuPopup}>
           {MENU_ITEMS.map((item, index) => (
-            <TouchableOpacity key={index} style={styles.menuItem}>
-              <Text style={styles.menuItemText}>{item}</Text>
+            <TouchableOpacity key={index} style={styles.menuItem} onPress={() => {
+              setIsMenuOpen(false);
+              router.push(item.path as string)}}>
+              <Text style={styles.menuItemText}>{item.key}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -715,7 +717,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   iconBtn: {
-    padding: 4,
+    marginLeft: SPACING.s,
   },
   titleSection: {
     alignItems: "center",

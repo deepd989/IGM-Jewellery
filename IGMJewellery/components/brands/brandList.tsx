@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   StyleSheet, 
   Text, 
@@ -7,49 +7,54 @@ import {
   ScrollView,  
   TouchableOpacity, 
   Dimensions,
-  Platform,
-  StatusBar
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Brand, useGetBrandsQuery } from '@/store/apis/brandsApi';
+import { Image } from 'expo-image';
+import { ChevronLeft } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 
 // --- Dynamic Responsiveness Logic ---
 const { width } = Dimensions.get('window');
 const SPACING = 16;
 const GRID_GAP = 12;
 
-// 1. Decide number of columns based on screen width
-// If screen is smaller than 380px (Small Androids / iPhone SE), use 2 cols. Otherwise 3.
 const NUM_COLUMNS = width < 380 ? 2 : 3;
-
-// 2. Calculate item width based on the dynamic column count
-// Total Width - Side Padding - Total Gaps (gap count is cols - 1)
 const TOTAL_GAP_SPACE = (NUM_COLUMNS - 1) * GRID_GAP;
 const AVAILABLE_WIDTH = width - (SPACING * 2) - TOTAL_GAP_SPACE;
 const ITEM_WIDTH = AVAILABLE_WIDTH / NUM_COLUMNS;
 
-
-// --- Mock Data ---
-const TOP_BRANDS = [1, 2, 3, 4, 5, 6];
-const ETHNIC_BRANDS = [1, 2, 3, 4, 5, 6];
-const MODERN_BRANDS = [1, 2, 3, 4, 5, 6];
-
-const BrandCard = () => {
+const BrandCard = ({ brand }: { brand: Brand }) => {
+  const router = useRouter();
   return (
-    <View style={styles.cardContainer} />
+    <TouchableOpacity style={styles.cardContainer} onPress={() => {
+      router.push(`/brandProfile/${brand.businessNameKey}`);
+    }}>
+      <Image 
+        source={{ uri: brand?.profileImageUri }}
+        style={styles.cardImage}
+        resizeMode="cover"
+      />
+      {/* Optional: Add business name text under image if desired */}
+      {/* <Text numberOfLines={1} style={styles.brandNameText}>{brand.businessName}</Text> */}
+    </TouchableOpacity>
   );
 };
 
-export const BrandGrid =({data})=>{
-    return (<View style={styles.gridContainer}>
-    {data.map((item, index) => (
-      <BrandCard key={index} />
-    ))}
-  </View>)
+export const BrandGrid = ({ data }: { data: Brand[] }) => {
+  return (
+    <View style={styles.gridContainer}>
+      {data.map((item) => (
+        <BrandCard key={item.id || item.businessName} brand={item} />
+      ))}
+    </View>
+  );
+};
 
-}
+export const BrandSection = ({ title, data }: { title: string, data: Brand[] }) => {
+  if (data.length === 0) return null; // Hide section if no results match
 
-export const BrandSection = ({ title, data }) => {
   return (
     <View style={styles.sectionContainer}>
       <View style={styles.sectionHeader}>
@@ -64,31 +69,71 @@ export const BrandSection = ({ title, data }) => {
   );
 };
 
-
-
 export default function BrandList() {
+  const router = useRouter();
+  const { data: brandsData = [], isLoading } = useGetBrandsQuery({});  
+  
+  // State for search
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filtered Data based on businessName
+  const filteredBrands = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return brandsData;
+
+    return brandsData.filter((brand) => 
+      brand.businessName?.toLowerCase().includes(query)
+    );
+  }, [searchQuery, brandsData]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => router.back()}
+        >
+          <ChevronLeft color="#000" size={24} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Brands</Text>
+        <View style={{ width: 40 }} /> 
+      </View>
+
       <View style={styles.container}>
-        <View style={styles.header}>
-            <Text style={styles.headerTitle}>Brands on IGM Jewellery</Text>
+        {/* Search Bar */}
+        <View style={styles.searchContainer}>
+          <View style={styles.searchBar}>
+            <Ionicons name="search" size={20} color="#000" style={styles.searchIcon} />
+            <TextInput 
+              placeholder="Search by business name" 
+              placeholderTextColor="#999"
+              style={styles.searchInput}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              autoCapitalize="none"
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchQuery('')}>
+                <Ionicons name="close-circle" size={20} color="#ccc" />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
 
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.searchContainer}>
-            <View style={styles.searchBar}>
-              <Ionicons name="search" size={20} color="#000" style={styles.searchIcon} />
-              <TextInput 
-                placeholder="Search" 
-                placeholderTextColor="#999"
-                style={styles.searchInput}
-              />
+          {filteredBrands.length > 0 ? (
+            <>
+              <BrandSection title="Top Brands" data={filteredBrands} />
+              <BrandSection title="Ethnic Jewellery Brands" data={filteredBrands} />
+              <BrandSection title="Modern Jewellery Brands" data={filteredBrands} />
+            </>
+          ) : (
+            <View style={styles.emptyState}>
+              <Ionicons name="search-outline" size={50} color="#eee" />
+              <Text style={styles.emptyText}>No brands found matching "{searchQuery}"</Text>
             </View>
-          </View>
-
-          <BrandSection title="Top Brands" data={TOP_BRANDS} />
-          <BrandSection title="Ethnic Jewellery Brands" data={ETHNIC_BRANDS} />
-          <BrandSection title="Modern Jewellery Brands" data={MODERN_BRANDS} />
+          )}
           
           <View style={{ height: 40 }} />
         </ScrollView>
@@ -101,17 +146,21 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
   },
   container: {
     flex: 1,
     backgroundColor: '#fff',
   },
   header: {
-    paddingVertical: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    paddingHorizontal: 15,
+    height: 60,
+  },
+  backButton: {
+    padding: 8,
+    borderRadius: 10,
   },
   headerTitle: {
     fontSize: 18,
@@ -120,7 +169,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     paddingHorizontal: SPACING,
-    paddingVertical: 15,
+    paddingVertical: 10,
   },
   searchBar: {
     flexDirection: 'row',
@@ -167,8 +216,6 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    // We use standard margins/padding math above, but flex gap is cleaner
-    // if you are on React Native 0.71+
     gap: GRID_GAP, 
   },
   cardContainer: {
@@ -176,5 +223,20 @@ const styles = StyleSheet.create({
     height: ITEM_WIDTH * 0.85, 
     backgroundColor: '#f5f5f5', 
     borderRadius: 8,
+    overflow: 'hidden',
   },
+  cardImage: {
+    width: '100%', 
+    height: '100%',
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 60,
+  },
+  emptyText: {
+    marginTop: 10,
+    color: '#999',
+    fontSize: 14,
+  }
 });
