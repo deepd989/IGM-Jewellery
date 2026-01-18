@@ -1,6 +1,14 @@
+import { Product } from "@/interfaces/product.interface";
+import {
+  useAddToWishlistMutation,
+  useGetWishlistQuery,
+  useRemoveFromWishlistMutation,
+} from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   Dimensions,
   Image,
   ScrollView,
@@ -13,6 +21,7 @@ import { COLORS, SPACING } from "../../constants/theme";
 
 interface ProductImageGalleryProps {
   images: string[];
+  product: Product;
 }
 
 const { width } = Dimensions.get("window");
@@ -20,8 +29,20 @@ const IMAGE_HEIGHT = 380;
 
 export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
   images,
+  product,
 }) => {
   const [activeSlide, setActiveSlide] = useState(0);
+
+  // Wishlist functionality
+  const { data: wishlistData } = useGetWishlistQuery();
+  const [addToWishlist, { isLoading: isAddingToWishlist }] =
+    useAddToWishlistMutation();
+  const [removeFromWishlist, { isLoading: isRemovingFromWishlist }] =
+    useRemoveFromWishlistMutation();
+
+  const isInWishlist = wishlistData?.items.some(
+    (item) => item.id === product.id,
+  );
 
   const onScroll = (event: any) => {
     const slide = Math.ceil(
@@ -30,6 +51,31 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     );
     if (slide !== activeSlide) {
       setActiveSlide(slide);
+    }
+  };
+
+  const handleToggleWishlist = async () => {
+    if (isInWishlist) {
+      // Remove from wishlist
+      try {
+        await removeFromWishlist(product.id).unwrap();
+      } catch (error) {
+        Alert.alert("Error", "Failed to remove from wishlist");
+      }
+    } else {
+      // Add to wishlist
+      try {
+        await addToWishlist(product).unwrap();
+      } catch (error: any) {
+        if (error?.data === "Item already in wishlist") {
+          Alert.alert(
+            "Already in Wishlist",
+            "This item is already wishlisted.",
+          );
+        } else {
+          Alert.alert("Error", "Failed to add to wishlist");
+        }
+      }
     }
   };
 
@@ -81,7 +127,9 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
       {/* Rating & Icons Row */}
       <View style={styles.floatingMeta}>
         <View style={styles.ratingBadge}>
-          <Text style={styles.ratingText}>5.0</Text>
+          <Text style={styles.ratingText}>
+            {product.rating?.toFixed(1) || "5.0"}
+          </Text>
           <Ionicons
             name="star"
             size={10}
@@ -99,8 +147,22 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
               color={COLORS.primary}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.mediaIcon}>
-            <Ionicons name="heart-outline" size={20} color={COLORS.primary} />
+
+          {/* Wishlist Heart Icon */}
+          <TouchableOpacity
+            style={styles.mediaIcon}
+            onPress={handleToggleWishlist}
+            disabled={isAddingToWishlist || isRemovingFromWishlist}
+          >
+            {isAddingToWishlist || isRemovingFromWishlist ? (
+              <ActivityIndicator size="small" color={COLORS.primary} />
+            ) : (
+              <Ionicons
+                name={isInWishlist ? "heart" : "heart-outline"}
+                size={20}
+                color={COLORS.primary}
+              />
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -110,7 +172,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFFFFF", // Light gray background for image area
+    backgroundColor: "#FFFFFF",
     position: "relative",
     marginBottom: SPACING.m,
   },
@@ -141,11 +203,11 @@ const styles = StyleSheet.create({
   pagination: {
     flexDirection: "row",
     position: "absolute",
-    bottom: 50, // Above the meta row
+    bottom: 50,
     alignSelf: "center",
   },
   dot: {
-    width: 30, // Dash style
+    width: 30,
     height: 3,
     borderRadius: 1.5,
     marginHorizontal: 3,
@@ -162,7 +224,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: SPACING.m,
     paddingBottom: SPACING.s,
-    marginTop: -30, // Pull up into image area slightly
+    marginTop: -30,
   },
   ratingBadge: {
     backgroundColor: "#F5F5F5",

@@ -23,6 +23,7 @@ import { useGetCategoryHierarchyQuery } from "@/store/apis/categories";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SPACING } from "../constants/theme";
+import { useGetWishlistQuery } from "../store/apis/wishlist";
 
 type ListingScreenProps = {
   filters?: Record<string, string[]>;
@@ -73,6 +74,10 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     { departmentId, categoryId, subCategoryId },
     { skip: !departmentId && !categoryId },
   );
+
+  // Get wishlist data for header heart icon
+  const { data: wishlistData } = useGetWishlistQuery();
+  const wishlistCount = wishlistData?.items.length || 0;
 
   // Initialize filters from navigation params and props
   useEffect(() => {
@@ -323,7 +328,16 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
             style={styles.iconBtn}
             onPress={() => router.push("/wishlist")}
           >
-            <Ionicons name="heart-outline" size={22} color={COLORS.text} />
+            <Ionicons
+              name={wishlistCount > 0 ? "heart" : "heart-outline"}
+              size={22}
+              color={wishlistCount > 0 ? COLORS.primary : COLORS.text}
+            />
+            {wishlistCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{wishlistCount}</Text>
+              </View>
+            )}
           </TouchableOpacity>
 
           <View style={styles.iconBtn}>
@@ -931,6 +945,23 @@ const styles = StyleSheet.create({
   },
   filterBadgeText: {
     color: COLORS.text,
+    fontSize: 10,
+    fontWeight: "700",
+  },
+  badge: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: "#FFFFFF",
     fontSize: 10,
     fontWeight: "700",
   },

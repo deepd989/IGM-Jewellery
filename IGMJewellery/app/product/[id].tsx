@@ -7,6 +7,7 @@ import { ReviewSection } from "@/components/products/ReviewSection";
 
 import { CartBadge } from "@/components/cart/CardBadge";
 import { useGetProductByIdQuery } from "@/store/apis/product";
+import { useGetWishlistQuery } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -34,6 +35,10 @@ export default function ProductDetailScreen() {
     isError,
     error,
   } = useGetProductByIdQuery(id as string);
+
+  // Get wishlist data for header heart icon
+  const { data: wishlistData } = useGetWishlistQuery();
+  const wishlistCount = wishlistData?.items.length || 0;
 
   // Loading state
   if (isLoading) {
@@ -108,7 +113,16 @@ export default function ProductDetailScreen() {
             style={styles.iconWrapper}
             onPress={() => router.push("/wishlist")}
           >
-            <Ionicons name="heart-outline" size={22} color={COLORS.text} />
+            <Ionicons
+              name={wishlistCount > 0 ? "heart" : "heart-outline"}
+              size={22}
+              color={wishlistCount > 0 ? COLORS.primary : COLORS.text}
+            />
+            {wishlistCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{wishlistCount}</Text>
+              </View>
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -124,8 +138,8 @@ export default function ProductDetailScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Gallery */}
-        <ProductImageGallery images={product.thumbnailUrls} />
+        {/* Gallery - Now with product prop for wishlist functionality */}
+        <ProductImageGallery images={product.thumbnailUrls} product={product} />
 
         {/* Info & Specs */}
         <View style={styles.infoWrapper}>
@@ -222,11 +236,28 @@ const styles = StyleSheet.create({
   infoWrapper: {
     backgroundColor: "#FFF",
   },
-
   iconWrapper: {
     width: 40,
     height: 40,
     justifyContent: "center",
     alignItems: "center",
+    position: "relative",
+  },
+  badge: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: "#FFFFFF",
+    fontSize: 10,
+    fontWeight: "700",
   },
 });
