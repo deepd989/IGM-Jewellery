@@ -26,8 +26,11 @@ const AVAILABLE_WIDTH = width - (SPACING * 2) - TOTAL_GAP_SPACE;
 const ITEM_WIDTH = AVAILABLE_WIDTH / NUM_COLUMNS;
 
 const BrandCard = ({ brand }: { brand: Brand }) => {
+  const router = useRouter();
   return (
-    <View style={styles.cardContainer}>
+    <TouchableOpacity style={styles.cardContainer} onPress={() => {
+      router.push(`/brandProfile/${brand.businessNameKey}`);
+    }}>
       <Image 
         source={{ uri: brand?.profileImageUri }}
         style={styles.cardImage}
@@ -35,7 +38,7 @@ const BrandCard = ({ brand }: { brand: Brand }) => {
       />
       {/* Optional: Add business name text under image if desired */}
       {/* <Text numberOfLines={1} style={styles.brandNameText}>{brand.businessName}</Text> */}
-    </View>
+    </TouchableOpacity>
   );
 };
 

@@ -81,7 +81,7 @@ const MOCK_PRODUCTS: Product[] = [
     productType: ProductType.Necklace,
     givenPrice: 35000,
     discountedPrice: 30000,
-    brand: Brand.Kalyan,
+    brand: Brand.KalyanJewellers,
     tags: ["pearl", "set"],
     thumbnailUrls: [
       "https://drive.google.com/uc?export=download&id=117WAh5AmHHGS255bC_kR6rP4gcdcQWJW",
@@ -462,7 +462,7 @@ export const productApiService = createApi({
     }),
 
     // Get products by brand
-    getProductsByBrand: builder.query<Product[], Brand>({
+    getProductsByBrand: builder.query<Product[], string>({
       queryFn: (brand) => {
         const products = MOCK_PRODUCTS.filter((p) => p.brand === brand);
         return { data: products };

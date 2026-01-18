@@ -1,8 +1,8 @@
 export enum Brand{
-    Tanishq = "Tanishq",
-    KalyanJewellers = "Kalyan Jewellers",
-    Kalyan = "Kalyan Jewellers",
-    Malabar = "Malabar Gold",
-    CaratLane = "CaratLane",
-    Bluestone = "Bluestone"
+    Tanishq = "tanishq",
+    KalyanJewellers = "kalyan_jewellers",
+    Malabar = "malabar",
+    CaratLane = "caratlane",
+    Bluestone = "bluestone",
+    PCJewellers = "pcj"
 }
