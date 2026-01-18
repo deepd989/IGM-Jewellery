@@ -5,6 +5,7 @@ import { categoryApiService } from "./apis/categories";
 import { checkoutApiService } from "./apis/checkout";
 import { productApiService } from "./apis/product";
 import { profileApiService } from "./apis/profile";
+import { wishlistApiService } from "./apis/wishlist";
 import userReducer from "./userSlice";
 
 export const store = configureStore({
@@ -16,6 +17,7 @@ export const store = configureStore({
     brands: brandsApiService.reducer,
     [cartApiService.reducerPath]: cartApiService.reducer,
     [checkoutApiService.reducerPath]: checkoutApiService.reducer,
+    [wishlistApiService.reducerPath]: wishlistApiService.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -24,7 +26,8 @@ export const store = configureStore({
       categoryApiService.middleware,
       brandsApiService.middleware,
       cartApiService.middleware,
-      checkoutApiService.middleware
+      checkoutApiService.middleware,
+      wishlistApiService.middleware,
     ),
 });
 

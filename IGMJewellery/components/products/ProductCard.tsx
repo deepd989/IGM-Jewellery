@@ -1,5 +1,10 @@
 import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
+import {
+  useAddToWishlistMutation,
+  useGetWishlistQuery,
+  useRemoveFromWishlistMutation,
+} from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -20,6 +25,10 @@ interface ProductCardProps {
   product: Product;
   viewMode: "grid" | "list";
   onPress: (product: Product) => void;
+  isInWishlist?: boolean;
+  onRemoveFromWishlist?: () => void;
+  isInCompare?: boolean;
+  onToggleCompare?: () => void;
 }
 
 const { width } = Dimensions.get("window");
@@ -28,11 +37,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   viewMode,
   onPress,
+  isInWishlist: propIsInWishlist,
+  onRemoveFromWishlist,
+  isInCompare,
+  onToggleCompare,
 }) => {
   const router = useRouter();
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
   const [showSuccess, setShowSuccess] = useState(false);
+
+  // Wishlist functionality
+  const { data: wishlistData } = useGetWishlistQuery();
+  const [addToWishlist, { isLoading: isAddingToWishlist }] =
+    useAddToWishlistMutation();
+  const [removeFromWishlist, { isLoading: isRemovingFromWishlist }] =
+    useRemoveFromWishlistMutation();
+
+  // Determine if in wishlist from props or query
+  const isInWishlist =
+    propIsInWishlist !== undefined
+      ? propIsInWishlist
+      : wishlistData?.items.some((item) => item.id === product.id);
 
   const isGrid = viewMode === "grid";
   const cardWidth = isGrid
@@ -76,12 +102,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               router.push("/cart?tab=trial");
             },
           },
-        ]
+        ],
       );
     } catch (error: any) {
       console.error("Failed to add to trial:", error);
 
-      // Check if item already in trial
       if (error?.data === "Item already in trial list") {
         Alert.alert(
           "Already in Trial",
@@ -92,11 +117,49 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               text: "View Trial List",
               onPress: () => router.push("/cart?tab=trial"),
             },
-          ]
+          ],
         );
       } else {
         Alert.alert("Error", "Failed to add item to trial. Please try again.");
       }
+    }
+  };
+
+  const handleToggleWishlist = async (e: any) => {
+    e.stopPropagation();
+
+    if (isInWishlist) {
+      // If we have a custom remove handler (from wishlist screen), use it
+      if (onRemoveFromWishlist) {
+        onRemoveFromWishlist();
+      } else {
+        // Otherwise use the mutation directly
+        try {
+          await removeFromWishlist(product.id).unwrap();
+        } catch (error) {
+          Alert.alert("Error", "Failed to remove from wishlist");
+        }
+      }
+    } else {
+      try {
+        await addToWishlist(product).unwrap();
+      } catch (error: any) {
+        if (error?.data === "Item already in wishlist") {
+          Alert.alert(
+            "Already in Wishlist",
+            "This item is already wishlisted.",
+          );
+        } else {
+          Alert.alert("Error", "Failed to add to wishlist");
+        }
+      }
+    }
+  };
+
+  const handleCompareToggle = (e: any) => {
+    e.stopPropagation();
+    if (onToggleCompare) {
+      onToggleCompare();
     }
   };
 
@@ -137,9 +200,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Favorite Icon */}
-        <TouchableOpacity style={styles.favIcon}>
-          <Ionicons name="heart-outline" size={20} color={COLORS.text} />
+        <TouchableOpacity
+          style={styles.favIcon}
+          onPress={handleToggleWishlist}
+          disabled={isAddingToWishlist || isRemovingFromWishlist}
+        >
+          {isAddingToWishlist || isRemovingFromWishlist ? (
+            <ActivityIndicator size="small" color={COLORS.primary} />
+          ) : (
+            <Ionicons
+              name={isInWishlist ? "heart" : "heart-outline"}
+              size={20}
+              color={isInWishlist ? COLORS.primary : COLORS.text}
+            />
+          )}
         </TouchableOpacity>
+
+        {/* Compare Checkbox - Only show in wishlist */}
+        {onToggleCompare && (
+          <TouchableOpacity
+            style={styles.compareCheckbox}
+            onPress={handleCompareToggle}
+          >
+            <View
+              style={[styles.checkbox, isInCompare && styles.checkboxActive]}
+            >
+              {isInCompare && (
+                <Ionicons name="checkmark" size={14} color="#FFFFFF" />
+              )}
+            </View>
+          </TouchableOpacity>
+        )}
 
         {/* Delivery Tag */}
         <View style={styles.deliveryTag}>
@@ -269,28 +360,36 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 8,
     right: 8,
-    backgroundColor: "rgba(255,255,255,0.8)",
-    borderRadius: 20,
-    padding: 4,
-  },
-  cartIcon: {
-    position: "absolute",
-    top: 48,
-    right: 8,
-    backgroundColor: COLORS.primary,
+    backgroundColor: "rgba(255,255,255,0.9)",
     borderRadius: 20,
     width: 32,
     height: 32,
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  cartIconSuccess: {
-    backgroundColor: "#4CAF50",
+  compareCheckbox: {
+    position: "absolute",
+    top: 8,
+    left: 8,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: COLORS.text,
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  checkboxActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
   },
   deliveryTag: {
     position: "absolute",
@@ -366,21 +465,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     color: COLORS.primary,
-  },
-  tryHomeBtn: {
-    flex: 1,
-    backgroundColor: COLORS.primary,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 6,
-    borderRadius: 4,
-  },
-  tryHomeBtnDisabled: {
-    opacity: 0.6,
-  },
-  tryHomeText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#FFFFFF",
   },
 });

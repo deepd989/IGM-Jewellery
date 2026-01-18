@@ -97,11 +97,17 @@ export default function ProductDetailScreen() {
           <Ionicons name="chevron-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
         <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.iconWrapper}>
+          <TouchableOpacity
+            style={styles.iconWrapper}
+            onPress={() => router.push("/searchPage")}
+          >
             <Ionicons name="search-outline" size={22} color={COLORS.text} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.iconWrapper}>
+          <TouchableOpacity
+            style={styles.iconWrapper}
+            onPress={() => router.push("/wishlist")}
+          >
             <Ionicons name="heart-outline" size={22} color={COLORS.text} />
           </TouchableOpacity>
 

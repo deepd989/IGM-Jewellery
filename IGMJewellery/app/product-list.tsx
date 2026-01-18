@@ -318,6 +318,14 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
           >
             <Ionicons name="search-outline" size={22} color={COLORS.text} />
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.iconBtn}
+            onPress={() => router.push("/wishlist")}
+          >
+            <Ionicons name="heart-outline" size={22} color={COLORS.text} />
+          </TouchableOpacity>
+
           <View style={styles.iconBtn}>
             <CartBadge iconSize={22} iconColor={COLORS.text} />
           </View>
