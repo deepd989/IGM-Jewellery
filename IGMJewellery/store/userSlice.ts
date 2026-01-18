@@ -12,6 +12,7 @@ interface UserState {
   addresses: Address[];
   paymentMethods: PaymentMethod[];
   preferences: Preferences;
+  isAuthenticated?: boolean;
 }
 
 // const initialState: User = {
@@ -73,20 +74,46 @@ const userSlice = createSlice({
   reducers: {
     updateProfile: (
       state,
-      action: PayloadAction<Partial<UserState["profile"]>>
+      action: PayloadAction<Partial<UserState["profile"]>>,
     ) => {
       state.profile = { ...state.profile, ...action.payload };
     },
     updatePreferences: (
       state,
-      action: PayloadAction<Partial<UserState["preferences"]>>
+      action: PayloadAction<Partial<UserState["preferences"]>>,
     ) => {
       state.preferences = { ...state.preferences, ...action.payload };
     },
     removePaymentMethod: (state, action: PayloadAction<string>) => {
       state.paymentMethods = state.paymentMethods.filter(
-        (m) => m.id !== action.payload
+        (m) => m.id !== action.payload,
       );
+    },
+    addLoyaltyPoints: (state, action: PayloadAction<number>) => {
+      state.profile.points += action.payload;
+
+      if (state.profile.points >= 5000) {
+        state.profile.tier = "IGM Star";
+      } else if (state.profile.points >= 1000) {
+        state.profile.tier = "Elite Shopper";
+      } else {
+        state.profile.tier = "New Shopper";
+      }
+    },
+
+    redeemLoyaltyPoints: (state, action: PayloadAction<number>) => {
+      if (state.profile.points >= action.payload) {
+        state.profile.points -= action.payload;
+      }
+    },
+
+    setAuthenticated: (state, action: PayloadAction<boolean>) => {
+      state.isAuthenticated = action.payload;
+    },
+
+    logout: (state) => {
+      state.isAuthenticated = false;
+      state.profile = initialState.profile;
     },
   },
 });
@@ -94,6 +121,13 @@ const userSlice = createSlice({
 // Selector to get the user
 export const selectUser = (state: { user: User }) => state.user;
 
-export const { updateProfile, updatePreferences, removePaymentMethod } =
-  userSlice.actions;
+export const {
+  updateProfile,
+  updatePreferences,
+  removePaymentMethod,
+  addLoyaltyPoints,
+  redeemLoyaltyPoints,
+  setAuthenticated,
+  logout,
+} = userSlice.actions;
 export default userSlice.reducer;

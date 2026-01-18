@@ -28,13 +28,7 @@ type ListingScreenProps = {
   filters?: Record<string, string[]>;
 };
 
-const FILTER_CHIPS = [
-  "All",
-  "Latest",
-  "Best Sellers",
-  "Express Delivery",
-  "Store Pick-up",
-];
+const FILTER_CHIPS = ["All", "Latest", "Best Sellers", "Store Pick-up"];
 const MENU_ITEMS = [
   "Bespoke Jewellery",
   "Our Brands",
@@ -71,13 +65,13 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   // Filtering State
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(
-    {}
+    {},
   );
 
   // Get category hierarchy for breadcrumbs
   const { data: hierarchy } = useGetCategoryHierarchyQuery(
     { departmentId, categoryId, subCategoryId },
-    { skip: !departmentId && !categoryId }
+    { skip: !departmentId && !categoryId },
   );
 
   // Initialize filters from navigation params and props
@@ -136,6 +130,38 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     }
   }, [categoryId, productType, occasion, brand, collection, gender, filters]);
 
+  // Apply chip-based filters
+  useEffect(() => {
+    const chipFilters: Record<string, string[]> = { ...activeFilters };
+
+    switch (selectedFilter) {
+      case "Latest":
+        chipFilters.collection = ["new-arrival"];
+        break;
+      case "Best Sellers":
+        chipFilters.collection = ["bestseller"];
+        break;
+      case "Store Pick-up":
+        // You can add a specific filter for store pickup if needed
+        // For now, we'll just show all products
+        break;
+      case "All":
+      default:
+        // Remove chip-based collection filters, keep other filters
+        if (chipFilters.collection) {
+          chipFilters.collection = chipFilters.collection.filter(
+            (c) => !["new-arrival", "bestseller"].includes(c),
+          );
+          if (chipFilters.collection.length === 0) {
+            delete chipFilters.collection;
+          }
+        }
+        break;
+    }
+
+    setActiveFilters(chipFilters);
+  }, [selectedFilter]);
+
   // Helper to map category to product type
   const getCategoryProductType = (catId: string): string | null => {
     const lowerCatId = catId.toLowerCase();
@@ -164,10 +190,19 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     filters: activeFilters,
   });
 
-  // Count active filters
-  const activeFilterCount = Object.values(activeFilters).reduce(
-    (total, options) => total + options.length,
-    0
+  // Count active filters (excluding chip-based filters)
+  const activeFilterCount = Object.entries(activeFilters).reduce(
+    (total, [key, options]) => {
+      // Don't count chip-based collection filters
+      if (
+        key === "collection" &&
+        options.some((o) => ["new-arrival", "bestseller"].includes(o))
+      ) {
+        return total;
+      }
+      return total + options.length;
+    },
+    0,
   );
 
   const toggleViewMode = () => {
@@ -187,14 +222,21 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
 
   const handleApplyFilters = (filters: Record<string, string[]>) => {
     setActiveFilters(filters);
+    // Reset chip selection if manual filters are applied
+    setSelectedFilter("All");
   };
 
   const handleClearFilters = () => {
     setActiveFilters({});
+    setSelectedFilter("All");
   };
 
   const handleSortSelect = (sort: string) => {
     setSelectedSort(sort);
+  };
+
+  const handleChipPress = (chip: string) => {
+    setSelectedFilter(chip);
   };
 
   // Generate page title based on navigation context
@@ -238,14 +280,24 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     return parts.join(" / ");
   };
 
-  // Get active filter tags for display
+  // Get active filter tags for display (excluding chip-based filters)
   const getActiveFilterTags = () => {
     const tags: string[] = [];
 
     Object.entries(activeFilters).forEach(([key, values]) => {
-      values.forEach((value) => {
-        tags.push(`${key}: ${value}`);
-      });
+      // Skip chip-based collection filters
+      if (key === "collection") {
+        const nonChipValues = values.filter(
+          (v) => !["new-arrival", "bestseller"].includes(v),
+        );
+        nonChipValues.forEach((value) => {
+          tags.push(`${key}: ${value}`);
+        });
+      } else {
+        values.forEach((value) => {
+          tags.push(`${key}: ${value}`);
+        });
+      }
     });
 
     return tags;
@@ -260,18 +312,17 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
         </TouchableOpacity>
 
         <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.iconBtn} onPress={() => router.push("/searchPage")}>
+          <TouchableOpacity
+            style={styles.iconBtn}
+            onPress={() => router.push("/searchPage")}
+          >
             <Ionicons name="search-outline" size={22} color={COLORS.text} />
           </TouchableOpacity>
-          {/* <TouchableOpacity style={styles.iconBtn}>
-            <Ionicons name="heart-outline" size={22} color={COLORS.text} />
-          </TouchableOpacity> */}
           <View style={styles.iconBtn}>
             <CartBadge iconSize={22} iconColor={COLORS.text} />
           </View>
         </View>
       </View>
-
 
       {/* Category Icon & Title */}
       <View style={styles.titleSection}>
@@ -302,7 +353,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
               styles.chip,
               selectedFilter === filter && styles.chipActive,
             ]}
-            onPress={() => setSelectedFilter(filter)}
+            onPress={() => handleChipPress(filter)}
           >
             <Text
               style={[
@@ -343,7 +394,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
                     const [filterKey, filterValue] = tag.split(": ");
                     const newFilters = { ...activeFilters };
                     newFilters[filterKey] = newFilters[filterKey].filter(
-                      (v) => v !== filterValue
+                      (v) => v !== filterValue,
                     );
                     if (newFilters[filterKey].length === 0) {
                       delete newFilters[filterKey];
@@ -412,7 +463,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
           <Text style={styles.emptySubtext}>
             Try adjusting your filters or browse different categories
           </Text>
-          {activeFilterCount > 0 && (
+          {(activeFilterCount > 0 || selectedFilter !== "All") && (
             <TouchableOpacity
               style={styles.clearButton}
               onPress={handleClearFilters}
@@ -643,15 +694,6 @@ const styles = StyleSheet.create({
   },
   iconBtn: {
     padding: 4,
-  },
-  breadcrumbContainer: {
-    paddingHorizontal: SPACING.m,
-    paddingVertical: SPACING.xs,
-    backgroundColor: "#F9F9F9",
-  },
-  breadcrumbText: {
-    fontSize: 11,
-    color: COLORS.textSecondary,
   },
   titleSection: {
     alignItems: "center",

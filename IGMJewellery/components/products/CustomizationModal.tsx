@@ -1,18 +1,17 @@
-import { Product } from '@/interfaces/product.interface';
-import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import { Product } from "@/interfaces/product.interface";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useState } from "react";
 import {
-    Dimensions,
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
-import { COLORS, SPACING } from '../../constants/theme';
-
+  Dimensions,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { COLORS, SPACING } from "../../constants/theme";
 
 interface CustomizationModalProps {
   visible: boolean;
@@ -20,48 +19,68 @@ interface CustomizationModalProps {
   product: Product;
 }
 
-const { height } = Dimensions.get('window');
+const { height } = Dimensions.get("window");
 
-const OptionGroup = ({ label, options, selectedId, onSelect, variant = 'chips' }: any) => (
-  <View style={styles.groupContainer}>
-    <Text style={styles.groupLabel}>{label}</Text>
-    <View style={styles.optionsRow}>
-      {options.map((opt: any) => {
-        const isSelected = opt.id === selectedId;
-        if (variant === 'color') {
-          return (
-            <TouchableOpacity 
-              key={opt.id} 
-              style={styles.colorOption}
-              onPress={() => onSelect(opt.id)}
-            >
-              <View style={[styles.colorCircle, { backgroundColor: opt.color }, isSelected && styles.colorCircleActive]} />
-              <Text style={[styles.colorText, isSelected && styles.colorTextActive]}>{opt.label}</Text>
-            </TouchableOpacity>
-          );
-        }
-        return (
-          <TouchableOpacity 
-            key={opt.id} 
-            style={[styles.chipOption, isSelected && styles.chipOptionActive]}
-            onPress={() => onSelect(opt.id)}
-          >
-            <Text style={[styles.chipText, isSelected && styles.chipTextActive]}>{opt.label}</Text>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
-  </View>
-);
+// Size options matching Figma
+const SIZES = [
+  { id: "5", label: "Size 5", measurement: "40.8mm", available: false },
+  { id: "7", label: "Size 7", measurement: "42.8mm", available: true },
+  {
+    id: "11",
+    label: "Size 11",
+    measurement: "44.8mm",
+    available: true,
+    recommended: true,
+  },
+  { id: "13", label: "Size 13", measurement: "46.8mm", available: true },
+  { id: "15", label: "Size 15", measurement: "48.8mm", available: false },
+];
 
-export const CustomizationModal: React.FC<CustomizationModalProps> = ({ visible, onClose, product }) => {
-  const [purity, setPurity] = useState('18KT');
-  const [color, setColor] = useState('yellow');
-  const [diamondQuality, setDiamondQuality] = useState('SI IJ');
-  const [quantity, setQuantity] = useState(1);
+const METAL_COLORS = [
+  {
+    id: "yellow-14kt",
+    label: "Yellow Gold",
+    purity: "14 KT",
+    status: "Ready to ship",
+  },
+  {
+    id: "yellow-18kt",
+    label: "Yellow Gold",
+    purity: "18 KT",
+    status: "Made to order",
+  },
+  {
+    id: "yellow-18kt-2",
+    label: "Yellow Gold",
+    purity: "18 KT",
+    status: "Ready to ship",
+  },
+  {
+    id: "yellow-18kt-3",
+    label: "Yellow Gold",
+    purity: "18 KT",
+    status: "Ready to ship",
+  },
+];
 
-  const incrementQuantity = () => setQuantity(prev => prev + 1);
-  const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
+const PURITIES = [
+  { id: "14KT", label: "14 KT" },
+  { id: "18KT", label: "18 KT" },
+  { id: "22KT", label: "22 KT" },
+];
+
+export const CustomizationModal: React.FC<CustomizationModalProps> = ({
+  visible,
+  onClose,
+  product,
+}) => {
+  const [selectedSize, setSelectedSize] = useState("11");
+  const [selectedMetal, setSelectedMetal] = useState("yellow-14kt");
+  const [selectedPurity, setSelectedPurity] = useState("18KT");
+
+  const currentSize = SIZES.find((s) => s.id === selectedSize);
+  const estimatedPrice = 22000;
+  const additionalCost = 2000;
 
   return (
     <Modal
@@ -71,77 +90,168 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({ visible,
       onRequestClose={onClose}
     >
       <Pressable style={styles.overlay} onPress={onClose}>
-        <Pressable style={styles.container} onPress={e => e.stopPropagation()}>
+        <Pressable
+          style={styles.container}
+          onPress={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>Customize your design</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <Ionicons name="close" size={24} color={COLORS.text} />
+            <TouchableOpacity onPress={onClose} style={styles.backBtn}>
+              <Ionicons name="chevron-back" size={24} color={COLORS.text} />
             </TouchableOpacity>
+            <View style={styles.headerIcons}>
+              <TouchableOpacity style={styles.iconBtn}>
+                <Ionicons name="heart-outline" size={22} color={COLORS.text} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.iconBtn}>
+                <Ionicons name="bag-outline" size={22} color={COLORS.text} />
+              </TouchableOpacity>
+            </View>
           </View>
 
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-            {/* Options */}
-            <OptionGroup 
-              label="Gold Purity"
-              selectedId={purity}
-              onSelect={setPurity}
-              options={[
-                { id: '14KT', label: '14 KT' },
-                { id: '18KT', label: '18 KT' },
-                { id: '22KT', label: '22 KT' },
-              ]}
-            />
-
-            <OptionGroup 
-              label="Metal Color"
-              selectedId={color}
-              onSelect={setColor}
-              variant="color"
-              options={[
-                { id: 'yellow', label: 'Yellow Gold', color: '#FFD700' },
-                { id: 'rose', label: 'Rose Gold', color: '#B76E79' },
-                { id: 'white', label: 'White Gold', color: '#E5E4E2' },
-              ]}
-            />
-
-            <OptionGroup 
-              label="Diamond Quality"
-              selectedId={diamondQuality}
-              onSelect={setDiamondQuality}
-              options={[
-                { id: 'SI IJ', label: 'SI IJ' },
-                { id: 'VVS EF', label: 'VVS EF' },
-                { id: 'VS GH', label: 'VS GH' },
-              ]}
-            />
-
-            {/* Quantity Selector */}
-            <View style={styles.quantitySection}>
-              <Text style={styles.groupLabel}>Quantity</Text>
-              <View style={styles.quantityRow}>
-                <View style={styles.quantityInputContainer}>
-                  <View style={styles.quantityLabelBox}>
-                    <Text style={styles.quantityLabelText}>Quantity</Text>
-                    <Text style={styles.quantityValue}>{quantity}</Text>
-                  </View>
-                  <View style={styles.quantityControls}>
-                    <TouchableOpacity onPress={incrementQuantity} style={styles.arrowBtn}>
-                      <Ionicons name="chevron-up" size={14} color="#333" />
-                    </TouchableOpacity>
-                    <View style={styles.arrowDivider} />
-                    <TouchableOpacity onPress={decrementQuantity} style={styles.arrowBtn}>
-                      <Ionicons name="chevron-down" size={14} color="#333" />
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.editCircle}>
-                    <Ionicons name="pencil" size={12} color="#FFF" />
-                  </View>
-                </View>
-                <TouchableOpacity style={styles.deleteBtn}>
-                  <Ionicons name="trash-outline" size={24} color="red" />
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {/* Size Selection with Ring Visual */}
+            <View style={styles.sizeSection}>
+              <View style={styles.sizeSectionHeader}>
+                <Text style={styles.sectionTitle}>Select Size</Text>
+                <TouchableOpacity>
+                  <Text style={styles.linkText}>View size guide</Text>
                 </TouchableOpacity>
               </View>
-              {quantity < 1 && <Text style={styles.errorText}>Quantity must be at least 1</Text>}
+
+              {/* Ring Visual and Size Options Side by Side */}
+              <View style={styles.sizeContentRow}>
+                {/* Ring Visual - Left Side */}
+                <View style={styles.ringContainer}>
+                  <View style={styles.ringVisual}>
+                    <View style={styles.ringOuter}>
+                      <View style={styles.ringInner} />
+                    </View>
+                    <View style={styles.ringShadow} />
+                  </View>
+                </View>
+
+                {/* Size Options - Right Side (Vertical) */}
+                <View style={styles.sizeOptionsContainer}>
+                  {SIZES.map((size) => {
+                    const isSelected = size.id === selectedSize;
+
+                    return (
+                      <TouchableOpacity
+                        key={size.id}
+                        style={[
+                          styles.sizeOption,
+                          isSelected && styles.sizeOptionSelected,
+                          !size.available && styles.sizeOptionDisabled,
+                        ]}
+                        onPress={() =>
+                          size.available && setSelectedSize(size.id)
+                        }
+                        disabled={!size.available}
+                      >
+                        {isSelected ? (
+                          <View style={styles.sizeOptionCenter}>
+                            <Text style={styles.sizeLabel}>{size.label}</Text>
+                            <Text style={styles.sizeMeasurement}>
+                              {size.measurement}
+                            </Text>
+                            {size.recommended && (
+                              <Text style={styles.sizeStatus}>
+                                Ready to ship
+                              </Text>
+                            )}
+                          </View>
+                        ) : (
+                          <Text
+                            style={[
+                              styles.sizeLabelSide,
+                              !size.available && styles.sizeLabelDisabled,
+                            ]}
+                          >
+                            {size.label}
+                          </Text>
+                        )}
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              </View>
+            </View>
+
+            {/* Metal Color Selection */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Select Metal Color</Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.metalOptionsScroll}
+              >
+                {METAL_COLORS.map((metal) => {
+                  const isSelected = metal.id === selectedMetal;
+                  return (
+                    <TouchableOpacity
+                      key={metal.id}
+                      style={[
+                        styles.metalOption,
+                        isSelected && styles.metalOptionSelected,
+                      ]}
+                      onPress={() => setSelectedMetal(metal.id)}
+                    >
+                      <Text style={styles.metalPurity}>{metal.purity}</Text>
+                      <Text style={styles.metalLabel}>{metal.label}</Text>
+                      <Text style={styles.metalStatus}>{metal.status}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </View>
+
+            {/* Gold Purity Selection */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Select Gold Purity</Text>
+              <View style={styles.purityRow}>
+                {PURITIES.map((purity) => {
+                  const isSelected = purity.id === selectedPurity;
+                  return (
+                    <TouchableOpacity
+                      key={purity.id}
+                      style={[
+                        styles.purityOption,
+                        isSelected && styles.purityOptionSelected,
+                      ]}
+                      onPress={() => setSelectedPurity(purity.id)}
+                    >
+                      <Text
+                        style={[
+                          styles.purityText,
+                          isSelected && styles.purityTextSelected,
+                        ]}
+                      >
+                        {purity.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Price Summary */}
+            <View style={styles.priceSection}>
+              <View style={styles.priceRow}>
+                <Text style={styles.priceLabel}>Estimated price</Text>
+                <Text style={styles.deliveryText}>Delivery by 20th Nov</Text>
+              </View>
+              <View style={styles.priceRow}>
+                <Text style={styles.priceAmount}>
+                  ₹{estimatedPrice.toLocaleString()}
+                </Text>
+                <Text style={styles.additionalCost}>
+                  (Additional ₹{additionalCost.toLocaleString()})
+                </Text>
+              </View>
             </View>
           </ScrollView>
 
@@ -160,178 +270,287 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({ visible,
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
   },
   container: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    maxHeight: height * 0.8,
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    maxHeight: height * 0.95,
+    height: height * 0.95,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: SPACING.m,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
-    position: 'relative',
+    paddingTop: SPACING.l,
+    backgroundColor: "#F5F5F5",
   },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: COLORS.text,
+  backBtn: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  closeBtn: {
-    position: 'absolute',
-    right: SPACING.m,
+  headerIcons: {
+    flexDirection: "row",
+    gap: SPACING.m,
+  },
+  iconBtn: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
   },
   scrollContent: {
-    padding: SPACING.m,
     paddingBottom: 100,
   },
-  groupContainer: {
-    marginBottom: SPACING.l,
+
+  // Size Section
+  sizeSection: {
+    backgroundColor: "#F5F5F5",
+    paddingBottom: SPACING.l,
   },
-  groupLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
-    marginBottom: 12,
+  sizeSectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: SPACING.m,
+    paddingTop: SPACING.m,
+    paddingBottom: SPACING.s,
   },
-  optionsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: COLORS.text,
   },
-  chipOption: {
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
+  linkText: {
+    fontSize: 12,
+    color: COLORS.text,
+    textDecorationLine: "underline",
   },
-  chipOptionActive: {
-    borderColor: COLORS.primary,
-    backgroundColor: '#FAFAFA',
+  sizeContentRow: {
+    flexDirection: "row",
+    paddingHorizontal: SPACING.m,
+    paddingTop: SPACING.m,
+    gap: SPACING.m,
   },
-  chipText: {
+  ringContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: SPACING.l,
+  },
+  ringVisual: {
+    width: 120,
+    height: 120,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  ringOuter: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 12,
+    borderColor: "#D4AF37",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+    backgroundColor: "#FFFFFF",
+  },
+  ringInner: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "transparent",
+  },
+  ringShadow: {
+    position: "absolute",
+    bottom: -10,
+    width: 80,
+    height: 10,
+    borderRadius: 40,
+    backgroundColor: "rgba(0,0,0,0.1)",
+  },
+  sizeOptionsContainer: {
+    flex: 1,
+    gap: SPACING.s,
+  },
+  sizeOption: {
+    padding: SPACING.m,
+    alignItems: "flex-start",
+    justifyContent: "center",
+    minHeight: 50,
+  },
+  sizeOptionSelected: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: COLORS.text,
+    paddingVertical: SPACING.m,
+    paddingHorizontal: SPACING.m,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  sizeOptionDisabled: {
+    opacity: 0.3,
+  },
+  sizeOptionCenter: {
+    alignItems: "flex-start",
+  },
+  sizeLabel: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: COLORS.text,
+    marginBottom: 2,
+  },
+  sizeLabelSide: {
     fontSize: 14,
     color: COLORS.textSecondary,
   },
-  chipTextActive: {
+  sizeLabelDisabled: {
+    textDecorationLine: "line-through",
+  },
+  sizeMeasurement: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    marginBottom: 2,
+  },
+  sizeStatus: {
+    fontSize: 11,
     color: COLORS.text,
-    fontWeight: '700',
+    fontWeight: "500",
   },
-  colorOption: {
-    alignItems: 'center',
+
+  // Metal Color Section
+  section: {
+    padding: SPACING.m,
+    backgroundColor: "#FFFFFF",
   },
-  colorCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+  metalOptionsScroll: {
+    paddingTop: SPACING.m,
+    gap: SPACING.m,
+  },
+  metalOption: {
+    width: 100,
+    padding: SPACING.m,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
-    marginBottom: 6,
+    borderColor: "#E0E0E0",
+    borderRadius: 8,
+    alignItems: "center",
   },
-  colorCircleActive: {
+  metalOptionSelected: {
+    borderColor: COLORS.text,
     borderWidth: 2,
-    borderColor: COLORS.primary,
+    backgroundColor: "#FAFAFA",
   },
-  colorText: {
+  metalPurity: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: COLORS.text,
+    marginBottom: SPACING.xs,
+  },
+  metalLabel: {
     fontSize: 11,
     color: COLORS.textSecondary,
+    marginBottom: SPACING.xs,
   },
-  colorTextActive: {
-    color: COLORS.text,
-    fontWeight: '700',
+  metalStatus: {
+    fontSize: 10,
+    color: COLORS.textSecondary,
   },
-  quantitySection: {
-    marginTop: SPACING.s,
+
+  // Purity Section
+  purityRow: {
+    flexDirection: "row",
+    gap: SPACING.m,
+    marginTop: SPACING.m,
   },
-  quantityRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  quantityInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  purityOption: {
+    flex: 1,
+    paddingVertical: SPACING.m,
     borderWidth: 1,
-    borderColor: '#E8A39A',
-    borderRadius: 4,
-    flex: 1,
-    height: 56,
-    marginRight: 16,
-    position: 'relative',
+    borderColor: "#E0E0E0",
+    borderRadius: 8,
+    alignItems: "center",
   },
-  quantityLabelBox: {
-    flex: 1,
-    paddingLeft: 12,
+  purityOptionSelected: {
+    borderColor: COLORS.text,
+    borderWidth: 2,
+    backgroundColor: "#FAFAFA",
   },
-  quantityLabelText: {
-    fontSize: 11,
-    color: '#8E9AAF',
+  purityText: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
   },
-  quantityValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
+  purityTextSelected: {
+    color: COLORS.text,
+    fontWeight: "700",
   },
-  quantityControls: {
-    width: 32,
-    height: '100%',
-    backgroundColor: '#F9F9F9',
-    borderLeftWidth: 1,
-    borderLeftColor: '#F0F0F0',
-  },
-  arrowBtn: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  arrowDivider: {
-    height: 1,
-    backgroundColor: '#F0F0F0',
-  },
-  editCircle: {
-    position: 'absolute',
-    right: -10,
-    top: 6,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#E87A5E',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#FFF',
-  },
-  deleteBtn: {
-    padding: 8,
-  },
-  errorText: {
-    color: '#E87A5E',
-    fontSize: 11,
-    marginTop: 4,
-  },
-  footer: {
+
+  // Price Section
+  priceSection: {
     padding: SPACING.m,
+    backgroundColor: "#FFFFFF",
     borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
-    backgroundColor: '#FFF',
+    borderTopColor: "#E0E0E0",
+  },
+  priceRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: SPACING.xs,
+  },
+  priceLabel: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+  },
+  deliveryText: {
+    fontSize: 13,
+    color: COLORS.text,
+    fontWeight: "500",
+  },
+  priceAmount: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: COLORS.text,
+  },
+  additionalCost: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+  },
+
+  // Footer
+  footer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: SPACING.m,
+    backgroundColor: "#FFFFFF",
+    borderTopWidth: 1,
+    borderTopColor: "#E0E0E0",
   },
   confirmBtn: {
     backgroundColor: COLORS.primary,
     height: 54,
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   confirmBtnText: {
-    color: '#FFF',
+    color: "#FFFFFF",
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: "700",
     letterSpacing: 1,
   },
 });
