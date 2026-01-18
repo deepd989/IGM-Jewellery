@@ -1,16 +1,21 @@
 import { Product } from "@/interfaces/product.interface";
+import { useAddToCartMutation } from "@/store/apis/cart";
+import { useGetProductsQuery } from "@/store/apis/product";
 import {
   useAddToWishlistMutation,
   useGetWishlistQuery,
   useRemoveFromWishlistMutation,
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   Dimensions,
+  FlatList,
   Image,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -31,7 +36,9 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
   images,
   product,
 }) => {
+  const router = useRouter();
   const [activeSlide, setActiveSlide] = useState(0);
+  const [showSimilarModal, setShowSimilarModal] = useState(false);
 
   // Wishlist functionality
   const { data: wishlistData } = useGetWishlistQuery();
@@ -39,6 +46,16 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     useAddToWishlistMutation();
   const [removeFromWishlist, { isLoading: isRemovingFromWishlist }] =
     useRemoveFromWishlistMutation();
+
+  // Fetch similar products (same brand or product type)
+  const { data: allProducts = [] } = useGetProductsQuery();
+  const similarProducts = allProducts
+    .filter(
+      (p) =>
+        p.id !== product.id &&
+        (p.brand === product.brand || p.productType === product.productType),
+    )
+    .slice(0, 10);
 
   const isInWishlist = wishlistData?.items.some(
     (item) => item.id === product.id,
@@ -56,14 +73,12 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
 
   const handleToggleWishlist = async () => {
     if (isInWishlist) {
-      // Remove from wishlist
       try {
         await removeFromWishlist(product.id).unwrap();
       } catch (error) {
         Alert.alert("Error", "Failed to remove from wishlist");
       }
     } else {
-      // Add to wishlist
       try {
         await addToWishlist(product).unwrap();
       } catch (error: any) {
@@ -81,7 +96,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Header Actions (Share/Fav) Overlay */}
+      {/* Header Actions (Share) Overlay */}
       <View style={styles.headerOverlay}>
         <TouchableOpacity style={styles.iconBtn}>
           <Ionicons
@@ -140,12 +155,12 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
         </View>
 
         <View style={styles.mediaIcons}>
-          <TouchableOpacity style={styles.mediaIcon}>
-            <Ionicons
-              name="videocam-outline"
-              size={20}
-              color={COLORS.primary}
-            />
+          {/* View Similar Icon */}
+          <TouchableOpacity
+            style={styles.mediaIcon}
+            onPress={() => setShowSimilarModal(true)}
+          >
+            <Ionicons name="albums-outline" size={20} color={COLORS.primary} />
           </TouchableOpacity>
 
           {/* Wishlist Heart Icon */}
@@ -166,7 +181,176 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Similar Products Modal */}
+      <Modal
+        visible={showSimilarModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowSimilarModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <TouchableOpacity
+            style={styles.modalOverlayTouch}
+            activeOpacity={1}
+            onPress={() => setShowSimilarModal(false)}
+          />
+          <View style={styles.modalContent}>
+            {/* Modal Header */}
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                View similar products across brands
+              </Text>
+              <TouchableOpacity
+                onPress={() => setShowSimilarModal(false)}
+                style={styles.closeButton}
+              >
+                <Ionicons name="close" size={24} color={COLORS.text} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Similar Products List */}
+            <FlatList
+              data={similarProducts}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={styles.similarProductsList}
+              renderItem={({ item }) => (
+                <SimilarProductCard
+                  product={item}
+                  onPress={() => {
+                    setShowSimilarModal(false);
+                    router.push({
+                      pathname: "/product/[id]",
+                      params: { id: item.id },
+                    });
+                  }}
+                />
+              )}
+              ListEmptyComponent={
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.emptyText}>
+                    No similar products found
+                  </Text>
+                </View>
+              }
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
+  );
+};
+
+// Similar Product Card Component
+const SimilarProductCard = ({
+  product,
+  onPress,
+}: {
+  product: Product;
+  onPress: () => void;
+}) => {
+  const { data: wishlistData } = useGetWishlistQuery();
+  const [addToWishlist] = useAddToWishlistMutation();
+  const [removeFromWishlist] = useRemoveFromWishlistMutation();
+  const [addToCart] = useAddToCartMutation();
+
+  const isInWishlist = wishlistData?.items.some(
+    (item) => item.id === product.id,
+  );
+
+  const handleToggleWishlist = async (e: any) => {
+    e.stopPropagation();
+    try {
+      if (isInWishlist) {
+        await removeFromWishlist(product.id).unwrap();
+      } else {
+        await addToWishlist(product).unwrap();
+      }
+    } catch (error) {
+      console.error("Wishlist error:", error);
+    }
+  };
+
+  const handleAddToCart = async (e: any) => {
+    e.stopPropagation();
+    try {
+      await addToCart({ product, quantity: 1 }).unwrap();
+      Alert.alert("Success", "Added to cart");
+    } catch (error) {
+      Alert.alert("Error", "Failed to add to cart");
+    }
+  };
+
+  const handleTryNow = (e: any) => {
+    e.stopPropagation();
+    onPress();
+  };
+
+  return (
+    <TouchableOpacity
+      style={styles.similarCard}
+      onPress={onPress}
+      activeOpacity={0.9}
+    >
+      {/* Product Image */}
+      <View style={styles.similarImageWrapper}>
+        <Image
+          source={{ uri: product.thumbnailUrls[0] }}
+          style={styles.similarImage}
+          resizeMode="cover"
+        />
+
+        {/* Wishlist Heart */}
+        <TouchableOpacity
+          style={styles.similarHeartIcon}
+          onPress={handleToggleWishlist}
+        >
+          <Ionicons
+            name={isInWishlist ? "heart" : "heart-outline"}
+            size={18}
+            color={isInWishlist ? COLORS.primary : COLORS.text}
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* Product Details */}
+      <View style={styles.similarDetails}>
+        <Text style={styles.similarPrice}>
+          ₹{product.discountedPrice.toLocaleString()}
+        </Text>
+        {product.givenPrice && (
+          <Text style={styles.similarOriginalPrice}>
+            ₹{product.givenPrice.toLocaleString()}
+          </Text>
+        )}
+      </View>
+
+      <Text style={styles.similarTitle} numberOfLines={1}>
+        {product.title}
+      </Text>
+      <Text style={styles.similarBrand}>{product.brand}</Text>
+
+      {/* Action Buttons */}
+      <View style={styles.similarActions}>
+        <TouchableOpacity style={styles.compareBtn} onPress={handleTryNow}>
+          <Ionicons
+            name="sparkles-outline"
+            size={12}
+            color={COLORS.primary}
+            style={{ marginRight: 4 }}
+          />
+          <Text style={styles.compareBtnText}>Try Now</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.addToCartBtnSmall}
+          onPress={handleAddToCart}
+        >
+          <Text style={styles.addToCartBtnText}>Add to cart</Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
   );
 };
 
@@ -260,5 +444,147 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+  },
+
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end",
+  },
+  modalOverlayTouch: {
+    flex: 1,
+  },
+  modalContent: {
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: "70%",
+    paddingBottom: 20,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: SPACING.m,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F0F0F0",
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: COLORS.text,
+    flex: 1,
+  },
+  closeButton: {
+    padding: 4,
+  },
+  similarProductsList: {
+    paddingHorizontal: SPACING.m,
+    paddingVertical: SPACING.m,
+  },
+  emptyContainer: {
+    padding: SPACING.xl,
+    alignItems: "center",
+  },
+  emptyText: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+  },
+
+  // Similar Product Card Styles
+  similarCard: {
+    width: 200,
+    backgroundColor: "#FFFFFF",
+    marginRight: SPACING.m,
+    borderWidth: 1,
+    borderColor: "#F0F0F0",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  similarImageWrapper: {
+    width: "100%",
+    aspectRatio: 1,
+    backgroundColor: "#FAFAFA",
+    position: "relative",
+  },
+  similarImage: {
+    width: "100%",
+    height: "100%",
+  },
+  similarHeartIcon: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: "rgba(255,255,255,0.9)",
+    borderRadius: 16,
+    width: 28,
+    height: 28,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  similarDetails: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    paddingHorizontal: SPACING.s,
+    paddingTop: SPACING.s,
+  },
+  similarPrice: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: COLORS.primary,
+    marginRight: 6,
+  },
+  similarOriginalPrice: {
+    fontSize: 12,
+    textDecorationLine: "line-through",
+    color: COLORS.textSecondary,
+  },
+  similarTitle: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: COLORS.text,
+    paddingHorizontal: SPACING.s,
+    marginTop: 4,
+  },
+  similarBrand: {
+    fontSize: 11,
+    color: COLORS.textSecondary,
+    paddingHorizontal: SPACING.s,
+    marginTop: 2,
+  },
+  similarActions: {
+    flexDirection: "row",
+    gap: 8,
+    padding: SPACING.s,
+    paddingTop: SPACING.m,
+  },
+  compareBtn: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    borderRadius: 4,
+  },
+  compareBtnText: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: COLORS.primary,
+  },
+  addToCartBtnSmall: {
+    flex: 1,
+    backgroundColor: COLORS.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 8,
+    borderRadius: 4,
+  },
+  addToCartBtnText: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#FFFFFF",
   },
 });
