@@ -52,7 +52,7 @@ export default function BrandGridTileView() {
   );
 
   return (
-    <>
+    <View>
       <SectionHeader value="Explore Brand" />
       <View style={styles.container}>
         {/* ROW 1 */}
@@ -60,9 +60,9 @@ export default function BrandGridTileView() {
           <Tile id="large1" w={W * 0.58} h={W * 0.38} src={tanishqLogo} brandSlug="tanishq" />
 
           <View style={{ justifyContent: "space-between" }}>
-            <Tile id="r1top" w={W * 0.28} h={W * 0.18} src={malabarLogo} brandSlug="malabar" />
+            <Tile id="r1top" w={W * 0.30} h={W * 0.18} src={malabarLogo} brandSlug="malabar" />
             <View style={{ marginTop: GAP }}>
-              <Tile id="r1bottom" w={W * 0.28} h={W * 0.18} src={caratlaneLogo} brandSlug="caratlane" />
+              <Tile id="r1bottom" w={W * 0.30} h={W * 0.18} src={caratlaneLogo} brandSlug="caratlane" />
             </View>
           </View>
         </View>
@@ -77,8 +77,8 @@ export default function BrandGridTileView() {
 
           {/* Middle column */}
           <View style={{ gap: GAP }}>
-            <Tile id="r2midTop" w={W * 0.28} h={W * 0.18} src={tanishqLogo} brandSlug="tanishq" />
-            <Tile id="r2midBottom" w={W * 0.28} h={W * 0.18} src={tbzLogo} brandSlug="tbz" />
+            <Tile id="r2midTop" w={W * 0.26} h={W * 0.18} src={tanishqLogo} brandSlug="tanishq" />
+            <Tile id="r2midBottom" w={W * 0.26} h={W * 0.18} src={tbzLogo} brandSlug="tbz" />
           </View>
 
           {/* Right big tile */}
@@ -88,10 +88,10 @@ export default function BrandGridTileView() {
         {/* ROW 3 */}
         <View style={styles.row}>
           <Tile id="r3left" w={W * 0.28} h={W * 0.18} src={pcjLogo} brandSlug="pcj" />
-          <Tile id="r3right" w={W * 0.64} h={W * 0.38} src={caratlaneLogo} brandSlug="caratlane" />
+          <Tile id="r3right" w={W * 0.61} h={W * 0.38} src={caratlaneLogo} brandSlug="caratlane" />
         </View>
       </View>
-    </>
+    </View>
   );
 }
 

@@ -68,7 +68,7 @@ const handleRedirect = (collectionName:string) => {
             >
               <View
                 style={[
-                  styles.brandCircle,
+                  styles.brandRectangle,
                   isActive && styles.brandCircleActive,
                 ]}
               >
@@ -147,10 +147,10 @@ placeholder:{
     padding:10,
   },
 
-  brandCircle: {
+  brandRectangle: {
     width: 64,
     height: 64,
-    borderRadius: 32,
+    // borderRadius: 32,
     backgroundColor: "#F3F3F3",
     marginBottom: 8,
     justifyContent: "center",

@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function UnderDev() {
   const router = useRouter();
@@ -10,12 +12,13 @@ export default function UnderDev() {
 
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <View style={styles.container}>
       <TouchableOpacity 
         style={styles.backButton}
         onPress={() => router.back()}
       >
-        <Text style={styles.backButtonText}> ← </Text>
+        <Ionicons name="chevron-back" size={24} color={"black"} />
       </TouchableOpacity>
       
       <Text style={styles.title}>Coming Soon</Text>
@@ -23,6 +26,7 @@ export default function UnderDev() {
         {featureName} is launching soon!
       </Text>
     </View>
+    </SafeAreaView>
   );
 }
 

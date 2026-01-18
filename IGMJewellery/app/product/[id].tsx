@@ -13,14 +13,14 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-} from "react-native";
-import { COLORS, SPACING } from "../../constants/theme";
+  View
+} from 'react-native';
+import { COLORS, SPACING } from '../../constants/theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -153,7 +153,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
-    paddingTop: Platform.OS === "android" ? 30 : 0,
   },
   header: {
     flexDirection: "row",

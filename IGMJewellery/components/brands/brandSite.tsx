@@ -150,7 +150,7 @@ export default function BrandProfile({
                 )}
                 showsVerticalScrollIndicator={false}
               /> */}
-              <ListingScreen  filters={{"brand":[header.brandNameKey]}} />
+              {/* <ListingScreen  filters={{"brand":[header.brandNameKey]}} /> */}
               </View>
               
       )}
@@ -195,7 +195,8 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 120,
     height: 120,
-    borderRadius: 60,
+    // borderRadius: 60,
+    padding: 10,
     backgroundColor: '#d3d3d3',
     marginTop: 20,
     marginBottom: 20,

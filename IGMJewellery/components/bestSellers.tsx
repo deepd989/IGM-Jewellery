@@ -6,7 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import ProductCard from "./productCard";
+import ProductCard2 from "./productCard";
 import { useSelector } from "react-redux";
 import { selectProducts } from "@/store/productSlice";
 import { categories } from "@/constants/categories";
@@ -51,7 +51,7 @@ export default function BestSellersSection() {
         })}
       </ScrollView>
 
-      <ProductCard product={products[0]}  />
+      <ProductCard2 product={products[0]}  />
 
       {/* Card */}
     </View>

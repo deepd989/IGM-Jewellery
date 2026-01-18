@@ -694,7 +694,6 @@ const styles = StyleSheet.create({
   },
   iconBtn: {
     padding: 4,
-    marginLeft: 6,
   },
   titleSection: {
     alignItems: "center",
@@ -808,7 +807,7 @@ const styles = StyleSheet.create({
   },
   leftFab: {
     position: "absolute",
-    bottom: 80,
+    bottom: 120,
     left: SPACING.m,
     width: 44,
     height: 44,
@@ -825,7 +824,7 @@ const styles = StyleSheet.create({
   },
   closeFab: {
     position: "absolute",
-    bottom: 80,
+    bottom: 120,
     right: SPACING.m,
     width: 48,
     height: 48,
@@ -871,7 +870,6 @@ const styles = StyleSheet.create({
     zIndex: 15,
   },
   bottomBar: {
-    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,

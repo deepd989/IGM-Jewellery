@@ -436,8 +436,6 @@ const styles = StyleSheet.create({
   backBtn: {
     width: 40,
     height: 40,
-    borderRadius: 8,
-    borderWidth: 1,
     borderColor: "#F0F0F0",
     justifyContent: "center",
     alignItems: "center",
@@ -478,7 +476,6 @@ const styles = StyleSheet.create({
     transform: [{ rotate: "45deg" }],
   },
   stickyFooter: {
-    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,

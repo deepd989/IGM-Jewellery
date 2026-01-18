@@ -7,7 +7,7 @@ import {
   Animated,
 } from "react-native";
 import { ResizeMode, Video } from "expo-av";
-import ProductCard from "./productCard";
+import ProductCard2 from "./productCard";
 import { useSelector } from "react-redux";
 import { selectProducts } from "@/store/productSlice";
 import { useGetProductsQuery } from "@/store/apis/product";
@@ -69,7 +69,7 @@ export default function HashtagComponent() {
               ]}
             >
               {/* Video */}
-              <ProductCard product={item} label2Text="Add to cart"/>
+              <ProductCard2 product={item} label2Text="Add to cart"/>
             </Animated.View>
           );
         }}

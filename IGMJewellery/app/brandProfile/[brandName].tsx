@@ -1,5 +1,6 @@
 import BrandProfile from '@/components/brands/brandSite';
 import { useGetBrandByNameQuery } from '@/store/apis/brandsApi';
+import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { View, Pressable, Text, StyleSheet } from 'react-native';
 
@@ -20,7 +21,7 @@ export default function BrandDetailPage() {
         accessibilityRole="button"
         accessibilityLabel="Go back"
       >
-        <Text style={styles.backText}>‹</Text>
+         <Ionicons name="chevron-back" size={24} color={"black"} />
       </Pressable>
 
       <BrandProfile

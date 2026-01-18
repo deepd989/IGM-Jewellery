@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from "react-native";
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { Product } from "@/interfaces/product.interface";
 import type { StyleProp, ViewStyle } from "react-native";
 import { Image } from "react-native";
 import { router } from "expo-router";
-import { useAddToTrialMutation } from "@/store/apis/cart";
+import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 
 interface ProductCardProps {
   product: Product,
+  onPress?: () => void,
   width?: number,
   deliveryDate?: string,
   label1Text?:string,
@@ -17,13 +18,28 @@ interface ProductCardProps {
 
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({
+const ProductCard2: React.FC<ProductCardProps> = ({
   product,
   deliveryDate,
   width,
   label1Text="Try Now",
-  label2Text="Try at home",
+  label2Text="Add to cart",
+  onPress,
 }) => {
+
+  
+  const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+
+    const handleAddToCart = async (e: any) => {
+      e.stopPropagation();
+      try {
+        alert(` ${product.title} Added to cart`);
+        await addToCart({ product, quantity: 1 }).unwrap();
+      } catch (error) {
+        console.error("Failed to add to cart:", error);
+        Alert.alert("Error", "Failed to add item to cart");
+      }
+    };
      const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
     const handleTryAtHome = async (e: any) => {
       e.stopPropagation();
@@ -83,14 +99,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
     );
   }
   return (
-    <View style={[styles.card, { width }]}>
+    <TouchableOpacity style={[styles.card, { width }]}  onPress={onPress}>
       {/* Top badges */}
       <View style={styles.topRow}>
-        {product && product.isNew && (
+      {product && product.isNew && (
           <View style={styles.newBadge}>
             <Text style={styles.newText}>New</Text>
           </View>
-        )}
+             )}
+        {!product.isNew && (<View style={{paddingHorizontal:6, paddingVertical:10}}/>)}
+    
         {/* <TouchableOpacity>
           <FontAwesome name="heart-o" size={20} color="black" />
         </TouchableOpacity> */}
@@ -139,11 +157,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         }}>
           <Text style={styles.tryNowText}>{label1Text}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.tryAtHome]} onPress={(event) => {handleTryAtHome(event)}}>
+        <TouchableOpacity style={[styles.button, styles.tryAtHome]} onPress={(event) => {handleAddToCart(event)}}>
           <Text style={styles.tryAtHomeText}>{label2Text}</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -158,6 +176,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
+
   },
   topRow: {
     flexDirection: "row",
@@ -230,7 +249,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    paddingVertical: 6,
+    padding:6,
     borderRadius: 6,
     alignItems: "center",
     marginHorizontal: 2,
@@ -260,4 +279,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProductCard;
+export default ProductCard2;

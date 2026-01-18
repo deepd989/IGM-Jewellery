@@ -14,7 +14,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -25,6 +24,7 @@ import {
 import * as z from "zod";
 import { CheckoutStepper } from "../../../components/checkout/CheckoutStepper";
 import { COLORS, SPACING } from "../../../constants/theme";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const cardSchema = z.object({
   cardNumber: z.string().length(16, "Card number must be 16 digits"),

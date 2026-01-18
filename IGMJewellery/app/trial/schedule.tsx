@@ -6,7 +6,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import {
   Alert,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,6 +14,7 @@ import {
 } from "react-native";
 import * as z from "zod";
 import { SPACING } from "../../constants/theme";
+import { SafeAreaView } from "react-native-safe-area-context";  
 
 const scheduleSchema = z.object({
   date: z.string().min(1, "Please select a date"),

@@ -12,7 +12,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -20,6 +19,7 @@ import {
   View,
 } from "react-native";
 import { useClearTrialMutation } from "../../store/apis/cart";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TrialAddressScreen() {
   const router = useRouter();

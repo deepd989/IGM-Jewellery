@@ -34,6 +34,48 @@ export interface BrandCollection {
 // Mock brands data
 const MOCK_BRANDS: Brand[] = [
   {
+    profileImageUri: 'https://drive.google.com/uc?export=download&id=113Cwm5g8GE6YO3rLKFAx_92uRd8uWc7C',
+    businessNameKey: 'kalyan_jewellers',
+    businessName: 'Kalyan Jewellers',
+    tagline: 'Trusted legacy in gold and diamonds',
+    ratingText: '4.7 · 12k reviews',
+    storeButtonLabel: 'Visit Store',
+    aboutSections: [
+      {
+        title: 'Our Heritage',
+        paragraphs: [
+          'Kalyan Jewellers has been crafting fine jewelry for decades.',
+          'We blend tradition with modern designs to suit every occasion.',
+        ],
+      },
+      {
+        title: 'Craftsmanship',
+        paragraphs: [
+          'Every piece is meticulously designed and inspected.',
+          'Sourcing ethical materials is core to our values.',
+        ],
+      },
+    ],
+    stats: [
+      { label: 'Stores', value: '150+' },
+      { label: 'Established', value: '1993' },
+      { label: 'Countries', value: '3' },
+    ],
+    collections:[{
+      title: 'Gifting Collection',
+      description: 'Thoughtful jewellery pieces perfect for meaningful gifts.',
+      imageUri: 'https://example.com/images/brands/gifting_collection.jpg',
+      productIds: ['prod19', 'prod20', 'prod21'],
+    },
+    {
+      title: 'Heritage Gold',
+      description: 'Inspired by Indian heritage and timeless gold artistry.',
+      imageUri: 'https://example.com/images/brands/heritage_gold.jpg',
+      productIds: ['prod22', 'prod23', 'prod24'],
+    }
+  ]
+  },
+  {
     profileImageUri: 'https://drive.google.com/uc?export=download&id=1BndyDIunNUIrWRbsrm1Sp-83t5o2jd_n',
     businessNameKey: 'malabar',
     businessName: 'Malabar Gold & Diamonds',
@@ -115,48 +157,6 @@ const MOCK_BRANDS: Brand[] = [
     productIds: ['prod16', 'prod17', 'prod18'],
   },]
 },
-  {
-    profileImageUri: 'https://drive.google.com/uc?export=download&id=113Cwm5g8GE6YO3rLKFAx_92uRd8uWc7C',
-    businessNameKey: 'kalyan_jewellers',
-    businessName: 'Kalyan Jewellers',
-    tagline: 'Trusted legacy in gold and diamonds',
-    ratingText: '4.7 · 12k reviews',
-    storeButtonLabel: 'Visit Store',
-    aboutSections: [
-      {
-        title: 'Our Heritage',
-        paragraphs: [
-          'Kalyan Jewellers has been crafting fine jewelry for decades.',
-          'We blend tradition with modern designs to suit every occasion.',
-        ],
-      },
-      {
-        title: 'Craftsmanship',
-        paragraphs: [
-          'Every piece is meticulously designed and inspected.',
-          'Sourcing ethical materials is core to our values.',
-        ],
-      },
-    ],
-    stats: [
-      { label: 'Stores', value: '150+' },
-      { label: 'Established', value: '1993' },
-      { label: 'Countries', value: '3' },
-    ],
-    collections:[{
-      title: 'Gifting Collection',
-      description: 'Thoughtful jewellery pieces perfect for meaningful gifts.',
-      imageUri: 'https://example.com/images/brands/gifting_collection.jpg',
-      productIds: ['prod19', 'prod20', 'prod21'],
-    },
-    {
-      title: 'Heritage Gold',
-      description: 'Inspired by Indian heritage and timeless gold artistry.',
-      imageUri: 'https://example.com/images/brands/heritage_gold.jpg',
-      productIds: ['prod22', 'prod23', 'prod24'],
-    }
-  ]
-  },
   {
     businessNameKey: 'tanishq',
     profileImageUri: 'https://drive.google.com/uc?export=download&id=1WoeWEPUu68OhUhuGb7IHa10ov856wW78',

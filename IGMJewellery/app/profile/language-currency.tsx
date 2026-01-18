@@ -4,7 +4,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,6 +11,8 @@ import {
   View,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 export default function LanguageCurrencyScreen() {
   const router = useRouter();

@@ -15,7 +15,6 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -27,6 +26,7 @@ import * as z from "zod";
 import { CheckoutStepper } from "../../components/checkout/CheckoutStepper";
 import { CheckoutSummary } from "../../components/checkout/CheckoutSummary";
 import { COLORS, SPACING } from "../../constants/theme";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const giftingSchema = z.object({
   giftWrapId: z.string().optional(),

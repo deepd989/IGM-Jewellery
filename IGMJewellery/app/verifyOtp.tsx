@@ -56,13 +56,13 @@ export default function OtpScreen() {
   };
 
   const verifyOtp = (code: string) => {
-    const isValid = code === "12345"; // Mock validation
 
-    if (isValid) {
+    if (code === "12345") {
       setError(null);
       router.replace("/home");
+    }else if(code === "00000"){
+      router.replace("/signUp");
     } else {
-      // --- Handle Invalid State ---
       setError("The OTP provided is invalid. Please try again.");
       Keyboard.dismiss();
     }

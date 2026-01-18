@@ -20,8 +20,9 @@ export default function searchBar() {
         <View style={styles.badge}>
           <Text style={styles.badgeText}>GBST Vault</Text>
         </View>
-        {/* <Ionicons name="notifications-outline" size={22} /> */}
-        {/* <Ionicons name="heart-outline" size={22} /> */}
+        <Ionicons name="notifications-outline" size={22} />
+        <Ionicons name="heart-outline" size={22}  />
+        
          <CartBadge iconSize={22} iconColor={COLORS.text} />
       </View>
     </View>
