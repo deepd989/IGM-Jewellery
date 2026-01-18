@@ -4,10 +4,13 @@ import { Sparkles, Mic, AudioWaveform, Send, AudioLines } from 'lucide-react-nat
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AiChatComponent from '../components/exploreAi/aiChat';
 import BottomNavBar from '@/components/bottomNavBar';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { COLORS, SPACING } from '@/constants/theme';
 
 export default function ChatInterface() {
   const params = useLocalSearchParams();
+  const router = useRouter();
   const searchQuery = (params.value as string) || '';
   const [showVoiceVideoInterface,setShowVoiceVideoInterface]= useState(params.mode)
 
@@ -58,6 +61,9 @@ export default function ChatInterface() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}>
+              <Ionicons name="chevron-back" size={24} color={COLORS.text} />
+            </TouchableOpacity>
       <View style={styles.container}>
         {/* Sparkle Icon */}
         <View style={styles.iconContainer}>
@@ -130,6 +136,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
+    iconBtn: {
+      marginLeft: SPACING.l,
+      marginTop: SPACING.m,
+    },
   greetingBold: {
     fontSize: 16,
     fontWeight: '600',

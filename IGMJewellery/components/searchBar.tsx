@@ -30,7 +30,7 @@ export default function searchBar() {
 }
 
 const styles = {
-  searchRow: { flexDirection: "row", alignItems: "center", marginTop: 20 },
+  searchRow: { flexDirection: "row", alignItems: "center", marginTop: 0, height:50,paddingHorizontal:10 },
   searchPlaceholder: { marginLeft: 8, color: "#666", fontSize: 16 },
 
   badge: { backgroundColor: "#f1f1f1", paddingHorizontal: 12, paddingVertical: 8, borderRadius: 14 },

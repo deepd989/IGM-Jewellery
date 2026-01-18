@@ -78,10 +78,7 @@ export default function HomeScreen() {
     
   return (
     <SafeAreaView style={{flex:1}}>
-    <ScrollView style={styles.container}>
-      
-      {/* Header */}
-      <View style={styles.header}>
+            <View style={styles.header}>
         <Text style={styles.deliveryText}>
             Deliver to <Text style={{ fontWeight: 'bold' }}>
               {pincode || 'Fetching...'}
@@ -89,10 +86,8 @@ export default function HomeScreen() {
         </Text>
 
       </View>
-
-      {/* Search Row */}
-     <SearchBar />
-      {/* Center Graphic */}
+      <SearchBar />
+    <ScrollView style={styles.container}>
 
       <View>
           <View style={styles.centerBox}>
@@ -238,7 +233,7 @@ export function SectionHeader({value}: {value:string}) {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: "#fff" },
 
-  header: { flexDirection: "row", alignItems: "center", gap: 6 },
+  header: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 10, marginBottom:5 },
   deliveryText: { fontSize: 14, color: "#444" },
   bold: { fontWeight: "600" },
 
