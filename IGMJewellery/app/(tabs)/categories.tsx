@@ -161,7 +161,7 @@ export default function CategoriesScreen() {
           <ActivityIndicator size="large" color={COLORS.primary} />
           <Text style={styles.loadingText}>Loading categories...</Text>
         </View>
-        <BottomNavBar></BottomNavBar>
+        <BottomNavBar activeTab='Categories'></BottomNavBar>
       </SafeAreaView>
     );
   }
@@ -278,7 +278,7 @@ export default function CategoriesScreen() {
           />
         </View>
       </View> */}
-    <BottomNavBar></BottomNavBar>
+    <BottomNavBar activeTab='Categories'></BottomNavBar>
     </SafeAreaView>
   );
 }
