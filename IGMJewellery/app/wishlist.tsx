@@ -46,25 +46,12 @@ export default function WishlistScreen() {
     });
   };
 
-  const handleRemoveFromWishlist = (productId: string) => {
-    Alert.alert(
-      "Remove from Wishlist",
-      "Are you sure you want to remove this item?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Remove",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await removeFromWishlist(productId).unwrap();
-            } catch (error) {
-              Alert.alert("Error", "Failed to remove item from wishlist");
-            }
-          },
-        },
-      ],
-    );
+  const handleRemoveFromWishlist = async (productId: string) => {
+    try {
+      await removeFromWishlist(productId).unwrap();
+    } catch (error) {
+      Alert.alert("Error", "Failed to remove item from wishlist");
+    }
   };
 
   const handleToggleCompare = async (product: Product) => {
