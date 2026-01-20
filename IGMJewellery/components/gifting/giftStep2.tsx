@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  View,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
-import RibbonGiftCard from './ribbonGiftCard';
+  View,
+} from "react-native";
+import { OCCASIONS } from "../../constants/occasions";
+import RibbonGiftCard from "./ribbonGiftCard";
 
 interface GiftCardScreenProps {
+  onNext: () => void;
   onDataChange: (data: {
     occasion: string;
     selectedAmount: number | string;
@@ -26,31 +28,45 @@ interface GiftCardScreenProps {
   };
 }
 
-export default function GiftCardScreen({ onDataChange,initialData }: GiftCardScreenProps) {
-  const [occasion, setOccasion] = useState(initialData?.occasion || 'Birthday');
-  const [selectedAmount, setSelectedAmount] = useState(initialData?.selectedAmount  || 10000);
-  const [message, setMessage] = useState(initialData?.message || '');
-  const [phoneNumber, setPhoneNumber] = useState(initialData?.phoneNumber || '');
-  const [selectedDate, setSelectedDate] = useState(initialData?.selectedDate || '30');
-
-  const occaisions = ['Birthday', 'Anniversary', 'Wedding', 'Get Well Soon', 'Other'];
+export default function GiftCardScreen({
+  onNext,
+  onDataChange,
+  initialData,
+}: GiftCardScreenProps) {
+  const [occasion, setOccasion] = useState(initialData?.occasion || "Birthday");
+  const [selectedAmount, setSelectedAmount] = useState(
+    initialData?.selectedAmount || 10000
+  );
+  const [message, setMessage] = useState(initialData?.message || "");
+  const [phoneNumber, setPhoneNumber] = useState(
+    initialData?.phoneNumber || ""
+  );
+  const [selectedDate, setSelectedDate] = useState(
+    initialData?.selectedDate || "30"
+  );
+  const [error, setError] = useState<string>("");
+  const occaisions = OCCASIONS;
   const amounts = [1000, 2000, 5000, 10000, 15000, 20000];
-  const dates = [
-    { day: '29', label: 'Sat' },
-    { day: '30', label: 'Sun' },
-    { day: '31', label: 'Mon' },
-    { day: '01', label: 'Tue' },
-    { day: '02', label: 'Wed' },
-  ];
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const dates = Array.from({ length: 10 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() + i + 1);
+    return {
+      day: date.getDate().toString().padStart(2, "0"), // e.g. "05"
+      label: daysOfWeek[date.getDay()], // e.g. "Mon"
+    };
+  });
 
   // Helper function to notify parent of changes
-  const notifyParent = (updates: Partial<{
-    occasion: string;
-    selectedAmount: number | string;
-    message: string;
-    phoneNumber: string;
-    selectedDate: string;
-  }>) => {
+  const notifyParent = (
+    updates: Partial<{
+      occasion: string;
+      selectedAmount: number | string;
+      message: string;
+      phoneNumber: string;
+      selectedDate: string;
+    }>
+  ) => {
     const currentData = {
       occasion,
       selectedAmount,
@@ -60,6 +76,32 @@ export default function GiftCardScreen({ onDataChange,initialData }: GiftCardScr
       ...updates,
     };
     onDataChange?.(currentData);
+  };
+
+  const handleDateSelect = (day: string) => {
+    // 1. Clean the phone number (remove any spaces)
+    const cleanedPhone = phoneNumber.replace(/\s+/g, "");
+
+    // 2. Check if empty
+    if (!cleanedPhone) {
+      setError("Recipient's phone number is required");
+      return;
+    }
+
+    // 3. Check for exactly 10 characters AND ensure they are all digits
+    const isAllDigits = /^\d+$/.test(cleanedPhone);
+
+    if (cleanedPhone.length !== 10 || !isAllDigits) {
+      setError("Please enter a valid 10-digit phone number");
+      return;
+    }
+
+    // If validation passes:
+    setError("");
+    setSelectedDate(day);
+    notifyParent({ selectedDate: day });
+
+    if (onNext) onNext();
   };
 
   return (
@@ -102,7 +144,12 @@ export default function GiftCardScreen({ onDataChange,initialData }: GiftCardScr
       </ScrollView>
 
       {/* Gift Card Preview */}
-      <RibbonGiftCard cardBackgroundColor='white' heading={'Happy ' + occasion + "!"} caption={message} amount={selectedAmount} />
+      <RibbonGiftCard
+        cardBackgroundColor="white"
+        heading={"Happy " + occasion + "!"}
+        caption={message}
+        amount={selectedAmount}
+      />
 
       {/* Amount Selection */}
       <View style={styles.section}>
@@ -126,7 +173,7 @@ export default function GiftCardScreen({ onDataChange,initialData }: GiftCardScr
                   selectedAmount === amt && styles.amountTextActive,
                 ]}
               >
-                {amt.toLocaleString('en-IN')}
+                {amt.toLocaleString("en-IN")}
               </Text>
             </TouchableOpacity>
           ))}
@@ -161,6 +208,7 @@ export default function GiftCardScreen({ onDataChange,initialData }: GiftCardScr
           </View>
           <TextInput
             style={styles.phoneInput}
+            maxLength={10}
             placeholder="00000 00000"
             placeholderTextColor="#999"
             value={phoneNumber}
@@ -171,6 +219,7 @@ export default function GiftCardScreen({ onDataChange,initialData }: GiftCardScr
             keyboardType="phone-pad"
           />
         </View>
+        {error && <Text style={{ color: "red", marginTop: 5 }}>{error}</Text>}
       </View>
 
       {/* Schedule */}
@@ -179,7 +228,11 @@ export default function GiftCardScreen({ onDataChange,initialData }: GiftCardScr
           Do you wish to schedule the Gift Card?
         </Text>
         <Text style={styles.sectionTitle}>Select a date</Text>
-        <View style={styles.dateContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.dateContainer}
+        >
           {dates.map((date) => (
             <TouchableOpacity
               key={date.day}
@@ -188,7 +241,7 @@ export default function GiftCardScreen({ onDataChange,initialData }: GiftCardScr
                 selectedDate === date.day && styles.dateButtonActive,
               ]}
               onPress={() => {
-                setSelectedDate(date.day);
+                handleDateSelect(date.day);
                 notifyParent({ selectedDate: date.day });
               }}
             >
@@ -210,7 +263,7 @@ export default function GiftCardScreen({ onDataChange,initialData }: GiftCardScr
               </Text>
             </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
       </View>
     </ScrollView>
   );
@@ -219,185 +272,185 @@ export default function GiftCardScreen({ onDataChange,initialData }: GiftCardScr
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingTop: 40,
     paddingBottom: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   title: {
     fontSize: 24,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
   },
   categoriesContainer: {
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   categoryButton: {
     paddingHorizontal: 20,
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     marginRight: 12,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   categoryButtonActive: {
-    backgroundColor: '#000',
-    borderColor: '#000',
+    backgroundColor: "#000",
+    borderColor: "#000",
   },
   categoryText: {
     fontSize: 14,
-    color: '#000',
+    color: "#000",
   },
   categoryTextActive: {
-    color: '#fff',
+    color: "#fff",
   },
   cardPreview: {
     margin: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 24,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 3,
   },
   cardHeader: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     marginBottom: 16,
   },
   cardBadge: {
     fontSize: 12,
-    color: '#666',
+    color: "#666",
   },
   cardTitle: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#000',
+    fontWeight: "700",
+    color: "#000",
     marginBottom: 8,
   },
   cardSubtitle: {
     fontSize: 14,
-    color: '#999',
+    color: "#999",
     marginBottom: 16,
   },
   cardAmount: {
     fontSize: 18,
-    color: '#000',
-    fontWeight: '500',
+    color: "#000",
+    fontWeight: "500",
   },
   cardDecoration: {
-    position: 'absolute',
+    position: "absolute",
     left: 24,
     bottom: 24,
   },
   ribbon: {
     width: 40,
     height: 40,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     borderRadius: 20,
   },
   section: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 20,
     marginBottom: 1,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
     marginBottom: 12,
   },
   optionalText: {
     fontSize: 14,
-    color: '#999',
+    color: "#999",
   },
   amountGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 12,
   },
   amountButton: {
-    width: '30%',
+    width: "30%",
     paddingVertical: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ddd',
-    backgroundColor: '#f9f9f9',
-    alignItems: 'center',
+    borderColor: "#ddd",
+    backgroundColor: "#f9f9f9",
+    alignItems: "center",
   },
   amountButtonActive: {
-    backgroundColor: '#000',
-    borderColor: '#000',
+    backgroundColor: "#000",
+    borderColor: "#000",
   },
   amountText: {
     fontSize: 16,
-    color: '#000',
-    fontWeight: '500',
+    color: "#000",
+    fontWeight: "500",
   },
   amountTextActive: {
-    color: '#fff',
+    color: "#fff",
   },
   textInput: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 8,
     padding: 16,
     fontSize: 14,
     minHeight: 100,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   phoneContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   countryCode: {
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 8,
     marginRight: 12,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: "#f9f9f9",
   },
   countryCodeText: {
     fontSize: 16,
-    color: '#000',
+    color: "#000",
   },
   phoneInput: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 8,
     padding: 16,
     fontSize: 16,
   },
   scheduleQuestion: {
     fontSize: 14,
-    color: '#000',
+    color: "#000",
     marginBottom: 16,
   },
   dateContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
   },
   dateButton: {
@@ -405,29 +458,31 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ddd',
-    backgroundColor: '#f9f9f9',
-    alignItems: 'center',
+    borderColor: "#ddd",
+    backgroundColor: "#f9f9f9",
+    alignItems: "center",
+    marginHorizontal: 10,
+    paddingHorizontal: 10,
   },
   dateButtonActive: {
-    backgroundColor: '#fff',
-    borderColor: '#000',
+    backgroundColor: "#fff",
+    borderColor: "#000",
     borderWidth: 2,
   },
   dateLabel: {
     fontSize: 12,
-    color: '#666',
+    color: "#666",
     marginBottom: 4,
   },
   dateLabelActive: {
-    color: '#000',
+    color: "#000",
   },
   dateDay: {
     fontSize: 20,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
   },
   dateDayActive: {
-    color: '#000',
+    color: "#000",
   },
 });

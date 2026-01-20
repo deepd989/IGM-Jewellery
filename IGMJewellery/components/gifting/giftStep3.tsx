@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Modal,
   Dimensions,
-} from 'react-native';
-import RibbonGiftCard from './ribbonGiftCard';
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import RibbonGiftCard from "./ribbonGiftCard";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 interface EGiftCardScreenProps {
   phoneNumber: string;
@@ -19,9 +20,15 @@ interface EGiftCardScreenProps {
   message: string;
 }
 
-export default function EGiftCardScreen({ phoneNumber, amount, occasion,message }: EGiftCardScreenProps) {
-  const [paymentMethod, setPaymentMethod] = useState('Pay using');
+export default function EGiftCardScreen({
+  phoneNumber,
+  amount,
+  occasion,
+  message,
+}: EGiftCardScreenProps) {
+  const [paymentMethod, setPaymentMethod] = useState("Pay using");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const router = useRouter();
 
   const handleBuyGift = () => {
     setShowSuccessModal(true);
@@ -30,6 +37,7 @@ export default function EGiftCardScreen({ phoneNumber, amount, occasion,message 
   const handleContinueShopping = () => {
     setShowSuccessModal(false);
     // Navigate to shopping or reset form
+    router.replace("/categories");
   };
 
   const handleReviewOrder = () => {
@@ -37,31 +45,39 @@ export default function EGiftCardScreen({ phoneNumber, amount, occasion,message 
     // Navigate to order review
   };
 
-  const formattedAmount = `${amount.toLocaleString('en-IN')}`;
+  const formattedAmount = `${amount.toLocaleString("en-IN")}`;
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <RibbonGiftCard cardBackgroundColor='white' heading={'Happy '+occasion+  ' !'} caption={message} amount={formattedAmount}/>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
+        <RibbonGiftCard
+          cardBackgroundColor="white"
+          heading={"Happy " + occasion + " !"}
+          caption={message}
+          amount={formattedAmount}
+        />
 
         {/* Order Summary */}
         <View style={styles.orderSection}>
           <Text style={styles.sectionTitle}>VIEW ORDER SUMMARY</Text>
-          
+
           <View style={styles.divider} />
-          
+
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Recipient's number</Text>
             <Text style={styles.summaryValue}>{phoneNumber}</Text>
           </View>
-          
+
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Subtotal</Text>
             <Text style={styles.summaryValue}>{formattedAmount}</Text>
           </View>
-          
+
           <View style={styles.divider} />
-          
+
           <View style={styles.summaryRow}>
             <Text style={styles.totalLabel}>Total Amount</Text>
             <Text style={styles.totalValue}>{formattedAmount}</Text>
@@ -71,7 +87,7 @@ export default function EGiftCardScreen({ phoneNumber, amount, occasion,message 
         {/* Terms & Conditions */}
         <View style={styles.termsContainer}>
           <Text style={styles.termsText}>
-            All gift cards are issued by Razorpay and have an expiry of 4 years.{' '}
+            All gift cards are issued by Razorpay and have an expiry of 4 years.{" "}
             <Text style={styles.termsLink}>Read T&C</Text>
           </Text>
         </View>
@@ -86,7 +102,7 @@ export default function EGiftCardScreen({ phoneNumber, amount, occasion,message 
             <Text style={styles.chevron}>›</Text>
           </TouchableOpacity>
         </View>
-        
+
         <TouchableOpacity style={styles.buyButton} onPress={handleBuyGift}>
           <Text style={styles.buyButtonText}>Buy E-Gift</Text>
         </TouchableOpacity>
@@ -102,7 +118,7 @@ export default function EGiftCardScreen({ phoneNumber, amount, occasion,message 
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             {/* Close Button */}
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.closeButton}
               onPress={() => setShowSuccessModal(false)}
             >
@@ -117,7 +133,9 @@ export default function EGiftCardScreen({ phoneNumber, amount, occasion,message 
             {/* Congratulations Text */}
             <Text style={styles.congratsTitle}>Congratulations!</Text>
             <Text style={styles.congratsMessage}>
-              Your gift card of <Text style={styles.boldAmount}>{formattedAmount}</Text> has been issued
+              Your gift card of{" "}
+              <Text style={styles.boldAmount}>{formattedAmount}</Text> has been
+              issued
             </Text>
             <Text style={styles.congratsMessage}>
               to +91 {phoneNumber} via SMS.
@@ -132,7 +150,9 @@ export default function EGiftCardScreen({ phoneNumber, amount, occasion,message 
             </View>
 
             {/* Share Text */}
-            <Text style={styles.shareText}>Share it with them to let them know</Text>
+            <Text style={styles.shareText}>
+              Share it with them to let them know
+            </Text>
 
             {/* Social Share Buttons */}
             <View style={styles.socialButtons}>
@@ -148,7 +168,7 @@ export default function EGiftCardScreen({ phoneNumber, amount, occasion,message 
             </View>
 
             {/* Continue Shopping Button */}
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.continueButton}
               onPress={handleContinueShopping}
             >
@@ -169,32 +189,32 @@ export default function EGiftCardScreen({ phoneNumber, amount, occasion,message 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   scrollView: {
     flex: 1,
   },
   giftCard: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     marginHorizontal: 20,
     marginTop: 20,
     marginBottom: 20,
     borderRadius: 16,
-    overflow: 'hidden',
+    overflow: "hidden",
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
   },
   giftCardHeader: {
     padding: 16,
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   logoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f0f0f0",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
@@ -202,40 +222,40 @@ const styles = StyleSheet.create({
   logo: {
     width: 16,
     height: 16,
-    backgroundColor: '#333',
+    backgroundColor: "#333",
     borderRadius: 8,
     marginRight: 6,
   },
   logoText: {
     fontSize: 12,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#333",
   },
   giftCardContent: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingHorizontal: 20,
     paddingBottom: 40,
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: "bold",
+    color: "#000",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#999',
+    color: "#999",
     marginBottom: 24,
   },
   amount: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: "bold",
+    color: "#000",
   },
   loadingBar: {
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     height: 60,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingLeft: 20,
   },
   spinner: {
@@ -243,11 +263,11 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     borderWidth: 4,
-    borderColor: '#d0d0d0',
-    borderTopColor: '#999',
+    borderColor: "#d0d0d0",
+    borderTopColor: "#999",
   },
   orderSection: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     marginHorizontal: 20,
     marginBottom: 20,
     borderRadius: 12,
@@ -255,39 +275,39 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: "bold",
+    color: "#000",
     marginBottom: 16,
     letterSpacing: 0.5,
   },
   divider: {
     height: 1,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     marginVertical: 16,
   },
   summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 16,
   },
   summaryLabel: {
     fontSize: 15,
-    color: '#666',
+    color: "#666",
   },
   summaryValue: {
     fontSize: 15,
-    color: '#000',
-    fontWeight: '500',
+    color: "#000",
+    fontWeight: "500",
   },
   totalLabel: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
   },
   totalValue: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: "bold",
+    color: "#000",
   },
   termsContainer: {
     paddingHorizontal: 20,
@@ -295,26 +315,26 @@ const styles = StyleSheet.create({
   },
   termsText: {
     fontSize: 13,
-    color: '#666',
+    color: "#666",
     lineHeight: 20,
   },
   termsLink: {
-    color: '#000',
-    fontWeight: '600',
+    color: "#000",
+    fontWeight: "600",
   },
   bottomBar: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#fff',
-    flexDirection: 'row',
+    backgroundColor: "#fff",
+    flexDirection: "row",
     padding: 16,
-    alignItems: 'center',
+    alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+    borderTopColor: "#e0e0e0",
     elevation: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -325,103 +345,103 @@ const styles = StyleSheet.create({
   },
   bottomPrice: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: "bold",
+    color: "#000",
     marginBottom: 4,
   },
   paymentSelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   paymentText: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
     marginRight: 4,
   },
   chevron: {
     fontSize: 18,
-    color: '#666',
-    fontWeight: 'bold',
+    color: "#666",
+    fontWeight: "bold",
   },
   buyButton: {
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 8,
     minWidth: 160,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buyButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   // Modal Styles
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
   modalContent: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 24,
     padding: 32,
-    width: '100%',
+    width: "100%",
     maxWidth: 400,
-    alignItems: 'center',
-    position: 'relative',
+    alignItems: "center",
+    position: "relative",
   },
   closeButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 20,
     right: 20,
     width: 32,
     height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 1,
   },
   closeIcon: {
     fontSize: 24,
-    color: '#000',
-    fontWeight: '300',
+    color: "#000",
+    fontWeight: "300",
   },
   successIcon: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#000',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#000",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 24,
   },
   checkmark: {
     fontSize: 48,
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
   },
   congratsTitle: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: "bold",
+    color: "#000",
     marginBottom: 12,
   },
   congratsMessage: {
     fontSize: 15,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
     lineHeight: 22,
   },
   boldAmount: {
-    fontWeight: 'bold',
-    color: '#000',
+    fontWeight: "bold",
+    color: "#000",
   },
   cardNumberContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 8,
@@ -430,7 +450,7 @@ const styles = StyleSheet.create({
   },
   cardNumberText: {
     fontSize: 15,
-    color: '#666',
+    color: "#666",
     marginRight: 8,
   },
   copyButton: {
@@ -438,15 +458,15 @@ const styles = StyleSheet.create({
   },
   copyIcon: {
     fontSize: 18,
-    color: '#000',
+    color: "#000",
   },
   shareText: {
     fontSize: 15,
-    color: '#666',
+    color: "#666",
     marginBottom: 20,
   },
   socialButtons: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 16,
     marginBottom: 32,
   },
@@ -454,30 +474,30 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#f5f5f5',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#f5f5f5",
+    alignItems: "center",
+    justifyContent: "center",
   },
   socialIcon: {
     fontSize: 24,
   },
   continueButton: {
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     paddingHorizontal: 48,
     paddingVertical: 16,
     borderRadius: 8,
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
     marginBottom: 16,
   },
   continueButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   reviewLink: {
     fontSize: 15,
-    color: '#666',
-    textDecorationLine: 'underline',
+    color: "#666",
+    textDecorationLine: "underline",
   },
 });
