@@ -3,6 +3,7 @@ import { brandsApiService } from "./apis/brandsApi";
 import { cartApiService } from "./apis/cart";
 import { categoryApiService } from "./apis/categories";
 import { checkoutApiService } from "./apis/checkout";
+import { giftApi } from "./apis/giftApi";
 import { productApiService } from "./apis/product";
 import { profileApiService } from "./apis/profile";
 import { wishlistApiService } from "./apis/wishlist";
@@ -18,6 +19,7 @@ export const store = configureStore({
     [cartApiService.reducerPath]: cartApiService.reducer,
     [checkoutApiService.reducerPath]: checkoutApiService.reducer,
     [wishlistApiService.reducerPath]: wishlistApiService.reducer,
+    [giftApi.reducerPath]: giftApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -28,6 +30,7 @@ export const store = configureStore({
       cartApiService.middleware,
       checkoutApiService.middleware,
       wishlistApiService.middleware,
+      giftApi.middleware
     ),
 });
 
