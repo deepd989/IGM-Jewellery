@@ -1,29 +1,35 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import RibbonGiftCard from './ribbonGiftCard';
+import React from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import RibbonGiftCard from "./ribbonGiftCard";
 
-const GiftStepA = () => {
+const GiftStepA = ({ nextStepFn }: { nextStepFn: () => void }) => {
   const steps = [
     {
-      icon: '💎',
-      title: 'Select your occasion',
-      description: 'A maximum of 5 products'
+      icon: "💎",
+      title: "Select your occasion",
+      description: "A maximum of 5 products",
     },
     {
-      icon: '🏠',
-      title: 'Choose the E-Gift amount',
-      description: 'Select you convenient date, time, and place'
+      icon: "🏠",
+      title: "Choose the E-Gift amount",
+      description: "Select you convenient date, time, and place",
     },
     {
-      icon: '💝',
-      title: 'Personalise it with a note',
-      description: 'Our consultant will get you your chosen designs'
+      icon: "💝",
+      title: "Personalise it with a note",
+      description: "Our consultant will get you your chosen designs",
     },
     {
-      icon: '🔒',
+      icon: "🔒",
       title: "Add Recipient's number & they will receive a redeemable link",
-      description: 'Our consultant will get you your chosen designs'
-    }
+      description: "Our consultant will get you your chosen designs",
+    },
   ];
 
   return (
@@ -31,7 +37,7 @@ const GiftStepA = () => {
       <View style={styles.content}>
         {/* Header Image Placeholder */}
         {/* <View style={styles.imageContainer} /> */}
-        <RibbonGiftCard/>
+        <RibbonGiftCard />
 
         {/* Title Section */}
         <Text style={styles.title}>Send a Gift Card!</Text>
@@ -58,9 +64,16 @@ const GiftStepA = () => {
             </View>
           ))}
         </View>
-
-
       </View>
+      <TouchableOpacity
+        style={styles.exploreButton}
+        activeOpacity={0.8}
+        onPress={() => {
+          nextStepFn();
+        }}
+      >
+        <Text style={styles.exploreText}>Send A Gift Card</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -68,89 +81,97 @@ const GiftStepA = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: "#fff",
   },
-  content: {
-    padding: 20
-  },
+  content: {},
   imageContainer: {
-    width: '100%',
+    width: "100%",
     height: 240,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     borderRadius: 12,
-    marginBottom: 24
+    marginBottom: 24,
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#000',
-    marginBottom: 8
+    fontWeight: "bold",
+    color: "#000",
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 15,
-    color: '#666',
+    color: "#666",
     lineHeight: 22,
-    marginBottom: 32
+    marginBottom: 32,
   },
   stepsContainer: {
-    marginBottom: 32
+    marginBottom: 32,
   },
   stepWrapper: {
-    position: 'relative'
+    position: "relative",
   },
   stepRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 8
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 8,
   },
   iconContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16
+    backgroundColor: "#f5f5f5",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 16,
   },
   icon: {
-    fontSize: 24
+    fontSize: 24,
   },
   stepContent: {
     flex: 1,
-    paddingTop: 4
+    paddingTop: 4,
   },
   stepTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#000',
+    fontWeight: "600",
+    color: "#000",
     marginBottom: 4,
-    lineHeight: 22
+    lineHeight: 22,
   },
   stepDescription: {
     fontSize: 14,
-    color: '#666',
-    lineHeight: 20
+    color: "#666",
+    lineHeight: 20,
   },
   connectorLine: {
     width: 2,
     height: 24,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     marginLeft: 23,
-    marginBottom: 8
+    marginBottom: 8,
   },
   button: {
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 24,
-    alignItems: 'center',
-    marginTop: 8
+    alignItems: "center",
+    marginTop: 8,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '600'
-  }
+    fontWeight: "600",
+  },
+  exploreButton: {
+    backgroundColor: "#000",
+    borderRadius: 30,
+    paddingVertical: 16,
+    paddingHorizontal: 40,
+    flexDirection: "row",
+    alignSelf: "center",
+    marginBottom: 40,
+  },
+  exploreText: { color: "#FFF", fontWeight: "600" },
 });
 
 export default GiftStepA;
