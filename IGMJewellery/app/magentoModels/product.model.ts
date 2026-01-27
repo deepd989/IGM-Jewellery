@@ -1,6 +1,6 @@
 export interface MagentoProduct {
   id: number;
-  sku: string;
+  sku: string; // this is unique identifier for product
   name: string;
   attribute_set_id: number;
   price: number;
@@ -17,7 +17,7 @@ export interface MagentoProduct {
   custom_attributes: CustomAttribute[];
   //product type missing eg ring, necklace etc.
   // rating of the product missing
-  // product is not mapped to occaision or gender
+  // product should be mapped to occaision or gender
 }
 
 export interface ExtensionAttributes {
