@@ -1,94 +1,95 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from "react-native";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { Product } from "@/interfaces/product.interface";
-import type { StyleProp, ViewStyle } from "react-native";
-import { Image } from "react-native";
-import { router } from "expo-router";
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
+import { FontAwesome } from "@expo/vector-icons";
+import { router } from "expo-router";
+import React from "react";
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface ProductCardProps {
-  product: Product,
-  onPress?: () => void,
-  width?: number,
-  deliveryDate?: string,
-  label1Text?:string,
-  label2Text?:string,
-    
-
+  product: Product;
+  onPress?: () => void;
+  width?: number;
+  deliveryDate?: string;
+  label1Text?: string;
+  label2Text?: string;
 }
 
 const ProductCard2: React.FC<ProductCardProps> = ({
   product,
   deliveryDate,
   width,
-  label1Text="Try Now",
-  label2Text="Add to cart",
+  label1Text = "Try Now",
+  label2Text = "Add to cart",
   onPress,
 }) => {
-
-  
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
 
-    const handleAddToCart = async (e: any) => {
-      e.stopPropagation();
-      try {
-        alert(` ${product.title} Added to cart`);
-        await addToCart({ product, quantity: 1 }).unwrap();
-      } catch (error) {
-        console.error("Failed to add to cart:", error);
-        Alert.alert("Error", "Failed to add item to cart");
-      }
-    };
-     const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
-    const handleTryAtHome = async (e: any) => {
-      e.stopPropagation();
-      console.log("Try at home clicked for:", product.title);
-  
-      try {
-        await addToTrial(product).unwrap();
-        console.log("Successfully added to trial");
-  
-        Alert.alert(
-          "Added to Trial List",
-          `${product.title} has been added to your home trial list.`,
-          [
-            {
-              text: "Continue Shopping",
-              style: "cancel",
-              onPress: () => console.log("Continue shopping pressed"),
+  const handleAddToCart = async (e: any) => {
+    e.stopPropagation();
+    try {
+      alert(` ${product.title} Added to cart`);
+      await addToCart({ product, quantity: 1 }).unwrap();
+    } catch (error) {
+      console.error("Failed to add to cart:", error);
+      Alert.alert("Error", "Failed to add item to cart");
+    }
+  };
+  const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
+  const handleTryAtHome = async (e: any) => {
+    e.stopPropagation();
+    console.log("Try at home clicked for:", product.title);
+
+    try {
+      await addToTrial(product).unwrap();
+      console.log("Successfully added to trial");
+
+      Alert.alert(
+        "Added to Trial List",
+        `${product.title} has been added to your home trial list.`,
+        [
+          {
+            text: "Continue Shopping",
+            style: "cancel",
+            onPress: () => console.log("Continue shopping pressed"),
+          },
+          {
+            text: "View Trial List",
+            onPress: () => {
+              console.log("Navigating to trial tab");
+              router.push("/cart?tab=trial");
             },
+          },
+        ]
+      );
+    } catch (error: any) {
+      console.error("Failed to add to trial:", error);
+
+      // Check if item already in trial
+      if (error?.data === "Item already in trial list") {
+        Alert.alert(
+          "Already in Trial",
+          "This item is already in your trial list.",
+          [
+            { text: "OK", style: "cancel" },
             {
               text: "View Trial List",
-              onPress: () => {
-                console.log("Navigating to trial tab");
-                router.push("/cart?tab=trial");
-              },
+              onPress: () => router.push("/cart?tab=trial"),
             },
           ]
         );
-      } catch (error: any) {
-        console.error("Failed to add to trial:", error);
-  
-        // Check if item already in trial
-        if (error?.data === "Item already in trial list") {
-          Alert.alert(
-            "Already in Trial",
-            "This item is already in your trial list.",
-            [
-              { text: "OK", style: "cancel" },
-              {
-                text: "View Trial List",
-                onPress: () => router.push("/cart?tab=trial"),
-              },
-            ]
-          );
-        } else {
-          Alert.alert("Error", "Failed to add item to trial. Please try again.");
-        }
+      } else {
+        Alert.alert("Error", "Failed to add item to trial. Please try again.");
       }
     }
-    
+  };
+
   if (!product) {
     return (
       <View style={[styles.card, { width }]}>
@@ -99,16 +100,18 @@ const ProductCard2: React.FC<ProductCardProps> = ({
     );
   }
   return (
-    <TouchableOpacity style={[styles.card, { width }]}  onPress={onPress}>
+    <TouchableOpacity style={[styles.card, { width }]} onPress={onPress}>
       {/* Top badges */}
       <View style={styles.topRow}>
-      {product && product.isNew && (
+        {product && product.isNew && (
           <View style={styles.newBadge}>
             <Text style={styles.newText}>New</Text>
           </View>
-             )}
-        {!product.isNew && (<View style={{paddingHorizontal:6, paddingVertical:10}}/>)}
-    
+        )}
+        {!product.isNew && (
+          <View style={{ paddingHorizontal: 6, paddingVertical: 10 }} />
+        )}
+
         {/* <TouchableOpacity>
           <FontAwesome name="heart-o" size={20} color="black" />
         </TouchableOpacity> */}
@@ -116,22 +119,29 @@ const ProductCard2: React.FC<ProductCardProps> = ({
 
       {/* Image placeholder */}
       <View style={styles.imagePlaceholder}>
-         <Image  source={{ uri: product.thumbnailUrls[0] }}
-                  style={styles.image}
-                  resizeMode="cover"/>
-        
+        <Image
+          source={{ uri: product.thumbnailUrls[0] }}
+          style={styles.image}
+          resizeMode="cover"
+        />
       </View>
 
-      {/* Delivery badge */}
-      {!deliveryDate && <View style={styles.deliveryBadge}>
-        <MaterialIcons name="local-shipping" size={16} color="black" />
-        <Text style={styles.deliveryText}>{deliveryDate}</Text>
-      </View>}
+      {/* Delivery badge is truned off*/}
+      {/* {!deliveryDate && (
+        <View style={styles.deliveryBadge}>
+          <MaterialIcons name="local-shipping" size={16} color="black" />
+          <Text style={styles.deliveryText}>{deliveryDate}</Text>
+        </View>
+      )} */}
 
       {/* Price */}
       <View style={styles.priceRow}>
-        <Text style={styles.price}>₹{product.discountedPrice.toLocaleString()}</Text>
-        <Text style={styles.originalPrice}>₹{product.givenPrice.toLocaleString()}</Text>
+        <Text style={styles.price}>
+          ₹{product.discountedPrice.toLocaleString()}
+        </Text>
+        <Text style={styles.originalPrice}>
+          ₹{product.givenPrice.toLocaleString()}
+        </Text>
       </View>
 
       {/* Product info */}
@@ -152,12 +162,23 @@ const ProductCard2: React.FC<ProductCardProps> = ({
 
       {/* Buttons */}
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={[styles.button, styles.tryNow]} onPress={() => {
-          router.push({pathname:'/underDev',params:{featureName:'Try-On Feature'}});
-        }}>
+        <TouchableOpacity
+          style={[styles.button, styles.tryNow]}
+          onPress={() => {
+            router.push({
+              pathname: "/underDev",
+              params: { featureName: "Try-On Feature" },
+            });
+          }}
+        >
           <Text style={styles.tryNowText}>{label1Text}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.tryAtHome]} onPress={(event) => {handleAddToCart(event)}}>
+        <TouchableOpacity
+          style={[styles.button, styles.tryAtHome]}
+          onPress={(event) => {
+            handleAddToCart(event);
+          }}
+        >
           <Text style={styles.tryAtHomeText}>{label2Text}</Text>
         </TouchableOpacity>
       </View>
@@ -176,7 +197,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
-
   },
   topRow: {
     flexDirection: "row",
@@ -249,7 +269,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    padding:6,
+    padding: 6,
     borderRadius: 6,
     alignItems: "center",
     marginHorizontal: 2,
@@ -259,7 +279,6 @@ const styles = StyleSheet.create({
     borderColor: "#000",
     justifyContent: "center",
     alignItems: "center",
-
   },
   tryAtHome: {
     backgroundColor: "#000",

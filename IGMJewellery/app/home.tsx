@@ -14,12 +14,11 @@ import OccasionCardList from "@/components/occaisionsHome";
 import PaymentMethods from "@/components/paymentMethods";
 import SearchBar from "@/components/searchBar";
 import { TopPicks } from "@/components/topPicks";
-import TryAtHomeCard from "@/components/tryAtHomeCard";
 import { getUserPincode } from "@/scripts/location";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
-import { AudioLines, Sparkles } from "lucide-react-native";
+import { Sparkles } from "lucide-react-native";
 import React, {
   useCallback,
   useEffect,
@@ -126,7 +125,7 @@ export default function HomeScreen() {
             >
               <Ionicons name="mic-outline" size={22} />
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={{
                 borderRadius: 50,
                 height: 30,
@@ -143,7 +142,7 @@ export default function HomeScreen() {
               }}
             >
               <AudioLines />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           <View>
@@ -207,8 +206,8 @@ export default function HomeScreen() {
         <TopPicks products={products} />
         <HorizontalRuleIGM />
         <LatestCollections />
-        <HorizontalRuleIGM />
-        <TryAtHomeCard />
+        {/* <HorizontalRuleIGM /> */}
+        {/* <TryAtHomeCard /> */}
         <HorizontalRuleIGM />
         <GiftingCard showExploreButton={true} />
         <HorizontalRuleIGM />

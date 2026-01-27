@@ -19,7 +19,6 @@ import {
   View,
 } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
-import { getEstimatedDeliveryDate } from "../../utils/deliveryDate";
 
 interface ProductCardProps {
   product: Product;
@@ -102,7 +101,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               router.push("/cart?tab=trial");
             },
           },
-        ],
+        ]
       );
     } catch (error: any) {
       console.error("Failed to add to trial:", error);
@@ -117,7 +116,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               text: "View Trial List",
               onPress: () => router.push("/cart?tab=trial"),
             },
-          ],
+          ]
         );
       } else {
         Alert.alert("Error", "Failed to add item to trial. Please try again.");
@@ -147,7 +146,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         if (error?.data === "Item already in wishlist") {
           Alert.alert(
             "Already in Wishlist",
-            "This item is already wishlisted.",
+            "This item is already wishlisted."
           );
         } else {
           Alert.alert("Error", "Failed to add to wishlist");
@@ -233,10 +232,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Delivery Tag */}
-        <View style={styles.deliveryTag}>
+        {/* <View style={styles.deliveryTag}>
           <Ionicons name="cube-outline" size={12} color={COLORS.text} />
           <Text style={styles.deliveryText}>{getEstimatedDeliveryDate()}</Text>
-        </View>
+        </View> */}
       </View>
 
       {/* Details Section */}

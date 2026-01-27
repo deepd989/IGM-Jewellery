@@ -242,7 +242,10 @@ export default function CartScreen() {
       </View>
 
       <View style={styles.tabs}>
-        <TouchableOpacity
+        {/* 
+        Trial bag is set off
+         */}
+        {/* <TouchableOpacity
           style={[styles.tab]}
           onPress={() => setActiveTab("bag")}
         >
@@ -250,8 +253,8 @@ export default function CartScreen() {
             Shopping Bag {cart.length > 0 && `(${cart.length})`}
           </Text>
           {isBag && <View style={styles.activeDiamond} />}
-        </TouchableOpacity>
-        <TouchableOpacity
+        </TouchableOpacity> */}
+        {/* <TouchableOpacity
           style={[styles.tab]}
           onPress={() => setActiveTab("trial")}
         >
@@ -259,7 +262,7 @@ export default function CartScreen() {
             Home trial ({trialList.length})
           </Text>
           {!isBag && <View style={styles.activeDiamond} />}
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       {isBag ? (

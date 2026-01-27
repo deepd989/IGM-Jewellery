@@ -29,12 +29,13 @@ type ListingScreenProps = {
   filters?: Record<string, string[]>;
 };
 
-const FILTER_CHIPS = ["All", "Latest", "Best Sellers", "Store Pick-up"];
+// const FILTER_CHIPS = ["All", "Latest", "Best Sellers", "Store Pick-up"];
+const FILTER_CHIPS: string[] = [];
 const MENU_ITEMS = [
-  {key:"Bespoke Jewellery",path:"/bespoke"},
-  {key:"Our Brands",path:"/brands"},
-  {key:"Call an expert", path:"/underDev"},
-  {key:"Chat with Sonar", path:"/exploreAi"},
+  { key: "Bespoke Jewellery", path: "/bespoke" },
+  { key: "Our Brands", path: "/brands" },
+  { key: "Call an expert", path: "/underDev" },
+  { key: "Chat with Sonar", path: "/exploreAi" },
 ];
 
 export default function ListingScreen({ filters }: ListingScreenProps) {
@@ -66,13 +67,13 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   // Filtering State
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(
-    {},
+    {}
   );
 
   // Get category hierarchy for breadcrumbs
   const { data: hierarchy } = useGetCategoryHierarchyQuery(
     { departmentId, categoryId, subCategoryId },
-    { skip: !departmentId && !categoryId },
+    { skip: !departmentId && !categoryId }
   );
 
   // Get wishlist data for header heart icon
@@ -155,7 +156,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
         // Remove chip-based collection filters, keep other filters
         if (chipFilters.collection) {
           chipFilters.collection = chipFilters.collection.filter(
-            (c) => !["new-arrival", "bestseller"].includes(c),
+            (c) => !["new-arrival", "bestseller"].includes(c)
           );
           if (chipFilters.collection.length === 0) {
             delete chipFilters.collection;
@@ -207,7 +208,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       }
       return total + options.length;
     },
-    0,
+    0
   );
 
   const toggleViewMode = () => {
@@ -293,7 +294,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       // Skip chip-based collection filters
       if (key === "collection") {
         const nonChipValues = values.filter(
-          (v) => !["new-arrival", "bestseller"].includes(v),
+          (v) => !["new-arrival", "bestseller"].includes(v)
         );
         nonChipValues.forEach((value) => {
           tags.push(`${key}: ${value}`);
@@ -416,7 +417,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
                     const [filterKey, filterValue] = tag.split(": ");
                     const newFilters = { ...activeFilters };
                     newFilters[filterKey] = newFilters[filterKey].filter(
-                      (v) => v !== filterValue,
+                      (v) => v !== filterValue
                     );
                     if (newFilters[filterKey].length === 0) {
                       delete newFilters[filterKey];
@@ -556,9 +557,14 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       {isMenuOpen && (
         <View style={styles.menuPopup}>
           {MENU_ITEMS.map((item, index) => (
-            <TouchableOpacity key={index} style={styles.menuItem} onPress={() => {
-              setIsMenuOpen(false);
-              router.push(item.path as string)}}>
+            <TouchableOpacity
+              key={index}
+              style={styles.menuItem}
+              onPress={() => {
+                setIsMenuOpen(false);
+                router.push(item.path as string);
+              }}
+            >
               <Text style={styles.menuItemText}>{item.key}</Text>
             </TouchableOpacity>
           ))}
