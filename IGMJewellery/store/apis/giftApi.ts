@@ -17,6 +17,7 @@ export interface SendGiftRequest {
   amount: number;
   message: string;
   senderName: string;
+  // senderPhone: string; this should be there
 }
 
 interface GiftsState {
