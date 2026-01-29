@@ -1,12 +1,5 @@
 import React, { useRef } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  Animated,
-} from "react-native";
-import { ResizeMode, Video } from "expo-av";
+import { Animated, Dimensions, StyleSheet, Text, View } from "react-native";
 
 const { width } = Dimensions.get("window");
 
@@ -53,7 +46,7 @@ export default function CommunityCarousel() {
         }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: true }
+          { useNativeDriver: true },
         )}
         renderItem={({ item, index }) => {
           const inputRange = [
@@ -92,10 +85,13 @@ export default function CommunityCarousel() {
                 isLooping
                 isMuted
               /> */}
-              <View style={[styles.video, {justifyContent:'center',alignItems:'center'}]}>
-                <Text>
-                  Video Placeholder
-                </Text>
+              <View
+                style={[
+                  styles.video,
+                  { justifyContent: "center", alignItems: "center" },
+                ]}
+              >
+                <Text>Video Placeholder</Text>
               </View>
 
               {/* Footer */}
@@ -115,43 +111,42 @@ export default function CommunityCarousel() {
 }
 
 const styles = StyleSheet.create({
-    heading: {
-      fontSize: 18,
-      fontWeight: "600",
-      textAlign: "center",
-      marginBottom: 16,
-    },
-    card: {
-      width: CARD_WIDTH,
-      height: 420,
-      marginRight: CARD_SPACING,
-      borderRadius: 16,
-      backgroundColor: "#E5E5E5",
-      overflow: "hidden",
-    },
-    video: {
-      width: "100%",
-      height: "85%",
-    },
-    footer: {
-      flexDirection: "row",
-      alignItems: "center",
-      padding: 12,
-    },
-    dot: {
-      width: 14,
-      height: 14,
-      borderRadius: 7,
-      backgroundColor: "#999",
-      marginRight: 10,
-    },
-    title: {
-      fontSize: 14,
-      fontWeight: "600",
-    },
-    brand: {
-      fontSize: 12,
-      color: "#777",
-    },
-  });
-  
+  heading: {
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  card: {
+    width: CARD_WIDTH,
+    height: 420,
+    marginRight: CARD_SPACING,
+    borderRadius: 16,
+    backgroundColor: "#E5E5E5",
+    overflow: "hidden",
+  },
+  video: {
+    width: "100%",
+    height: "85%",
+  },
+  footer: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+  },
+  dot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: "#999",
+    marginRight: 10,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  brand: {
+    fontSize: 12,
+    color: "#777",
+  },
+});

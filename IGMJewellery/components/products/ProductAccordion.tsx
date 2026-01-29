@@ -56,7 +56,7 @@ const AccordionItem = ({
 
 export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
   const [openSection, setOpenSection] = useState<string | null>(
-    "PRODUCT DETAIL"
+    "PRODUCT DETAIL",
   );
   const router = useRouter();
 
@@ -135,9 +135,9 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
       </AccordionItem>
 
       <AccordionItem
-        title="GENERAL DETAIL"
-        isOpen={openSection === "GENERAL DETAIL"}
-        onToggle={() => toggleSection("GENERAL DETAIL")}
+        title="PRODUCT DESCRIPTION"
+        isOpen={openSection === "PRODUCT DESCRIPTION"}
+        onToggle={() => toggleSection("PRODUCT DESCRIPTION")}
       >
         <Text style={styles.descriptionTitle}>
           Gold Unisex ring 24k, Kalyan Jewellers
