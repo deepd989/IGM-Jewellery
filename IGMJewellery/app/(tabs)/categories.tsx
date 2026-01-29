@@ -139,6 +139,21 @@ export default function CategoriesScreen() {
     }
   }, [categories]);
 
+  const handleSubCategoryPress = (subCategory: SubCategory) => {
+    const currentCategory = categories.find((c) => c.id === activeCategoryId);
+
+    router.push({
+      pathname: "/product-list",
+      params: {
+        departmentId: activeDepartmentId,
+        categoryId: activeCategoryId,
+        subCategoryId: subCategory.id,
+        categoryName: currentCategory?.name || "Products",
+        subCategoryName: subCategory.name,
+      },
+    });
+  };
+
   if (loadingDepts) {
     return (
       <SafeAreaView style={styles.centerContent}>
@@ -210,7 +225,10 @@ export default function CategoriesScreen() {
               columnWrapperStyle={styles.gridRow}
               contentContainerStyle={styles.gridContainer}
               renderItem={({ item }) => (
-                <GridItem item={item} onPress={() => {}} />
+                <GridItem
+                  item={item}
+                  onPress={() => handleSubCategoryPress(item)}
+                />
               )}
             />
           )}
