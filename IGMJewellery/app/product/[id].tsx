@@ -13,15 +13,14 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
-} from 'react-native';
-import { COLORS, SPACING } from '../../constants/theme';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { COLORS, SPACING } from "../../constants/theme";
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();

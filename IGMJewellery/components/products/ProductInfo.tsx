@@ -82,7 +82,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
               router.push("/cart?tab=trial");
             },
           },
-        ]
+        ],
       );
     } catch (error: any) {
       console.error("Failed to add to trial:", error);
@@ -98,7 +98,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
               text: "View Trial List",
               onPress: () => router.push("/cart?tab=trial"),
             },
-          ]
+          ],
         );
       } else {
         Alert.alert("Error", "Failed to add item to trial. Please try again.");
