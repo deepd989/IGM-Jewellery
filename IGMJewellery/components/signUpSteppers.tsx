@@ -1,46 +1,59 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity, Modal, Text } from "react-native";
-import LanguageStep from "./signUp/LanguageStep";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useAuth } from "../auth/authContext";
 import GenderStep from "./signUp/GenderStep";
-import ShopForStep from "./signUp/ShopForStep";
+import LanguageStep from "./signUp/LanguageStep";
 import PreferenceStep from "./signUp/PreferenceStep";
+import ShopForStep from "./signUp/ShopForStep";
 import WelcomeStep from "./signUp/WelcomeStep";
 import { SignUpProgressBar } from "./signUpProgressBar";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import { Container } from "lucide-react-native";
-import { useRouter } from "expo-router";
 
 export default function SignUpUserStepper() {
   const [step, setStep] = useState(0);
   const [showWelcomeModal, setShowWelcomeModal] = useState(true);
+  const { phoneNumber } = useLocalSearchParams<{ phoneNumber: string }>();
   const router = useRouter();
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     language: "English",
     gender: "",
     shopFor: [] as string[],
     preferences: [] as string[],
+    phoneNumber: phoneNumber,
   });
+
+  async function handleLogin() {
+    await login({
+      token: "dummy-token",
+      userId: phoneNumber,
+    });
+  }
 
   const updateData = (key: keyof typeof formData, value: any) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
-  const next = () => setStep((s) =>{ 
-    console.log("Current Step:", s);
-    s= s + 1
-    console.log("Next Step:", s);
-    return s
-
-  });
-  const back = () => setStep((s) => {
-    if(s==0){
-      router.back();
-
-    }
-    return Math.max(0, s - 1)
-  });
+  const next = () =>
+    setStep((s) => {
+      console.log("Current Step:", s);
+      s = Math.min(4, s + 1);
+      console.log("Next Step:", s);
+      if (s == 4) {
+        console.log("Final Form Data:", formData);
+        handleLogin();
+      }
+      return s;
+    });
+  const back = () =>
+    setStep((s) => {
+      if (s == 0) {
+        router.back();
+      }
+      return Math.max(0, s - 1);
+    });
 
   return (
     <View style={styles.container}>
@@ -55,7 +68,8 @@ export default function SignUpUserStepper() {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Welcome!</Text>
             <Text style={styles.modalText}>
-              Let's get you started. Please provide your details to personalize your experience.
+              Let's get you started. Please provide your details to personalize
+              your experience.
             </Text>
             <TouchableOpacity
               style={styles.modalButton}
@@ -110,7 +124,7 @@ export default function SignUpUserStepper() {
           />
         )}
 
-        {step === 4 && <WelcomeStep />}
+        {step === 4 && <WelcomeStep onNext={next} />}
       </View>
     </View>
   );

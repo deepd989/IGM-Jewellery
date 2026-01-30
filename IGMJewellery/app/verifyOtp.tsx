@@ -8,14 +8,16 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../auth/authContext";
 
 const OTP_LENGTH = 5;
 const TIMER_SECONDS = 60;
 
 export default function OtpScreen() {
+  const { login } = useAuth();
   const router = useRouter();
-  const { phoneNumber } = useLocalSearchParams<{ phoneNumber?: string }>();
+  const { phoneNumber } = useLocalSearchParams<{ phoneNumber: string }>();
   const inputs = useRef<TextInput[]>([]);
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
@@ -32,7 +34,7 @@ export default function OtpScreen() {
 
   const handleChange = (value: string, index: number) => {
     if (!/^\d?$/.test(value)) return;
-    
+
     // Clear error when user starts typing again
     if (error) setError(null);
 
@@ -55,13 +57,23 @@ export default function OtpScreen() {
     }
   };
 
-  const verifyOtp = (code: string) => {
+  const verifyOtp = async (code: string) => {
+    // in reality, you'd verify the OTP with your backend here
 
     if (code === "12345") {
       setError(null);
+      // if old user - log them in
+      await login({
+        token: "dummy-token",
+        userId: phoneNumber,
+      });
       router.replace("/home");
-    }else if(code === "00000"){
-      router.replace("/signUp");
+    } else if (code === "00000") {
+      // if new user - redirect to sign up
+      router.replace({
+        pathname: "/signUp",
+        params: { phoneNumber },
+      });
     } else {
       setError("The OTP provided is invalid. Please try again.");
       Keyboard.dismiss();
@@ -78,13 +90,17 @@ export default function OtpScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => router.back()} style={{ paddingVertical: 8 }}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={{ paddingVertical: 8 }}
+        >
           <Text style={{ color: "#000", fontSize: 16 }}>←</Text>
         </TouchableOpacity>
 
         <Text style={styles.title}>Enter code</Text>
         <Text style={styles.subtitle}>
-          We’ve sent an SMS with an activation code to your phone {phoneNumber ?? ""}
+          We’ve sent an SMS with an activation code to your phone{" "}
+          {phoneNumber ?? ""}
         </Text>
 
         <View style={styles.otpContainer}>
@@ -112,9 +128,7 @@ export default function OtpScreen() {
         </View>
 
         {/* --- Error Message Display --- */}
-        {error && (
-          <Text style={styles.errorText}>{error}</Text>
-        )}
+        {error && <Text style={styles.errorText}>{error}</Text>}
 
         <TouchableOpacity disabled={timeLeft > 0} onPress={resendCode}>
           <Text style={styles.timerText}>
