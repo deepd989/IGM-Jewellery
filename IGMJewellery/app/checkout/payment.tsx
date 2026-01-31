@@ -16,10 +16,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { CheckoutStepper } from "../../components/checkout/CheckoutStepper";
 import { CheckoutSummary } from "../../components/checkout/CheckoutSummary";
 import { COLORS, SPACING } from "../../constants/theme";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const PAYMENT_OPTIONS = [
   {
@@ -57,7 +57,7 @@ export default function PaymentScreen() {
   const [updatePaymentMethod] = useUpdatePaymentMethodMutation();
 
   const [selectedMethod, setSelectedMethod] = useState(
-    checkoutSession?.checkoutState.selectedPaymentMethod || "google_pay"
+    checkoutSession?.checkoutState.selectedPaymentMethod || "google_pay",
   );
 
   const handlePaymentMethodSelect = async (methodId: string) => {
@@ -184,15 +184,19 @@ export default function PaymentScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Preferred Payment Options</Text>
 
-          <TouchableOpacity style={styles.payOnlinePrimary}>
-            <View style={styles.squarePlaceholder} />
+          <View style={styles.payOnlinePrimary}>
+            {/* Optional: Add an icon inside the placeholder to make it look nicer */}
+            <View style={styles.squarePlaceholder}>
+              <Ionicons name="wallet-outline" size={24} color="#666" />
+            </View>
+
             <View style={styles.methodInfo}>
               <Text style={styles.methodTitle}>Pay Online</Text>
               <Text style={styles.methodSubtitle}>
                 Credit, Debit, Net Banking, UPI & More
               </Text>
             </View>
-          </TouchableOpacity>
+          </View>
 
           {PAYMENT_OPTIONS.map((opt) => (
             <TouchableOpacity
@@ -220,7 +224,7 @@ export default function PaymentScreen() {
           ))}
         </View>
 
-        <TouchableOpacity style={styles.codBox}>
+        {/* <TouchableOpacity style={styles.codBox}>
           <View style={styles.squarePlaceholder}>
             <Ionicons name="cash-outline" size={24} color="#666" />
           </View>
@@ -229,7 +233,7 @@ export default function PaymentScreen() {
             <Text style={styles.methodSubtitle}>Pay via cash on delivery</Text>
           </View>
           <View style={styles.checkboxOutline} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Gift Cards</Text>
