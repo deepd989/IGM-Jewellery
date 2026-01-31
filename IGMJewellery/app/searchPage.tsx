@@ -1,29 +1,33 @@
 import { OCCASIONS } from '@/constants/occasions';
-    import { ProductTypes } from '@/constants/productTypes';
-    import { RELATIONSHIPS } from '@/constants/relationships';
-    import React, { useState } from 'react';
-    import { router } from 'expo-router';
-    import {
-    View,
+import { ProductTypes } from '@/constants/productTypes';
+import { RELATIONSHIPS } from '@/constants/relationships';
+import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import {
+    Dimensions,
+    Platform,
+    ScrollView,
+    StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
-    ScrollView,
-    StyleSheet,
-    Platform,
-    } from 'react-native';
+    View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
     const occasions = OCCASIONS
     const whoIsItFor = RELATIONSHIPS
     const products = ProductTypes
 
+    const SCREEN_WIDTH = Dimensions.get('window').width;
+
     export default function AiSearchComponent() {
     const [searchText, setSearchText] = useState('');
     const [selectedOccasion, setSelectedOccasion] = useState('Wedding');
     const [selectedWhoFor, setSelectedWhoFor] = useState('');
     const [selectedProduct, setSelectedProduct] = useState('');
-    const [priceRange, setPriceRange] = useState([0, 10000]);
+    const [priceRange, setPriceRange] = useState<[number, number]>([5000, 50000]);
     
     const [occasionExpanded, setOccasionExpanded] = useState(true);
     const [whoForExpanded, setWhoForExpanded] = useState(false);
@@ -219,9 +223,29 @@ import { SafeAreaView } from 'react-native-safe-area-context';
                 <View style={styles.accordionContent}>
                 <View style={styles.priceRangeContainer}>
                     <Text style={styles.priceRangeText}>
-                    ${priceRange[0]} - ${priceRange[1]}
+                    ₹{priceRange[0].toLocaleString('en-IN')} - ₹{priceRange[1].toLocaleString('en-IN')}
                     </Text>
-                    <Text style={styles.priceHint}>Add your price slider component here</Text>
+                    <View style={styles.sliderContainer}>
+                      <MultiSlider
+                        sliderLength={SCREEN_WIDTH - 80}
+                        values={[priceRange[0], priceRange[1]]}
+                        min={500}
+                        max={200000}
+                        step={500}
+                        onValuesChange={(values) =>
+                          setPriceRange(values as [number, number])
+                        }
+                        selectedStyle={{ backgroundColor: '#000' }}
+                        markerStyle={{
+                          backgroundColor: '#000',
+                          height: 20,
+                          width: 20,
+                          borderRadius: 10,
+                        }}
+                        unselectedStyle={{ backgroundColor: '#E0E0E0' }}
+                        trackStyle={{ height: 4 }}
+                      />
+                    </View>
                 </View>
                 </View>
             )}
@@ -415,6 +439,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
         fontSize: 14,
         color: '#999',
         fontStyle: 'italic',
+    },
+    sliderContainer: {
+        alignItems: 'center',
+        paddingVertical: 10,
     },
     bottomContainer: {
         padding: 20,

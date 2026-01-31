@@ -1,16 +1,13 @@
+import { useGetProductsQuery } from "@/store/apis/product";
 import React, { useRef } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  Animated,
+    Animated,
+    Dimensions,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
-import { ResizeMode, Video } from "expo-av";
 import ProductCard2 from "./productCard";
-import { useSelector } from "react-redux";
-import { selectProducts } from "@/store/productSlice";
-import { useGetProductsQuery } from "@/store/apis/product";
 
 const { width } = Dimensions.get("window");
 
@@ -23,7 +20,7 @@ export default function HashtagComponent() {
   const scrollX = useRef(new Animated.Value(0)).current;
 
   return (
-    <View>
+    <View style={styles.container}>
       <Text style={styles.heading}>#TheModernDiva</Text>
 
       <Animated.FlatList
@@ -79,6 +76,9 @@ export default function HashtagComponent() {
 }
 
 const styles = StyleSheet.create({
+    container: {
+      paddingBottom: 24,
+    },
     heading: {
       fontSize: 18,
       fontWeight: "600",

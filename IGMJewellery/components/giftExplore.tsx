@@ -1,4 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ScrollingColumn } from "./scrollingColumn";
@@ -6,6 +7,14 @@ import { ScrollingColumn } from "./scrollingColumn";
 const GRID_HEIGHT = 500;
 
 export default function GiftExplore() {
+  const router = useRouter();
+
+  const handleCategoryPress = (category: { id: number; title: string; size: string }) => {
+    router.push({
+      pathname: "/product-list",
+      params: { giftCategory: category.title },
+    });
+  };
   const categories = [
     { id: 1, title: "🎁 Premium Gifts", size: "large" },
     { id: 2, title: "💎 Luxury Items", size: "medium" },
@@ -26,7 +35,7 @@ export default function GiftExplore() {
   const col2 = [categories[1], categories[4], categories[7], categories[10]];
   const col3 = [categories[2], categories[5], categories[8], categories[11]];
 
-  const renderCard = (item) => (
+  const renderCard = (item: { id: number; title: string; size: string }) => (
     <TouchableOpacity
       key={item.id}
       style={[
@@ -34,6 +43,7 @@ export default function GiftExplore() {
         item.size === "large" ? styles.largeCard : styles.mediumCard,
       ]}
       activeOpacity={0.7}
+      onPress={() => handleCategoryPress(item)}
     >
       <Text style={styles.cardText}>{item.title}</Text>
     </TouchableOpacity>
