@@ -1,23 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  FlatList,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
-  Modal,
-} from 'react-native';
-import { Audio } from 'expo-av';
-import { Camera } from 'expo-camera';
+import { COLORS } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+    FlatList,
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import VoiceVideoInterface from './aiVoice';
-import { useRouter } from 'expo-router';
-import { COLORS } from '@/constants/theme';
 
 interface IMessage {
   id: string;
@@ -94,6 +91,33 @@ export default function AiChatComponent({ initialMessage = '', mode }: { initial
   const handleVideoCapture = async () => {
     setInterfaceMode('video');
     setShowVoiceVideoInterface(true);
+  };
+
+  const handleTranscript = (text: string) => {
+    // Close the voice interface
+    setShowVoiceVideoInterface(false);
+    
+    if (text.trim()) {
+      // Create a new user message with the transcribed text
+      const newMessage: IMessage = {
+        id: Date.now().toString(),
+        text: text.trim(),
+        sender: 'user',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, newMessage]);
+
+      // Simulate AI response
+      setTimeout(() => {
+        const aiResponse: IMessage = {
+          id: (Date.now() + 1).toString(),
+          text: 'Let me help you find what you want.\nAre you looking for something for yourself?',
+          sender: 'ai',
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, aiResponse]);
+      }, 1000);
+    }
   };
 
   const renderMessage = ({ item }) => {
@@ -205,7 +229,11 @@ export default function AiChatComponent({ initialMessage = '', mode }: { initial
           >
             <Ionicons name="close" size={28} color="#000" />
           </TouchableOpacity>
-          <VoiceVideoInterface mode={interfaceMode} />
+          <VoiceVideoInterface 
+            mode={interfaceMode} 
+            onTranscript={handleTranscript}
+            onClose={() => setShowVoiceVideoInterface(false)}
+          />
         </SafeAreaView>
       </Modal>
     </SafeAreaView>
