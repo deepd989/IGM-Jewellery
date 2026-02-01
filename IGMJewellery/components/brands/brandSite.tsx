@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList } from 'react-native';
-import { ProductCard } from '../products/ProductCard';
-import { useSelector } from 'react-redux';
-import { selectProducts } from '@/store/productSlice';
+import { COLORS, SPACING } from '@/constants/theme';
 import { BrandAboutSection, BrandStat } from '@/store/apis/brandsApi';
-import ListingScreen from '@/app/product-list';
-import { SPACING } from '@/constants/theme';
-import { useGetProductsByBrandQuery, useGetProductsQuery } from '@/store/apis/product';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useGetProductsByBrandQuery } from '@/store/apis/product';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { FilterModal } from '../products/FilterModal';
+import { ProductCard } from '../products/ProductCard';
+import { SortModal } from '../products/SortModal';
 
 type ProfileHeaderProps = {
   brandNameKey:string;
@@ -120,20 +120,52 @@ export default function BrandProfile({
 }: BrandProfileProps) {
   const [activeTab, setActiveTab] = useState(initialActiveTab);
   const router = useRouter();
-   const {
-      data: products = [],
-      isLoading,
-      isError,
-      error,
-      refetch,
-    } = useGetProductsByBrandQuery(
-   header.brandNameKey as string,
-    );
+  
+  // Filter and Sort State
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [isSortVisible, setIsSortVisible] = useState(false);
+  const [selectedSort, setSelectedSort] = useState('Featured');
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
+  
+  // Use API with filters and sorting - same approach as product-list.tsx
+  const {
+    data: products = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetProductsByBrandQuery({
+    brand: header.brandNameKey as string,
+    sortBy: selectedSort,
+    filters: activeFilters,
+  });
 
-    useEffect(() => {
-      console.log('Fetched products for brand:', header.brandNameKey, products);
-    }, [products]);
- 
+  useEffect(() => {
+    console.log('Fetched products for brand:', header.brandNameKey, products);
+  }, [products]);
+
+  // Count active filters
+  const activeFilterCount = Object.values(activeFilters).reduce(
+    (total, options) => total + options.length,
+    0
+  );
+
+  const toggleViewMode = () => {
+    setViewMode((prev) => (prev === 'grid' ? 'list' : 'grid'));
+  };
+
+  const handleApplyFilters = (filters: Record<string, string[]>) => {
+    setActiveFilters(filters);
+  };
+
+  const handleClearFilters = () => {
+    setActiveFilters({});
+  };
+
+  const handleSortSelect = (sort: string) => {
+    setSelectedSort(sort);
+  };
 
   return (
     <>
@@ -153,33 +185,117 @@ export default function BrandProfile({
       )}
 
       {activeTab === 'Products' && (
-         <SafeAreaView style={styles.container}>
-        <View >
-          <FlatList
-                  key={"grid"}
-                  data={products}
-                  keyExtractor={(item) => item.id}
-                  numColumns={2}
-                  renderItem={({ item }) => (
-                    <ProductCard
-                      product={item}
-                      viewMode={"grid"}
-                      onPress={() =>  router.push({
-                        pathname: "/product/[id]",
-                        params: { id: item.id },
-                      })
-                    }
-                    />
-                  )}
-                  columnWrapperStyle={
-                     styles.columnWrapper 
-                  }
-                  contentContainerStyle={styles.listContent}
-                  showsVerticalScrollIndicator={false}
+         <SafeAreaView style={styles.container} edges={['bottom']}>
+        <View style={{ flex: 1 }}>
+          {/* Products Count */}
+          <View style={styles.productsHeader}>
+            <Text style={styles.productsCount}>
+              {products.length} {products.length === 1 ? 'Product' : 'Products'}
+            </Text>
+            {activeFilterCount > 0 && (
+              <TouchableOpacity onPress={handleClearFilters}>
+                <Text style={styles.clearFiltersText}>Clear filters</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={COLORS.primary} />
+              <Text style={styles.loadingText}>Loading products...</Text>
+            </View>
+          ) : products.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Ionicons name="search-outline" size={48} color={COLORS.textSecondary} />
+              <Text style={styles.emptyText}>No products found</Text>
+              {activeFilterCount > 0 && (
+                <TouchableOpacity style={styles.clearButton} onPress={handleClearFilters}>
+                  <Text style={styles.clearButtonText}>Clear Filters</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          ) : (
+            <FlatList
+              key={viewMode}
+              data={products}
+              keyExtractor={(item) => item.id}
+              numColumns={viewMode === 'grid' ? 2 : 1}
+              renderItem={({ item }) => (
+                <ProductCard
+                  product={item}
+                  viewMode={viewMode}
+                  onPress={() => router.push({
+                    pathname: "/product/[id]",
+                    params: { id: item.id },
+                  })}
                 />
-              </View>
-              </SafeAreaView>
-              
+              )}
+              columnWrapperStyle={viewMode === 'grid' ? styles.columnWrapper : undefined}
+              contentContainerStyle={styles.listContent}
+              showsVerticalScrollIndicator={false}
+            />
+          )}
+          
+          {/* Left: View Toggle */}
+          <TouchableOpacity style={styles.leftFab} onPress={toggleViewMode}>
+            <Ionicons
+              name={viewMode === 'grid' ? 'list' : 'grid'}
+              size={22}
+              color="#000"
+            />
+          </TouchableOpacity>
+          
+          {/* Bottom Bar */}
+          <View style={styles.bottomBar}>
+            <TouchableOpacity
+              style={styles.bottomBarItem}
+              onPress={() => setIsSortVisible(true)}
+            >
+              <Ionicons
+                name="swap-vertical"
+                size={18}
+                color="#FFF"
+                style={{ marginRight: 8 }}
+              />
+              <Text style={styles.bottomBarText}>SORT</Text>
+              {selectedSort !== 'Featured' && <View style={styles.activeDot} />}
+            </TouchableOpacity>
+
+            <View style={styles.bottomBarDivider} />
+
+            <TouchableOpacity
+              style={styles.bottomBarItem}
+              onPress={() => setIsFilterVisible(true)}
+            >
+              <Ionicons
+                name="options-outline"
+                size={18}
+                color="#FFF"
+                style={{ marginRight: 8 }}
+              />
+              <Text style={styles.bottomBarText}>FILTER</Text>
+              {activeFilterCount > 0 && (
+                <View style={styles.filterBadge}>
+                  <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
+          
+          <SortModal
+            visible={isSortVisible}
+            onClose={() => setIsSortVisible(false)}
+            selectedSort={selectedSort}
+            onSelect={handleSortSelect}
+          />
+          <FilterModal
+            visible={isFilterVisible}
+            onClose={() => setIsFilterVisible(false)}
+            onApply={handleApplyFilters}
+            initialFilters={activeFilters}
+          />
+        </View>
+        </SafeAreaView>
       )}
     </>
   );
@@ -351,11 +467,128 @@ const styles = StyleSheet.create({
     margin:10,
     alignItems:'center',
   },
-    listContent: {
-      paddingHorizontal: SPACING.m,
-      paddingBottom: 100,
-    },
-    columnWrapper: {
-      justifyContent: "space-between",
-    },
+  productsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.m,
+    paddingVertical: SPACING.s,
+  },
+  productsCount: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+  },
+  clearFiltersText: {
+    fontSize: 14,
+    color: COLORS.primary,
+    fontWeight: '500',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: SPACING.m,
+    fontSize: 14,
+    color: COLORS.textSecondary,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.l,
+  },
+  emptyText: {
+    marginTop: SPACING.m,
+    fontSize: 16,
+    color: COLORS.textSecondary,
+  },
+  clearButton: {
+    marginTop: SPACING.l,
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.m,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+  },
+  clearButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  listContent: {
+    paddingHorizontal: SPACING.m,
+    paddingBottom: 140,
+  },
+  columnWrapper: {
+    justifyContent: "space-between",
+  },
+  leftFab: {
+    position: 'absolute',
+    bottom: 80,
+    left: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+    height: 50,
+    backgroundColor: '#000',
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  bottomBarItem: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bottomBarText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  bottomBarDivider: {
+    width: 1,
+    height: 20,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    marginHorizontal: 16,
+  },
+  activeDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#FFD700',
+    marginLeft: 6,
+  },
+  filterBadge: {
+    backgroundColor: '#FFD700',
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 6,
+  },
+  filterBadgeText: {
+    color: '#000',
+    fontSize: 11,
+    fontWeight: '700',
+  },
 });

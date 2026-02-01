@@ -461,10 +461,22 @@ export const productApiService = createApi({
       },
     }),
 
-    // Get products by brand
-    getProductsByBrand: builder.query<Product[], string>({
-      queryFn: (brand) => {
-        const products = MOCK_PRODUCTS.filter((p) => p.brand === brand);
+    // Get products by brand with optional filters and sorting
+    getProductsByBrand: builder.query<Product[], { brand: string; sortBy?: string; filters?: Record<string, string[]> }>({
+      queryFn: ({ brand, sortBy, filters }) => {
+        // First filter by brand
+        let products = MOCK_PRODUCTS.filter((p) => p.brand === brand);
+
+        // Apply additional filters if provided
+        if (filters && Object.keys(filters).length > 0) {
+          products = applyFilters(products, filters);
+        }
+
+        // Apply sorting
+        if (sortBy) {
+          products = applySorting(products, sortBy);
+        }
+
         return { data: products };
       },
     }),
