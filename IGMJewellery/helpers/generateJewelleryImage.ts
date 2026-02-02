@@ -1,5 +1,5 @@
+import { AiApiUrl } from "../envConstants/AiApiUrl";
 import { Product } from "../interfaces/product.interface";
-import { API_URL } from "../store/newApis/apiUrl.const";
 
 /**
  *
@@ -27,7 +27,7 @@ export async function generateJewelleryImage(
   formData.append("jewelleryUrls", JSON.stringify(jewelleryUrls));
 
   try {
-    const response = await fetch(`${API_URL}/generateImageByUrl`, {
+    const response = await fetch(`${AiApiUrl}/generateImageByUrl`, {
       method: "POST",
       body: formData,
     });
@@ -37,7 +37,6 @@ export async function generateJewelleryImage(
     reader.readAsDataURL(blob);
     reader.onloadend = () => {
       const base64data = reader.result as string;
-      console.log("Generated image received", base64data);
       setData(base64data);
     };
   } catch (error) {

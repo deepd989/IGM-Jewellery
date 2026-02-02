@@ -7,7 +7,7 @@ import {
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -18,7 +18,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useAuth } from "../../auth/authContext";
 import { COLORS, SPACING } from "../../constants/theme";
+import { generateJewelleryImage } from "../../helpers/generateJewelleryImage";
 
 interface ProductCardProps {
   product: Product;
@@ -41,10 +43,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   isInCompare,
   onToggleCompare,
 }) => {
+  const { userId } = useAuth();
   const router = useRouter();
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
   const [showSuccess, setShowSuccess] = useState(false);
+  const [firstImageBase64State, setFirstImageBase64State] = useState("");
 
   // Wishlist functionality
   const { data: wishlistData } = useGetWishlistQuery();
@@ -52,6 +56,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     useAddToWishlistMutation();
   const [removeFromWishlist, { isLoading: isRemovingFromWishlist }] =
     useRemoveFromWishlistMutation();
+
+  useEffect(() => {
+    generateJewelleryImage(
+      userId as string,
+      product,
+      "casual wear",
+      "black",
+      setFirstImageBase64State
+    );
+  }, []);
 
   // Determine if in wishlist from props or query
   const isInWishlist =
@@ -186,7 +200,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Image Section */}
       <View style={[styles.imageWrapper, !isGrid && styles.listImageWrapper]}>
         <Image
-          source={{ uri: product.thumbnailUrls[0] }}
+          source={{ uri: firstImageBase64State || product.thumbnailUrls[0] }}
           style={styles.image}
           resizeMode="cover"
         />

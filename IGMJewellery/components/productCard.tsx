@@ -2,7 +2,7 @@ import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -11,6 +11,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useAuth } from "../auth/authContext";
+import { generateJewelleryImage } from "../helpers/generateJewelleryImage";
 
 interface ProductCardProps {
   product: Product;
@@ -30,6 +32,8 @@ const ProductCard2: React.FC<ProductCardProps> = ({
   onPress,
 }) => {
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const { userId } = useAuth();
+  const [firstImageBase64State, setFirstImageBase64State] = useState("");
 
   const handleAddToCart = async (e: any) => {
     e.stopPropagation();
@@ -41,6 +45,17 @@ const ProductCard2: React.FC<ProductCardProps> = ({
       Alert.alert("Error", "Failed to add item to cart");
     }
   };
+
+  useEffect(() => {
+    generateJewelleryImage(
+      userId as string,
+      product,
+      "casual wear",
+      "black",
+      setFirstImageBase64State
+    );
+  }, []);
+
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
   const handleTryAtHome = async (e: any) => {
     e.stopPropagation();
@@ -120,7 +135,7 @@ const ProductCard2: React.FC<ProductCardProps> = ({
       {/* Image placeholder */}
       <View style={styles.imagePlaceholder}>
         <Image
-          source={{ uri: product.thumbnailUrls[0] }}
+          source={{ uri: firstImageBase64State || product.thumbnailUrls[0] }}
           style={styles.image}
           resizeMode="cover"
         />
