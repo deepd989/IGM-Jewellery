@@ -85,27 +85,6 @@ export const DeliveryCheck: React.FC = () => {
         </View>
         <Ionicons name="chevron-forward" size={20} color={COLORS.text} />
       </TouchableOpacity>
-
-      {/* Live Call */}
-      <View style={styles.liveCallContainer}>
-        <View style={styles.videoIcon}>
-          <Ionicons name="videocam" size={24} color={COLORS.primary} />
-        </View>
-        <Text style={styles.liveCallTitle}>WISH TO SEE THE PRODUCT LIVE?</Text>
-        <Text style={styles.liveCallDesc}>
-          Celebrate every day in style with the subtle grace of these drop
-          earrings crafted in 22 Karat Yellow Gold in a leaf design.
-        </Text>
-        <TouchableOpacity style={styles.scheduleBtn}>
-          <Ionicons
-            name="videocam-outline"
-            size={18}
-            color="#FFF"
-            style={{ marginRight: 8 }}
-          />
-          <Text style={styles.scheduleBtnText}>Schedule call</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };

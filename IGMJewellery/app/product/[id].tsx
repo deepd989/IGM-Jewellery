@@ -8,25 +8,33 @@ import { ReviewSection } from "@/components/products/ReviewSection";
 import { CartBadge } from "@/components/cart/CardBadge";
 import { useGetProductByIdQuery } from "@/store/apis/product";
 import { useGetWishlistQuery } from "@/store/apis/wishlist";
+// Import Cart Mutations
+import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
-} from 'react-native';
-import { COLORS, SPACING } from '../../constants/theme';
-import { SafeAreaView } from 'react-native-safe-area-context';
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { COLORS, SPACING } from "../../constants/theme";
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const [isCustomizeVisible, setIsCustomizeVisible] = useState(false);
+
+  // Cart & Trial Logic
+  const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // Fetch product from Redux API
   const {
@@ -40,21 +48,64 @@ export default function ProductDetailScreen() {
   const { data: wishlistData } = useGetWishlistQuery();
   const wishlistCount = wishlistData?.items.length || 0;
 
+  const handleAddToCart = async () => {
+    if (!product) return;
+    try {
+      console.log("Adding to cart:", product.title);
+      await addToCart({ product, quantity: 1 }).unwrap();
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 2000);
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      Alert.alert("Error", "Failed to add item to cart");
+    }
+  };
+
+  const handleTryAtHome = async () => {
+    if (!product) return;
+    console.log("Try at home clicked for:", product.title);
+
+    try {
+      await addToTrial(product).unwrap();
+      Alert.alert(
+        "Added to Trial List",
+        `${product.title} has been added to your home trial list.`,
+        [
+          {
+            text: "Continue Shopping",
+            style: "cancel",
+          },
+          {
+            text: "View Trial List",
+            onPress: () => router.push("/cart?tab=trial"),
+          },
+        ],
+      );
+    } catch (error: any) {
+      if (error?.data === "Item already in trial list") {
+        Alert.alert(
+          "Already in Trial",
+          "This item is already in your trial list.",
+          [
+            { text: "OK", style: "cancel" },
+            {
+              text: "View Trial List",
+              onPress: () => router.push("/cart?tab=trial"),
+            },
+          ],
+        );
+      } else {
+        Alert.alert("Error", "Failed to add item to trial.");
+      }
+    }
+  };
+
   // Loading state
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backBtn}
-          >
-            <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-          </TouchableOpacity>
-        </View>
         <View style={styles.centerContent}>
           <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text style={styles.loadingText}>Loading product details...</Text>
         </View>
       </SafeAreaView>
     );
@@ -73,22 +124,7 @@ export default function ProductDetailScreen() {
           </TouchableOpacity>
         </View>
         <View style={styles.centerContent}>
-          <Ionicons
-            name="alert-circle-outline"
-            size={64}
-            color={COLORS.error}
-          />
           <Text style={styles.errorText}>Product not found</Text>
-          <Text style={styles.errorSubtext}>
-            {error?.toString() ||
-              "The product you are looking for does not exist."}
-          </Text>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-          >
-            <Text style={styles.backButtonText}>Go Back</Text>
-          </TouchableOpacity>
         </View>
       </SafeAreaView>
     );
@@ -138,10 +174,8 @@ export default function ProductDetailScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Gallery - Now with product prop for wishlist functionality */}
         <ProductImageGallery images={product.thumbnailUrls} product={product} />
 
-        {/* Info & Specs */}
         <View style={styles.infoWrapper}>
           <ProductInfo
             product={product}
@@ -149,17 +183,52 @@ export default function ProductDetailScreen() {
           />
         </View>
 
-        {/* Delivery & Highlights */}
         <DeliveryCheck />
-
-        {/* Accordion */}
         <ProductAccordion product={product} />
-
-        {/* Reviews */}
         <ReviewSection product={product} />
       </ScrollView>
 
-      {/* Customization Bottom Sheet Modal */}
+      {/* Sticky Footer */}
+      <View style={styles.stickyFooter}>
+        <TouchableOpacity
+          style={styles.stickyTryBtn}
+          onPress={handleTryAtHome}
+          disabled={isAddingToTrial}
+        >
+          {isAddingToTrial ? (
+            <ActivityIndicator size="small" color={COLORS.primary} />
+          ) : (
+            <>
+              <Ionicons name="home-outline" size={18} color={COLORS.primary} />
+              <Text style={styles.stickyTryText}>Try at Home</Text>
+            </>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.stickyAddBtn,
+            showSuccess && styles.stickyAddBtnSuccess,
+          ]}
+          onPress={handleAddToCart}
+          disabled={isAddingToCart}
+        >
+          {isAddingToCart ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : showSuccess ? (
+            <>
+              <Ionicons name="checkmark-circle" size={18} color="#FFFFFF" />
+              <Text style={styles.stickyAddText}>Added!</Text>
+            </>
+          ) : (
+            <>
+              <Ionicons name="bag-add-outline" size={18} color="#FFFFFF" />
+              <Text style={styles.stickyAddText}>Add to Cart</Text>
+            </>
+          )}
+        </TouchableOpacity>
+      </View>
+
       <CustomizationModal
         visible={isCustomizeVisible}
         onClose={() => setIsCustomizeVisible(false)}
@@ -183,26 +252,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     zIndex: 10,
   },
-  backBtn: {
-    padding: 4,
-  },
-  headerRight: {
-    flexDirection: "row",
-  },
-  iconBtn: {
-    marginLeft: SPACING.m,
-    padding: 4,
-  },
+  backBtn: { padding: 4 },
+  headerRight: { flexDirection: "row" },
   centerContent: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: SPACING.l,
-  },
-  loadingText: {
-    marginTop: SPACING.m,
-    fontSize: 16,
-    color: COLORS.textSecondary,
   },
   errorText: {
     marginTop: SPACING.m,
@@ -210,31 +266,10 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: COLORS.text,
   },
-  errorSubtext: {
-    marginTop: SPACING.s,
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    textAlign: "center",
-    paddingHorizontal: SPACING.l,
-  },
-  backButton: {
-    marginTop: SPACING.l,
-    paddingHorizontal: SPACING.xl,
-    paddingVertical: SPACING.m,
-    backgroundColor: COLORS.primary,
-    borderRadius: 8,
-  },
-  backButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
   scrollContent: {
-    paddingBottom: 40,
+    paddingBottom: 100, // Extra padding to prevent footer overlap
   },
-  infoWrapper: {
-    backgroundColor: "#FFF",
-  },
+  infoWrapper: { backgroundColor: "#FFF" },
   iconWrapper: {
     width: 40,
     height: 40,
@@ -258,5 +293,58 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 10,
     fontWeight: "700",
+  },
+
+  // Sticky Footer Styles
+  stickyFooter: {
+    flexDirection: "row",
+    padding: SPACING.m,
+    paddingBottom: Platform.OS === "ios" ? 0 : SPACING.m, // SafeAreaView handles iOS bottom
+    backgroundColor: "#FFFFFF",
+    borderTopWidth: 1,
+    borderTopColor: "#F0F0F0",
+    gap: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  stickyTryBtn: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 50,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    borderRadius: 8,
+    gap: 8,
+  },
+  stickyTryText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: COLORS.primary,
+  },
+  stickyAddBtn: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 50,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+    gap: 8,
+  },
+  stickyAddBtnSuccess: {
+    backgroundColor: "#4CAF50",
+  },
+  stickyAddText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#FFFFFF",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
 });

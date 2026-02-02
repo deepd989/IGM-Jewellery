@@ -1,17 +1,14 @@
 import React, { useRef } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  Animated,
-} from "react-native";
-import { ResizeMode, Video } from "expo-av";
+import { Animated, Dimensions, StyleSheet, Text, View } from "react-native";
 
 const { width } = Dimensions.get("window");
 
-const CARD_WIDTH = width * 0.75;
-const CARD_SPACING = 20;
+// Account for parent container padding (16px on each side in home.tsx)
+const PARENT_PADDING = 16;
+const FULL_WIDTH = width;
+
+const CARD_WIDTH = FULL_WIDTH * 0.75;
+const CARD_SPACING = 10;
 
 const DATA = [
   {
@@ -36,9 +33,15 @@ const DATA = [
 
 export default function CommunityCarousel() {
   const scrollX = useRef(new Animated.Value(0)).current;
+  
+  // Calculate padding to center the card, accounting for parent padding
+  const SIDE_PADDING = (FULL_WIDTH - CARD_WIDTH) / 2 - CARD_SPACING;
+  
+  // Total item width including margins on both sides
+  const SNAP_INTERVAL = CARD_WIDTH + CARD_SPACING * 2;
 
   return (
-    <View>
+    <View style={styles.container}>
       <Text style={styles.heading}>Meet our community</Text>
 
       <Animated.FlatList
@@ -46,20 +49,20 @@ export default function CommunityCarousel() {
         keyExtractor={(item) => item.id}
         horizontal
         showsHorizontalScrollIndicator={false}
-        snapToInterval={CARD_WIDTH + CARD_SPACING}
+        snapToInterval={SNAP_INTERVAL}
         decelerationRate="fast"
         contentContainerStyle={{
-          paddingHorizontal: (width - CARD_WIDTH) / 2,
+          paddingHorizontal: SIDE_PADDING,
         }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: true }
+          { useNativeDriver: true },
         )}
         renderItem={({ item, index }) => {
           const inputRange = [
-            (index - 1) * (CARD_WIDTH + CARD_SPACING),
-            index * (CARD_WIDTH + CARD_SPACING),
-            (index + 1) * (CARD_WIDTH + CARD_SPACING),
+            (index - 1) * SNAP_INTERVAL,
+            index * SNAP_INTERVAL,
+            (index + 1) * SNAP_INTERVAL,
           ];
 
           const scale = scrollX.interpolate({
@@ -92,10 +95,8 @@ export default function CommunityCarousel() {
                 isLooping
                 isMuted
               /> */}
-              <View style={[styles.video, {justifyContent:'center',alignItems:'center'}]}>
-                <Text>
-                  Video Placeholder
-                </Text>
+              <View style={styles.videoPlaceholder}>
+                <Text style={styles.placeholderText}>Video Placeholder</Text>
               </View>
 
               {/* Footer */}
@@ -114,44 +115,60 @@ export default function CommunityCarousel() {
   );
 }
 
+const PARENT_PADDING_STYLE = 16;
+
 const styles = StyleSheet.create({
-    heading: {
-      fontSize: 18,
-      fontWeight: "600",
-      textAlign: "center",
-      marginBottom: 16,
-    },
-    card: {
-      width: CARD_WIDTH,
-      height: 420,
-      marginRight: CARD_SPACING,
-      borderRadius: 16,
-      backgroundColor: "#E5E5E5",
-      overflow: "hidden",
-    },
-    video: {
-      width: "100%",
-      height: "85%",
-    },
-    footer: {
-      flexDirection: "row",
-      alignItems: "center",
-      padding: 12,
-    },
-    dot: {
-      width: 14,
-      height: 14,
-      borderRadius: 7,
-      backgroundColor: "#999",
-      marginRight: 10,
-    },
-    title: {
-      fontSize: 14,
-      fontWeight: "600",
-    },
-    brand: {
-      fontSize: 12,
-      color: "#777",
-    },
-  });
-  
+  container: {
+    // Offset the parent's 16px padding to make carousel full-width
+    marginHorizontal: -PARENT_PADDING_STYLE,
+  },
+  heading: {
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  card: {
+    width: CARD_WIDTH,
+    height: 420,
+    marginHorizontal: CARD_SPACING,
+    borderRadius: 16,
+    backgroundColor: "#E5E5E5",
+    overflow: "hidden",
+  },
+  video: {
+    width: "100%",
+    height: "85%",
+  },
+  videoPlaceholder: {
+    width: "100%",
+    height: "85%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#E5E5E5",
+  },
+  placeholderText: {
+    color: "#999",
+    fontSize: 14,
+  },
+  footer: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+  },
+  dot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: "#999",
+    marginRight: 10,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  brand: {
+    fontSize: 12,
+    color: "#777",
+  },
+});

@@ -1,17 +1,62 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated, Platform } from 'react-native';
 import { Camera, CameraView } from 'expo-camera';
+import {
+    ExpoSpeechRecognitionModule,
+    useSpeechRecognitionEvent,
+} from 'expo-speech-recognition';
+import React, { useEffect, useState } from 'react';
+import { Alert, Animated, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function VoiceVideoInterface({ mode: initialMode = 'voice' }) {
-  const [isListening, setIsListening] = useState(true);
-  const [hasPermission, setHasPermission] = useState(null);
+interface VoiceVideoInterfaceProps {
+  mode?: 'voice' | 'video';
+  onTranscript?: (text: string) => void;
+  onClose?: () => void;
+}
+
+export default function VoiceVideoInterface({ 
+  mode: initialMode = 'voice',
+  onTranscript,
+  onClose 
+}: VoiceVideoInterfaceProps) {
+  const [isListening, setIsListening] = useState(false);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [mode, setMode] = useState(initialMode);
+  const [transcript, setTranscript] = useState('');
   const [pulseAnim] = useState(new Animated.Value(1));
   const [bar1] = useState(new Animated.Value(0.3));
   const [bar2] = useState(new Animated.Value(0.5));
   const [bar3] = useState(new Animated.Value(0.8));
   const [bar4] = useState(new Animated.Value(0.6));
   const [bar5] = useState(new Animated.Value(0.4));
+
+  // Speech recognition event listeners
+  useSpeechRecognitionEvent('start', () => {
+    setIsListening(true);
+  });
+
+  useSpeechRecognitionEvent('end', () => {
+    setIsListening(false);
+    // When speech recognition ends, send the transcript if available
+    if (transcript && onTranscript) {
+      onTranscript(transcript);
+    }
+  });
+
+  useSpeechRecognitionEvent('result', (event) => {
+    const recognizedText = event.results[0]?.transcript || '';
+    setTranscript(recognizedText);
+  });
+
+  useSpeechRecognitionEvent('error', (event) => {
+    console.log('Speech recognition error:', event.error, event.message);
+    setIsListening(false);
+    if (event.error === 'not-allowed') {
+      Alert.alert(
+        'Permission Required',
+        'Please grant microphone and speech recognition permissions to use voice search.',
+        [{ text: 'OK' }]
+      );
+    }
+  });
 
   useEffect(() => {
     // Request camera permission for video mode
@@ -64,6 +109,67 @@ export default function VoiceVideoInterface({ mode: initialMode = 'voice' }) {
     }
   }, [isListening, mode]);
 
+  // Auto-start voice recognition when component mounts in voice mode
+  useEffect(() => {
+    if (mode === 'voice') {
+      startListening();
+    }
+    
+    return () => {
+      // Cleanup: stop recognition when component unmounts
+      if (isListening) {
+        ExpoSpeechRecognitionModule.stop();
+      }
+    };
+  }, []);
+
+  const startListening = async () => {
+    try {
+      // Request permissions
+      const result = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+      
+      if (!result.granted) {
+        Alert.alert(
+          'Permission Required',
+          'Please grant microphone and speech recognition permissions to use voice search.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+
+      // Start speech recognition
+      ExpoSpeechRecognitionModule.start({
+        lang: 'en-IN', // Indian English for better recognition
+        interimResults: true,
+        continuous: false,
+      });
+    } catch (error) {
+      console.error('Error starting speech recognition:', error);
+      Alert.alert('Error', 'Failed to start speech recognition. Please try again.');
+    }
+  };
+
+  const stopListening = () => {
+    ExpoSpeechRecognitionModule.stop();
+  };
+
+  const toggleListening = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
+
+  const handleSendTranscript = () => {
+    if (transcript && onTranscript) {
+      onTranscript(transcript);
+      if (onClose) {
+        onClose();
+      }
+    }
+  };
+
   const renderVisualizer = () => {
     if (mode === 'video') {
       if (hasPermission === null) {
@@ -92,47 +198,56 @@ export default function VoiceVideoInterface({ mode: initialMode = 'voice' }) {
 
     // Voice mode - render animated bars
     return (
-      <View style={styles.visualizerInner}>
-        <Animated.View
-          style={[
-            styles.bar,
-            { height: 20, transform: [{ scaleY: bar1 }] },
-          ]}
-        />
-        <Animated.View
-          style={[
-            styles.bar,
-            { height: 40, transform: [{ scaleY: bar2 }] },
-          ]}
-        />
-        <Animated.View
-          style={[
-            styles.bar,
-            { height: 60, transform: [{ scaleY: bar3 }] },
-          ]}
-        />
-        <Animated.View
-          style={[
-            styles.bar,
-            { height: 40, transform: [{ scaleY: bar4 }] },
-          ]}
-        />
-        <Animated.View
-          style={[
-            styles.bar,
-            { height: 25, transform: [{ scaleY: bar5 }] },
-          ]}
-        />
-        <View style={styles.sparkle}>
-          <View style={styles.sparkleVertical} />
-          <View style={styles.sparkleHorizontal} />
+      <TouchableOpacity onPress={toggleListening} activeOpacity={0.8}>
+        <View style={styles.visualizerInner}>
+          <Animated.View
+            style={[
+              styles.bar,
+              { height: 20, transform: [{ scaleY: bar1 }] },
+            ]}
+          />
+          <Animated.View
+            style={[
+              styles.bar,
+              { height: 40, transform: [{ scaleY: bar2 }] },
+            ]}
+          />
+          <Animated.View
+            style={[
+              styles.bar,
+              { height: 60, transform: [{ scaleY: bar3 }] },
+            ]}
+          />
+          <Animated.View
+            style={[
+              styles.bar,
+              { height: 40, transform: [{ scaleY: bar4 }] },
+            ]}
+          />
+          <Animated.View
+            style={[
+              styles.bar,
+              { height: 25, transform: [{ scaleY: bar5 }] },
+            ]}
+          />
+          <View style={styles.sparkle}>
+            <View style={styles.sparkleVertical} />
+            <View style={styles.sparkleHorizontal} />
+          </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
-  const toggleMode = (newMode) => {
+  const toggleMode = (newMode: 'voice' | 'video') => {
+    if (isListening) {
+      stopListening();
+    }
     setMode(newMode);
+    if (newMode === 'voice') {
+      // Small delay before starting in new mode
+      setTimeout(() => startListening(), 300);
+    }
   };
 
   return (
@@ -144,26 +259,43 @@ export default function VoiceVideoInterface({ mode: initialMode = 'voice' }) {
             styles.glowOuter,
             {
               transform: [{ scale: pulseAnim }],
+              backgroundColor: isListening 
+                ? 'rgba(99, 102, 241, 0.25)' 
+                : 'rgba(139, 92, 246, 0.15)',
             },
           ]}
         />
-        {/* <Animated.View style={[styles.glowMid]} /> */}
         
         {renderVisualizer()}
       </View>
 
       {/* Status Text */}
       <Text style={styles.statusText}>
-        {mode === 'video' ? 'Video call..' : 'Talking..'}
+        {mode === 'video' 
+          ? 'Video call..' 
+          : isListening 
+            ? 'Listening...' 
+            : 'Tap to speak'}
       </Text>
 
-      {/* Message */}
-      <View style={styles.messageContainer}>
-        <Text style={styles.messageText}>
-          <Text style={styles.messageBold}>Hey there!</Text> What sparkle are we
-          looking for today?
-        </Text>
-      </View>
+      {/* Transcript Display */}
+      {transcript ? (
+        <View style={styles.transcriptContainer}>
+          <Text style={styles.transcriptText}>{transcript}</Text>
+          {!isListening && (
+            <TouchableOpacity style={styles.sendTranscriptBtn} onPress={handleSendTranscript}>
+              <Text style={styles.sendTranscriptText}>Send</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      ) : (
+        <View style={styles.messageContainer}>
+          <Text style={styles.messageText}>
+            <Text style={styles.messageBold}>Hey there!</Text> What sparkle are we
+            looking for today?
+          </Text>
+        </View>
+      )}
 
       {/* Control Buttons */}
       <View style={styles.controls}>
@@ -350,6 +482,30 @@ const styles = StyleSheet.create({
       ios: '700',
       android: 'bold',
     }),
+  },
+  transcriptContainer: {
+    maxWidth: 400,
+    marginBottom: 60,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  transcriptText: {
+    fontSize: 20,
+    color: '#1f2937',
+    textAlign: 'center',
+    lineHeight: 28,
+    marginBottom: 16,
+  },
+  sendTranscriptBtn: {
+    backgroundColor: '#000',
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 24,
+  },
+  sendTranscriptText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   controls: {
     flexDirection: 'row',

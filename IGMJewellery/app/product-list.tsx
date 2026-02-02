@@ -80,6 +80,13 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   const { data: wishlistData } = useGetWishlistQuery();
   const wishlistCount = wishlistData?.items.length || 0;
 
+  // Helper to parse comma-separated filter values
+  const parseFilterParam = (param: string | string[] | undefined): string[] => {
+    if (!param) return [];
+    if (Array.isArray(param)) return param;
+    return param.split(',').map(v => v.trim()).filter(Boolean);
+  };
+
   // Initialize filters from navigation params and props
   useEffect(() => {
     const newFilters: Record<string, string[]> = {};
@@ -93,30 +100,40 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     }
 
     // Handle direct productType param (overrides category mapping)
-    if (productType) {
-      newFilters.productType = [productType];
+    const productTypeValues = parseFilterParam(productType);
+    if (productTypeValues.length > 0) {
+      newFilters.productType = productTypeValues;
     }
 
     // Handle occasion filter
-    if (occasion) {
-      newFilters.occasion = Array.isArray(occasion) ? occasion : [occasion];
+    const occasionValues = parseFilterParam(occasion);
+    if (occasionValues.length > 0) {
+      newFilters.occasion = occasionValues;
     }
 
     // Handle brand filter
-    if (brand) {
-      newFilters.brand = Array.isArray(brand) ? brand : [brand];
+    const brandValues = parseFilterParam(brand);
+    if (brandValues.length > 0) {
+      newFilters.brand = brandValues;
     }
 
     // Handle collection filter
-    if (collection) {
-      newFilters.collection = Array.isArray(collection)
-        ? collection
-        : [collection];
+    const collectionValues = parseFilterParam(collection);
+    if (collectionValues.length > 0) {
+      newFilters.collection = collectionValues;
     }
 
     // Handle gender filter
-    if (gender) {
-      newFilters.gender = Array.isArray(gender) ? gender : [gender];
+    const genderValues = parseFilterParam(gender);
+    if (genderValues.length > 0) {
+      newFilters.gender = genderValues;
+    }
+
+    // Handle priceRange filter (from gift categories)
+    const priceRangeParam = params.priceRange as string | undefined;
+    const priceRangeValues = parseFilterParam(priceRangeParam);
+    if (priceRangeValues.length > 0) {
+      newFilters.priceRange = priceRangeValues;
     }
 
     // Merge with filters passed as props
@@ -134,7 +151,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     if (JSON.stringify(newFilters) !== JSON.stringify(activeFilters)) {
       setActiveFilters(newFilters);
     }
-  }, [categoryId, productType, occasion, brand, collection, gender, filters]);
+  }, [categoryId, productType, occasion, brand, collection, gender, params.priceRange, filters]);
 
   // Apply chip-based filters
   useEffect(() => {

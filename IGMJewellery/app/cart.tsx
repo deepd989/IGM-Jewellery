@@ -82,18 +82,18 @@ export default function CartScreen() {
   const calculateTotals = () => {
     const subtotal = cart.reduce(
       (acc, item) => acc + item.product.discountedPrice * item.quantity,
-      0
+      0,
     );
     const savings = cart.reduce(
       (acc, item) =>
         acc +
         (item.product.givenPrice! - item.product.discountedPrice) *
           item.quantity,
-      0
+      0,
     );
     const addons = giftAddons.reduce(
       (acc, item) => (item.isChecked ? acc + item.price : acc),
-      0
+      0,
     );
     return { subtotal, savings, addons };
   };
@@ -120,7 +120,7 @@ export default function CartScreen() {
     if (cart.length === 0) {
       Alert.alert(
         "Empty Cart",
-        "Please add items to your cart before checkout"
+        "Please add items to your cart before checkout",
       );
       return;
     }
@@ -132,7 +132,7 @@ export default function CartScreen() {
       Alert.alert(
         "Error",
         error?.data || "Failed to start checkout. Please try again.",
-        [{ text: "OK" }]
+        [{ text: "OK" }],
       );
     }
   };
@@ -148,7 +148,7 @@ export default function CartScreen() {
       console.log("Trial list exceeds maximum limit:", trialList.length);
       Alert.alert(
         "Maximum Limit Exceeded",
-        "You can select maximum 5 items for home trial"
+        "You can select maximum 5 items for home trial",
       );
       return;
     }
@@ -159,7 +159,7 @@ export default function CartScreen() {
       console.log("Trial list exceeds maximum limit:", trialList.length);
       Alert.alert(
         "Multiple Brands",
-        "Home trial is available for items from 1 brand only. Please select items from the same brand."
+        "Home trial is available for items from 1 brand only. Please select items from the same brand.",
       );
       return;
     }
@@ -236,16 +236,16 @@ export default function CartScreen() {
           {isBag ? "Shopping Bag" : "Home Trial"}
         </Text>
         <View></View>
-        {/* <TouchableOpacity>
+        <TouchableOpacity>
           <Ionicons name="heart-outline" size={24} color={COLORS.text} />
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </View>
 
       <View style={styles.tabs}>
         {/* 
         Trial bag is set off
          */}
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={[styles.tab]}
           onPress={() => setActiveTab("bag")}
         >
@@ -253,8 +253,8 @@ export default function CartScreen() {
             Shopping Bag {cart.length > 0 && `(${cart.length})`}
           </Text>
           {isBag && <View style={styles.activeDiamond} />}
-        </TouchableOpacity> */}
-        {/* <TouchableOpacity
+        </TouchableOpacity>
+        <TouchableOpacity
           style={[styles.tab]}
           onPress={() => setActiveTab("trial")}
         >
@@ -262,7 +262,7 @@ export default function CartScreen() {
             Home trial ({trialList.length})
           </Text>
           {!isBag && <View style={styles.activeDiamond} />}
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </View>
 
       {isBag ? (

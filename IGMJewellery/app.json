@@ -12,6 +12,16 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.deepd989.IGMJewellery"
     },
+    "plugins": [
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Allow IGM Jewellery to use the microphone for voice search.",
+          "speechRecognitionPermission": "Allow IGM Jewellery to use speech recognition for voice search.",
+          "androidSpeechServicePackages": ["com.google.android.googlequicksearchbox"]
+        }
+      ]
+    ],
     "extra": {
       "eas": {
         "projectId": "758e71a8-150b-4ea7-acf8-0e46443bf1d2"
