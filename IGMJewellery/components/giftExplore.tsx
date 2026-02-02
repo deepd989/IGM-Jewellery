@@ -6,36 +6,114 @@ import { ScrollingColumn } from "./scrollingColumn";
 
 const GRID_HEIGHT = 500;
 
+// Gift category definitions with proper filter mappings
+const GIFT_CATEGORIES = [
+  { 
+    id: 1, 
+    title: "🎁 Premium Gifts", 
+    size: "large",
+    filters: { priceRange: ["50k-100k", "above-100k"] }
+  },
+  { 
+    id: 2, 
+    title: "💎 Luxury Items", 
+    size: "medium",
+    filters: { priceRange: ["above-100k"], collection: ["exclusive"] }
+  },
+  { 
+    id: 3, 
+    title: "✨ Special", 
+    size: "large",
+    filters: { collection: ["exclusive"] }
+  },
+  { 
+    id: 4, 
+    title: "📧 Shop e-gifts", 
+    size: "large",
+    filters: { productType: ["gift"] }
+  },
+  { 
+    id: 5, 
+    title: "🕴️ Men's gifting", 
+    size: "medium",
+    filters: { gender: ["male"] }
+  },
+  { 
+    id: 6, 
+    title: "💸 Under 30k", 
+    size: "large",
+    filters: { priceRange: ["under-10k", "10k-25k"] }
+  },
+  { 
+    id: 7, 
+    title: "💖 Gifts for Wife", 
+    size: "large",
+    filters: { gender: ["female"], occasion: ["Anniversary", "Birthday"] }
+  },
+  { 
+    id: 8, 
+    title: "🚚 Quick delivery", 
+    size: "medium",
+    filters: { collection: ["bestseller"] } // Using bestseller as proxy for available items
+  },
+  { 
+    id: 9, 
+    title: "✍️ Personalised", 
+    size: "large",
+    filters: { collection: ["exclusive"] }
+  },
+  { 
+    id: 10, 
+    title: "🔥 Trending", 
+    size: "large",
+    filters: { collection: ["bestseller"] }
+  },
+  { 
+    id: 11, 
+    title: "🏆 Best Sellers", 
+    size: "medium",
+    filters: { collection: ["bestseller"] }
+  },
+  { 
+    id: 12, 
+    title: "🆕 New Arrivals", 
+    size: "large",
+    filters: { collection: ["new-arrival"] }
+  },
+];
+
+type GiftCategory = typeof GIFT_CATEGORIES[number];
+
 export default function GiftExplore() {
   const router = useRouter();
 
-  const handleCategoryPress = (category: { id: number; title: string; size: string }) => {
+  const handleCategoryPress = (category: GiftCategory) => {
+    // Build query params from the category's filter mapping
+    const queryParams: Record<string, string> = {
+      categoryName: category.title.replace(/^[^\s]+\s/, ''), // Remove emoji prefix
+    };
+
+    // Convert filter arrays to comma-separated strings for URL params
+    if (category.filters) {
+      Object.entries(category.filters).forEach(([key, values]) => {
+        if (values && values.length > 0) {
+          queryParams[key] = values.join(',');
+        }
+      });
+    }
+
     router.push({
       pathname: "/product-list",
-      params: { giftCategory: category.title },
+      params: queryParams,
     });
   };
-  const categories = [
-    { id: 1, title: "🎁 Premium Gifts", size: "large" },
-    { id: 2, title: "💎 Luxury Items", size: "medium" },
-    { id: 3, title: "✨ Special", size: "large" },
-    { id: 4, title: "📧 Shop e-gifts", size: "large" },
-    { id: 5, title: "🕴️ Men’s gifting", size: "medium" },
-    { id: 6, title: "💸 Under 30k", size: "large" },
-    { id: 7, title: "💖 Gifts for Wife", size: "large" },
-    { id: 8, title: "🚚 Quick delivery", size: "medium" },
-    { id: 9, title: "✍️ Personalised", size: "large" },
-    { id: 10, title: "🔥 Trending", size: "large" },
-    { id: 11, title: "🏆 Best Sellers", size: "medium" },
-    { id: 12, title: "🆕 New Arrivals", size: "large" },
-  ];
 
   // Helper to split data into 3 vertical columns
-  const col1 = [categories[0], categories[3], categories[6], categories[9]];
-  const col2 = [categories[1], categories[4], categories[7], categories[10]];
-  const col3 = [categories[2], categories[5], categories[8], categories[11]];
+  const col1 = [GIFT_CATEGORIES[0], GIFT_CATEGORIES[3], GIFT_CATEGORIES[6], GIFT_CATEGORIES[9]];
+  const col2 = [GIFT_CATEGORIES[1], GIFT_CATEGORIES[4], GIFT_CATEGORIES[7], GIFT_CATEGORIES[10]];
+  const col3 = [GIFT_CATEGORIES[2], GIFT_CATEGORIES[5], GIFT_CATEGORIES[8], GIFT_CATEGORIES[11]];
 
-  const renderCard = (item: { id: number; title: string; size: string }) => (
+  const renderCard = (item: GiftCategory) => (
     <TouchableOpacity
       key={item.id}
       style={[
@@ -89,7 +167,11 @@ export default function GiftExplore() {
         />
       </View>
 
-      <TouchableOpacity style={styles.exploreButton} activeOpacity={0.8}>
+      <TouchableOpacity 
+        style={styles.exploreButton} 
+        activeOpacity={0.8}
+        onPress={() => router.push("/product-list")}
+      >
         <Text style={styles.exploreText}>Explore all</Text>
       </TouchableOpacity>
     </View>
