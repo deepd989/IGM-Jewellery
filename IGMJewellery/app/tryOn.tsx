@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  FlatList,
   Image,
   ScrollView,
   StyleSheet,
@@ -12,56 +13,75 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Dropdown } from "react-native-element-dropdown"; // New Import
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/theme";
+import { AiApiUrl } from "../envConstants/AiApiUrl";
 import { Product } from "../interfaces/product.interface";
-import { useGetProductByIdQuery } from "../store/apis/product";
+import { useGetProductsQuery } from "../store/apis/product";
 
 const TryOnScreen = () => {
   const router = useRouter();
-  const API_URL = "http://localhost:3000"; // Ensure this matches your server IP
+  const API_URL = AiApiUrl;
   const params = useLocalSearchParams();
   const userId = params.userId as string | undefined;
-  const productId = params.productId as string;
+
   const {
-    data: productData,
+    data: products = [],
     isLoading,
     isError,
     error,
-  } = useGetProductByIdQuery(productId as string);
+    refetch,
+  } = useGetProductsQuery({});
+
   const [userImage, setUserImage] = useState("");
   const [outputImageState, setOutputImageState] = useState("");
+  const [showOutputImage, setShowOutputImage] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [isImageUploaded, setIsImageUploaded] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [outputLoading, setOutputLoading] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const handleProductSelect = (product: Product) => {
+    setSelectedProduct(product);
+  };
 
-  // State for selections
-  const [outfit, setOutfit] = useState("Casual");
-  const [color, setColor] = useState("#FFD700");
+  // Updated state for selections to work with dropdown
+  const [outfit, setOutfit] = useState("Casual wear");
+  const [color, setColor] = useState("#000000");
 
-  const outfitTypes = ["Casual", "Formal", "Party Wear", "Ethnic"];
+  // Dropdown formatted data
+  const outfitTypes = [
+    { label: "Casual wear", value: "Casual wear" },
+    { label: "Formal", value: "Formal" },
+    { label: "Party Wear", value: "Party Wear" },
+    { label: "Ethnic", value: "Ethnic" },
+    { label: "Rajasthani Wear", value: "Rajasthani Wear" },
+    { label: "Punjabi Suit", value: "Punjabi Suit" },
+    { label: "Saree", value: "Saree" },
+  ];
+
   const colorOptions = [
-    { name: "Gold", code: "#FFD700" },
-    { name: "Silver", code: "#C0C0C0" },
-    { name: "Rose Gold", code: "#B76E79" },
+    { label: "Black", value: "#000000" },
+    { label: "White", value: "#FFFFFF" },
+    { label: "Grey", value: "#808080" },
+    { label: "Blue", value: "#0000FF" },
+    { label: "Navy Blue", value: "#000080" },
+    { label: "Brown", value: "#8B4513" },
+    { label: "Beige", value: "#F5F5DC" },
+    { label: "Green", value: "#008000" },
+    { label: "Red", value: "#FF0000" },
   ];
 
   useEffect(() => {
     const fetchUserImage = async () => {
       if (!userId) return;
-
       setLoading(true);
       try {
         const url = `${API_URL}/getImage/dp_${userId}`;
-        console.log("Fetching image from", url);
-
         const response = await fetch(url);
-
         if (response.ok) {
-          // 1. Get the binary blob from the response
           const blob = await response.blob();
-
-          // 2. Convert Blob to Base64 so React Native <Image> can read it
           const reader = new FileReader();
           reader.onloadend = () => {
             const base64data = reader.result as string;
@@ -69,8 +89,6 @@ const TryOnScreen = () => {
             setIsImageUploaded(true);
           };
           reader.readAsDataURL(blob);
-        } else {
-          console.log("No existing image found on server.");
         }
       } catch (error) {
         console.log("Could not fetch user image:", error);
@@ -78,7 +96,6 @@ const TryOnScreen = () => {
         setLoading(false);
       }
     };
-
     fetchUserImage();
   }, [userId]);
 
@@ -89,7 +106,6 @@ const TryOnScreen = () => {
       aspect: [1, 1],
       quality: 0.8,
     });
-
     if (!result.canceled) {
       handleUpload(result.assets[0].uri);
     }
@@ -98,8 +114,7 @@ const TryOnScreen = () => {
   const handleUpload = async (uri: string) => {
     setUploading(true);
     const formData = new FormData();
-
-    // @ts-ignore - Required for React Native FormData file objects
+    // @ts-ignore
     formData.append("userFace", {
       uri,
       name: "user_face.png",
@@ -111,23 +126,15 @@ const TryOnScreen = () => {
       const response = await fetch(`${API_URL}/uploadDp`, {
         method: "POST",
         body: formData,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
-
       if (response.ok) {
-        setUserImage(uri); // Update UI with the local URI immediately
+        setUserImage(uri);
         setIsImageUploaded(true);
         Alert.alert("Success", "Face uploaded successfully!");
-      } else {
-        Alert.alert("Upload Failed", "Server rejected the image.");
       }
     } catch (error) {
-      Alert.alert(
-        "Error",
-        "Could not connect to server. Check your connection."
-      );
+      Alert.alert("Error", "Could not connect to server.");
     } finally {
       setUploading(false);
     }
@@ -140,18 +147,13 @@ const TryOnScreen = () => {
     outfitColor: string
   ) {
     const formData = new FormData();
-
-    // Note: Ensure 'productId' is available in your scope (e.g., product.id)
     formData.append("userId", userId);
     formData.append("productId", product.id);
     formData.append("outfitType", outfitType || "suit");
     formData.append("outfitColor", outfitColor || "black");
 
     const type = product.productType.toLowerCase();
-    const jewelleryUrls = {
-      [type]: product.thumbnailUrls[0],
-    };
-
+    const jewelleryUrls = { [type]: product.thumbnailUrls[0] };
     formData.append("jewelleryUrls", JSON.stringify(jewelleryUrls));
 
     try {
@@ -159,19 +161,13 @@ const TryOnScreen = () => {
         method: "POST",
         body: formData,
       });
-
       if (!response.ok) throw new Error("Network response was not ok");
-
-      // 1. Get the response as a Blob (Binary Large Object)
       const blob = await response.blob();
-
-      // 2. Convert Blob to Base64
       const reader = new FileReader();
       reader.readAsDataURL(blob);
-
       reader.onloadend = () => {
         const base64data = reader.result as string;
-
+        console.log("Generated image received", base64data);
         setOutputImageState(base64data);
       };
     } catch (error) {
@@ -180,11 +176,43 @@ const TryOnScreen = () => {
   }
 
   const handleViewTryOn = async () => {
-    await generateJewelleryImage(
-      userId as string,
-      productData as Product,
-      outfit,
-      color
+    setShowOutputImage(true);
+    if (!selectedProduct || !userId) {
+      Alert.alert(
+        "Selection Required",
+        "Please select a product and upload a user photo."
+      );
+      return;
+    }
+    setOutputLoading(true);
+    await generateJewelleryImage(userId, selectedProduct, outfit, color);
+    setOutputLoading(false);
+  };
+
+  const renderProductItem = ({ item }: { item: Product }) => {
+    const isSelected = selectedProduct?.id === item.id;
+    return (
+      <TouchableOpacity
+        style={[styles.productCard, isSelected && styles.productCardSelected]}
+        onPress={() => handleProductSelect(item)}
+      >
+        <Image
+          source={{ uri: item.thumbnailUrls[0] }}
+          style={styles.productImage}
+        />
+        <Text numberOfLines={1} style={styles.productName}>
+          {item.name}
+        </Text>
+        {isSelected && (
+          <View style={styles.checkBadge}>
+            <Ionicons
+              name="checkmark-circle"
+              size={20}
+              color={COLORS.primary || "#000"}
+            />
+          </View>
+        )}
+      </TouchableOpacity>
     );
   };
 
@@ -204,87 +232,88 @@ const TryOnScreen = () => {
       >
         <Text style={styles.title}>Try On Your Masterpiece</Text>
         <Text style={styles.subtitle}>
-          Upload a clear photo of your face to see how the jewelry looks on you.
+          Upload a clear photo to see the results.
         </Text>
 
-        {/* Image Upload Area */}
         <TouchableOpacity
           style={styles.uploadBox}
           onPress={pickImage}
           disabled={uploading || loading}
         >
-          {loading ? (
-            <ActivityIndicator color="#000" size="large" />
-          ) : userImage ? (
-            <Image source={{ uri: userImage }} style={styles.previewImg} />
-          ) : (
-            <View style={styles.uploadPlaceholder}>
-              {uploading ? (
+          {!showOutputImage &&
+            (loading ? (
+              <ActivityIndicator color="#000" size="large" />
+            ) : userImage ? (
+              <Image source={{ uri: userImage }} style={styles.previewImg} />
+            ) : (
+              <View style={styles.uploadPlaceholder}>
+                <Text style={styles.plusIcon}>+</Text>
+                <Text style={styles.uploadText}>Upload your face</Text>
+              </View>
+            ))}
+
+          {showOutputImage &&
+            (outputLoading ? (
+              <View>
                 <ActivityIndicator color="#000" size="large" />
-              ) : (
-                <>
-                  <Text style={styles.plusIcon}>+</Text>
-                  <Text style={styles.uploadText}>Upload your face</Text>
-                </>
-              )}
-            </View>
-          )}
+                <Text>Generating your look...</Text>
+              </View>
+            ) : (
+              <Image
+                source={{ uri: outputImageState }}
+                style={[styles.previewImg]}
+              />
+            ))}
         </TouchableOpacity>
 
-        {/* Outfit Selection */}
+        <Text style={styles.label}>Select Jewelry</Text>
+        <FlatList
+          horizontal
+          data={products}
+          renderItem={renderProductItem}
+          keyExtractor={(item) => item.id}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.carouselContainer}
+        />
+
+        {/* Outfit Dropdown */}
         <Text style={styles.label}>Outfit Type</Text>
-        <View style={styles.chipContainer}>
-          {outfitTypes.map((type) => (
-            <TouchableOpacity
-              key={type}
-              style={[styles.chip, outfit === type && styles.chipActive]}
-              onPress={() => setOutfit(type)}
-            >
-              <Text
-                style={outfit === type ? styles.textWhite : styles.textBlack}
-              >
-                {type}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <Dropdown
+          style={styles.dropdown}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          data={outfitTypes}
+          maxHeight={300}
+          labelField="label"
+          valueField="value"
+          placeholder="Select Outfit"
+          value={outfit}
+          onChange={(item) => setOutfit(item.value)}
+        />
 
-        {/* Color Selection */}
+        {/* Color Dropdown */}
         <Text style={styles.label}>Metal Color</Text>
-        <View style={styles.chipContainer}>
-          {colorOptions.map((item) => (
-            <TouchableOpacity
-              key={item.code}
-              style={[styles.chip, color === item.code && styles.chipActive]}
-              onPress={() => setColor(item.code)}
-            >
-              <View
-                style={[styles.colorCircle, { backgroundColor: item.code }]}
-              />
-              <Text
-                style={
-                  color === item.code ? styles.textWhite : styles.textBlack
-                }
-              >
-                {item.name}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {outputImageState ? (
-          <>
-            <Text style={[styles.label, { marginTop: 30 }]}>
-              Your Try-On Result
-            </Text>
-            <Image
-              source={{ uri: outputImageState }}
-              style={[styles.previewImg, { height: 300, borderRadius: 16 }]}
+        <Dropdown
+          style={styles.dropdown}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          data={colorOptions}
+          maxHeight={300}
+          labelField="label"
+          valueField="value"
+          placeholder="Select Color"
+          value={color}
+          onChange={(item) => setColor(item.value)}
+          renderLeftIcon={() => (
+            <View
+              style={[
+                styles.colorCircle,
+                { backgroundColor: color, marginRight: 10 },
+              ]}
             />
-          </>
-        ) : null}
+          )}
+        />
 
-        {/* Action Button */}
         <TouchableOpacity
           style={[styles.primaryBtn, !isImageUploaded && styles.btnDisabled]}
           onPress={handleViewTryOn}
@@ -310,17 +339,11 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: 18, fontWeight: "700" },
   backBtn: { padding: 5 },
-  backIcon: { fontSize: 24, fontWeight: "300" },
   scrollContent: { padding: 20, paddingBottom: 40 },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    textAlign: "left",
-    marginBottom: 8,
-  },
-  subtitle: { fontSize: 14, color: "#666", marginBottom: 25, lineHeight: 20 },
+  title: { fontSize: 22, fontWeight: "bold", marginBottom: 8 },
+  subtitle: { fontSize: 14, color: "#666", marginBottom: 25 },
   uploadBox: {
-    height: 250,
+    height: 350,
     borderStyle: "dashed",
     borderWidth: 2,
     borderColor: "#ddd",
@@ -333,37 +356,74 @@ const styles = StyleSheet.create({
   },
   uploadPlaceholder: { alignItems: "center" },
   plusIcon: { fontSize: 40, color: "#aaa" },
-  uploadText: { color: "#888", marginTop: 10, fontWeight: "500" },
+  uploadText: { color: "#888", marginTop: 10 },
   previewImg: { width: "100%", height: "100%", resizeMode: "cover" },
   label: { fontSize: 16, fontWeight: "600", marginTop: 20, marginBottom: 12 },
-  chipContainer: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
-  chip: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 25,
-    borderWidth: 1,
+
+  // Dropdown Styles
+  dropdown: {
+    height: 55,
     borderColor: "#eee",
-    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    backgroundColor: "#fafafa",
   },
-  chipActive: { backgroundColor: "#000", borderColor: "#000" },
+  placeholderStyle: { fontSize: 16, color: "#888" },
+  selectedTextStyle: { fontSize: 16, color: "#000" },
+
   colorCircle: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    marginRight: 8,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.1)",
   },
-  textWhite: { color: "#fff", fontWeight: "500" },
-  textBlack: { color: "#000", fontWeight: "500" },
   primaryBtn: {
     backgroundColor: "#000",
     padding: 18,
     borderRadius: 12,
     marginTop: 40,
     alignItems: "center",
+  },
+  carouselContainer: {
+    paddingVertical: 10,
+    gap: 15, // Note: gap works in recent RN versions, otherwise use marginRight on cards
+  },
+  productCard: {
+    width: 120,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: "#eee",
+    alignItems: "center",
+    position: "relative",
+    marginRight: 12,
+  },
+  productCardSelected: {
+    borderColor: "#000",
+    borderWidth: 2,
+    backgroundColor: "#f0f0f0",
+  },
+  productImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginBottom: 8,
+    resizeMode: "contain",
+  },
+  productName: {
+    fontSize: 12,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+  checkBadge: {
+    position: "absolute",
+    top: -5,
+    right: -5,
+    backgroundColor: "#fff",
+    borderRadius: 10,
   },
   btnDisabled: { backgroundColor: "#ccc" },
   primaryBtnText: { color: "#fff", fontWeight: "bold", fontSize: 16 },

@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useAuth } from "../auth/authContext";
 
 interface ProductCardProps {
   product: Product;
@@ -31,7 +30,6 @@ const ProductCard2: React.FC<ProductCardProps> = ({
   onPress,
 }) => {
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
-  const { userId } = useAuth();
 
   const handleAddToCart = async (e: any) => {
     e.stopPropagation();
@@ -167,10 +165,7 @@ const ProductCard2: React.FC<ProductCardProps> = ({
         <TouchableOpacity
           style={[styles.button, styles.tryNow]}
           onPress={() => {
-            router.push({
-              pathname: "/tryOn",
-              params: { userId: userId, productId: product.id },
-            });
+            alert("VIRTUAL REALITY INTEGRATION");
           }}
         >
           <Text style={styles.tryNowText}>{label1Text}</Text>
