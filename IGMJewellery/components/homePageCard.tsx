@@ -136,17 +136,26 @@ export const NecklaceCard: React.FC<Props> = ({
 }) => {
   const { apiUrl, userId } = useAuth();
   const [firstImageBase64State, setFirstImageBase64State] = useState("");
-
+  console.log(product?.title, product?.id);
   useEffect(() => {
-    generateJewelleryImage(
-      apiUrl,
-      userId as string,
-      product,
-      "casual wear",
-      "black",
-      setFirstImageBase64State
-    );
-  }, []);
+    // 1. Reset the image state so the old product's image doesn't flicker
+    // while the new one is loading
+    setFirstImageBase64State("");
+
+    // 2. Only run the generator if a product actually exists
+    if (product) {
+      generateJewelleryImage(
+        apiUrl,
+        userId as string,
+        product,
+        "casual wear",
+        "black",
+        setFirstImageBase64State
+      );
+    }
+
+    // ADD DEPENDENCIES HERE:
+  }, [product, apiUrl, userId]);
 
   return (
     <View style={necklaceCardStyle.wrapper}>
