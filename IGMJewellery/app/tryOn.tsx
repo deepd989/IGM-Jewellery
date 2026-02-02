@@ -17,6 +17,7 @@ import { Dropdown } from "react-native-element-dropdown"; // New Import
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/theme";
 import { AiApiUrl } from "../envConstants/AiApiUrl";
+import { generateJewelleryImage } from "../helpers/generateJewelleryImage";
 import { Product } from "../interfaces/product.interface";
 import { useGetProductsQuery } from "../store/apis/product";
 
@@ -140,41 +141,6 @@ const TryOnScreen = () => {
     }
   };
 
-  async function generateJewelleryImage(
-    userId: string,
-    product: Product,
-    outfitType: string,
-    outfitColor: string
-  ) {
-    const formData = new FormData();
-    formData.append("userId", userId);
-    formData.append("productId", product.id);
-    formData.append("outfitType", outfitType || "suit");
-    formData.append("outfitColor", outfitColor || "black");
-
-    const type = product.productType.toLowerCase();
-    const jewelleryUrls = { [type]: product.thumbnailUrls[0] };
-    formData.append("jewelleryUrls", JSON.stringify(jewelleryUrls));
-
-    try {
-      const response = await fetch(`${API_URL}/generateImageByUrl`, {
-        method: "POST",
-        body: formData,
-      });
-      if (!response.ok) throw new Error("Network response was not ok");
-      const blob = await response.blob();
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        const base64data = reader.result as string;
-        console.log("Generated image received", base64data);
-        setOutputImageState(base64data);
-      };
-    } catch (error) {
-      console.error("Request failed:", error);
-    }
-  }
-
   const handleViewTryOn = async () => {
     setShowOutputImage(true);
     if (!selectedProduct || !userId) {
@@ -185,7 +151,13 @@ const TryOnScreen = () => {
       return;
     }
     setOutputLoading(true);
-    await generateJewelleryImage(userId, selectedProduct, outfit, color);
+    await generateJewelleryImage(
+      userId,
+      selectedProduct,
+      outfit,
+      color,
+      setOutputImageState
+    );
     setOutputLoading(false);
   };
 
