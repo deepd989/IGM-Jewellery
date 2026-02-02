@@ -1,4 +1,3 @@
-import { AiApiUrl } from "../envConstants/AiApiUrl";
 import { Product } from "../interfaces/product.interface";
 
 /**
@@ -10,12 +9,14 @@ import { Product } from "../interfaces/product.interface";
  * @param setData
  */
 export async function generateJewelleryImage(
+  AiApiUrl: string,
   userId: string,
   product: Product,
   outfitType: string,
   outfitColor: string,
   setData: (data: string) => void
 ) {
+  if (!product || !userId) return;
   const formData = new FormData();
   formData.append("userId", userId);
   formData.append("productId", product.id);

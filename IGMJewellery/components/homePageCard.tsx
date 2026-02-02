@@ -4,10 +4,11 @@ import { useGetProductsQuery } from "@/store/apis/product";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useAuth } from "../auth/authContext";
+import { generateJewelleryImage } from "../helpers/generateJewelleryImage";
 import EarringIcon from "./ui/earingsComponentSvg";
 
 export default function HomePageCard() {
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
 
 interface Props {
   productType: ProductType;
-  product: Product | undefined; // undefined in case there are no products of that type
+  product: Product; // undefined in case there are no products of that type
   onTryOn: () => void;
   deliveryDate: string;
 }
@@ -133,18 +134,20 @@ export const NecklaceCard: React.FC<Props> = ({
   deliveryDate,
   onTryOn,
 }) => {
-  const defaultImages: Record<ProductType, any> = {
-    Earring:
-      "https://drive.google.com/uc?export=download&id=1oxG-8ZQuAcMs79DPFmdsg-OE2XJ0oOyY",
-    Necklace:
-      "https://drive.google.com/uc?export=download&id=117WAh5AmHHGS255bC_kR6rP4gcdcQWJW",
-    Ring: "https://drive.google.com/uc?export=download&id=1NpEwC0OOIWeeyVGNP4a7SYtkhyAKZxS6",
-    Bracelet:
-      "https://drive.google.com/uc?export=download&id=1cv1HV0_u8E6u7mAQW9IdDcvFA39xlVev",
-    Gold: require("../assets/images/dummyImages/dummyGold.png"),
-    Gift: require("../assets/images/dummyImages/dummyGift.jpg"),
-    "Diamond Stone": require("../assets/images/dummyImages/dummyDiamond.png"),
-  };
+  const { apiUrl, userId } = useAuth();
+  const [firstImageBase64State, setFirstImageBase64State] = useState("");
+
+  useEffect(() => {
+    generateJewelleryImage(
+      apiUrl,
+      userId as string,
+      product,
+      "casual wear",
+      "black",
+      setFirstImageBase64State
+    );
+  }, []);
+
   return (
     <View style={necklaceCardStyle.wrapper}>
       <TouchableOpacity
@@ -158,7 +161,7 @@ export const NecklaceCard: React.FC<Props> = ({
 
         <View style={necklaceCardStyle.imageWrapper}>
           <Image
-            source={defaultImages[productType]}
+            source={firstImageBase64State || product?.thumbnailUrls[0]}
             style={necklaceCardStyle.image}
           />
           {/* { product &&

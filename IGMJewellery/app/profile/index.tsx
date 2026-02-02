@@ -94,7 +94,7 @@ const MENU_ITEMS = [
 export default function ProfileScreen() {
   const router = useRouter();
   const profile = useSelector((state: RootState) => state.user.profile);
-  const { logout } = useAuth();
+  const { userId, logout } = useAuth();
 
   async function handleLogout() {
     await logout();
@@ -124,7 +124,7 @@ export default function ProfileScreen() {
           />
           <View style={styles.userInfo}>
             <Text style={styles.userName}>{profile.name}</Text>
-            <Text style={styles.userPhone}>{profile.phone}</Text>
+            <Text style={styles.userPhone}>{userId}</Text>
           </View>
           <TouchableOpacity
             style={styles.langSelector}

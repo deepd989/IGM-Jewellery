@@ -1,12 +1,20 @@
 // src/auth/AuthContext.tsx
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getAuth, removeAuth, saveAuth } from "./authStorage";
+import {
+  getAuth,
+  getGlobalApiUrl,
+  removeAuth,
+  saveAuth,
+  setGlobalApiUrl,
+} from "./authStorage";
 
 type AuthContextType = {
   isAuthenticated: boolean;
   isLoading: boolean;
   token: string | null;
   userId: string | null;
+  apiUrl: string;
+  setApiUrl: (url: string) => void;
   login: (data: { token: string; userId: string }) => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -17,13 +25,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [apiUrl, setInstanceApiUrl] = useState<string>("");
 
   const isAuthenticated = !!token;
 
   useEffect(() => {
     const bootstrap = async () => {
       const auth = await getAuth();
-
+      const storedApiUrl = (await getGlobalApiUrl()) as string;
+      setInstanceApiUrl(storedApiUrl);
       if (auth) {
         setToken(auth.token);
         setUserId(auth.userId);
@@ -54,6 +64,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUserId(null);
   };
 
+  const setApiUrl = async (url: string) => {
+    await setGlobalApiUrl(url);
+    setInstanceApiUrl(url);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -63,6 +78,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         userId,
         login,
         logout,
+        apiUrl,
+        setApiUrl,
       }}
     >
       {children}

@@ -15,15 +15,15 @@ import {
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown"; // New Import
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../auth/authContext";
 import { COLORS } from "../constants/theme";
-import { AiApiUrl } from "../envConstants/AiApiUrl";
 import { generateJewelleryImage } from "../helpers/generateJewelleryImage";
 import { Product } from "../interfaces/product.interface";
 import { useGetProductsQuery } from "../store/apis/product";
 
 const TryOnScreen = () => {
+  const { apiUrl } = useAuth();
   const router = useRouter();
-  const API_URL = AiApiUrl;
   const params = useLocalSearchParams();
   const userId = params.userId as string | undefined;
 
@@ -79,7 +79,7 @@ const TryOnScreen = () => {
       if (!userId) return;
       setLoading(true);
       try {
-        const url = `${API_URL}/getImage/dp_${userId}`;
+        const url = `${apiUrl}/getImage/dp_${userId}`;
         const response = await fetch(url);
         if (response.ok) {
           const blob = await response.blob();
@@ -124,7 +124,7 @@ const TryOnScreen = () => {
     formData.append("userId", userId || "GUEST");
 
     try {
-      const response = await fetch(`${API_URL}/uploadDp`, {
+      const response = await fetch(`${apiUrl}/uploadDp`, {
         method: "POST",
         body: formData,
         headers: { "Content-Type": "multipart/form-data" },
@@ -152,6 +152,7 @@ const TryOnScreen = () => {
     }
     setOutputLoading(true);
     await generateJewelleryImage(
+      apiUrl,
       userId,
       selectedProduct,
       outfit,

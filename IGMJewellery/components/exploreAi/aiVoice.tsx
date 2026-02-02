@@ -1,26 +1,34 @@
-import { Camera, CameraView } from 'expo-camera';
+import { Camera, CameraView } from "expo-camera";
 import {
-    ExpoSpeechRecognitionModule,
-    useSpeechRecognitionEvent,
-} from 'expo-speech-recognition';
-import React, { useEffect, useState } from 'react';
-import { Alert, Animated, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+  ExpoSpeechRecognitionModule,
+  useSpeechRecognitionEvent,
+} from "expo-speech-recognition";
+import React, { useEffect, useState } from "react";
+import {
+  Alert,
+  Animated,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface VoiceVideoInterfaceProps {
-  mode?: 'voice' | 'video';
+  mode?: "voice" | "video";
   onTranscript?: (text: string) => void;
   onClose?: () => void;
 }
 
-export default function VoiceVideoInterface({ 
-  mode: initialMode = 'voice',
+export default function VoiceVideoInterface({
+  mode: initialMode = "voice",
   onTranscript,
-  onClose 
+  onClose,
 }: VoiceVideoInterfaceProps) {
   const [isListening, setIsListening] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [mode, setMode] = useState(initialMode);
-  const [transcript, setTranscript] = useState('');
+  const [transcript, setTranscript] = useState("");
   const [pulseAnim] = useState(new Animated.Value(1));
   const [bar1] = useState(new Animated.Value(0.3));
   const [bar2] = useState(new Animated.Value(0.5));
@@ -29,11 +37,11 @@ export default function VoiceVideoInterface({
   const [bar5] = useState(new Animated.Value(0.4));
 
   // Speech recognition event listeners
-  useSpeechRecognitionEvent('start', () => {
+  useSpeechRecognitionEvent("start", () => {
     setIsListening(true);
   });
 
-  useSpeechRecognitionEvent('end', () => {
+  useSpeechRecognitionEvent("end", () => {
     setIsListening(false);
     // When speech recognition ends, send the transcript if available
     if (transcript && onTranscript) {
@@ -41,29 +49,29 @@ export default function VoiceVideoInterface({
     }
   });
 
-  useSpeechRecognitionEvent('result', (event) => {
-    const recognizedText = event.results[0]?.transcript || '';
+  useSpeechRecognitionEvent("result", (event) => {
+    const recognizedText = event.results[0]?.transcript || "";
     setTranscript(recognizedText);
   });
 
-  useSpeechRecognitionEvent('error', (event) => {
-    console.log('Speech recognition error:', event.error, event.message);
+  useSpeechRecognitionEvent("error", (event) => {
+    console.log("Speech recognition error:", event.error, event.message);
     setIsListening(false);
-    if (event.error === 'not-allowed') {
+    if (event.error === "not-allowed") {
       Alert.alert(
-        'Permission Required',
-        'Please grant microphone and speech recognition permissions to use voice search.',
-        [{ text: 'OK' }]
+        "Permission Required",
+        "Please grant microphone and speech recognition permissions to use voice search.",
+        [{ text: "OK" }]
       );
     }
   });
 
   useEffect(() => {
     // Request camera permission for video mode
-    if (mode === 'video') {
+    if (mode === "video") {
       (async () => {
         const { status } = await Camera.requestCameraPermissionsAsync();
-        setHasPermission(status === 'granted');
+        setHasPermission(status === "granted");
       })();
     }
   }, [mode]);
@@ -88,7 +96,7 @@ export default function VoiceVideoInterface({
 
   useEffect(() => {
     // Animated bars for voice mode
-    if (isListening && mode === 'voice') {
+    if (isListening && mode === "voice") {
       const bars = [bar1, bar2, bar3, bar4, bar5];
       bars.forEach((bar, index) => {
         Animated.loop(
@@ -111,10 +119,10 @@ export default function VoiceVideoInterface({
 
   // Auto-start voice recognition when component mounts in voice mode
   useEffect(() => {
-    if (mode === 'voice') {
+    if (mode === "voice") {
       startListening();
     }
-    
+
     return () => {
       // Cleanup: stop recognition when component unmounts
       if (isListening) {
@@ -126,26 +134,30 @@ export default function VoiceVideoInterface({
   const startListening = async () => {
     try {
       // Request permissions
-      const result = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
-      
+      const result =
+        await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+
       if (!result.granted) {
         Alert.alert(
-          'Permission Required',
-          'Please grant microphone and speech recognition permissions to use voice search.',
-          [{ text: 'OK' }]
+          "Permission Required",
+          "Please grant microphone and speech recognition permissions to use voice search.",
+          [{ text: "OK" }]
         );
         return;
       }
 
       // Start speech recognition
       ExpoSpeechRecognitionModule.start({
-        lang: 'en-IN', // Indian English for better recognition
+        lang: "en-IN", // Indian English for better recognition
         interimResults: true,
         continuous: false,
       });
     } catch (error) {
-      console.error('Error starting speech recognition:', error);
-      Alert.alert('Error', 'Failed to start speech recognition. Please try again.');
+      console.error("Error starting speech recognition:", error);
+      Alert.alert(
+        "Error",
+        "Failed to start speech recognition. Please try again."
+      );
     }
   };
 
@@ -171,11 +183,13 @@ export default function VoiceVideoInterface({
   };
 
   const renderVisualizer = () => {
-    if (mode === 'video') {
+    if (mode === "video") {
       if (hasPermission === null) {
         return (
           <View style={styles.cameraPlaceholder}>
-            <Text style={styles.cameraText}>Requesting camera permission...</Text>
+            <Text style={styles.cameraText}>
+              Requesting camera permission...
+            </Text>
           </View>
         );
       }
@@ -188,10 +202,7 @@ export default function VoiceVideoInterface({
       }
       return (
         <View style={styles.cameraContainer}>
-          <CameraView
-            style={styles.camera}
-            facing="back"
-          />
+          <CameraView style={styles.camera} facing="back" />
         </View>
       );
     }
@@ -201,34 +212,19 @@ export default function VoiceVideoInterface({
       <TouchableOpacity onPress={toggleListening} activeOpacity={0.8}>
         <View style={styles.visualizerInner}>
           <Animated.View
-            style={[
-              styles.bar,
-              { height: 20, transform: [{ scaleY: bar1 }] },
-            ]}
+            style={[styles.bar, { height: 20, transform: [{ scaleY: bar1 }] }]}
           />
           <Animated.View
-            style={[
-              styles.bar,
-              { height: 40, transform: [{ scaleY: bar2 }] },
-            ]}
+            style={[styles.bar, { height: 40, transform: [{ scaleY: bar2 }] }]}
           />
           <Animated.View
-            style={[
-              styles.bar,
-              { height: 60, transform: [{ scaleY: bar3 }] },
-            ]}
+            style={[styles.bar, { height: 60, transform: [{ scaleY: bar3 }] }]}
           />
           <Animated.View
-            style={[
-              styles.bar,
-              { height: 40, transform: [{ scaleY: bar4 }] },
-            ]}
+            style={[styles.bar, { height: 40, transform: [{ scaleY: bar4 }] }]}
           />
           <Animated.View
-            style={[
-              styles.bar,
-              { height: 25, transform: [{ scaleY: bar5 }] },
-            ]}
+            style={[styles.bar, { height: 25, transform: [{ scaleY: bar5 }] }]}
           />
           <View style={styles.sparkle}>
             <View style={styles.sparkleVertical} />
@@ -239,12 +235,12 @@ export default function VoiceVideoInterface({
     );
   };
 
-  const toggleMode = (newMode: 'voice' | 'video') => {
+  const toggleMode = (newMode: "voice" | "video") => {
     if (isListening) {
       stopListening();
     }
     setMode(newMode);
-    if (newMode === 'voice') {
+    if (newMode === "voice") {
       // Small delay before starting in new mode
       setTimeout(() => startListening(), 300);
     }
@@ -259,23 +255,23 @@ export default function VoiceVideoInterface({
             styles.glowOuter,
             {
               transform: [{ scale: pulseAnim }],
-              backgroundColor: isListening 
-                ? 'rgba(99, 102, 241, 0.25)' 
-                : 'rgba(139, 92, 246, 0.15)',
+              backgroundColor: isListening
+                ? "rgba(99, 102, 241, 0.25)"
+                : "rgba(139, 92, 246, 0.15)",
             },
           ]}
         />
-        
+
         {renderVisualizer()}
       </View>
 
       {/* Status Text */}
       <Text style={styles.statusText}>
-        {mode === 'video' 
-          ? 'Video call..' 
-          : isListening 
-            ? 'Listening...' 
-            : 'Tap to speak'}
+        {mode === "video"
+          ? "Video call.."
+          : isListening
+          ? "Listening..."
+          : "Tap to speak"}
       </Text>
 
       {/* Transcript Display */}
@@ -283,7 +279,10 @@ export default function VoiceVideoInterface({
         <View style={styles.transcriptContainer}>
           <Text style={styles.transcriptText}>{transcript}</Text>
           {!isListening && (
-            <TouchableOpacity style={styles.sendTranscriptBtn} onPress={handleSendTranscript}>
+            <TouchableOpacity
+              style={styles.sendTranscriptBtn}
+              onPress={handleSendTranscript}
+            >
               <Text style={styles.sendTranscriptText}>Send</Text>
             </TouchableOpacity>
           )}
@@ -291,8 +290,8 @@ export default function VoiceVideoInterface({
       ) : (
         <View style={styles.messageContainer}>
           <Text style={styles.messageText}>
-            <Text style={styles.messageBold}>Hey there!</Text> What sparkle are we
-            looking for today?
+            <Text style={styles.messageBold}>Hey there!</Text> What sparkle are
+            we looking for today?
           </Text>
         </View>
       )}
@@ -302,35 +301,32 @@ export default function VoiceVideoInterface({
         <TouchableOpacity
           style={[
             styles.controlButton,
-            mode === 'voice' && styles.activeButton
+            mode === "voice" && styles.activeButton,
           ]}
-          onPress={() => toggleMode('voice')}
+          onPress={() => toggleMode("voice")}
         >
           <View style={styles.micIcon}>
-            <View style={[
-              styles.micBody,
-              mode === 'voice' && styles.activeIcon
-            ]} />
-            <View style={[
-              styles.micStand,
-              mode === 'voice' && styles.activeIcon
-            ]} />
+            <View
+              style={[styles.micBody, mode === "voice" && styles.activeIcon]}
+            />
+            <View
+              style={[styles.micStand, mode === "voice" && styles.activeIcon]}
+            />
           </View>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[
             styles.controlButton,
-            mode === 'video' && styles.activeButton
+            mode === "video" && styles.activeButton,
           ]}
-          onPress={() => toggleMode('video')}
+          onPress={() => toggleMode("video")}
         >
           <View style={styles.videoOffIcon}>
-            <View style={[
-              styles.videoRect,
-              mode === 'video' && styles.activeIcon
-            ]} />
-            {mode !== 'video' && <View style={styles.videoSlash} />}
+            <View
+              style={[styles.videoRect, mode === "video" && styles.activeIcon]}
+            />
+            {mode !== "video" && <View style={styles.videoSlash} />}
           </View>
         </TouchableOpacity>
       </View>
@@ -341,112 +337,112 @@ export default function VoiceVideoInterface({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#f5f5f5",
+    alignItems: "center",
+    justifyContent: "center",
     padding: 20,
   },
   visualizerContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 40,
-    position: 'relative',
+    position: "relative",
     height: 300,
   },
   glowOuter: {
-    position: 'absolute',
+    position: "absolute",
     width: 300,
     height: 300,
     borderRadius: 150,
-    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+    backgroundColor: "rgba(139, 92, 246, 0.15)",
   },
   glowMid: {
-    position: 'absolute',
+    position: "absolute",
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: 'rgba(139, 92, 246, 0.25)',
+    backgroundColor: "rgba(139, 92, 246, 0.25)",
   },
   visualizerInner: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: 'rgba(99, 102, 241, 0.8)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(99, 102, 241, 0.8)",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 6,
-    position: 'relative',
-    overflow: 'hidden',
+    position: "relative",
+    overflow: "hidden",
   },
   cameraContainer: {
     width: 300,
     height: 300,
-    borderRadius:150,
-    overflow: 'hidden',
-    backgroundColor: '#000',
+    borderRadius: 150,
+    overflow: "hidden",
+    backgroundColor: "#000",
   },
   camera: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   cameraPlaceholder: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: 'rgba(99, 102, 241, 0.8)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(99, 102, 241, 0.8)",
+    alignItems: "center",
+    justifyContent: "center",
     padding: 10,
   },
   cameraText: {
-    color: 'white',
+    color: "white",
     fontSize: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
   bar: {
     width: 8,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 4,
   },
   sparkle: {
-    position: 'absolute',
+    position: "absolute",
     top: 15,
     right: 20,
     width: 20,
     height: 20,
   },
   sparkleVertical: {
-    position: 'absolute',
+    position: "absolute",
     width: 3,
     height: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     left: 8.5,
     borderRadius: 2,
   },
   sparkleHorizontal: {
-    position: 'absolute',
+    position: "absolute",
     width: 20,
     height: 3,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     top: 8.5,
     borderRadius: 2,
   },
   avatar: {
-    position: 'absolute',
+    position: "absolute",
     right: -80,
     top: 100,
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#1e40af',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#1e40af",
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 4,
-    borderColor: '#1f2937',
+    borderColor: "#1f2937",
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
@@ -457,13 +453,13 @@ const styles = StyleSheet.create({
     }),
   },
   avatarText: {
-    color: 'white',
+    color: "white",
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   statusText: {
     fontSize: 16,
-    color: '#9ca3af',
+    color: "#9ca3af",
     marginBottom: 20,
   },
   messageContainer: {
@@ -473,44 +469,44 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: 24,
-    color: '#1f2937',
-    textAlign: 'center',
+    color: "#1f2937",
+    textAlign: "center",
     lineHeight: 32,
   },
   messageBold: {
     fontWeight: Platform.select({
-      ios: '700',
-      android: 'bold',
+      ios: "700",
+      android: "bold",
     }),
   },
   transcriptContainer: {
     maxWidth: 400,
     marginBottom: 60,
     paddingHorizontal: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   transcriptText: {
     fontSize: 20,
-    color: '#1f2937',
-    textAlign: 'center',
+    color: "#1f2937",
+    textAlign: "center",
     lineHeight: 28,
     marginBottom: 16,
   },
   sendTranscriptBtn: {
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     paddingHorizontal: 32,
     paddingVertical: 12,
     borderRadius: 24,
   },
   sendTranscriptText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   controls: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 200,
-    position: 'absolute',
+    position: "absolute",
     bottom: Platform.select({
       ios: 60,
       android: 40,
@@ -520,12 +516,12 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#e5e7eb',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#e5e7eb",
+    alignItems: "center",
+    justifyContent: "center",
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
@@ -536,47 +532,47 @@ const styles = StyleSheet.create({
     }),
   },
   micIcon: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   micBody: {
     width: 16,
     height: 24,
-    backgroundColor: '#1f2937',
+    backgroundColor: "#1f2937",
     borderRadius: 8,
     marginBottom: 2,
   },
   micStand: {
     width: 24,
     height: 3,
-    backgroundColor: '#1f2937',
+    backgroundColor: "#1f2937",
     borderRadius: 2,
   },
   videoOffIcon: {
     width: 32,
     height: 20,
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
   },
   videoRect: {
     width: 28,
     height: 18,
-    backgroundColor: '#1f2937',
+    backgroundColor: "#1f2937",
     borderRadius: 4,
   },
   videoSlash: {
-    position: 'absolute',
+    position: "absolute",
     width: 40,
     height: 3,
-    backgroundColor: '#1f2937',
-    transform: [{ rotate: '-45deg' }],
+    backgroundColor: "#1f2937",
+    transform: [{ rotate: "-45deg" }],
     borderRadius: 2,
   },
   activeButton: {
-    backgroundColor: '#6366f1',
+    backgroundColor: "#6366f1",
   },
   activeIcon: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
 });

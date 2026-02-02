@@ -1,7 +1,7 @@
 import { ScrollingColumn } from "@/components/scrollingColumn";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   Dimensions,
   StyleSheet,
@@ -10,12 +10,14 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import HealthCheckModal from "../components/connectionModal";
 
 const { width } = Dimensions.get("window");
 const COLUMN_WIDTH = (width - 40) / 4; // 4 columns layout
 
 export default function JewelryLanding() {
   const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
 
   // Helper to render a tile (Brand or Product)
   const Tile = ({ children, style, isLogo }) => (
@@ -25,111 +27,120 @@ export default function JewelryLanding() {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.scrollContent}>
-        {/* The Masonry Background Grid */}
-        <View style={styles.gridContainer}>
-          {/* Column 1 */}
-          <View style={styles.column}>
-            <ScrollingColumn duration={10000}>
-              <View style={{ height: 60 }} />
-              <Tile style={styles.emptyTile} />
-              <Tile isLogo>
-                <Text style={styles.logoText}>M</Text>
-              </Tile>
-              <Tile>
-                <Text style={styles.placeholderImg}>💍</Text>
-              </Tile>
-              <Tile style={styles.emptyTile} />
+    <>
+      {showModal && (
+        <SafeAreaView style={styles.safeArea}>
+          <HealthCheckModal setModalVisible={setShowModal} />
+        </SafeAreaView>
+      )}
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.scrollContent}>
+          {/* The Masonry Background Grid */}
+          <View style={styles.gridContainer}>
+            {/* Column 1 */}
+            <View style={styles.column}>
+              <ScrollingColumn duration={10000}>
+                <View style={{ height: 60 }} />
+                <Tile style={styles.emptyTile} />
+                <Tile isLogo>
+                  <Text style={styles.logoText}>M</Text>
+                </Tile>
+                <Tile>
+                  <Text style={styles.placeholderImg}>💍</Text>
+                </Tile>
+                <Tile style={styles.emptyTile} />
+              </ScrollingColumn>
+            </View>
+
+            {/* Column 2 */}
+            <ScrollingColumn duration={10000} reverse={true}>
+              <View style={[styles.column, { marginTop: -40 }]}>
+                <Tile style={styles.emptyTile} />
+                <Tile style={styles.emptyTile} />
+                <Tile>
+                  <Text style={styles.placeholderImg}>💎</Text>
+                </Tile>
+                <Tile isLogo>
+                  <Text style={styles.logoTextSmall}>tbz</Text>
+                </Tile>
+              </View>
             </ScrollingColumn>
+
+            {/* Column 3 */}
+            <ScrollingColumn duration={10000}>
+              <View style={[styles.column, { marginTop: 20 }]}>
+                <Tile style={styles.emptyTile} />
+                <Tile isLogo>
+                  <Text style={styles.logoTextSmall}>PCJ</Text>
+                </Tile>
+                <Tile>
+                  <Text style={styles.placeholderImg}>💚</Text>
+                </Tile>
+                <Tile style={styles.emptyTile} />
+              </View>
+            </ScrollingColumn>
+
+            {/* Column 4 */}
+            <ScrollingColumn duration={10000} reverse={true}>
+              <View style={[styles.column, { marginTop: -20 }]}>
+                <Tile>
+                  <Text style={styles.placeholderImg}>💍</Text>
+                </Tile>
+                <Tile>
+                  <Text style={styles.placeholderImg}>🔶</Text>
+                </Tile>
+                <Tile isLogo>
+                  <Text style={styles.logoTextSmall}>TANISHQ</Text>
+                </Tile>
+                <Tile style={styles.emptyTile} />
+              </View>
+            </ScrollingColumn>
+
+            {/* Top Gradient Overlay for Fade-in effect */}
+            <LinearGradient
+              colors={["#FFFFFF", "transparent"]}
+              style={styles.topGradient}
+              pointerEvents="none"
+            />
           </View>
 
-          {/* Column 2 */}
-          <ScrollingColumn duration={10000} reverse={true}>
-            <View style={[styles.column, { marginTop: -40 }]}>
-              <Tile style={styles.emptyTile} />
-              <Tile style={styles.emptyTile} />
-              <Tile>
-                <Text style={styles.placeholderImg}>💎</Text>
-              </Tile>
-              <Tile isLogo>
-                <Text style={styles.logoTextSmall}>tbz</Text>
-              </Tile>
+          {/* Hero Section */}
+          <View style={styles.heroSection}>
+            <View style={styles.mainRingContainer}>
+              {/* Placeholder for the large central rings */}
+              <View style={styles.mainRingPlaceholder}>
+                <Text style={{ fontSize: 80 }}>💍</Text>
+              </View>
             </View>
-          </ScrollingColumn>
 
-          {/* Column 3 */}
-          <ScrollingColumn duration={10000}>
-            <View style={[styles.column, { marginTop: 20 }]}>
-              <Tile style={styles.emptyTile} />
-              <Tile isLogo>
-                <Text style={styles.logoTextSmall}>PCJ</Text>
-              </Tile>
-              <Tile>
-                <Text style={styles.placeholderImg}>💚</Text>
-              </Tile>
-              <Tile style={styles.emptyTile} />
-            </View>
-          </ScrollingColumn>
-
-          {/* Column 4 */}
-          <ScrollingColumn duration={10000} reverse={true}>
-            <View style={[styles.column, { marginTop: -20 }]}>
-              <Tile>
-                <Text style={styles.placeholderImg}>💍</Text>
-              </Tile>
-              <Tile>
-                <Text style={styles.placeholderImg}>🔶</Text>
-              </Tile>
-              <Tile isLogo>
-                <Text style={styles.logoTextSmall}>TANISHQ</Text>
-              </Tile>
-              <Tile style={styles.emptyTile} />
-            </View>
-          </ScrollingColumn>
-
-          {/* Top Gradient Overlay for Fade-in effect */}
-          <LinearGradient
-            colors={["#FFFFFF", "transparent"]}
-            style={styles.topGradient}
-            pointerEvents="none"
-          />
-        </View>
-
-        {/* Hero Section */}
-        <View style={styles.heroSection}>
-          <View style={styles.mainRingContainer}>
-            {/* Placeholder for the large central rings */}
-            <View style={styles.mainRingPlaceholder}>
-              <Text style={{ fontSize: 80 }}>💍</Text>
-            </View>
-          </View>
-
-          <Text style={styles.title}>IGM Jewellery</Text>
-          <Text style={styles.subtitle}>
-            India's first AI-powered jewellery marketplace, where heritage meets
-            high tech
-          </Text>
-
-          {/* Auth Links */}
-          <View style={styles.authContainer}>
-            <TouchableOpacity
-              style={styles.fullButton}
-              onPress={() => router.push("/login")}
-            >
-              <Text style={styles.buttonText}>Login</Text>
+            <TouchableOpacity onPress={() => setShowModal(true)}>
+              <Text style={styles.title}>IGM Jewellery</Text>
+              <Text style={styles.subtitle}>
+                India's first AI-powered jewellery marketplace, where heritage
+                meets high tech
+              </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.fullButton}
-              onPress={() => router.push("/home")}
-            >
-              <Text style={styles.buttonText}>Explore as guest</Text>
-            </TouchableOpacity>
+            {/* Auth Links */}
+            <View style={styles.authContainer}>
+              <TouchableOpacity
+                style={styles.fullButton}
+                onPress={() => router.push("/login")}
+              >
+                <Text style={styles.buttonText}>Login</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.fullButton}
+                onPress={() => router.push("/home")}
+              >
+                <Text style={styles.buttonText}>Explore as guest</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </>
   );
 }
 
