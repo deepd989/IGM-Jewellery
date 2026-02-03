@@ -297,7 +297,7 @@ const TryOnScreen = () => {
         <View style={styles.toggleContainer}>
           <View style={styles.toggleTextContent}>
             <Text style={styles.toggleLabel}>
-              Use image for product preview
+              Use images for product preview
             </Text>
           </View>
           <Switch

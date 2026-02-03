@@ -4,8 +4,8 @@ export function firstImageHelper(
   useUserImage: boolean
 ): string {
   if (useUserImage) {
-    return userImage;
+    return userImage || "";
   } else {
-    return productImage;
+    return productImage || "";
   }
 }

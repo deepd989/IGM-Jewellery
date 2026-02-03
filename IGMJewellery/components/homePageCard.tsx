@@ -174,7 +174,7 @@ export const NecklaceCard: React.FC<Props> = ({
             source={{
               uri: firstImageHelper(
                 firstImageBase64State,
-                product.thumbnailUrls[0],
+                product?.thumbnailUrls[0],
                 imageGlobal
               ),
             }}
