@@ -34,6 +34,7 @@ const ProductCard2: React.FC<ProductCardProps> = ({
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const { userId, apiUrl } = useAuth();
   const [firstImageBase64State, setFirstImageBase64State] = useState("");
+  const [isTryOnModalVisible, setIsTryOnModalVisible] = useState(false);
 
   const handleAddToCart = async (e: any) => {
     e.stopPropagation();
@@ -56,6 +57,8 @@ const ProductCard2: React.FC<ProductCardProps> = ({
       setFirstImageBase64State
     );
   }, []);
+
+  useEffect(() => {}, [isTryOnModalVisible]);
 
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
   const handleTryAtHome = async (e: any) => {
@@ -105,6 +108,17 @@ const ProductCard2: React.FC<ProductCardProps> = ({
       }
     }
   };
+
+  // if (isTryOnModalVisible) {
+  //   <SafeAreaView>
+  //     <TryOnModal
+  //       visible={isTryOnModalVisible}
+  //       onClose={() => setIsTryOnModalVisible(false)}
+  //       tryOnUrl="https://jeweltry.plushvie.in/igmindia/118305"
+  //       productTitle={product.title}
+  //     ></TryOnModal>
+  //   </SafeAreaView>;
+  // }
 
   if (!product) {
     return (
@@ -180,8 +194,14 @@ const ProductCard2: React.FC<ProductCardProps> = ({
       <View style={styles.buttonRow}>
         <TouchableOpacity
           style={[styles.button, styles.tryNow]}
-          onPress={() => {
-            alert("VIRTUAL REALITY INTEGRATION");
+          onPress={(e) => {
+            router.push({
+              pathname: "/virtualTryOn2",
+              params: {
+                tryOnUrl: `https://jeweltry.plushvie.in/igmindia/118305`,
+                productTitle: product.title,
+              },
+            });
           }}
         >
           <Text style={styles.tryNowText}>{label1Text}</Text>

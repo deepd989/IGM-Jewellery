@@ -283,8 +283,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <TouchableOpacity
             style={styles.tryNowBtn}
             onPress={(e) => {
+              router.push({
+                pathname: "/virtualTryOn2",
+                params: {
+                  tryOnUrl: `https://jeweltry.plushvie.in/igmindia/118305`,
+                  productTitle: product.title,
+                },
+              });
               e.stopPropagation();
-              onPress(product);
             }}
           >
             <Ionicons

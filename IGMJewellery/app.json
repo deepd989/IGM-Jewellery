@@ -6,11 +6,16 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "android": {
-      "package": "com.deepd989.IGMJewellery"
+      "package": "com.deepd989.IGMJewellery",
+      "permissions": ["CAMERA", "RECORD_AUDIO"]
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.deepd989.IGMJewellery"
+      "bundleIdentifier": "com.deepd989.IGMJewellery",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow IGM Jewellery to access your camera for the Virtual Try-on feature.",
+        "NSMicrophoneUsageDescription": "Allow IGM Jewellery to access your microphone."
+      }
     },
     "plugins": [
       [
@@ -18,7 +23,15 @@
         {
           "microphonePermission": "Allow IGM Jewellery to use the microphone for voice search.",
           "speechRecognitionPermission": "Allow IGM Jewellery to use speech recognition for voice search.",
-          "androidSpeechServicePackages": ["com.google.android.googlequicksearchbox"]
+          "androidSpeechServicePackages": [
+            "com.google.android.googlequicksearchbox"
+          ]
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow IGM Jewellery to access your camera for Virtual Try-on."
         }
       ]
     ],
