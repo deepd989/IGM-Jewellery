@@ -113,7 +113,10 @@ export default function JewelryLanding() {
               </View>
             </View>
 
-            <TouchableOpacity onPress={() => setShowModal(true)}>
+            <TouchableOpacity
+              onLongPress={() => setShowModal(true)}
+              delayLongPress={800}
+            >
               <Text style={styles.title}>IGM Jewellery</Text>
               <Text style={styles.subtitle}>
                 India's first AI-powered jewellery marketplace, where heritage

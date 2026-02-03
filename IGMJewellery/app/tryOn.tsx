@@ -9,6 +9,7 @@ import {
   Image,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TouchableOpacity,
   View,
@@ -22,7 +23,7 @@ import { Product } from "../interfaces/product.interface";
 import { useGetProductsQuery } from "../store/apis/product";
 
 const TryOnScreen = () => {
-  const { apiUrl } = useAuth();
+  const { apiUrl, imageGlobal, setImageGlobalUsage } = useAuth();
   const router = useRouter();
   const params = useLocalSearchParams();
   const userId = params.userId as string | undefined;
@@ -34,6 +35,13 @@ const TryOnScreen = () => {
     error,
     refetch,
   } = useGetProductsQuery({});
+
+  const [useImageGloballyFlag, setUseImageGloballyFlag] = useState(imageGlobal);
+  const toggleSwitch = () =>
+    setUseImageGloballyFlag((previousState) => {
+      setImageGlobalUsage(!previousState);
+      return !previousState;
+    });
 
   const [userImage, setUserImage] = useState("");
   const [outputImageState, setOutputImageState] = useState("");
@@ -286,7 +294,20 @@ const TryOnScreen = () => {
             />
           )}
         />
-
+        <View style={styles.toggleContainer}>
+          <View style={styles.toggleTextContent}>
+            <Text style={styles.toggleLabel}>
+              Use image for product preview
+            </Text>
+          </View>
+          <Switch
+            trackColor={{ false: "#D1D1D1", true: COLORS.primary || "#000" }}
+            thumbColor={useImageGloballyFlag ? "#fff" : "#f4f3f4"}
+            ios_backgroundColor="#D1D1D1"
+            onValueChange={toggleSwitch}
+            value={useImageGloballyFlag}
+          />
+        </View>
         <TouchableOpacity
           style={[styles.primaryBtn, !isImageUploaded && styles.btnDisabled]}
           onPress={handleViewTryOn}
@@ -400,6 +421,30 @@ const styles = StyleSheet.create({
   },
   btnDisabled: { backgroundColor: "#ccc" },
   primaryBtnText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  toggleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#fafafa",
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#eee",
+    marginTop: 25,
+  },
+  toggleTextContent: {
+    flex: 1,
+  },
+  toggleLabel: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#000",
+  },
+  toggleSubLabel: {
+    fontSize: 12,
+    color: "#888",
+    marginTop: 2,
+  },
 });
 
 export default TryOnScreen;

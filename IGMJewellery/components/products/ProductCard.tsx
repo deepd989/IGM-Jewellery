@@ -21,6 +21,7 @@ import {
 import { useAuth } from "../../auth/authContext";
 import { COLORS, SPACING } from "../../constants/theme";
 import { generateJewelleryImage } from "../../helpers/generateJewelleryImage";
+import { firstImageHelper } from "../../helpers/imageUsageHelper";
 
 interface ProductCardProps {
   product: Product;
@@ -43,7 +44,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   isInCompare,
   onToggleCompare,
 }) => {
-  const { userId, apiUrl } = useAuth();
+  const { userId, apiUrl, imageGlobal } = useAuth();
   const router = useRouter();
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
@@ -201,7 +202,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Image Section */}
       <View style={[styles.imageWrapper, !isGrid && styles.listImageWrapper]}>
         <Image
-          source={{ uri: firstImageBase64State || product.thumbnailUrls[0] }}
+          source={{
+            uri: firstImageHelper(
+              firstImageBase64State,
+              product.thumbnailUrls[0],
+              imageGlobal
+            ),
+          }}
           style={styles.image}
           resizeMode="cover"
         />

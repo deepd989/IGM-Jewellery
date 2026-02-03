@@ -9,6 +9,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useAuth } from "../auth/authContext";
 import { generateJewelleryImage } from "../helpers/generateJewelleryImage";
+import { firstImageHelper } from "../helpers/imageUsageHelper";
 import EarringIcon from "./ui/earingsComponentSvg";
 
 export default function HomePageCard() {
@@ -134,7 +135,7 @@ export const NecklaceCard: React.FC<Props> = ({
   deliveryDate,
   onTryOn,
 }) => {
-  const { apiUrl, userId } = useAuth();
+  const { apiUrl, userId, imageGlobal } = useAuth();
   const [firstImageBase64State, setFirstImageBase64State] = useState("");
   console.log(product?.title, product?.id);
   useEffect(() => {
@@ -170,7 +171,13 @@ export const NecklaceCard: React.FC<Props> = ({
 
         <View style={necklaceCardStyle.imageWrapper}>
           <Image
-            source={firstImageBase64State || product?.thumbnailUrls[0]}
+            source={{
+              uri: firstImageHelper(
+                firstImageBase64State,
+                product.thumbnailUrls[0],
+                imageGlobal
+              ),
+            }}
             style={necklaceCardStyle.image}
           />
           {/* { product &&

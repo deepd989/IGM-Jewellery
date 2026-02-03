@@ -12,7 +12,7 @@ import { useGetWishlistQuery } from "@/store/apis/wishlist";
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -24,12 +24,17 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../../auth/authContext";
 import { COLORS, SPACING } from "../../constants/theme";
+import { generateJewelleryImage } from "../../helpers/generateJewelleryImage";
+import { Product } from "../../interfaces/product.interface";
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const [isCustomizeVisible, setIsCustomizeVisible] = useState(false);
+  const { userId, apiUrl, imageGlobal } = useAuth();
+  const [firstImageBase64State, setFirstImageBase64State] = useState("");
 
   // Cart & Trial Logic
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
@@ -43,6 +48,21 @@ export default function ProductDetailScreen() {
     isError,
     error,
   } = useGetProductByIdQuery(id as string);
+
+  useEffect(() => {
+    generateJewelleryImage(
+      apiUrl,
+      userId as string,
+      product as Product,
+      "casual wear",
+      "black",
+      setFirstImageBase64State
+    );
+  }, [product]);
+
+  useEffect(() => {
+    console.log("First image base64 updated.", firstImageBase64State);
+  }, [firstImageBase64State]);
 
   // Get wishlist data for header heart icon
   const { data: wishlistData } = useGetWishlistQuery();
@@ -79,7 +99,7 @@ export default function ProductDetailScreen() {
             text: "View Trial List",
             onPress: () => router.push("/cart?tab=trial"),
           },
-        ],
+        ]
       );
     } catch (error: any) {
       if (error?.data === "Item already in trial list") {
@@ -92,7 +112,7 @@ export default function ProductDetailScreen() {
               text: "View Trial List",
               onPress: () => router.push("/cart?tab=trial"),
             },
-          ],
+          ]
         );
       } else {
         Alert.alert("Error", "Failed to add item to trial.");
@@ -174,7 +194,10 @@ export default function ProductDetailScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <ProductImageGallery images={product.thumbnailUrls} product={product} />
+        <ProductImageGallery
+          images={[...product.thumbnailUrls, firstImageBase64State]}
+          product={product}
+        />
 
         <View style={styles.infoWrapper}>
           <ProductInfo

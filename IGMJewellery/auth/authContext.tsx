@@ -17,6 +17,8 @@ type AuthContextType = {
   setApiUrl: (url: string) => void;
   login: (data: { token: string; userId: string }) => Promise<void>;
   logout: () => Promise<void>;
+  imageGlobal: boolean;
+  setImageGlobalUsage: (flag: boolean) => void;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -26,6 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [apiUrl, setInstanceApiUrl] = useState<string>("");
+  const [imageGlobal, setImageGlobalUsage] = useState<boolean>(false);
 
   const isAuthenticated = !!token;
 
@@ -80,6 +83,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logout,
         apiUrl,
         setApiUrl,
+        imageGlobal,
+        setImageGlobalUsage,
       }}
     >
       {children}

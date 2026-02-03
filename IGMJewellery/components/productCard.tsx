@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useAuth } from "../auth/authContext";
 import { generateJewelleryImage } from "../helpers/generateJewelleryImage";
+import { firstImageHelper } from "../helpers/imageUsageHelper";
 
 interface ProductCardProps {
   product: Product;
@@ -32,7 +33,7 @@ const ProductCard2: React.FC<ProductCardProps> = ({
   onPress,
 }) => {
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
-  const { userId, apiUrl } = useAuth();
+  const { userId, apiUrl, imageGlobal } = useAuth();
   const [firstImageBase64State, setFirstImageBase64State] = useState("");
   const [isTryOnModalVisible, setIsTryOnModalVisible] = useState(false);
 
@@ -150,7 +151,13 @@ const ProductCard2: React.FC<ProductCardProps> = ({
       {/* Image placeholder */}
       <View style={styles.imagePlaceholder}>
         <Image
-          source={{ uri: firstImageBase64State || product.thumbnailUrls[0] }}
+          source={{
+            uri: firstImageHelper(
+              firstImageBase64State,
+              product.thumbnailUrls[0],
+              imageGlobal
+            ),
+          }}
           style={styles.image}
           resizeMode="cover"
         />
