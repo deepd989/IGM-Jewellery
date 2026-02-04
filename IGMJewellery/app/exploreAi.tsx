@@ -1,22 +1,31 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import { Sparkles, Mic, AudioWaveform, Send, AudioLines } from 'lucide-react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import AiChatComponent from '../components/exploreAi/aiChat';
-import BottomNavBar from '@/components/bottomNavBar';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SPACING } from '@/constants/theme';
+import BottomNavBar from "@/components/bottomNavBar";
+import { COLORS, SPACING } from "@/constants/theme";
+import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { AudioLines, Mic, Send, Sparkles } from "lucide-react-native";
+import React, { useState } from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import AiChatComponent from "../components/exploreAi/aiChat";
 
-export default function ChatInterface() {
+export default function ExploreAi() {
   const params = useLocalSearchParams();
   const router = useRouter();
-  const searchQuery = (params.value as string) || '';
-  const [showVoiceVideoInterface,setShowVoiceVideoInterface]= useState(params.mode)
+  const searchQuery = (params.value as string) || "";
+  const [showVoiceVideoInterface, setShowVoiceVideoInterface] = useState(
+    params.mode
+  );
 
-  const [inputText, setInputText] = useState('');
+  const [inputText, setInputText] = useState("");
   const [showChat, setShowChat] = useState(false);
-  const [userMessage, setUserMessage] = useState('');
+  const [userMessage, setUserMessage] = useState("");
 
   const suggestions = [
     "Our New collection",
@@ -29,7 +38,7 @@ export default function ChatInterface() {
     "Product Refund",
     "Delivery timeline",
     "Talk to an Expert",
-    "More"
+    "More",
   ];
 
   const handleSend = () => {
@@ -49,21 +58,24 @@ export default function ChatInterface() {
     return <AiChatComponent initialMessage={userMessage} />;
   }
 
-  if(searchQuery && searchQuery!=""){
+  if (searchQuery && searchQuery != "") {
     return <AiChatComponent initialMessage={searchQuery} />;
   }
 
-  if(showVoiceVideoInterface){
-    return <AiChatComponent initialMessage={''} mode={showVoiceVideoInterface as 'voice'|'video'} />;
+  if (showVoiceVideoInterface) {
+    return (
+      <AiChatComponent
+        initialMessage={""}
+        mode={showVoiceVideoInterface as "voice" | "video"}
+      />
+    );
   }
 
-
-
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}>
-              <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-            </TouchableOpacity>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+      <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}>
+        <Ionicons name="chevron-back" size={24} color={COLORS.text} />
+      </TouchableOpacity>
       <View style={styles.container}>
         {/* Sparkle Icon */}
         <View style={styles.iconContainer}>
@@ -86,24 +98,31 @@ export default function ChatInterface() {
             onSubmitEditing={handleSend}
             returnKeyType="send"
           />
-          <TouchableOpacity style={styles.iconButton} onPress={()=>{setShowVoiceVideoInterface('voice')}}>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => {
+              setShowVoiceVideoInterface("voice");
+            }}
+          >
             <Mic size={20} color="#333" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton} onPress={()=>{setShowVoiceVideoInterface('video')}}>
-             <AudioLines />
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => {
+              setShowVoiceVideoInterface("video");
+            }}
+          >
+            <AudioLines />
           </TouchableOpacity>
           {inputText.trim().length > 0 && (
-            <TouchableOpacity 
-              style={styles.sendButton} 
-              onPress={handleSend}
-            >
+            <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
               <Send size={18} color="#fff" />
             </TouchableOpacity>
           )}
         </View>
 
         {/* Suggestion Chips */}
-        <ScrollView 
+        <ScrollView
           style={styles.suggestionsContainer}
           showsVerticalScrollIndicator={false}
         >
@@ -120,7 +139,7 @@ export default function ChatInterface() {
           </View>
         </ScrollView>
       </View>
-      <BottomNavBar activeTab='AiDiscover'></BottomNavBar>
+      <BottomNavBar activeTab="AiDiscover"></BottomNavBar>
     </SafeAreaView>
   );
 }
@@ -128,36 +147,36 @@ export default function ChatInterface() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingHorizontal: 20,
     paddingTop: 60,
   },
   iconContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
-    iconBtn: {
-      marginLeft: SPACING.l,
-      marginTop: SPACING.m,
-    },
+  iconBtn: {
+    marginLeft: SPACING.l,
+    marginTop: SPACING.m,
+  },
   greetingBold: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    textAlign: 'center',
+    fontWeight: "600",
+    color: "#333",
+    textAlign: "center",
     marginBottom: 4,
   },
   greetingLight: {
     fontSize: 14,
-    fontWeight: '300',
-    color: '#666',
-    textAlign: 'center',
+    fontWeight: "300",
+    color: "#666",
+    textAlign: "center",
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: "#e0e0e0",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -167,7 +186,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 13,
-    color: '#333',
+    color: "#333",
   },
   iconButton: {
     marginLeft: 12,
@@ -177,24 +196,24 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#000",
+    justifyContent: "center",
+    alignItems: "center",
     marginLeft: 8,
   },
   suggestionsContainer: {
     flex: 1,
   },
   suggestionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginHorizontal: -5, // Negative margin to offset chip margins
   },
   suggestionChip: {
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: "#e0e0e0",
     borderRadius: 20,
     marginRight: 10,
     marginBottom: 10,
@@ -202,7 +221,7 @@ const styles = StyleSheet.create({
   },
   suggestionText: {
     fontSize: 12,
-    color: '#333',
-    fontWeight: '400',
+    color: "#333",
+    fontWeight: "400",
   },
 });

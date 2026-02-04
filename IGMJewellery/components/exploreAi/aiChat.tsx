@@ -1,39 +1,46 @@
-import { COLORS } from '@/constants/theme';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import { COLORS } from "@/constants/theme";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
 import {
-    FlatList,
-    KeyboardAvoidingView,
-    Modal,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import VoiceVideoInterface from './aiVoice';
+  FlatList,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import VoiceVideoInterface from "./aiVoice";
 
 interface IMessage {
   id: string;
   text: string;
-  sender: 'user' | 'ai';
+  sender: "user" | "ai";
   timestamp: Date;
 }
 
-export default function AiChatComponent({ initialMessage = '', mode }: { initialMessage: string ,mode?:'voice'|'video'}) {
-  const router=useRouter();
+export default function AiChatComponent({
+  initialMessage = "",
+  mode,
+}: {
+  initialMessage: string;
+  mode?: "voice" | "video";
+}) {
+  const router = useRouter();
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const [inputText, setInputText] = useState('');
+  const [inputText, setInputText] = useState("");
   const [isRecording, setIsRecording] = useState(false);
-  const [recording, setRecording] = useState(null);
-  const [showVoiceVideoInterface, setShowVoiceVideoInterface] = useState(!!mode);
-  const [interfaceMode, setInterfaceMode] = useState<'voice' | 'video'>(mode || 'voice');
-  const flatListRef = useRef(null);
-
- 
+  const [showVoiceVideoInterface, setShowVoiceVideoInterface] = useState(
+    !!mode
+  );
+  const [interfaceMode, setInterfaceMode] = useState<"voice" | "video">(
+    mode || "voice"
+  );
+  const flatListRef = useRef<FlatList>(null);
 
   // Send initial message when component mounts
   useEffect(() => {
@@ -41,17 +48,16 @@ export default function AiChatComponent({ initialMessage = '', mode }: { initial
       const newMessage: IMessage = {
         id: Date.now().toString(),
         text: initialMessage.trim(),
-        sender: 'user',
+        sender: "user",
         timestamp: new Date(),
       };
       setMessages([newMessage]);
 
-      // Simulate AI response
       setTimeout(() => {
         const aiResponse: IMessage = {
           id: (Date.now() + 1).toString(),
-          text: 'Let me help you find what you want.\nAre you looking for something for yourself?',
-          sender: 'ai',
+          text: "Let me help you find what you want.\nAre you looking for something for yourself?",
+          sender: "ai",
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, aiResponse]);
@@ -64,18 +70,17 @@ export default function AiChatComponent({ initialMessage = '', mode }: { initial
       const newMessage: IMessage = {
         id: Date.now().toString(),
         text: inputText.trim(),
-        sender: 'user',
+        sender: "user",
         timestamp: new Date(),
       };
       setMessages([...messages, newMessage]);
-      setInputText('');
+      setInputText("");
 
-      // Simulate AI response
       setTimeout(() => {
         const aiResponse: IMessage = {
-          id: (Date.now() + 1).toString(),
-          text: 'Let me help you find what you want.\nAre you looking for something for yourself?',
-          sender: 'ai',
+          id: (Date.now() + 2).toString(),
+          text: "Let me help you find what you want.\nAre you looking for something for yourself?",
+          sender: "ai",
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, aiResponse]);
@@ -84,35 +89,32 @@ export default function AiChatComponent({ initialMessage = '', mode }: { initial
   };
 
   const handleVoiceRecord = async () => {
-    setInterfaceMode('voice');
+    setInterfaceMode("voice");
     setShowVoiceVideoInterface(true);
   };
 
   const handleVideoCapture = async () => {
-    setInterfaceMode('video');
+    setInterfaceMode("video");
     setShowVoiceVideoInterface(true);
   };
 
   const handleTranscript = (text: string) => {
-    // Close the voice interface
     setShowVoiceVideoInterface(false);
-    
+
     if (text.trim()) {
-      // Create a new user message with the transcribed text
       const newMessage: IMessage = {
         id: Date.now().toString(),
         text: text.trim(),
-        sender: 'user',
+        sender: "user",
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, newMessage]);
 
-      // Simulate AI response
       setTimeout(() => {
         const aiResponse: IMessage = {
-          id: (Date.now() + 1).toString(),
-          text: 'Let me help you find what you want.\nAre you looking for something for yourself?',
-          sender: 'ai',
+          id: (Date.now() + 3).toString(),
+          text: "Let me help you find what you want.\nAre you looking for something for yourself?",
+          sender: "ai",
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, aiResponse]);
@@ -120,8 +122,8 @@ export default function AiChatComponent({ initialMessage = '', mode }: { initial
     }
   };
 
-  const renderMessage = ({ item }) => {
-    const isUser = item.sender === 'user';
+  const renderMessage = ({ item }: { item: IMessage }) => {
+    const isUser = item.sender === "user";
     return (
       <View style={styles.messageContainer}>
         {!isUser && (
@@ -151,13 +153,16 @@ export default function AiChatComponent({ initialMessage = '', mode }: { initial
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}>
-              <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-            </TouchableOpacity>
+      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <Ionicons name="chevron-back" size={24} color={COLORS.text || "#000"} />
+      </TouchableOpacity>
+
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+        // "padding" is better for iOS, "height" or undefined works better for Android
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        // This offset accounts for the header/safe area height
+        keyboardVerticalOffset={10}
       >
         <FlatList
           ref={flatListRef}
@@ -165,6 +170,10 @@ export default function AiChatComponent({ initialMessage = '', mode }: { initial
           renderItem={renderMessage}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.messagesList}
+          // Automatically moves content when keyboard appears
+          automaticallyAdjustKeyboardInsets={true}
+          // Allows dismissing keyboard by dragging down
+          keyboardDismissMode="on-drag"
           onContentSizeChange={() => {
             if (messages.length > 0) {
               flatListRef.current?.scrollToEnd({ animated: true });
@@ -182,7 +191,6 @@ export default function AiChatComponent({ initialMessage = '', mode }: { initial
             onChangeText={setInputText}
             multiline
             maxLength={1000}
-            textAlignVertical="center"
           />
           <TouchableOpacity
             style={[styles.iconButton, isRecording && styles.recordingButton]}
@@ -190,9 +198,9 @@ export default function AiChatComponent({ initialMessage = '', mode }: { initial
             activeOpacity={0.7}
           >
             <Ionicons
-              name={isRecording ? 'stop-circle' : 'mic'}
+              name={isRecording ? "stop-circle" : "mic"}
               size={24}
-              color={isRecording ? '#FF0000' : '#666'}
+              color={isRecording ? "#FF0000" : "#666"}
             />
           </TouchableOpacity>
           <TouchableOpacity
@@ -214,7 +222,6 @@ export default function AiChatComponent({ initialMessage = '', mode }: { initial
         </View>
       </KeyboardAvoidingView>
 
-      {/* Voice/Video Interface Modal */}
       <Modal
         visible={showVoiceVideoInterface}
         animationType="slide"
@@ -229,8 +236,8 @@ export default function AiChatComponent({ initialMessage = '', mode }: { initial
           >
             <Ionicons name="close" size={28} color="#000" />
           </TouchableOpacity>
-          <VoiceVideoInterface 
-            mode={interfaceMode} 
+          <VoiceVideoInterface
+            mode={interfaceMode}
             onTranscript={handleTranscript}
             onClose={() => setShowVoiceVideoInterface(false)}
           />
@@ -243,30 +250,29 @@ export default function AiChatComponent({ initialMessage = '', mode }: { initial
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   messagesList: {
     padding: 16,
-    paddingBottom: 8,
+    paddingBottom: 20,
     flexGrow: 1,
   },
   messageContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 16,
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   messageBubble: {
-    maxWidth: '75%',
+    maxWidth: "75%",
     borderRadius: 20,
     padding: 12,
     paddingHorizontal: 16,
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
@@ -277,12 +283,12 @@ const styles = StyleSheet.create({
     }),
   },
   userBubble: {
-    backgroundColor: '#000',
-    marginLeft: 'auto',
+    backgroundColor: "#000",
+    marginLeft: "auto",
     borderBottomRightRadius: 4,
   },
   aiBubble: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: "#F5F5F5",
     borderBottomLeftRadius: 4,
   },
   messageText: {
@@ -290,108 +296,84 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   userText: {
-    color: '#fff',
+    color: "#fff",
   },
   aiText: {
-    color: '#000',
+    color: "#000",
   },
   aiAvatar: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#000',
+    backgroundColor: "#000",
     marginRight: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   userAvatar: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#D0D0D0',
+    backgroundColor: "#D0D0D0",
     marginLeft: 8,
   },
-  optionsContainer: {
-    flexDirection: 'row',
-    marginTop: 12,
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  optionButton: {
-    backgroundColor: '#fff',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-  },
-  optionText: {
-    fontSize: 14,
-    color: '#000',
-  },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
+    flexDirection: "row",
+    alignItems: "flex-end",
     padding: 12,
-    paddingBottom: Platform.OS === 'ios' ? 12 : 12,
+    paddingBottom: 12, // More padding for iOS home indicator
     borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
-    backgroundColor: '#fff',
+    borderTopColor: "#E0E0E0",
+    backgroundColor: "#fff",
   },
   input: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
-    borderRadius: 24,
+    backgroundColor: "#F5F5F5",
+    borderRadius: 20,
     paddingHorizontal: 16,
-    paddingTop: Platform.OS === 'ios' ? 10 : 8,
-    paddingBottom: Platform.OS === 'ios' ? 10 : 8,
+    paddingTop: 10,
+    paddingBottom: 10,
     fontSize: 15,
     maxHeight: 100,
-    minHeight: 40,
   },
   iconButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 4,
   },
   recordingButton: {
-    backgroundColor: '#FFE0E0',
+    backgroundColor: "#FFE0E0",
+    borderRadius: 20,
   },
   sendButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 8,
+    backgroundColor: "#000",
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 4,
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   closeButton: {
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? 50 : 20,
+    position: "absolute",
+    top: Platform.OS === "ios" ? 50 : 20,
     right: 20,
     zIndex: 10,
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
     elevation: 3,
   },
-  iconBtn: {
-    padding: 4,
-    marginLeft: 12,
+  backButton: {
+    padding: 10,
   },
 });
