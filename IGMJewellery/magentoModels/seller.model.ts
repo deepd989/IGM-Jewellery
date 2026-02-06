@@ -54,13 +54,24 @@ export interface Seller {
   // no data for ABOUT SECTION of seller
 }
 
-// collection api missing
+// Single seller item in list response
+export interface SellerListItem {
+  seller_data: Seller;
+  collection_items: unknown[];
+}
 
-// Browse all sellers
+// Browse all sellers API response
 export interface SellerListResponse {
-  items: Seller[];
+  items: SellerListItem[];
   search_criteria: {
-    filter_groups: any[];
+    filter_groups: unknown[];
   };
   total_count: number;
 }
+
+// Attribute option for resolving custom_attributes
+export interface AttributeOption {
+  label: string;
+  value: string;
+}
+
