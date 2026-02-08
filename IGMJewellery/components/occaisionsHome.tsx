@@ -17,7 +17,7 @@ export default function OccasionCardList() {
   };
   return (
     <>
-      <SectionHeader value="Shop by Occaision" />
+      <SectionHeader value="Shop by Occasion" />
       <View style={styles.container}>
         {data.map((item, index) => (
           <TouchableOpacity

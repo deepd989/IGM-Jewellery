@@ -2,7 +2,7 @@ import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -11,6 +11,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useAuth } from "../auth/authContext";
+import { generateJewelleryImage } from "../helpers/generateJewelleryImage";
+import { firstImageHelper } from "../helpers/imageUsageHelper";
 
 interface ProductCardProps {
   product: Product;
@@ -30,6 +33,9 @@ const ProductCard2: React.FC<ProductCardProps> = ({
   onPress,
 }) => {
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const { userId, apiUrl, imageGlobal } = useAuth();
+  const [firstImageBase64State, setFirstImageBase64State] = useState("");
+  const [isTryOnModalVisible, setIsTryOnModalVisible] = useState(false);
 
   const handleAddToCart = async (e: any) => {
     e.stopPropagation();
@@ -41,6 +47,20 @@ const ProductCard2: React.FC<ProductCardProps> = ({
       Alert.alert("Error", "Failed to add item to cart");
     }
   };
+
+  useEffect(() => {
+    generateJewelleryImage(
+      apiUrl,
+      userId as string,
+      product,
+      "casual wear",
+      "black",
+      setFirstImageBase64State
+    );
+  }, []);
+
+  useEffect(() => {}, [isTryOnModalVisible]);
+
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
   const handleTryAtHome = async (e: any) => {
     e.stopPropagation();
@@ -90,6 +110,17 @@ const ProductCard2: React.FC<ProductCardProps> = ({
     }
   };
 
+  // if (isTryOnModalVisible) {
+  //   <SafeAreaView>
+  //     <TryOnModal
+  //       visible={isTryOnModalVisible}
+  //       onClose={() => setIsTryOnModalVisible(false)}
+  //       tryOnUrl="https://jeweltry.plushvie.in/igmindia/118305"
+  //       productTitle={product.title}
+  //     ></TryOnModal>
+  //   </SafeAreaView>;
+  // }
+
   if (!product) {
     return (
       <View style={[styles.card, { width }]}>
@@ -120,7 +151,13 @@ const ProductCard2: React.FC<ProductCardProps> = ({
       {/* Image placeholder */}
       <View style={styles.imagePlaceholder}>
         <Image
-          source={{ uri: product.thumbnailUrls[0] }}
+          source={{
+            uri: firstImageHelper(
+              firstImageBase64State,
+              product.thumbnailUrls[0],
+              imageGlobal
+            ),
+          }}
           style={styles.image}
           resizeMode="cover"
         />
@@ -164,10 +201,13 @@ const ProductCard2: React.FC<ProductCardProps> = ({
       <View style={styles.buttonRow}>
         <TouchableOpacity
           style={[styles.button, styles.tryNow]}
-          onPress={() => {
+          onPress={(e) => {
             router.push({
-              pathname: "/underDev",
-              params: { featureName: "Try-On Feature" },
+              pathname: "/virtualTryOn2",
+              params: {
+                tryOnUrl: `https://jeweltry.plushvie.in/igmindia/118305`,
+                productTitle: product.title,
+              },
             });
           }}
         >

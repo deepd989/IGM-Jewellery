@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type Props = {
   value: string[];
@@ -26,7 +26,7 @@ export default function PreferenceStep({ value, onChange, onNext, onBack }: Prop
             style={[styles.chip, value.includes(opt) && styles.chipSelected]}
             onPress={() => toggle(opt)}
           >
-            <Text style={styles.chipText}>{opt}</Text>
+            <Text style={[styles.chipText, value.includes(opt) && styles.chipTextSelected]}>{opt}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
   },
   chipSelected: { backgroundColor: "#000" },
   chipText: { color: "#000" },
+  chipTextSelected: { color: "#fff" },
   actions: { flexDirection: "row", marginTop: 24, gap: 12 },
   primary: { backgroundColor: "#000", paddingVertical: 12, borderRadius: 8, flex: 1 },
   primaryText: { color: "#fff", textAlign: "center", fontWeight: "600" },

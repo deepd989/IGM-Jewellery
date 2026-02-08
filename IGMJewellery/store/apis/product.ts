@@ -3,8 +3,15 @@ import { Product } from "@/interfaces/product.interface";
 import { attributeResolver } from "@/magentoModels/conversionHelpers/attributeResolver";
 import { convertMagentoProducts } from "@/magentoModels/conversionHelpers/productConverter";
 import { MagentoProduct } from "@/magentoModels/product.model";
-import { SellerListItem, SellerListResponse } from "@/magentoModels/seller.model";
-import { API_ACCESS_TOKEN, API_BASE_URL, API_ENDPOINTS } from "@/store/newApis/apiUrl.const";
+import {
+  SellerListItem,
+  SellerListResponse,
+} from "@/magentoModels/seller.model";
+import {
+  API_ACCESS_TOKEN,
+  API_BASE_URL,
+  API_ENDPOINTS,
+} from "@/store/newApis/apiUrl.const";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // Cache for products fetched from API
@@ -21,7 +28,7 @@ async function fetchSellers(): Promise<SellerListItem[]> {
       `${API_BASE_URL}${API_ENDPOINTS.SELLERS}?searchCriteria=string`,
       {
         headers: {
-          "Authorization": `Bearer ${API_ACCESS_TOKEN}`,
+          Authorization: `Bearer ${API_ACCESS_TOKEN}`,
           "Content-Type": "application/json",
         },
       }
@@ -43,20 +50,24 @@ async function fetchSellers(): Promise<SellerListItem[]> {
 /**
  * Fetch products for a specific seller
  */
-async function fetchSellerProducts(sellerId: string): Promise<MagentoProduct[]> {
+async function fetchSellerProducts(
+  sellerId: string
+): Promise<MagentoProduct[]> {
   try {
     const response = await fetch(
       `${API_BASE_URL}${API_ENDPOINTS.SELLER_PRODUCTS(sellerId)}`,
       {
         headers: {
-          "Authorization": `Bearer ${API_ACCESS_TOKEN}`,
+          Authorization: `Bearer ${API_ACCESS_TOKEN}`,
           "Content-Type": "application/json",
         },
       }
     );
 
     if (!response.ok) {
-      console.error(`Failed to fetch products for seller ${sellerId}: ${response.status}`);
+      console.error(
+        `Failed to fetch products for seller ${sellerId}: ${response.status}`
+      );
       return [];
     }
 
@@ -74,7 +85,7 @@ async function fetchSellerProducts(sellerId: string): Promise<MagentoProduct[]> 
 async function fetchAllProducts(): Promise<Product[]> {
   // Check cache first
   const now = Date.now();
-  if (cachedProducts && (now - cacheTimestamp) < CACHE_DURATION) {
+  if (cachedProducts && now - cacheTimestamp < CACHE_DURATION) {
     console.log("Returning cached products");
     return cachedProducts;
   }
@@ -90,7 +101,7 @@ async function fetchAllProducts(): Promise<Product[]> {
 
   // Fetch products for each seller in parallel
   const allMagentoProducts: MagentoProduct[] = [];
-  
+
   await Promise.all(
     sellers.map(async (sellerItem) => {
       const sellerId = sellerItem.seller_data.seller_id;
@@ -104,7 +115,7 @@ async function fetchAllProducts(): Promise<Product[]> {
 
   // Convert to app's Product interface
   const appProducts = convertMagentoProducts(allMagentoProducts);
-  
+
   // Update cache
   cachedProducts = appProducts;
   cacheTimestamp = now;

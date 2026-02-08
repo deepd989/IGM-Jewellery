@@ -1,7 +1,7 @@
 import { ScrollingColumn } from "@/components/scrollingColumn";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
   Dimensions,
   StyleSheet,
@@ -10,14 +10,16 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import HealthCheckModal from "../components/connectionModal";
 
-const { width } = Dimensions.get("window");
-const COLUMN_WIDTH = (width - 40) / 4; // 4 columns layout
+const { width, height } = Dimensions.get("window");
+const COLUMN_WIDTH = (width - 40) / 4;
+const TILE_HEIGHT = height * 0.12;
 
 export default function JewelryLanding() {
   const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
 
-  // Helper to render a tile (Brand or Product)
   const Tile = ({ children, style, isLogo }) => (
     <View style={[styles.tile, style]}>
       {isLogo ? <View style={styles.logoCircle}>{children}</View> : children}
@@ -26,13 +28,19 @@ export default function JewelryLanding() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.scrollContent}>
+      {showModal && (
+        <View style={StyleSheet.absoluteFillObject}>
+          <HealthCheckModal setModalVisible={setShowModal} />
+        </View>
+      )}
+
+      <View style={styles.container}>
         {/* The Masonry Background Grid */}
         <View style={styles.gridContainer}>
           {/* Column 1 */}
           <View style={styles.column}>
             <ScrollingColumn duration={10000}>
-              <View style={{ height: 60 }} />
+              <View style={{ height: 40 }} />
               <Tile style={styles.emptyTile} />
               <Tile isLogo>
                 <Text style={styles.logoText}>M</Text>
@@ -88,10 +96,17 @@ export default function JewelryLanding() {
             </View>
           </ScrollingColumn>
 
-          {/* Top Gradient Overlay for Fade-in effect */}
+          {/* Top Fade Overlay */}
           <LinearGradient
             colors={["#FFFFFF", "transparent"]}
             style={styles.topGradient}
+            pointerEvents="none"
+          />
+
+          {/* Bottom Fade Overlay - NEW */}
+          <LinearGradient
+            colors={["transparent", "#FFFFFF"]}
+            style={styles.bottomGradient}
             pointerEvents="none"
           />
         </View>
@@ -99,19 +114,24 @@ export default function JewelryLanding() {
         {/* Hero Section */}
         <View style={styles.heroSection}>
           <View style={styles.mainRingContainer}>
-            {/* Placeholder for the large central rings */}
             <View style={styles.mainRingPlaceholder}>
-              <Text style={{ fontSize: 80 }}>💍</Text>
+              <Text style={{ fontSize: 50 }}>💍</Text>
             </View>
           </View>
 
-          <Text style={styles.title}>IGM Jewellery</Text>
-          <Text style={styles.subtitle}>
-            India's first AI-powered jewellery marketplace, where heritage meets
-            high tech
-          </Text>
+          <View style={styles.textContainer}>
+            <TouchableOpacity
+              onLongPress={() => setShowModal(true)}
+              delayLongPress={800}
+            >
+              <Text style={styles.title}>Zeywar</Text>
+            </TouchableOpacity>
+            <Text style={styles.subtitle}>
+              India's first AI-powered jewellery marketplace, where heritage
+              meets high tech
+            </Text>
+          </View>
 
-          {/* Auth Links */}
           <View style={styles.authContainer}>
             <TouchableOpacity
               style={styles.fullButton}
@@ -121,10 +141,12 @@ export default function JewelryLanding() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.fullButton}
+              style={[styles.fullButton, styles.secondaryButton]}
               onPress={() => router.push("/home")}
             >
-              <Text style={styles.buttonText}>Explore as guest</Text>
+              <Text style={[styles.buttonText, { color: "#000" }]}>
+                Explore as Guest
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -138,161 +160,120 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF",
   },
-  scrollContent: {
-    paddingBottom: 60,
+  container: {
+    flex: 1,
+    justifyContent: "space-between",
+    paddingBottom: 10,
   },
   gridContainer: {
     flexDirection: "row",
     justifyContent: "space-evenly",
     paddingHorizontal: 10,
-    height: 520, // Slightly reduced height
+    height: height * 0.42, // Adjusted slightly to give grid more room
     overflow: "hidden",
-    marginTop: -40, // Pulls the entire grid up
   },
   column: {
     width: COLUMN_WIDTH,
-    flexDirection: "column",
   },
   tile: {
     width: COLUMN_WIDTH - 10,
-    height: COLUMN_WIDTH + 20,
+    height: TILE_HEIGHT,
     backgroundColor: "#FAFAFA",
     borderRadius: 12,
-    marginVertical: 8,
+    marginVertical: 6,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  emptyTile: {
-    backgroundColor: "#FDFDFD",
-  },
-  logoCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
+    borderColor: "#F0F0F0",
+  },
+  emptyTile: { backgroundColor: "#F9F9F9" },
+  logoCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#EEE",
     justifyContent: "center",
     alignItems: "center",
   },
-  logoText: {
-    fontSize: 24,
-    color: "#999",
-    fontWeight: "300",
-  },
-  logoTextSmall: {
-    fontSize: 14,
-    color: "#999",
-    fontWeight: "500",
-    letterSpacing: 1,
-  },
-  placeholderImg: {
-    fontSize: 30,
-  },
+  logoText: { fontSize: 18, color: "#AAA" },
+  logoTextSmall: { fontSize: 9, color: "#AAA", fontWeight: "600" },
+  placeholderImg: { fontSize: 20 },
   topGradient: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
-    height: 100, // Reduced height of gradient to show more content
+    height: 80,
+    zIndex: 2,
+  },
+  bottomGradient: {
+    position: "absolute",
+    bottom: 0, // Anchored to the bottom of the grid
+    left: 0,
+    right: 0,
+    height: 20, // Slightly taller for a smoother fade into the hero
     zIndex: 2,
   },
   heroSection: {
-    marginTop: -150, // Pulled hero section up further to meet the grid
+    flex: 1,
     alignItems: "center",
-    paddingHorizontal: 40,
+    justifyContent: "center",
+    paddingHorizontal: 30,
+    marginTop: -40, // Pulls the hero up so it sits "under" the fade
   },
   mainRingContainer: {
-    width: 240,
-    height: 180,
+    height: 120,
     justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 10,
   },
   mainRingPlaceholder: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     backgroundColor: "#FFF",
     justifyContent: "center",
     alignItems: "center",
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
   },
-  badge: {
-    position: "absolute",
-    bottom: 5,
-    backgroundColor: "#385A54",
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    justifyContent: "center",
+  textContainer: {
+    marginVertical: 15,
     alignItems: "center",
-    borderWidth: 3,
-    borderColor: "#FFF",
-    zIndex: 5,
-  },
-  badgeText: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "bold",
   },
   title: {
-    fontSize: 32, // Slightly smaller to match the compact feel
+    fontSize: 26,
     fontWeight: "700",
     color: "#000",
     textAlign: "center",
-    marginBottom: 10,
+    marginBottom: 6,
   },
   subtitle: {
-    fontSize: 15,
+    fontSize: 14,
     color: "#666",
     textAlign: "center",
-    lineHeight: 20,
-    fontWeight: "400",
-  },
-  linkButton: {
-    alignItems: "center",
-  },
-  skip: {
-    marginTop: 15,
-  },
-  linkText: {
-    fontSize: 16,
-    color: "black",
-    fontWeight: "600",
-    letterSpacing: 0.5,
-  },
-  linkUnderline: {
-    height: 2,
-    width: "100%",
-    backgroundColor: "#385A54",
-    marginTop: 4,
-    borderRadius: 1,
-  },
-  linkSeparator: {
-    width: 1,
-    height: 20,
-    backgroundColor: "#E0E0E0",
+    lineHeight: 18,
   },
   authContainer: {
     width: "100%",
-    marginTop: 10,
-    gap: 12, // Space between the buttons
+    gap: 8,
   },
   fullButton: {
     backgroundColor: "#000",
     width: "100%",
-    paddingVertical: 16,
-    borderRadius: 5, // Rounded corners
+    paddingVertical: 14,
+    borderRadius: 8,
     alignItems: "center",
-    justifyContent: "center",
+  },
+  secondaryButton: {
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: "#DDD",
   },
   buttonText: {
     color: "#FFF",
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "600",
   },
 });
