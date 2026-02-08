@@ -2,24 +2,24 @@ import { CartBadge } from "@/components/cart/CardBadge";
 import { ProductCard } from "@/components/products/ProductCard";
 import { Product } from "@/interfaces/product.interface";
 import {
-  useClearCompareMutation,
-  useGetWishlistQuery,
-  useRemoveFromWishlistMutation,
-  useToggleCompareMutation,
+    useClearCompareMutation,
+    useGetWishlistQuery,
+    useRemoveFromWishlistMutation,
+    useToggleCompareMutation,
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Platform,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    FlatList,
+    Platform,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { COLORS, SPACING } from "../constants/theme";
 
@@ -32,7 +32,8 @@ export default function WishlistScreen() {
   const [toggleCompare] = useToggleCompareMutation();
   const [clearCompare] = useClearCompareMutation();
 
-  const wishlistItems = wishlistData?.items || [];
+  // Extract products from wishlist items (WishlistItem contains { product, itemId })
+  const wishlistItems = wishlistData?.items?.map(item => item.product) || [];
   const compareList = wishlistData?.compareList || [];
 
   const toggleViewMode = () => {
