@@ -33,7 +33,7 @@ const ProductCard2: React.FC<ProductCardProps> = ({
   onPress,
 }) => {
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
-  const { userId, apiUrl, imageGlobal } = useAuth();
+  const { userObject, apiUrl, imageGlobal, phoneNumber } = useAuth();
   const [firstImageBase64State, setFirstImageBase64State] = useState("");
   const [isTryOnModalVisible, setIsTryOnModalVisible] = useState(false);
 
@@ -51,7 +51,7 @@ const ProductCard2: React.FC<ProductCardProps> = ({
   useEffect(() => {
     generateJewelleryImage(
       apiUrl,
-      userId as string,
+      phoneNumber as string,
       product,
       "casual wear",
       "black",

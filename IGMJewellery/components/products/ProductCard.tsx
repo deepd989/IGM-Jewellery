@@ -44,7 +44,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   isInCompare,
   onToggleCompare,
 }) => {
-  const { userId, apiUrl, imageGlobal } = useAuth();
+  const { phoneNumber, apiUrl, imageGlobal } = useAuth();
   const router = useRouter();
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
@@ -61,7 +61,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   useEffect(() => {
     generateJewelleryImage(
       apiUrl,
-      userId as string,
+      phoneNumber as string,
       product,
       "casual wear",
       "black",

@@ -1,13 +1,14 @@
 // src/auth/authStorage.ts
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
+import { UserLoginObject } from "../magentoModels/userLoginObject.model";
 
 const AUTH_KEY = "auth_data";
 const API_URL_KEY = "api_url";
 
 export type StoredAuth = {
   token: string;
-  userId: string;
+  userObject: UserLoginObject | null;
 };
 
 // Helper to determine if we are on Web

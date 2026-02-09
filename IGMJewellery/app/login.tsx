@@ -9,28 +9,53 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  useSendLoginOtpMutation,
+  useSendRegistrationOtpMutation,
+} from "../store/newApis/sendOtp.magento.api";
 
 export default function PhoneLoginScreen() {
   const [phone, setPhone] = useState("");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-
+  const [sendLoginOtp] = useSendLoginOtpMutation();
+  const [sendRegistrationOtp] = useSendRegistrationOtpMutation();
   const isValidIndianPhone = (value: string) => {
     const digits = value.replace(/\D/g, "");
     return /^\d{10}$/.test(digits);
   };
 
-  const handleGetOtp = () => {
+  const handleGetOtp = async () => {
     if (!isValidIndianPhone(phone)) {
       setError("Please enter a valid 10-digit phone number.");
       return;
     }
     setError(null);
+
     const digits = phone.replace(/\D/g, "");
-    router.push({
-      pathname: "/verifyOtp",
-      params: { phoneNumber: `${digits}` },
-    });
+    console.log("Requesting OTP for:", digits);
+    const loginResponse: any = await sendLoginOtp({
+      mobileNumber: digits,
+    }).unwrap();
+    const registrationResponse: any = await sendRegistrationOtp({
+      mobileNumber: digits,
+    }).unwrap();
+    console.log("Login OTP Response:", loginResponse);
+    console.log("Registration OTP Response:", registrationResponse);
+    if (loginResponse.success) {
+      router.push({
+        pathname: "/verifyOtp",
+        params: { phoneNumber: digits, isLogin: 1 },
+      });
+      return;
+    } else if (registrationResponse.success) {
+      router.push({
+        pathname: "/verifyOtp",
+        params: { phoneNumber: digits, isLogin: 0 },
+      });
+    } else {
+      setError("Failed to send OTP. Please try again.");
+    }
   };
 
   return (

@@ -1,5 +1,6 @@
 // src/auth/AuthContext.tsx
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { UserLoginObject } from "../magentoModels/userLoginObject.model";
 import {
   getAuth,
   getGlobalApiUrl,
@@ -12,10 +13,15 @@ type AuthContextType = {
   isAuthenticated: boolean;
   isLoading: boolean;
   token: string | null;
-  userId: string | null;
+  userObject: UserLoginObject | null;
   apiUrl: string;
+  phoneNumber: string | null;
   setApiUrl: (url: string) => void;
-  login: (data: { token: string; userId: string }) => Promise<void>;
+  login: (data: {
+    token: string;
+    userObject: UserLoginObject | null;
+    phoneNumber: string;
+  }) => Promise<void>;
   logout: () => Promise<void>;
   imageGlobal: boolean;
   setImageGlobalUsage: (flag: boolean) => void;
@@ -25,12 +31,13 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [userObject, setUserObject] = useState<UserLoginObject | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [apiUrl, setInstanceApiUrl] = useState<string>("");
+  const [aiServiceApiUrl, setInstanceApiUrl] = useState<string>("");
   const [imageGlobal, setImageGlobalUsage] = useState<boolean>(false);
+  const [phoneNumber, setPhoneNumber] = useState<string | null>("");
 
-  const isAuthenticated = !!token;
+  const isAuthenticated = !!userObject;
 
   useEffect(() => {
     const bootstrap = async () => {
@@ -39,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setInstanceApiUrl(storedApiUrl);
       if (auth) {
         setToken(auth.token);
-        setUserId(auth.userId);
+        setUserObject(auth.userObject);
       }
 
       setIsLoading(false);
@@ -50,24 +57,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async ({
     token,
-    userId,
+    userObject,
+    phoneNumber,
   }: {
     token: string;
-    userId: string;
+    userObject: UserLoginObject | null;
+    phoneNumber: string;
   }) => {
-    console.log("Logging in with token:", token, "and userId:", userId);
-    await saveAuth({ token, userId });
+    console.log(
+      "Logging in with token:",
+      token,
+      "and userId:",
+      JSON.stringify(userObject)
+    );
+    await saveAuth({ token, userObject });
     setToken(token);
-    setUserId(userId);
+    setUserObject(userObject);
+    setPhoneNumber(phoneNumber);
   };
 
   const logout = async () => {
     await removeAuth();
     setToken(null);
-    setUserId(null);
+    setUserObject(null);
+    setPhoneNumber(null);
   };
 
-  const setApiUrl = async (url: string) => {
+  const setAiServiceApiUrl = async (url: string) => {
     await setGlobalApiUrl(url);
     setInstanceApiUrl(url);
   };
@@ -78,11 +94,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated,
         isLoading,
         token,
-        userId,
+        userObject,
+        phoneNumber,
         login,
         logout,
-        apiUrl,
-        setApiUrl,
+        apiUrl: aiServiceApiUrl,
+        setApiUrl: setAiServiceApiUrl,
         imageGlobal,
         setImageGlobalUsage,
       }}

@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAuth } from "../auth/authContext";
+import { useRegisterCustomerProfileMutation } from "../store/newApis/sendOtp.magento.api";
 import GenderStep from "./signUp/GenderStep";
 import LanguageStep from "./signUp/LanguageStep";
 import PreferenceStep from "./signUp/PreferenceStep";
@@ -10,25 +11,60 @@ import ShopForStep from "./signUp/ShopForStep";
 import WelcomeStep from "./signUp/WelcomeStep";
 import { SignUpProgressBar } from "./signUpProgressBar";
 
+interface RegisterMagentoUser {
+  mobileNumber: string;
+  verificationToken: string;
+  profileData: {
+    full_name: string;
+    gender: string;
+    date_of_birth: string;
+    city: string;
+    preferred_language: string;
+    identity: string;
+    shopping_for: string;
+    jewelry_preference: string; //comma separated values like "self,spouse,children"
+  };
+}
+
 export default function SignUpUserStepper() {
   const [step, setStep] = useState(0);
   const [showWelcomeModal, setShowWelcomeModal] = useState(true);
-  const { phoneNumber } = useLocalSearchParams<{ phoneNumber: string }>();
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, token, phoneNumber } = useAuth();
+  const [registerCustomer] = useRegisterCustomerProfileMutation();
 
   const [formData, setFormData] = useState({
     language: "English",
     gender: "",
     shopFor: [] as string[],
     preferences: [] as string[],
-    phoneNumber: phoneNumber,
+    phoneNumber: phoneNumber || "",
   });
 
   async function handleLogin() {
+    const registerResult: any = await registerCustomer({
+      mobileNumber: phoneNumber || "",
+      verificationToken: token || "",
+      profileData: {
+        full_name: "dummyname",
+        gender: formData.gender,
+        date_of_birth: "",
+        city: "",
+        preferred_language: "english",
+        identity: "",
+        shopping_for: "myself,wife",
+        jewelry_preference: "ethnic,traditional",
+      },
+    });
+    console.log("Register Result:", registerResult, "phone:", phoneNumber);
     await login({
-      token: "dummy-token",
-      userId: phoneNumber,
+      token: token || "",
+      userObject: {
+        customer_email: "9619399161@experapps.xyz",
+        customer_id: (registerResult?.data?.customer_id as string) || "",
+        customer_name: "",
+      },
+      phoneNumber: phoneNumber || "",
     });
   }
 
@@ -38,11 +74,8 @@ export default function SignUpUserStepper() {
 
   const next = () =>
     setStep((s) => {
-      console.log("Current Step:", s);
       s = Math.min(4, s + 1);
-      console.log("Next Step:", s);
       if (s == 4) {
-        console.log("Final Form Data:", formData);
         handleLogin();
       }
       return s;

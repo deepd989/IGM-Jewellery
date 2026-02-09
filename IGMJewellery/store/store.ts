@@ -8,6 +8,7 @@ import { productApiService } from "./apis/product";
 import { profileApiService } from "./apis/profile";
 import { wishlistApiService } from "./apis/wishlist";
 import { magentoApiService } from "./newApis/magentoApi";
+import { otpApiService } from "./newApis/sendOtp.magento.api";
 import userReducer from "./userSlice";
 
 export const store = configureStore({
@@ -22,6 +23,7 @@ export const store = configureStore({
     [wishlistApiService.reducerPath]: wishlistApiService.reducer,
     [giftApi.reducerPath]: giftApi.reducer,
     [magentoApiService.reducerPath]: magentoApiService.reducer,
+    [otpApiService.reducerPath]: otpApiService.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -33,10 +35,10 @@ export const store = configureStore({
       checkoutApiService.middleware,
       wishlistApiService.middleware,
       giftApi.middleware,
-      magentoApiService.middleware
+      magentoApiService.middleware,
+      otpApiService.middleware
     ),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-

@@ -13,7 +13,7 @@ import { firstImageHelper } from "../helpers/imageUsageHelper";
 import EarringIcon from "./ui/earingsComponentSvg";
 
 export default function HomePageCard() {
-  const { userId } = useAuth();
+  const { phoneNumber } = useAuth();
   const {
     data: products = [],
     isLoading,
@@ -93,7 +93,10 @@ export default function HomePageCard() {
         onTryOn={() => {
           router.push({
             pathname: "/tryOn",
-            params: { userId: userId },
+            params: {
+              userId: phoneNumber,
+              productType: cardTitle,
+            },
           });
         }}
         deliveryDate="Delivery by Sep 25"
@@ -135,7 +138,7 @@ export const NecklaceCard: React.FC<Props> = ({
   deliveryDate,
   onTryOn,
 }) => {
-  const { apiUrl, userId, imageGlobal } = useAuth();
+  const { apiUrl, phoneNumber, imageGlobal } = useAuth();
   const [firstImageBase64State, setFirstImageBase64State] = useState("");
   console.log(product?.title, product?.id);
   useEffect(() => {
@@ -147,7 +150,7 @@ export const NecklaceCard: React.FC<Props> = ({
     if (product) {
       generateJewelleryImage(
         apiUrl,
-        userId as string,
+        phoneNumber as string,
         product,
         "casual wear",
         "black",
@@ -156,7 +159,7 @@ export const NecklaceCard: React.FC<Props> = ({
     }
 
     // ADD DEPENDENCIES HERE:
-  }, [product, apiUrl, userId]);
+  }, [product, apiUrl, phoneNumber]);
 
   return (
     <View style={necklaceCardStyle.wrapper}>

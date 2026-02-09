@@ -33,7 +33,7 @@ export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const [isCustomizeVisible, setIsCustomizeVisible] = useState(false);
-  const { userId, apiUrl, imageGlobal } = useAuth();
+  const { userObject, apiUrl, imageGlobal, phoneNumber } = useAuth();
   const [firstImageBase64State, setFirstImageBase64State] = useState("");
 
   // Cart & Trial Logic
@@ -52,7 +52,7 @@ export default function ProductDetailScreen() {
   useEffect(() => {
     generateJewelleryImage(
       apiUrl,
-      userId as string,
+      phoneNumber as string,
       product as Product,
       "casual wear",
       "black",

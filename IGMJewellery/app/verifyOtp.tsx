@@ -1,7 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Keyboard,
   StyleSheet,
   Text,
   TextInput,
@@ -10,6 +9,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../auth/authContext";
+import {
+  useSendLoginOtpMutation,
+  useSendRegistrationOtpMutation,
+  useVerifyLoginOtpMutation,
+  useVerifyRegistrationOtpMutation,
+} from "../store/newApis/sendOtp.magento.api";
 
 const OTP_LENGTH = 5;
 const TIMER_SECONDS = 60;
@@ -17,10 +22,17 @@ const TIMER_SECONDS = 60;
 export default function OtpScreen() {
   const { login } = useAuth();
   const router = useRouter();
-  const { phoneNumber } = useLocalSearchParams<{ phoneNumber: string }>();
+  const { phoneNumber, isLogin } = useLocalSearchParams<{
+    phoneNumber: string;
+    isLogin: string;
+  }>();
   const inputs = useRef<TextInput[]>([]);
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
+  const [verifyLoginOtp] = useVerifyLoginOtpMutation();
+  const [verifyRegistrationOtp] = useVerifyRegistrationOtpMutation();
+  const [sendLoginOtp] = useSendLoginOtpMutation();
+  const [sendRegistrationOtp] = useSendRegistrationOtpMutation();
   // --- New Error State ---
   const [error, setError] = useState<string | null>(null);
 
@@ -58,33 +70,57 @@ export default function OtpScreen() {
   };
 
   const verifyOtp = async (code: string) => {
-    // in reality, you'd verify the OTP with your backend here
-
-    if (code === "12345") {
-      setError(null);
-      // if old user - log them in
-      await login({
-        token: "dummy-token",
-        userId: phoneNumber,
-      });
-      router.replace("/home");
-    } else if (code === "00000") {
-      // if new user - redirect to sign up
-      router.replace({
-        pathname: "/signUp",
-        params: { phoneNumber },
-      });
+    if (isLogin === "1") {
+      const loginResult: any = await verifyLoginOtp({
+        mobileNumber: phoneNumber,
+        otp: code,
+      }).unwrap();
+      if (loginResult.success) {
+        await login({
+          token: loginResult.token,
+          userObject: {
+            customer_email: loginResult.customer_email,
+            customer_id: loginResult.customer_id,
+            customer_name: loginResult.customer_name,
+          },
+          phoneNumber: phoneNumber,
+        });
+        router.replace("/home");
+        return;
+      }
+    } else if (isLogin === "0") {
+      const newUserResult: { verification_token: string; success: boolean } =
+        await verifyRegistrationOtp({
+          mobileNumber: phoneNumber,
+          otp: code,
+        }).unwrap();
+      if (newUserResult.success) {
+        await login({
+          token: newUserResult.verification_token,
+          userObject: null,
+          phoneNumber: phoneNumber,
+        });
+        router.replace("/signUp");
+        return;
+      }
     } else {
-      setError("The OTP provided is invalid. Please try again.");
-      Keyboard.dismiss();
+      setError("Invalid login type. Please try again.");
+      return;
     }
+    setError("Invalid OTP. Please try again.");
   };
 
-  const resendCode = () => {
+  const resendCode = async () => {
     setOtp(Array(OTP_LENGTH).fill(""));
     setTimeLeft(TIMER_SECONDS);
     setError(null);
     inputs.current[0]?.focus();
+    await sendLoginOtp({
+      mobileNumber: phoneNumber,
+    }).unwrap();
+    await sendRegistrationOtp({
+      mobileNumber: phoneNumber,
+    }).unwrap();
   };
 
   return (

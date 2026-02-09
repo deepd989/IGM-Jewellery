@@ -1,11 +1,9 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useAuth } from "../../auth/authContext";
 
 export default function WelcomeStep({ onNext }: { onNext: () => void }) {
   const router = useRouter();
-  const { login } = useAuth();
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to IGM Jewellery</Text>

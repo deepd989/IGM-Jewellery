@@ -5,13 +5,11 @@ import { ActivityIndicator, View } from "react-native";
 import { useAuth } from "./authContext";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, token, userId } = useAuth();
+  const { isAuthenticated, isLoading, token, userObject } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (isLoading) return;
-
-    console.log("auth guard:", { isAuthenticated, token, userId });
 
     if (!isAuthenticated) {
       router.replace("/");
