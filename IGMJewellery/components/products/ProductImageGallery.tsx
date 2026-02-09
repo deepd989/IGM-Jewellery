@@ -2,25 +2,25 @@ import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation } from "@/store/apis/cart";
 import { useGetProductsQuery } from "@/store/apis/product";
 import {
-  useAddToWishlistMutation,
-  useGetWishlistQuery,
-  useRemoveFromWishlistMutation,
+    useAddToWishlistMutation,
+    useGetWishlistQuery,
+    useRemoveFromWishlistMutation,
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Dimensions,
-  FlatList,
-  Image,
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Dimensions,
+    FlatList,
+    Image,
+    Modal,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
 
@@ -58,7 +58,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     .slice(0, 10);
 
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.id === product.id,
+    (item) => item.product.id === product.id,
   );
 
   const onScroll = (event: any) => {
@@ -257,7 +257,7 @@ const SimilarProductCard = ({
   const [addToCart] = useAddToCartMutation();
 
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.id === product.id,
+    (item) => item.product.id === product.id,
   );
 
   const handleToggleWishlist = async (e: any) => {

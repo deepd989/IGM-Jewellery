@@ -9,4 +9,7 @@ export const API_ENDPOINTS = {
   SELLERS: "/mpapi/sellers",
   SELLER_PRODUCTS: (sellerId: string) => `/mpapi/admin/sellers/${sellerId}/product`,
   ATTRIBUTE_OPTIONS: (attributeCode: string) => `/products/attributes/${attributeCode}/options`,
+  WISHLIST_ADD: "/connectifysync/wishlist/add",
+  WISHLIST_REMOVE: "/connectifysync/wishlist/remove",
 } as const;
+

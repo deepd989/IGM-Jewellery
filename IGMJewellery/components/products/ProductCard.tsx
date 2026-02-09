@@ -1,22 +1,22 @@
 import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import {
-  useAddToWishlistMutation,
-  useGetWishlistQuery,
-  useRemoveFromWishlistMutation,
+    useAddToWishlistMutation,
+    useGetWishlistQuery,
+    useRemoveFromWishlistMutation,
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Dimensions,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Dimensions,
+    Image,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useAuth } from "../../auth/authContext";
 import { COLORS, SPACING } from "../../constants/theme";
@@ -73,7 +73,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const isInWishlist =
     propIsInWishlist !== undefined
       ? propIsInWishlist
-      : wishlistData?.items.some((item) => item.id === product.id);
+      : wishlistData?.items.some((item) => item.product.id === product.id);
 
   const isGrid = viewMode === "grid";
   const cardWidth = isGrid

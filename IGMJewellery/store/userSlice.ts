@@ -1,8 +1,8 @@
 import { Address } from "@/interfaces/address.interface";
 import {
-  PaymentMethod,
-  Preferences,
-  Profile,
+    PaymentMethod,
+    Preferences,
+    Profile,
 } from "@/interfaces/profile.interface";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { User } from "../interfaces/user.interface";
@@ -24,6 +24,7 @@ interface UserState {
 
 const initialState: UserState = {
   profile: {
+    customerId: 5, // Hardcoded for wishlist API - will be set from auth in future
     name: "Welcome, User",
     phone: "+91 9876543221",
     email: "",
