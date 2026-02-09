@@ -2,7 +2,7 @@ import { Gender } from "@/constants/genderEnum";
 import { OccasiomEnum } from "@/constants/occasions";
 import { Brand } from "@/enums/brand.enum";
 import { ProductType } from "@/enums/productType.enum";
-import { Product } from "@/interfaces/product.interface";
+import { Product, ProductDetails } from "@/interfaces/product.interface";
 import { CustomAttribute, MagentoProduct } from "@/magentoModels/product.model";
 import { attributeResolver } from "./attributeResolver";
 
@@ -199,6 +199,138 @@ function generateTags(product: MagentoProduct): string[] {
 }
 
 /**
+ * Extract and resolve product details from custom attributes
+ */
+function extractProductDetails(product: MagentoProduct): ProductDetails {
+  const details: ProductDetails = {};
+
+  // Metal type (resolved from ID to label)
+  const metalType = getCustomAttribute(product, "metal_type");
+  if (metalType) {
+    const resolved = attributeResolver.resolve("metal_type", metalType);
+    if (resolved && resolved !== String(metalType)) {
+      details.metalType = resolved;
+    }
+  }
+
+  // Metal purity - check gold, platinum, or silver
+  const goldPurity = getCustomAttribute(product, "gold_purity");
+  if (goldPurity) {
+    const resolved = attributeResolver.resolve("gold_purity", goldPurity);
+    if (resolved && resolved !== String(goldPurity)) {
+      details.metalPurity = resolved;
+    }
+  }
+  if (!details.metalPurity) {
+    const platinumPurity = getCustomAttribute(product, "platinum_purity");
+    if (platinumPurity) {
+      const resolved = attributeResolver.resolve("platinum_purity", platinumPurity);
+      if (resolved && resolved !== String(platinumPurity)) {
+        details.metalPurity = resolved;
+      }
+    }
+  }
+  if (!details.metalPurity) {
+    const silverPurity = getCustomAttribute(product, "silver_purity");
+    if (silverPurity) {
+      const resolved = attributeResolver.resolve("silver_purity", silverPurity);
+      if (resolved && resolved !== String(silverPurity)) {
+        details.metalPurity = resolved;
+      }
+    }
+  }
+
+  // Metal finish
+  const metalFinish = getCustomAttribute(product, "metal_finish");
+  if (metalFinish) {
+    const resolved = attributeResolver.resolve("metal_finish", metalFinish);
+    if (resolved && resolved !== String(metalFinish)) {
+      details.metalFinish = resolved;
+    }
+  }
+
+  // Weights (numeric values, format with unit)
+  const netWeight = getCustomAttribute(product, "net_wt");
+  if (netWeight && typeof netWeight === "string") {
+    const numVal = parseFloat(netWeight);
+    if (!isNaN(numVal) && numVal > 0) {
+      details.netWeight = `${numVal.toFixed(3)} g`;
+    }
+  }
+
+  const grossWeight = getCustomAttribute(product, "gross_wt");
+  if (grossWeight && typeof grossWeight === "string") {
+    const numVal = parseFloat(grossWeight);
+    if (!isNaN(numVal) && numVal > 0) {
+      details.grossWeight = `${numVal.toFixed(3)} g`;
+    }
+  }
+
+  // Dimensions (numeric values, format with unit)
+  const height = getCustomAttribute(product, "dim_height");
+  if (height && typeof height === "string") {
+    const numVal = parseFloat(height);
+    if (!isNaN(numVal) && numVal > 0) {
+      details.height = `${numVal} mm`;
+    }
+  }
+
+  const width = getCustomAttribute(product, "dim_width");
+  if (width && typeof width === "string") {
+    const numVal = parseFloat(width);
+    if (!isNaN(numVal) && numVal > 0) {
+      details.width = `${numVal} mm`;
+    }
+  }
+
+  const depth = getCustomAttribute(product, "dim_depth");
+  if (depth && typeof depth === "string") {
+    const numVal = parseFloat(depth);
+    if (!isNaN(numVal) && numVal > 0) {
+      details.depth = `${numVal} mm`;
+    }
+  }
+
+  // Diamond weight
+  const diamondWeight = getCustomAttribute(product, "d1_wt");
+  if (diamondWeight && typeof diamondWeight === "string") {
+    const numVal = parseFloat(diamondWeight);
+    if (!isNaN(numVal) && numVal > 0) {
+      details.diamondWeight = `${numVal.toFixed(3)} C`;
+    }
+  }
+
+  // Diamond clarity (resolved from ID to label)
+  const d1Clarity = getCustomAttribute(product, "d1_clarity");
+  if (d1Clarity) {
+    const resolved = attributeResolver.resolve("d1_clarity", d1Clarity);
+    if (resolved && resolved !== String(d1Clarity)) {
+      details.diamondClarity = resolved;
+    }
+  }
+
+  // Diamond color (resolved from ID to label)
+  const d1Color = getCustomAttribute(product, "d1_colour");
+  if (d1Color) {
+    const resolved = attributeResolver.resolve("d1_colour", d1Color);
+    if (resolved && resolved !== String(d1Color)) {
+      details.diamondColor = resolved;
+    }
+  }
+
+  // Stone type
+  const stoneType = getCustomAttribute(product, "s_type");
+  if (stoneType) {
+    const resolved = attributeResolver.resolve("s_type", stoneType);
+    if (resolved && resolved !== String(stoneType)) {
+      details.stoneType = resolved;
+    }
+  }
+
+  return details;
+}
+
+/**
  * Check if product is new (created within last 30 days)
  */
 function isNewProduct(product: MagentoProduct): boolean {
@@ -228,6 +360,7 @@ export function convertMagentoProduct(magentoProduct: MagentoProduct): Product {
     rating: 4.0 + Math.random() * 1.0, // Generate random rating between 4.0-5.0
     occaision: parseOccasions(magentoProduct),
     gender: Gender.unisex, // Default to unisex as API doesn't provide gender
+    productDetails: extractProductDetails(magentoProduct),
   };
 }
 
