@@ -1,49 +1,46 @@
-import React, { useEffect, useMemo, useState } from "react";
 import { useGetBrandsQuery } from "@/store/apis/brandsApi";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-} from "react-native";
 import { useRouter } from "expo-router";
-import { PlayCircle } from "lucide-react-native";
-
-
+import React, { useEffect, useMemo, useState } from "react";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { HapticButton } from "./basic components/hapticButton";
 
 export default function LatestCollections() {
-  const { data: brandsData = [], isLoading, isError, error, refetch } = useGetBrandsQuery({});
+  const {
+    data: brandsData = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetBrandsQuery({});
   const router = useRouter();
   const [activeBrand, setActiveBrand] = useState<string | null>(null);
 
-useEffect(() => {
-  if (!activeBrand && brandsData.length > 0) {
-    setActiveBrand(brandsData[0].businessName);
-  }
-}, [brandsData, activeBrand]);
+  useEffect(() => {
+    if (!activeBrand && brandsData.length > 0) {
+      setActiveBrand(brandsData[0].businessName);
+    }
+  }, [brandsData, activeBrand]);
 
-const brandNames = useMemo(
-  () => brandsData.map((b) => b.businessName),
-  [brandsData]
-);
+  const brandNames = useMemo(
+    () => brandsData.map((b) => b.businessName),
+    [brandsData]
+  );
 
-const activeBrandData = useMemo(
-  () => brandsData.find((b) => b.businessName === activeBrand),
-  [brandsData, activeBrand]
-);
+  const activeBrandData = useMemo(
+    () => brandsData.find((b) => b.businessName === activeBrand),
+    [brandsData, activeBrand]
+  );
 
-const handleRedirect = (collectionName:string) => {
-  const navigationData={
-    brand: activeBrand,
-    collection:collectionName
-  }
-  router.push({
-    pathname: "/product-list",
-    params: navigationData,
-  });
-}
+  const handleRedirect = (collectionName: string) => {
+    const navigationData = {
+      brand: activeBrand,
+      collection: collectionName,
+    };
+    router.push({
+      pathname: "/product-list",
+      params: navigationData,
+    });
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -60,7 +57,7 @@ const handleRedirect = (collectionName:string) => {
           const isActive = brand === activeBrand;
 
           return (
-            <TouchableOpacity
+            <HapticButton
               key={brand}
               style={styles.brandItem}
               onPress={() => setActiveBrand(brand)}
@@ -73,40 +70,51 @@ const handleRedirect = (collectionName:string) => {
                 ]}
               >
                 {isActive && <View style={styles.diamond} />}
-                 <Image  source={{ uri: brandsData.find(b => b.businessName === brand)?.profileImageUri }}
-                                  style={styles.image}
-                                  resizeMode="cover"/>
+                <Image
+                  source={{
+                    uri: brandsData.find((b) => b.businessName === brand)
+                      ?.profileImageUri,
+                  }}
+                  style={styles.image}
+                  resizeMode="cover"
+                />
               </View>
 
               <Text
-                style={[
-                  styles.brandLabel,
-                  isActive && styles.brandLabelActive,
-                ]}
+                style={[styles.brandLabel, isActive && styles.brandLabelActive]}
               >
                 {brand}
               </Text>
-            </TouchableOpacity>
+            </HapticButton>
           );
         })}
       </ScrollView>
 
       {/* Collection Cards */}
       {activeBrandData?.collections.map((collection, i) => (
-        <TouchableOpacity key={i} style={styles.collectionCard} onPress={() => handleRedirect(collection.title)}>
+        <HapticButton
+          key={i}
+          style={styles.collectionCard}
+          onPress={() => handleRedirect(collection.title)}
+        >
           {/* <Image 
             source={{ uri: collection.imageUri }} 
             style={styles.collectionImage}
             resizeMode="cover"
           /> */}
-          <Text style={styles.placeholder}> Insert Collection Display Cover Here</Text>
+          <Text style={styles.placeholder}>
+            {" "}
+            Insert Collection Display Cover Here
+          </Text>
           <View style={styles.collectionOverlay}>
             <Text style={styles.collectionTitle}>{collection.title}</Text>
             {collection.description && (
-              <Text style={styles.collectionDescription}>{collection.description}</Text>
+              <Text style={styles.collectionDescription}>
+                {collection.description}
+              </Text>
             )}
           </View>
-        </TouchableOpacity>
+        </HapticButton>
       ))}
     </ScrollView>
   );
@@ -117,12 +125,12 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     backgroundColor: "#fff",
   },
-placeholder:{
-  color: "#AAA",
-  fontSize:16,
-  textAlign:"center",
-  marginTop:80,
-},
+  placeholder: {
+    color: "#AAA",
+    fontSize: 16,
+    textAlign: "center",
+    marginTop: 80,
+  },
   title: {
     fontSize: 20,
     fontWeight: "600",
@@ -141,10 +149,10 @@ placeholder:{
     alignItems: "center",
     marginRight: 24,
   },
-  image:{
+  image: {
     width: "100%",
     height: "100%",
-    padding:10,
+    padding: 10,
   },
 
   brandRectangle: {

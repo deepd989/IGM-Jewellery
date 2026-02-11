@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Modal, StyleSheet, Text, View } from "react-native";
 import { useAuth } from "../auth/authContext";
+import { HapticButton } from "./basic components/hapticButton";
 import GenderStep from "./signUp/GenderStep";
 import LanguageStep from "./signUp/LanguageStep";
 import PreferenceStep from "./signUp/PreferenceStep";
@@ -71,20 +72,20 @@ export default function SignUpUserStepper() {
               Let's get you started. Please provide your details to personalize
               your experience.
             </Text>
-            <TouchableOpacity
+            <HapticButton
               style={styles.modalButton}
               onPress={() => setShowWelcomeModal(false)}
             >
               <Text style={styles.modalButtonText}>Get Started</Text>
-            </TouchableOpacity>
+            </HapticButton>
           </View>
         </View>
       </Modal>
 
       <View>
-        <TouchableOpacity onPress={back} style={styles.backBtn}>
+        <HapticButton onPress={back} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={22} />
-        </TouchableOpacity>
+        </HapticButton>
       </View>
       <SignUpProgressBar step={step} />
 

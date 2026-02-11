@@ -1,14 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../components/basic components/hapticButton";
 
 export default function PhoneLoginScreen() {
   const [phone, setPhone] = useState("");
@@ -80,13 +75,13 @@ export default function PhoneLoginScreen() {
 
         {/* Bottom Section */}
         <View style={styles.bottom}>
-          <TouchableOpacity style={styles.button} onPress={handleGetOtp}>
+          <HapticButton style={styles.button} onPress={handleGetOtp}>
             <Text style={styles.buttonText}>Get OTP</Text>
-          </TouchableOpacity>
+          </HapticButton>
 
-          {/* <TouchableOpacity>
+          {/* <HapticButton>
             <Text style={styles.guest}>Browse as guest</Text>
-          </TouchableOpacity> */}
+          </HapticButton> */}
         </View>
       </View>
     </SafeAreaView>

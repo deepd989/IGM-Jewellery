@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../basic components/hapticButton";
 import GiftStepA from "./giftStep1";
 import GiftCardScreen from "./giftStep2";
 import EGiftCardScreen from "./giftStep3";
@@ -41,24 +42,24 @@ export default function GiftStepper() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ backgroundColor: "#faf7f7" }}>
-        <TouchableOpacity onPress={back} style={styles.backBtn}>
+        <HapticButton onPress={back} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={22} />
-        </TouchableOpacity>
+        </HapticButton>
       </View>
 
       <View style={styles.container}>
         {step === 0 && (
           <View style={{ flex: 1 }}>
             <GiftStepA nextStepFn={next} />
-            {/* <TouchableOpacity
+            {/* <HapticButton
               style={[styles.secondaryBtn, styles.backMain]}
               onPress={() => router.back()}
             >
               <Ionicons name="chevron-back" color="black" size={16} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.nextBtn} onPress={next}>
+            </HapticButton>
+            <HapticButton style={styles.nextBtn} onPress={next}>
               <Ionicons name="chevron-forward" color="#fff" size={16} />
-            </TouchableOpacity> */}
+            </HapticButton> */}
           </View>
         )}
 

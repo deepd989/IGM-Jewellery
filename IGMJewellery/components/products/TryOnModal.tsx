@@ -6,11 +6,11 @@ import {
   Platform,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { WebView } from "react-native-webview";
 import { COLORS, SPACING } from "../../constants/theme";
+import { HapticButton } from "../basic components/hapticButton";
 
 interface TryOnModalProps {
   visible: boolean;
@@ -55,9 +55,9 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={onClose} style={styles.backBtn}>
+          <HapticButton onPress={onClose} style={styles.backBtn}>
             <Ionicons name="close" size={24} color={COLORS.text} />
-          </TouchableOpacity>
+          </HapticButton>
           <Text style={styles.headerTitle} numberOfLines={1}>
             Try On - {productTitle}
           </Text>
@@ -84,9 +84,9 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({
             <Text style={styles.errorSubtext}>
               Please check your connection and try again
             </Text>
-            <TouchableOpacity style={styles.retryButton} onPress={onClose}>
+            <HapticButton style={styles.retryButton} onPress={onClose}>
               <Text style={styles.retryButtonText}>Close</Text>
-            </TouchableOpacity>
+            </HapticButton>
           </View>
         )}
 

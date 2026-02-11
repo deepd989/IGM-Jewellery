@@ -10,9 +10,9 @@ import {
   Platform,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import { HapticButton } from "../basic components/hapticButton";
 
 interface VoiceVideoInterfaceProps {
   mode?: "voice" | "video";
@@ -209,7 +209,7 @@ export default function VoiceVideoInterface({
 
     // Voice mode - render animated bars
     return (
-      <TouchableOpacity onPress={toggleListening} activeOpacity={0.8}>
+      <HapticButton onPress={toggleListening} activeOpacity={0.8}>
         <View style={styles.visualizerInner}>
           <Animated.View
             style={[styles.bar, { height: 20, transform: [{ scaleY: bar1 }] }]}
@@ -231,7 +231,7 @@ export default function VoiceVideoInterface({
             <View style={styles.sparkleHorizontal} />
           </View>
         </View>
-      </TouchableOpacity>
+      </HapticButton>
     );
   };
 
@@ -279,12 +279,12 @@ export default function VoiceVideoInterface({
         <View style={styles.transcriptContainer}>
           <Text style={styles.transcriptText}>{transcript}</Text>
           {!isListening && (
-            <TouchableOpacity
+            <HapticButton
               style={styles.sendTranscriptBtn}
               onPress={handleSendTranscript}
             >
               <Text style={styles.sendTranscriptText}>Send</Text>
-            </TouchableOpacity>
+            </HapticButton>
           )}
         </View>
       ) : (
@@ -298,7 +298,7 @@ export default function VoiceVideoInterface({
 
       {/* Control Buttons */}
       <View style={styles.controls}>
-        <TouchableOpacity
+        <HapticButton
           style={[
             styles.controlButton,
             mode === "voice" && styles.activeButton,
@@ -313,9 +313,9 @@ export default function VoiceVideoInterface({
               style={[styles.micStand, mode === "voice" && styles.activeIcon]}
             />
           </View>
-        </TouchableOpacity>
+        </HapticButton>
 
-        <TouchableOpacity
+        <HapticButton
           style={[
             styles.controlButton,
             mode === "video" && styles.activeButton,
@@ -328,7 +328,7 @@ export default function VoiceVideoInterface({
             />
             {mode !== "video" && <View style={styles.videoSlash} />}
           </View>
-        </TouchableOpacity>
+        </HapticButton>
       </View>
     </View>
   );

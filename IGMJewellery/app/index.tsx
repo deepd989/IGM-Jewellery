@@ -2,14 +2,9 @@ import { ScrollingColumn } from "@/components/scrollingColumn";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
-  Dimensions,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../components/basic components/hapticButton";
 import HealthCheckModal from "../components/connectionModal";
 
 const { width, height } = Dimensions.get("window");
@@ -120,12 +115,12 @@ export default function JewelryLanding() {
           </View>
 
           <View style={styles.textContainer}>
-            <TouchableOpacity
+            <HapticButton
               onLongPress={() => setShowModal(true)}
               delayLongPress={800}
             >
               <Text style={styles.title}>Zeywar</Text>
-            </TouchableOpacity>
+            </HapticButton>
             <Text style={styles.subtitle}>
               India's first AI-powered jewellery marketplace, where heritage
               meets high tech
@@ -133,21 +128,21 @@ export default function JewelryLanding() {
           </View>
 
           <View style={styles.authContainer}>
-            <TouchableOpacity
+            <HapticButton
               style={styles.fullButton}
               onPress={() => router.push("/login")}
             >
               <Text style={styles.buttonText}>Login</Text>
-            </TouchableOpacity>
+            </HapticButton>
 
-            <TouchableOpacity
+            <HapticButton
               style={[styles.fullButton, styles.secondaryButton]}
               onPress={() => router.push("/home")}
             >
               <Text style={[styles.buttonText, { color: "#000" }]}>
                 Explore as Guest
               </Text>
-            </TouchableOpacity>
+            </HapticButton>
           </View>
         </View>
       </View>

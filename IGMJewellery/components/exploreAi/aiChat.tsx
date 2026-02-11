@@ -10,10 +10,10 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../basic components/hapticButton";
 import VoiceVideoInterface from "./aiVoice";
 
 interface IMessage {
@@ -153,9 +153,9 @@ export default function AiChatComponent({
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+      <HapticButton onPress={() => router.back()} style={styles.backButton}>
         <Ionicons name="chevron-back" size={24} color={COLORS.text || "#000"} />
-      </TouchableOpacity>
+      </HapticButton>
 
       <KeyboardAvoidingView
         style={styles.container}
@@ -192,7 +192,7 @@ export default function AiChatComponent({
             multiline
             maxLength={1000}
           />
-          <TouchableOpacity
+          <HapticButton
             style={[styles.iconButton, isRecording && styles.recordingButton]}
             onPress={handleVoiceRecord}
             activeOpacity={0.7}
@@ -202,22 +202,22 @@ export default function AiChatComponent({
               size={24}
               color={isRecording ? "#FF0000" : "#666"}
             />
-          </TouchableOpacity>
-          <TouchableOpacity
+          </HapticButton>
+          <HapticButton
             style={styles.iconButton}
             onPress={handleVideoCapture}
             activeOpacity={0.7}
           >
             <Ionicons name="videocam" size={24} color="#666" />
-          </TouchableOpacity>
+          </HapticButton>
           {inputText.trim().length > 0 && (
-            <TouchableOpacity
+            <HapticButton
               style={styles.sendButton}
               onPress={handleSend}
               activeOpacity={0.8}
             >
               <Ionicons name="send" size={20} color="#fff" />
-            </TouchableOpacity>
+            </HapticButton>
           )}
         </View>
       </KeyboardAvoidingView>
@@ -229,13 +229,13 @@ export default function AiChatComponent({
         onRequestClose={() => setShowVoiceVideoInterface(false)}
       >
         <SafeAreaView style={styles.modalContainer}>
-          <TouchableOpacity
+          <HapticButton
             style={styles.closeButton}
             onPress={() => setShowVoiceVideoInterface(false)}
             activeOpacity={0.7}
           >
             <Ionicons name="close" size={28} color="#000" />
-          </TouchableOpacity>
+          </HapticButton>
           <VoiceVideoInterface
             mode={interfaceMode}
             onTranscript={handleTranscript}

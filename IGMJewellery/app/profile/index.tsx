@@ -3,17 +3,11 @@ import { RootState } from "@/store/store";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import { useAuth } from "../../auth/authContext";
+import { HapticButton } from "../../components/basic components/hapticButton";
 
 const PROFILE_STATS = [
   {
@@ -104,13 +98,13 @@ export default function ProfileScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
-        <TouchableOpacity
+        <HapticButton
           style={styles.pointsBadge}
           onPress={() => router.push("/profile/loyalty")}
         >
           <Ionicons name="trophy" size={14} color="#000" />
           <Text style={styles.pointsText}>{profile.points} Points</Text>
-        </TouchableOpacity>
+        </HapticButton>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -126,7 +120,7 @@ export default function ProfileScreen() {
             <Text style={styles.userName}>{profile.name}</Text>
             <Text style={styles.userPhone}>{userId}</Text>
           </View>
-          <TouchableOpacity
+          <HapticButton
             style={styles.langSelector}
             onPress={() => router.push("/profile/language-currency")}
           >
@@ -137,12 +131,12 @@ export default function ProfileScreen() {
               style={styles.flag}
             />
             <Text style={styles.langText}>EN</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
 
         <View style={styles.statsGrid}>
           {PROFILE_STATS.map((stat) => (
-            <TouchableOpacity
+            <HapticButton
               key={stat.id}
               style={styles.statCard}
               onPress={() => stat.path && router.push(stat.path as any)}
@@ -150,13 +144,13 @@ export default function ProfileScreen() {
               <Ionicons name={stat.icon as any} size={24} color="#000" />
               <Text style={styles.statTitle}>{stat.title}</Text>
               <Text style={styles.statDesc}>{stat.desc}</Text>
-            </TouchableOpacity>
+            </HapticButton>
           ))}
         </View>
 
         <View style={styles.menuList}>
           {MENU_ITEMS.map((item) => (
-            <TouchableOpacity
+            <HapticButton
               key={item.id}
               style={styles.menuItem}
               onPress={() => item.path && router.push(item.path as any)}
@@ -166,7 +160,7 @@ export default function ProfileScreen() {
                 <Text style={styles.menuTitle}>{item.title}</Text>
                 <Text style={styles.menuDesc}>{item.desc}</Text>
               </View>
-            </TouchableOpacity>
+            </HapticButton>
           ))}
         </View>
 
@@ -192,7 +186,7 @@ export default function ProfileScreen() {
           </View>
 
           {[1, 2, 3].map((_, i) => (
-            <TouchableOpacity
+            <HapticButton
               key={i}
               style={styles.subOrderItem}
               onPress={() => router.push("/orders/ord1")}
@@ -208,7 +202,7 @@ export default function ProfileScreen() {
                 <Text style={styles.subOrderPrice}>₹3,000</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#CCC" />
-            </TouchableOpacity>
+            </HapticButton>
           ))}
         </View>
 
@@ -219,19 +213,19 @@ export default function ProfileScreen() {
             { title: "Terms of Use" },
             { title: "Delete Account" },
           ].map((link) => (
-            <TouchableOpacity
+            <HapticButton
               key={link.title}
               style={styles.footerLinkItem}
               onPress={() => link.path && router.push(link.path as any)}
             >
               <Text style={styles.footerLinkText}>{link.title}</Text>
-            </TouchableOpacity>
+            </HapticButton>
           ))}
         </View>
 
-        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+        <HapticButton style={styles.logoutBtn} onPress={handleLogout}>
           <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.version}>APP VERSION 1.1.0</Text>
       </ScrollView>
       <BottomNavBar activeTab="Profile"></BottomNavBar>

@@ -1,14 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { SignUpProgressBar } from "../signUpProgressBar";
+import { HapticButton } from "../basic components/hapticButton";
 
 type Gender = "Female" | "Male" | "Prefer not to say" | "";
 
@@ -19,27 +12,22 @@ type Props = {
   onBack: () => void;
 };
 
-export default function GenderStep({
-  value,
-  onChange,
-  onNext,
-  onBack,
-}: Props) {
+export default function GenderStep({ value, onChange, onNext, onBack }: Props) {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
       {/* <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backBtn}>
+        <HapticButton onPress={onBack} style={styles.backBtn}>
           <Text style={styles.backArrow}>←</Text>
-        </TouchableOpacity>
+        </HapticButton>
 
         <Text style={styles.sparkle}>✦</Text>
       </View> */}
 
       {/* <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backBtn}>
+        <HapticButton onPress={onBack} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={22} />
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.sparkle}>✦</Text>
       </View> */}
       {/* Content */}
@@ -57,7 +45,7 @@ export default function GenderStep({
         {["Female", "Male"].map((g) => {
           const selected = value === g;
           return (
-            <TouchableOpacity
+            <HapticButton
               key={g}
               style={[styles.card, selected && styles.cardSelected]}
               onPress={() => onChange(g as Gender)}
@@ -66,13 +54,13 @@ export default function GenderStep({
                 {selected && <View style={styles.radioInner} />}
               </View>
               <Text style={styles.cardText}>{g}</Text>
-            </TouchableOpacity>
+            </HapticButton>
           );
         })}
       </View>
 
       {/* Prefer not to say */}
-      <TouchableOpacity onPress={() => onChange("Prefer not to say")}>
+      <HapticButton onPress={() => onChange("Prefer not to say")}>
         <Text
           style={[
             styles.preferText,
@@ -81,20 +69,20 @@ export default function GenderStep({
         >
           Prefer not to say
         </Text>
-      </TouchableOpacity>
+      </HapticButton>
 
       {/* CTA */}
-      <TouchableOpacity
+      <HapticButton
         style={styles.continueBtn}
         onPress={onNext}
         disabled={!value}
       >
         <Text style={styles.continueText}>Continue</Text>
-      </TouchableOpacity>
+      </HapticButton>
 
-      {/* <TouchableOpacity>
+      {/* <HapticButton>
         <Text style={styles.skipText}>Skip</Text>
-      </TouchableOpacity> */}
+      </HapticButton> */}
     </SafeAreaView>
   );
 }
@@ -103,7 +91,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor:"white"
+    backgroundColor: "white",
   },
 
   /* Header */
@@ -127,7 +115,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 0,
     fontSize: 44,
-
   },
 
   /* Text */

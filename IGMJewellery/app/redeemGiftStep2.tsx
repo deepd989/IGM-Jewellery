@@ -9,10 +9,10 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../components/basic components/hapticButton";
 import { COLORS } from "../constants/theme";
 import { useDeleteGiftMutation } from "../store/apis/giftApi";
 
@@ -75,12 +75,9 @@ export default function RedeemGiftStep2() {
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
+        <HapticButton style={styles.backButton} onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={20} color={COLORS.text} />
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.headerTitle}>Collect Gift Card</Text>
         <View style={styles.headerSpacer} />
       </View>
@@ -102,9 +99,9 @@ export default function RedeemGiftStep2() {
           {/* Card Number */}
           <View style={styles.cardNumberContainer}>
             <Text style={styles.cardNumberText}>Card No. #{cardId}</Text>
-            <TouchableOpacity onPress={handleCopyCardNumber}>
+            <HapticButton onPress={handleCopyCardNumber}>
               <CopyIcon />
-            </TouchableOpacity>
+            </HapticButton>
           </View>
         </View>
 
@@ -170,7 +167,7 @@ export default function RedeemGiftStep2() {
 
         {/* Claim Button */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
+          <HapticButton
             style={[
               styles.claimButton,
               isClaimed && styles.claimButtonDisabled,
@@ -180,7 +177,7 @@ export default function RedeemGiftStep2() {
             activeOpacity={0.8}
           >
             <Text style={styles.claimButtonText}>Claim Gift Card</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </ScrollView>
 
@@ -193,12 +190,12 @@ export default function RedeemGiftStep2() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <TouchableOpacity
+            <HapticButton
               style={styles.closeButton}
               onPress={() => setShowSuccessModal(false)}
             >
               <CloseIcon />
-            </TouchableOpacity>
+            </HapticButton>
 
             <View style={styles.successIcon}>
               <CheckIcon />
@@ -214,18 +211,18 @@ export default function RedeemGiftStep2() {
               <Text style={styles.successCardNumberText}>
                 Gift Card No. #{cardId}
               </Text>
-              <TouchableOpacity onPress={handleCopyCardNumber}>
+              <HapticButton onPress={handleCopyCardNumber}>
                 <CopyIcon />
-              </TouchableOpacity>
+              </HapticButton>
             </View>
 
-            <TouchableOpacity
+            <HapticButton
               style={styles.continueButton}
               onPress={handleContinueShopping}
               activeOpacity={0.8}
             >
               <Text style={styles.continueButtonText}>Continue Shopping</Text>
-            </TouchableOpacity>
+            </HapticButton>
           </View>
         </View>
       </Modal>

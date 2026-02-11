@@ -20,11 +20,11 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../auth/authContext";
+import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS, SPACING } from "../../constants/theme";
 import { generateJewelleryImage } from "../../helpers/generateJewelleryImage";
 import { Product } from "../../interfaces/product.interface";
@@ -136,12 +136,9 @@ export default function ProductDetailScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backBtn}
-          >
+          <HapticButton onPress={() => router.back()} style={styles.backBtn}>
             <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-          </TouchableOpacity>
+          </HapticButton>
         </View>
         <View style={styles.centerContent}>
           <Text style={styles.errorText}>Product not found</Text>
@@ -154,18 +151,18 @@ export default function ProductDetailScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <HapticButton onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-        </TouchableOpacity>
+        </HapticButton>
         <View style={styles.headerRight}>
-          <TouchableOpacity
+          <HapticButton
             style={styles.iconWrapper}
             onPress={() => router.push("/searchPage")}
           >
             <Ionicons name="search-outline" size={22} color={COLORS.text} />
-          </TouchableOpacity>
+          </HapticButton>
 
-          <TouchableOpacity
+          <HapticButton
             style={styles.iconWrapper}
             onPress={() => router.push("/wishlist")}
           >
@@ -179,14 +176,14 @@ export default function ProductDetailScreen() {
                 <Text style={styles.badgeText}>{wishlistCount}</Text>
               </View>
             )}
-          </TouchableOpacity>
+          </HapticButton>
 
-          <TouchableOpacity
+          <HapticButton
             style={styles.iconWrapper}
             onPress={() => router.push("/cart")}
           >
             <CartBadge iconSize={22} iconColor={COLORS.text} />
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </View>
 
@@ -213,7 +210,7 @@ export default function ProductDetailScreen() {
 
       {/* Sticky Footer */}
       <View style={styles.stickyFooter}>
-        <TouchableOpacity
+        <HapticButton
           style={styles.stickyTryBtn}
           onPress={handleTryAtHome}
           disabled={isAddingToTrial}
@@ -226,9 +223,9 @@ export default function ProductDetailScreen() {
               <Text style={styles.stickyTryText}>Try at Home</Text>
             </>
           )}
-        </TouchableOpacity>
+        </HapticButton>
 
-        <TouchableOpacity
+        <HapticButton
           style={[
             styles.stickyAddBtn,
             showSuccess && styles.stickyAddBtnSuccess,
@@ -249,7 +246,7 @@ export default function ProductDetailScreen() {
               <Text style={styles.stickyAddText}>Add to Cart</Text>
             </>
           )}
-        </TouchableOpacity>
+        </HapticButton>
       </View>
 
       <CustomizationModal

@@ -5,11 +5,12 @@ import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useAuth } from "../auth/authContext";
 import { generateJewelleryImage } from "../helpers/generateJewelleryImage";
 import { firstImageHelper } from "../helpers/imageUsageHelper";
+import { HapticButton } from "./basic components/hapticButton";
 import EarringIcon from "./ui/earingsComponentSvg";
 
 export default function HomePageCard() {
@@ -69,9 +70,9 @@ export default function HomePageCard() {
           color="#000"
           onPress={() => setCardTitle(ProductType.Gift)}
         />
-        <TouchableOpacity onPress={() => setCardTitle(ProductType.Earring)}>
+        <HapticButton onPress={() => setCardTitle(ProductType.Earring)}>
           <EarringIcon width={40} height={40} />
-        </TouchableOpacity>
+        </HapticButton>
       </View>
       <View
         style={{
@@ -160,7 +161,7 @@ export const NecklaceCard: React.FC<Props> = ({
 
   return (
     <View style={necklaceCardStyle.wrapper}>
-      <TouchableOpacity
+      <HapticButton
         style={necklaceCardStyle.card}
         activeOpacity={0.9}
         onPress={() => {
@@ -181,9 +182,9 @@ export const NecklaceCard: React.FC<Props> = ({
             style={necklaceCardStyle.image}
           />
           {/* { product &&
-          <TouchableOpacity style={necklaceCardStyle.wishlistButton}>
+          <HapticButton style={necklaceCardStyle.wishlistButton}>
             <AntDesign name="heart" size={22} color="#000" />
-          </TouchableOpacity>} */}
+          </HapticButton>} */}
           {product && (
             <View style={necklaceCardStyle.deliveryTag}>
               <AntDesign name="truck" size={14} color="#555" />
@@ -216,13 +217,13 @@ export const NecklaceCard: React.FC<Props> = ({
             )
           // </View>
         }
-      </TouchableOpacity>
+      </HapticButton>
 
       {/* Floating "See how it looks on you" Button */}
-      <TouchableOpacity style={necklaceCardStyle.tryOnButton} onPress={onTryOn}>
+      <HapticButton style={necklaceCardStyle.tryOnButton} onPress={onTryOn}>
         <Ionicons name="sparkles-outline" size={18} color="#fff" />
         <Text style={necklaceCardStyle.tryOnText}>See how it looks on you</Text>
-      </TouchableOpacity>
+      </HapticButton>
     </View>
   );
 };

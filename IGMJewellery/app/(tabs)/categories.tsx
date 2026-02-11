@@ -21,10 +21,10 @@ import {
   Image,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS, SPACING } from "../../constants/theme";
 
 const { width } = Dimensions.get("window");
@@ -40,7 +40,7 @@ const DepartmentTab = ({
   isActive: boolean;
   onPress: () => void;
 }) => (
-  <TouchableOpacity style={styles.deptTab} onPress={onPress}>
+  <HapticButton style={styles.deptTab} onPress={onPress}>
     <View style={styles.deptImageContainer}>
       <Image
         source={item.imageUrl}
@@ -60,7 +60,7 @@ const DepartmentTab = ({
         <View style={styles.activeLine} />
       </View>
     )}
-  </TouchableOpacity>
+  </HapticButton>
 );
 
 /* ---------------- SIDEBAR ITEM ---------------- */
@@ -74,7 +74,7 @@ const SidebarItem = ({
   isActive: boolean;
   onPress: () => void;
 }) => (
-  <TouchableOpacity
+  <HapticButton
     style={[styles.sidebarItem, isActive && styles.sidebarItemActive]}
     onPress={onPress}
   >
@@ -87,7 +87,7 @@ const SidebarItem = ({
     <Text style={[styles.sidebarText, isActive && styles.sidebarTextActive]}>
       {item.name}
     </Text>
-  </TouchableOpacity>
+  </HapticButton>
 );
 
 /* ---------------- GRID ITEM ---------------- */
@@ -99,10 +99,7 @@ const GridItem = ({
   item: SubCategory;
   onPress: (item: SubCategory) => void;
 }) => (
-  <TouchableOpacity
-    style={styles.gridItemContainer}
-    onPress={() => onPress(item)}
-  >
+  <HapticButton style={styles.gridItemContainer} onPress={() => onPress(item)}>
     <View style={styles.gridItemBox}>
       {item.imageUrl ? (
         <Image source={{ uri: item.imageUrl }} style={styles.gridImage} />
@@ -111,7 +108,7 @@ const GridItem = ({
       )}
     </View>
     <Text style={styles.gridItemText}>{item.name}</Text>
-  </TouchableOpacity>
+  </HapticButton>
 );
 
 /* ================= SCREEN ================= */
@@ -166,9 +163,9 @@ export default function CategoriesScreen() {
     <SafeAreaView style={styles.container}>
       {/* HEADER */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <HapticButton onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={24} />
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.headerTitle}>Categories</Text>
         <CartBadge iconSize={24} iconColor={COLORS.primary} />
       </View>

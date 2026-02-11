@@ -4,15 +4,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { AudioLines, Mic, Send, Sparkles } from "lucide-react-native";
 import React, { useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../components/basic components/hapticButton";
 import AiChatComponent from "../components/exploreAi/aiChat";
 
 export default function ExploreAi() {
@@ -73,9 +67,9 @@ export default function ExploreAi() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}>
+      <HapticButton onPress={() => router.back()} style={styles.iconBtn}>
         <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-      </TouchableOpacity>
+      </HapticButton>
       <View style={styles.container}>
         {/* Sparkle Icon */}
         <View style={styles.iconContainer}>
@@ -98,26 +92,26 @@ export default function ExploreAi() {
             onSubmitEditing={handleSend}
             returnKeyType="send"
           />
-          <TouchableOpacity
+          <HapticButton
             style={styles.iconButton}
             onPress={() => {
               setShowVoiceVideoInterface("voice");
             }}
           >
             <Mic size={20} color="#333" />
-          </TouchableOpacity>
-          <TouchableOpacity
+          </HapticButton>
+          <HapticButton
             style={styles.iconButton}
             onPress={() => {
               setShowVoiceVideoInterface("video");
             }}
           >
             <AudioLines />
-          </TouchableOpacity>
+          </HapticButton>
           {inputText.trim().length > 0 && (
-            <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+            <HapticButton style={styles.sendButton} onPress={handleSend}>
               <Send size={18} color="#fff" />
-            </TouchableOpacity>
+            </HapticButton>
           )}
         </View>
 
@@ -128,13 +122,13 @@ export default function ExploreAi() {
         >
           <View style={styles.suggestionsGrid}>
             {suggestions.map((suggestion, index) => (
-              <TouchableOpacity
+              <HapticButton
                 key={index}
                 style={styles.suggestionChip}
                 onPress={() => handleSuggestionPress(suggestion)}
               >
                 <Text style={styles.suggestionText}>{suggestion}</Text>
-              </TouchableOpacity>
+              </HapticButton>
             ))}
           </View>
         </ScrollView>

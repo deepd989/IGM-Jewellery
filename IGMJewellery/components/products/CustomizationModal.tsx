@@ -8,10 +8,10 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
+import { HapticButton } from "../basic components/hapticButton";
 
 interface CustomizationModalProps {
   visible: boolean;
@@ -96,16 +96,16 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
         >
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity onPress={onClose} style={styles.backBtn}>
+            <HapticButton onPress={onClose} style={styles.backBtn}>
               <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-            </TouchableOpacity>
+            </HapticButton>
             <View style={styles.headerIcons}>
-              <TouchableOpacity style={styles.iconBtn}>
+              <HapticButton style={styles.iconBtn}>
                 <Ionicons name="heart-outline" size={22} color={COLORS.text} />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconBtn}>
+              </HapticButton>
+              <HapticButton style={styles.iconBtn}>
                 <Ionicons name="bag-outline" size={22} color={COLORS.text} />
-              </TouchableOpacity>
+              </HapticButton>
             </View>
           </View>
 
@@ -117,9 +117,9 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
             <View style={styles.sizeSection}>
               <View style={styles.sizeSectionHeader}>
                 <Text style={styles.sectionTitle}>Select Size</Text>
-                <TouchableOpacity>
+                <HapticButton>
                   <Text style={styles.linkText}>View size guide</Text>
-                </TouchableOpacity>
+                </HapticButton>
               </View>
 
               {/* Ring Visual and Size Options Side by Side */}
@@ -140,7 +140,7 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
                     const isSelected = size.id === selectedSize;
 
                     return (
-                      <TouchableOpacity
+                      <HapticButton
                         key={size.id}
                         style={[
                           styles.sizeOption,
@@ -174,7 +174,7 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
                             {size.label}
                           </Text>
                         )}
-                      </TouchableOpacity>
+                      </HapticButton>
                     );
                   })}
                 </View>
@@ -192,7 +192,7 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
                 {METAL_COLORS.map((metal) => {
                   const isSelected = metal.id === selectedMetal;
                   return (
-                    <TouchableOpacity
+                    <HapticButton
                       key={metal.id}
                       style={[
                         styles.metalOption,
@@ -203,7 +203,7 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
                       <Text style={styles.metalPurity}>{metal.purity}</Text>
                       <Text style={styles.metalLabel}>{metal.label}</Text>
                       <Text style={styles.metalStatus}>{metal.status}</Text>
-                    </TouchableOpacity>
+                    </HapticButton>
                   );
                 })}
               </ScrollView>
@@ -216,7 +216,7 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
                 {PURITIES.map((purity) => {
                   const isSelected = purity.id === selectedPurity;
                   return (
-                    <TouchableOpacity
+                    <HapticButton
                       key={purity.id}
                       style={[
                         styles.purityOption,
@@ -232,7 +232,7 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
                       >
                         {purity.label}
                       </Text>
-                    </TouchableOpacity>
+                    </HapticButton>
                   );
                 })}
               </View>
@@ -257,9 +257,9 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
 
           {/* Sticky Footer */}
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.confirmBtn} onPress={onClose}>
+            <HapticButton style={styles.confirmBtn} onPress={onClose}>
               <Text style={styles.confirmBtnText}>CONFIRM CUSTOMIZATION</Text>
-            </TouchableOpacity>
+            </HapticButton>
           </View>
         </Pressable>
       </Pressable>

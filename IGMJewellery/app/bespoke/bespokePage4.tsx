@@ -8,13 +8,8 @@ import {
   UserCircle2,
 } from "lucide-react-native";
 import React from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { HapticButton } from "../../components/basic components/hapticButton";
 
 const BespokePage4 = () => {
   const router = useRouter();
@@ -57,10 +52,10 @@ const BespokePage4 = () => {
         </View>
 
         {/* Request ID Tag */}
-        <TouchableOpacity style={styles.requestIdContainer}>
+        <HapticButton style={styles.requestIdContainer}>
           <Text style={styles.requestIdText}>Request No. {requestNumber}</Text>
           <Copy size={16} color="#666" style={{ marginLeft: 8 }} />
-        </TouchableOpacity>
+        </HapticButton>
 
         <Text style={styles.expectTitle}>Here's what you can expect next</Text>
 
@@ -89,15 +84,15 @@ const BespokePage4 = () => {
 
       {/* Bottom Action Bar */}
       <View style={styles.footer}>
-        {/* <TouchableOpacity style={styles.statusButton}>
+        {/* <HapticButton style={styles.statusButton}>
           <Text style={styles.statusButtonText}>Check Order Status</Text>
-        </TouchableOpacity> */}
-        <TouchableOpacity
+        </HapticButton> */}
+        <HapticButton
           style={styles.continueButton}
           onPress={() => router.push("/product-list")}
         >
           <Text style={styles.continueButtonText}>Continue Shopping</Text>
-        </TouchableOpacity>
+        </HapticButton>
       </View>
     </View>
   );

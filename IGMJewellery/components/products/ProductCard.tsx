@@ -15,13 +15,13 @@ import {
   Image,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { useAuth } from "../../auth/authContext";
 import { COLORS, SPACING } from "../../constants/theme";
 import { generateJewelleryImage } from "../../helpers/generateJewelleryImage";
 import { firstImageHelper } from "../../helpers/imageUsageHelper";
+import { HapticButton } from "../basic components/hapticButton";
 
 interface ProductCardProps {
   product: Product;
@@ -194,7 +194,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <TouchableOpacity
+    <HapticButton
       style={[styles.card, { width: cardWidth }]}
       onPress={() => onPress(product)}
       activeOpacity={0.9}
@@ -221,7 +221,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Favorite Icon */}
-        <TouchableOpacity
+        <HapticButton
           style={styles.favIcon}
           onPress={handleToggleWishlist}
           disabled={isAddingToWishlist || isRemovingFromWishlist}
@@ -235,11 +235,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               color={isInWishlist ? COLORS.primary : COLORS.text}
             />
           )}
-        </TouchableOpacity>
+        </HapticButton>
 
         {/* Compare Checkbox - Only show in wishlist */}
         {onToggleCompare && (
-          <TouchableOpacity
+          <HapticButton
             style={styles.compareCheckbox}
             onPress={handleCompareToggle}
           >
@@ -250,7 +250,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 <Ionicons name="checkmark" size={14} color="#FFFFFF" />
               )}
             </View>
-          </TouchableOpacity>
+          </HapticButton>
         )}
 
         {/* Delivery Tag */}
@@ -287,7 +287,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Action Buttons */}
         <View style={styles.actionRow}>
-          <TouchableOpacity
+          <HapticButton
             style={styles.tryNowBtn}
             onPress={(e) => {
               router.push({
@@ -307,9 +307,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               style={{ marginRight: 4 }}
             />
             <Text style={styles.tryNowText}>Try Now</Text>
-          </TouchableOpacity>
+          </HapticButton>
 
-          <TouchableOpacity
+          <HapticButton
             style={[
               styles.addToBagBtn,
               isAddingToCart && styles.addToBagBtnDisabled,
@@ -324,10 +324,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             ) : (
               <Text style={styles.addToBagText}>Add to Bag</Text>
             )}
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </View>
-    </TouchableOpacity>
+    </HapticButton>
   );
 };
 

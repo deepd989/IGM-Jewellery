@@ -14,11 +14,11 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
-import { COLORS, SPACING } from "../constants/theme";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../components/basic components/hapticButton";
+import { COLORS, SPACING } from "../constants/theme";
 
 export default function CouponsScreen() {
   const router = useRouter();
@@ -68,9 +68,9 @@ export default function CouponsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <HapticButton onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.headerTitle}>Apply Coupon</Text>
         <View style={{ width: 40 }} />
       </View>
@@ -88,13 +88,13 @@ export default function CouponsScreen() {
               applied
             </Text>
           </View>
-          <TouchableOpacity onPress={handleRemoveCoupon} disabled={isRemoving}>
+          <HapticButton onPress={handleRemoveCoupon} disabled={isRemoving}>
             {isRemoving ? (
               <ActivityIndicator size="small" color={COLORS.error} />
             ) : (
               <Text style={styles.removeText}>Remove</Text>
             )}
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       )}
 

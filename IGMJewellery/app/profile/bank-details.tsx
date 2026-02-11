@@ -1,14 +1,12 @@
-
-import { RootState } from '@/store/store';
-import { removePaymentMethod } from '@/store/userSlice';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-
+import { RootState } from "@/store/store";
+import { removePaymentMethod } from "@/store/userSlice";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
+import { HapticButton } from "../../components/basic components/hapticButton";
 
 export default function BankDetailsScreen() {
   const router = useRouter();
@@ -18,16 +16,18 @@ export default function BankDetailsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <HapticButton onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={24} color="#000" />
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.headerTitle}>Bank/UPI Details</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Here are your registered Bank Details</Text>
-        <Text style={styles.subtitle}>You can edit or add new details below</Text>
+        <Text style={styles.subtitle}>
+          You can edit or add new details below
+        </Text>
 
         <View style={styles.list}>
           {methods.map((method) => (
@@ -35,50 +35,84 @@ export default function BankDetailsScreen() {
               <View style={styles.iconBox} />
               <View style={styles.cardContent}>
                 <Text style={styles.cardTitle}>
-                  {method.provider} {method.category ? `- ${method.category} Card` : ''}
+                  {method.provider}{" "}
+                  {method.category ? `- ${method.category} Card` : ""}
                 </Text>
                 <Text style={styles.cardId}>{method.identifier}</Text>
               </View>
               <View style={styles.actions}>
-                <TouchableOpacity style={styles.actionBtn}>
+                <HapticButton style={styles.actionBtn}>
                   <Ionicons name="pencil-outline" size={20} color="#000" />
-                </TouchableOpacity>
-                <TouchableOpacity 
+                </HapticButton>
+                <HapticButton
                   style={[styles.actionBtn, { marginLeft: 16 }]}
                   onPress={() => dispatch(removePaymentMethod(method.id))}
                 >
                   <Ionicons name="trash-outline" size={20} color="#000" />
-                </TouchableOpacity>
+                </HapticButton>
               </View>
             </View>
           ))}
         </View>
 
-        <TouchableOpacity style={styles.addBtn}>
+        <HapticButton style={styles.addBtn}>
           <Ionicons name="add" size={24} color="#000" />
           <Text style={styles.addText}>Add payment method</Text>
-        </TouchableOpacity>
+        </HapticButton>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16 },
-  backBtn: { width: 40, height: 40, borderRadius: 8, borderWidth: 1, borderColor: '#F0F0F0', justifyContent: 'center', alignItems: 'center' },
-  headerTitle: { fontSize: 18, fontWeight: '700' },
+  container: { flex: 1, backgroundColor: "#FFF" },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
+  },
+  backBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#F0F0F0",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerTitle: { fontSize: 18, fontWeight: "700" },
   content: { padding: 24 },
-  title: { fontSize: 16, fontWeight: '700', textAlign: 'center' },
-  subtitle: { fontSize: 13, color: '#888', textAlign: 'center', marginTop: 6, marginBottom: 32 },
+  title: { fontSize: 16, fontWeight: "700", textAlign: "center" },
+  subtitle: {
+    fontSize: 13,
+    color: "#888",
+    textAlign: "center",
+    marginTop: 6,
+    marginBottom: 32,
+  },
   list: { gap: 16 },
-  card: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12 },
-  iconBox: { width: 48, height: 48, backgroundColor: '#F0F0F0', borderRadius: 4 },
+  card: { flexDirection: "row", alignItems: "center", paddingVertical: 12 },
+  iconBox: {
+    width: 48,
+    height: 48,
+    backgroundColor: "#F0F0F0",
+    borderRadius: 4,
+  },
   cardContent: { flex: 1, marginLeft: 16 },
-  cardTitle: { fontSize: 14, fontWeight: '700' },
-  cardId: { fontSize: 12, color: '#888', marginTop: 2 },
-  actions: { flexDirection: 'row' },
+  cardTitle: { fontSize: 14, fontWeight: "700" },
+  cardId: { fontSize: 12, color: "#888", marginTop: 2 },
+  actions: { flexDirection: "row" },
   actionBtn: { padding: 4 },
-  addBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 54, borderWidth: 1, borderColor: '#DDD', borderRadius: 8, marginTop: 40 },
-  addText: { fontSize: 14, fontWeight: '600', marginLeft: 12 },
+  addBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    height: 54,
+    borderWidth: 1,
+    borderColor: "#DDD",
+    borderRadius: 8,
+    marginTop: 40,
+  },
+  addText: { fontSize: 14, fontWeight: "600", marginLeft: 12 },
 });

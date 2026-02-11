@@ -1,13 +1,7 @@
 import React, { useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { OCCASIONS } from "../../constants/occasions";
+import { HapticButton } from "../basic components/hapticButton";
 import RibbonGiftCard from "./ribbonGiftCard";
 
 interface GiftCardScreenProps {
@@ -120,7 +114,7 @@ export default function GiftCardScreen({
         style={styles.categoriesContainer}
       >
         {occaisions.map((cat) => (
-          <TouchableOpacity
+          <HapticButton
             key={cat}
             style={[
               styles.categoryButton,
@@ -139,7 +133,7 @@ export default function GiftCardScreen({
             >
               {cat}
             </Text>
-          </TouchableOpacity>
+          </HapticButton>
         ))}
       </ScrollView>
 
@@ -156,7 +150,7 @@ export default function GiftCardScreen({
         <Text style={styles.sectionTitle}>Choose an amount</Text>
         <View style={styles.amountGrid}>
           {amounts.map((amt) => (
-            <TouchableOpacity
+            <HapticButton
               key={amt}
               style={[
                 styles.amountButton,
@@ -175,7 +169,7 @@ export default function GiftCardScreen({
               >
                 {amt.toLocaleString("en-IN")}
               </Text>
-            </TouchableOpacity>
+            </HapticButton>
           ))}
         </View>
       </View>
@@ -234,7 +228,7 @@ export default function GiftCardScreen({
           style={styles.dateContainer}
         >
           {dates.map((date) => (
-            <TouchableOpacity
+            <HapticButton
               key={date.day}
               style={[
                 styles.dateButton,
@@ -261,7 +255,7 @@ export default function GiftCardScreen({
               >
                 {date.day}
               </Text>
-            </TouchableOpacity>
+            </HapticButton>
           ))}
         </ScrollView>
       </View>

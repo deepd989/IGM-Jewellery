@@ -1,11 +1,6 @@
 import React from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { HapticButton } from "../basic components/hapticButton";
 import RibbonGiftCard from "./ribbonGiftCard";
 
 const GiftStepA = ({ nextStepFn }: { nextStepFn: () => void }) => {
@@ -65,7 +60,7 @@ const GiftStepA = ({ nextStepFn }: { nextStepFn: () => void }) => {
           ))}
         </View>
       </View>
-      <TouchableOpacity
+      <HapticButton
         style={styles.exploreButton}
         activeOpacity={0.8}
         onPress={() => {
@@ -73,7 +68,7 @@ const GiftStepA = ({ nextStepFn }: { nextStepFn: () => void }) => {
         }}
       >
         <Text style={styles.exploreText}>Send A Gift Card</Text>
-      </TouchableOpacity>
+      </HapticButton>
     </ScrollView>
   );
 };

@@ -2,17 +2,11 @@ import { useGetCartQuery } from "@/store/apis/cart";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useMemo } from "react";
-import {
-  Dimensions,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../../components/basic components/hapticButton";
 import { OrderItemCard } from "../../components/checkout/OrderItemCard";
 import { COLORS, SPACING } from "../../constants/theme";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -37,12 +31,12 @@ export default function ConfirmationScreen() {
 
     const totalItems = cartData.items.reduce(
       (acc, item) => acc + item.quantity,
-      0,
+      0
     );
 
     const sellingPrice = cartData.items.reduce(
       (acc, item) => acc + item.product.discountedPrice * item.quantity,
-      0,
+      0
     );
 
     const platformFee = 220;
@@ -62,12 +56,12 @@ export default function ConfirmationScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity
+        <HapticButton
           onPress={() => router.replace("/(tabs)/categories")}
           style={styles.backBtn}
         >
           <Ionicons name="chevron-back" size={24} color="#000" />
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.headerTitle}>Order Confirmation</Text>
         <View style={{ width: 40 }} />
       </View>
@@ -105,9 +99,9 @@ export default function ConfirmationScreen() {
 
             <View style={styles.orderIdRow}>
               <Text style={styles.orderId}>Order ID: {orderDisplayId}</Text>
-              <TouchableOpacity>
+              <HapticButton>
                 <Ionicons name="copy-outline" size={16} />
-              </TouchableOpacity>
+              </HapticButton>
             </View>
           </View>
 
@@ -157,19 +151,19 @@ export default function ConfirmationScreen() {
 
         {/* Bottom Section */}
         <View style={styles.bottomSection}>
-          <TouchableOpacity
+          <HapticButton
             style={styles.primaryBtn}
             onPress={() => router.replace("/(tabs)/categories")}
           >
             <Text style={styles.primaryBtnText}>Continue Shopping</Text>
-          </TouchableOpacity>
+          </HapticButton>
 
-          <TouchableOpacity
+          <HapticButton
             style={styles.secondaryBtn}
             onPress={() => router.push("/orders")}
           >
             <Text style={styles.secondaryBtnText}>View your orders</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </View>
     </SafeAreaView>

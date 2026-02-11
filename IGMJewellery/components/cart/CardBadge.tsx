@@ -1,12 +1,11 @@
+import { COLORS } from "@/constants/theme";
 
-import { COLORS } from '@/constants/theme';
-
-import { useGetCartQuery } from '@/store/apis/cart';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
+import { useGetCartQuery } from "@/store/apis/cart";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { HapticButton } from "../basic components/hapticButton";
 
 interface CartBadgeProps {
   iconSize?: number;
@@ -14,23 +13,24 @@ interface CartBadgeProps {
   showLabel?: boolean;
 }
 
-export const CartBadge: React.FC<CartBadgeProps> = ({ 
-  iconSize = 22, 
+export const CartBadge: React.FC<CartBadgeProps> = ({
+  iconSize = 22,
   iconColor = COLORS.text,
-  showLabel = false 
+  showLabel = false,
 }) => {
   const router = useRouter();
   const { data: cartData } = useGetCartQuery();
 
-  const totalItems = cartData?.items.reduce((sum, item) => sum + item.quantity, 0) || 0;
+  const totalItems =
+    cartData?.items.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
   const handlePress = () => {
-    router.push('/cart');
+    router.push("/cart");
   };
 
   return (
-    <TouchableOpacity 
-      // style={styles.container} 
+    <HapticButton
+      // style={styles.container}
       onPress={handlePress}
       activeOpacity={0.7}
     >
@@ -39,45 +39,43 @@ export const CartBadge: React.FC<CartBadgeProps> = ({
         {totalItems > 0 && (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>
-              {totalItems > 99 ? '99+' : totalItems}
+              {totalItems > 99 ? "99+" : totalItems}
             </Text>
           </View>
         )}
       </View>
-      {showLabel && (
-        <Text style={styles.label}>Cart</Text>
-      )}
-    </TouchableOpacity>
+      {showLabel && <Text style={styles.label}>Cart</Text>}
+    </HapticButton>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: 4,
   },
   iconContainer: {
-    position: 'relative',
+    position: "relative",
   },
   badge: {
-    position: 'absolute',
+    position: "absolute",
     top: -6,
     right: -8,
     backgroundColor: COLORS.primary,
     minWidth: 18,
     height: 18,
     borderRadius: 9,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 4,
     borderWidth: 2,
-    borderColor: '#FFFFFF',
+    borderColor: "#FFFFFF",
   },
   badgeText: {
     fontSize: 10,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontWeight: "700",
+    color: "#FFFFFF",
   },
   label: {
     fontSize: 10,
