@@ -10,7 +10,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 
@@ -22,6 +21,7 @@ import { Product } from "@/interfaces/product.interface";
 import { useGetCategoryHierarchyQuery } from "@/store/apis/categories";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../components/basic components/hapticButton";
 import { COLORS, SPACING } from "../constants/theme";
 import { useGetWishlistQuery } from "../store/apis/wishlist";
 
@@ -84,7 +84,10 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   const parseFilterParam = (param: string | string[] | undefined): string[] => {
     if (!param) return [];
     if (Array.isArray(param)) return param;
-    return param.split(',').map(v => v.trim()).filter(Boolean);
+    return param
+      .split(",")
+      .map((v) => v.trim())
+      .filter(Boolean);
   };
 
   // Initialize filters from navigation params and props
@@ -151,7 +154,16 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     if (JSON.stringify(newFilters) !== JSON.stringify(activeFilters)) {
       setActiveFilters(newFilters);
     }
-  }, [categoryId, productType, occasion, brand, collection, gender, params.priceRange, filters]);
+  }, [
+    categoryId,
+    productType,
+    occasion,
+    brand,
+    collection,
+    gender,
+    params.priceRange,
+    filters,
+  ]);
 
   // Apply chip-based filters
   useEffect(() => {
@@ -330,19 +342,19 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     <View>
       {/* Page Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}>
+        <HapticButton onPress={() => router.back()} style={styles.iconBtn}>
           <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-        </TouchableOpacity>
+        </HapticButton>
 
         <View style={styles.headerActions}>
-          <TouchableOpacity
+          <HapticButton
             style={styles.iconBtn}
             onPress={() => router.push("/searchPage")}
           >
             <Ionicons name="search-outline" size={22} color={COLORS.text} />
-          </TouchableOpacity>
+          </HapticButton>
 
-          <TouchableOpacity
+          <HapticButton
             style={styles.iconBtn}
             onPress={() => router.push("/wishlist")}
           >
@@ -356,7 +368,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
                 <Text style={styles.badgeText}>{wishlistCount}</Text>
               </View>
             )}
-          </TouchableOpacity>
+          </HapticButton>
 
           <View style={styles.iconBtn}>
             <CartBadge iconSize={22} iconColor={COLORS.text} />
@@ -387,7 +399,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
         contentContainerStyle={styles.filterContainer}
       >
         {FILTER_CHIPS.map((filter) => (
-          <TouchableOpacity
+          <HapticButton
             key={filter}
             style={[
               styles.chip,
@@ -403,7 +415,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
             >
               {filter}
             </Text>
-          </TouchableOpacity>
+          </HapticButton>
         ))}
       </ScrollView>
 
@@ -415,9 +427,9 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
               {activeFilterCount}{" "}
               {activeFilterCount === 1 ? "filter" : "filters"} applied
             </Text>
-            <TouchableOpacity onPress={handleClearFilters}>
+            <HapticButton onPress={handleClearFilters}>
               <Text style={styles.clearFiltersText}>Clear All</Text>
-            </TouchableOpacity>
+            </HapticButton>
           </View>
 
           {/* Active Filter Tags */}
@@ -429,7 +441,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
             {getActiveFilterTags().map((tag, index) => (
               <View key={index} style={styles.filterTag}>
                 <Text style={styles.filterTagText}>{tag}</Text>
-                <TouchableOpacity
+                <HapticButton
                   onPress={() => {
                     const [filterKey, filterValue] = tag.split(": ");
                     const newFilters = { ...activeFilters };
@@ -444,7 +456,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
                   style={styles.filterTagClose}
                 >
                   <Ionicons name="close" size={14} color={COLORS.text} />
-                </TouchableOpacity>
+                </HapticButton>
               </View>
             ))}
           </ScrollView>
@@ -477,12 +489,9 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
           />
           <Text style={styles.errorText}>Failed to load products</Text>
           <Text style={styles.errorSubtext}>{error?.toString()}</Text>
-          <TouchableOpacity
-            style={styles.retryButton}
-            onPress={() => refetch()}
-          >
+          <HapticButton style={styles.retryButton} onPress={() => refetch()}>
             <Text style={styles.retryButtonText}>Retry</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </SafeAreaView>
     );
@@ -504,19 +513,19 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
             Try adjusting your filters or browse different categories
           </Text>
           {(activeFilterCount > 0 || selectedFilter !== "All") && (
-            <TouchableOpacity
+            <HapticButton
               style={styles.clearButton}
               onPress={handleClearFilters}
             >
               <Text style={styles.clearButtonText}>Clear Filters</Text>
-            </TouchableOpacity>
+            </HapticButton>
           )}
-          <TouchableOpacity
+          <HapticButton
             style={[styles.clearButton, { marginTop: SPACING.m }]}
             onPress={handleCategoriesPress}
           >
             <Text style={styles.clearButtonText}>Browse Categories</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </SafeAreaView>
     );
@@ -545,36 +554,36 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       />
 
       {/* Left: View Toggle */}
-      <TouchableOpacity style={styles.leftFab} onPress={toggleViewMode}>
+      <HapticButton style={styles.leftFab} onPress={toggleViewMode}>
         <Ionicons
           name={viewMode === "grid" ? "list" : "grid"}
           size={22}
           color="#000"
         />
-      </TouchableOpacity>
+      </HapticButton>
 
       {/* Right: Support Menu */}
       {!isMenuOpen ? (
-        <TouchableOpacity
+        <HapticButton
           style={styles.closeFab}
           onPress={() => setIsMenuOpen(true)}
         >
           <Ionicons name="sparkles" size={22} />
-        </TouchableOpacity>
+        </HapticButton>
       ) : (
-        <TouchableOpacity
+        <HapticButton
           style={styles.closeFab}
           onPress={() => setIsMenuOpen(false)}
         >
           <Ionicons name="close" size={24} color="#000" />
-        </TouchableOpacity>
+        </HapticButton>
       )}
 
       {/* Menu Popup */}
       {isMenuOpen && (
         <View style={styles.menuPopup}>
           {MENU_ITEMS.map((item, index) => (
-            <TouchableOpacity
+            <HapticButton
               key={index}
               style={styles.menuItem}
               onPress={() => {
@@ -583,14 +592,14 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
               }}
             >
               <Text style={styles.menuItemText}>{item.key}</Text>
-            </TouchableOpacity>
+            </HapticButton>
           ))}
         </View>
       )}
 
       {/* Bottom Bar */}
       <View style={styles.bottomBar}>
-        <TouchableOpacity
+        <HapticButton
           style={styles.bottomBarItem}
           onPress={handleCategoriesPress}
         >
@@ -601,11 +610,11 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
             style={{ marginRight: 8 }}
           />
           <Text style={styles.bottomBarText}>CATEGORIES</Text>
-        </TouchableOpacity>
+        </HapticButton>
 
         <View style={styles.bottomBarDivider} />
 
-        <TouchableOpacity
+        <HapticButton
           style={styles.bottomBarItem}
           onPress={() => setIsSortVisible(true)}
         >
@@ -617,11 +626,11 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
           />
           <Text style={styles.bottomBarText}>SORT</Text>
           {selectedSort !== "Featured" && <View style={styles.activeDot} />}
-        </TouchableOpacity>
+        </HapticButton>
 
         <View style={styles.bottomBarDivider} />
 
-        <TouchableOpacity
+        <HapticButton
           style={styles.bottomBarItem}
           onPress={() => setIsFilterVisible(true)}
         >
@@ -637,7 +646,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
               <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
             </View>
           )}
-        </TouchableOpacity>
+        </HapticButton>
       </View>
 
       {isMenuOpen && (

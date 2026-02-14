@@ -1,12 +1,7 @@
 import { Diamond } from "lucide-react-native"; // Install: npm install lucide-react-native
 import React, { useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { HapticButton } from "../../components/basic components/hapticButton";
 
 const categories = [
   { id: "1", title: "N E C K L A C E", hasIcon: false },
@@ -39,7 +34,7 @@ export default function BespokePage2({
         {categories.map((item) => {
           const isSelected = selected === item.id;
           return (
-            <TouchableOpacity
+            <HapticButton
               key={item.id}
               activeOpacity={0.7}
               onPress={() => setSelected(item.id)}
@@ -51,16 +46,16 @@ export default function BespokePage2({
                   <Diamond size={20} color="black" strokeWidth={1.5} />
                 </View>
               )}
-            </TouchableOpacity>
+            </HapticButton>
           );
         })}
       </ScrollView>
 
       {/* Footer Button */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.nextButton} onPress={nextStepFn}>
+        <HapticButton style={styles.nextButton} onPress={nextStepFn}>
           <Text style={styles.nextButtonText}>Next</Text>
-        </TouchableOpacity>
+        </HapticButton>
       </View>
     </View>
   );

@@ -1,88 +1,89 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { HapticButton } from "./basic components/hapticButton";
 import { ScrollingColumn } from "./scrollingColumn";
 
 const GRID_HEIGHT = 500;
 
 // Gift category definitions with proper filter mappings
 const GIFT_CATEGORIES = [
-  { 
-    id: 1, 
-    title: "🎁 Premium Gifts", 
+  {
+    id: 1,
+    title: "🎁 Premium Gifts",
     size: "large",
-    filters: { priceRange: ["50k-100k", "above-100k"] }
+    filters: { priceRange: ["50k-100k", "above-100k"] },
   },
-  { 
-    id: 2, 
-    title: "💎 Luxury Items", 
+  {
+    id: 2,
+    title: "💎 Luxury Items",
     size: "medium",
-    filters: { priceRange: ["above-100k"], collection: ["exclusive"] }
+    filters: { priceRange: ["above-100k"], collection: ["exclusive"] },
   },
-  { 
-    id: 3, 
-    title: "✨ Special", 
+  {
+    id: 3,
+    title: "✨ Special",
     size: "large",
-    filters: { collection: ["exclusive"] }
+    filters: { collection: ["exclusive"] },
   },
-  { 
-    id: 4, 
-    title: "📧 Shop e-gifts", 
+  {
+    id: 4,
+    title: "📧 Shop e-gifts",
     size: "large",
-    filters: { productType: ["gift"] }
+    filters: { productType: ["gift"] },
   },
-  { 
-    id: 5, 
-    title: "🕴️ Men's gifting", 
+  {
+    id: 5,
+    title: "🕴️ Men's gifting",
     size: "medium",
-    filters: { gender: ["male"] }
+    filters: { gender: ["male"] },
   },
-  { 
-    id: 6, 
-    title: "💸 Under 30k", 
+  {
+    id: 6,
+    title: "💸 Under 30k",
     size: "large",
-    filters: { priceRange: ["under-10k", "10k-25k"] }
+    filters: { priceRange: ["under-10k", "10k-25k"] },
   },
-  { 
-    id: 7, 
-    title: "💖 Gifts for Wife", 
+  {
+    id: 7,
+    title: "💖 Gifts for Wife",
     size: "large",
-    filters: { gender: ["female"], occasion: ["Anniversary", "Birthday"] }
+    filters: { gender: ["female"], occasion: ["Anniversary", "Birthday"] },
   },
-  { 
-    id: 8, 
-    title: "🚚 Quick delivery", 
+  {
+    id: 8,
+    title: "🚚 Quick delivery",
     size: "medium",
-    filters: { collection: ["bestseller"] } // Using bestseller as proxy for available items
+    filters: { collection: ["bestseller"] }, // Using bestseller as proxy for available items
   },
-  { 
-    id: 9, 
-    title: "✍️ Personalised", 
+  {
+    id: 9,
+    title: "✍️ Personalised",
     size: "large",
-    filters: { collection: ["exclusive"] }
+    filters: { collection: ["exclusive"] },
   },
-  { 
-    id: 10, 
-    title: "🔥 Trending", 
+  {
+    id: 10,
+    title: "🔥 Trending",
     size: "large",
-    filters: { collection: ["bestseller"] }
+    filters: { collection: ["bestseller"] },
   },
-  { 
-    id: 11, 
-    title: "🏆 Best Sellers", 
+  {
+    id: 11,
+    title: "🏆 Best Sellers",
     size: "medium",
-    filters: { collection: ["bestseller"] }
+    filters: { collection: ["bestseller"] },
   },
-  { 
-    id: 12, 
-    title: "🆕 New Arrivals", 
+  {
+    id: 12,
+    title: "🆕 New Arrivals",
     size: "large",
-    filters: { collection: ["new-arrival"] }
+    filters: { collection: ["new-arrival"] },
   },
 ];
 
-type GiftCategory = typeof GIFT_CATEGORIES[number];
+type GiftCategory = (typeof GIFT_CATEGORIES)[number];
 
 export default function GiftExplore() {
   const router = useRouter();
@@ -90,14 +91,14 @@ export default function GiftExplore() {
   const handleCategoryPress = (category: GiftCategory) => {
     // Build query params from the category's filter mapping
     const queryParams: Record<string, string> = {
-      categoryName: category.title.replace(/^[^\s]+\s/, ''), // Remove emoji prefix
+      categoryName: category.title.replace(/^[^\s]+\s/, ""), // Remove emoji prefix
     };
 
     // Convert filter arrays to comma-separated strings for URL params
     if (category.filters) {
       Object.entries(category.filters).forEach(([key, values]) => {
         if (values && values.length > 0) {
-          queryParams[key] = values.join(',');
+          queryParams[key] = values.join(",");
         }
       });
     }
@@ -109,12 +110,27 @@ export default function GiftExplore() {
   };
 
   // Helper to split data into 3 vertical columns
-  const col1 = [GIFT_CATEGORIES[0], GIFT_CATEGORIES[3], GIFT_CATEGORIES[6], GIFT_CATEGORIES[9]];
-  const col2 = [GIFT_CATEGORIES[1], GIFT_CATEGORIES[4], GIFT_CATEGORIES[7], GIFT_CATEGORIES[10]];
-  const col3 = [GIFT_CATEGORIES[2], GIFT_CATEGORIES[5], GIFT_CATEGORIES[8], GIFT_CATEGORIES[11]];
+  const col1 = [
+    GIFT_CATEGORIES[0],
+    GIFT_CATEGORIES[3],
+    GIFT_CATEGORIES[6],
+    GIFT_CATEGORIES[9],
+  ];
+  const col2 = [
+    GIFT_CATEGORIES[1],
+    GIFT_CATEGORIES[4],
+    GIFT_CATEGORIES[7],
+    GIFT_CATEGORIES[10],
+  ];
+  const col3 = [
+    GIFT_CATEGORIES[2],
+    GIFT_CATEGORIES[5],
+    GIFT_CATEGORIES[8],
+    GIFT_CATEGORIES[11],
+  ];
 
   const renderCard = (item: GiftCategory) => (
-    <TouchableOpacity
+    <HapticButton
       key={item.id}
       style={[
         styles.card,
@@ -124,7 +140,7 @@ export default function GiftExplore() {
       onPress={() => handleCategoryPress(item)}
     >
       <Text style={styles.cardText}>{item.title}</Text>
-    </TouchableOpacity>
+    </HapticButton>
   );
 
   return (
@@ -167,13 +183,13 @@ export default function GiftExplore() {
         />
       </View>
 
-      <TouchableOpacity 
-        style={styles.exploreButton} 
+      <HapticButton
+        style={styles.exploreButton}
         activeOpacity={0.8}
         onPress={() => router.push("/product-list")}
       >
         <Text style={styles.exploreText}>Explore all</Text>
-      </TouchableOpacity>
+      </HapticButton>
     </View>
   );
 }

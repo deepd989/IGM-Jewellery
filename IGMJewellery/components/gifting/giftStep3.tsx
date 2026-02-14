@@ -6,9 +6,9 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import { HapticButton } from "../basic components/hapticButton";
 import RibbonGiftCard from "./ribbonGiftCard";
 
 const { width } = Dimensions.get("window");
@@ -97,15 +97,15 @@ export default function EGiftCardScreen({
       <View style={styles.bottomBar}>
         <View style={styles.priceSection}>
           <Text style={styles.bottomPrice}>{formattedAmount}</Text>
-          <TouchableOpacity style={styles.paymentSelector}>
+          <HapticButton style={styles.paymentSelector}>
             <Text style={styles.paymentText}>{paymentMethod}</Text>
             <Text style={styles.chevron}>›</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
 
-        <TouchableOpacity style={styles.buyButton} onPress={handleBuyGift}>
+        <HapticButton style={styles.buyButton} onPress={handleBuyGift}>
           <Text style={styles.buyButtonText}>Buy E-Gift</Text>
-        </TouchableOpacity>
+        </HapticButton>
       </View>
 
       {/* Success Modal */}
@@ -118,12 +118,12 @@ export default function EGiftCardScreen({
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             {/* Close Button */}
-            <TouchableOpacity
+            <HapticButton
               style={styles.closeButton}
               onPress={() => setShowSuccessModal(false)}
             >
               <Text style={styles.closeIcon}>✕</Text>
-            </TouchableOpacity>
+            </HapticButton>
 
             {/* Success Icon */}
             <View style={styles.successIcon}>
@@ -144,9 +144,9 @@ export default function EGiftCardScreen({
             {/* Gift Card Number */}
             <View style={styles.cardNumberContainer}>
               <Text style={styles.cardNumberText}>Gift Card No. #12345</Text>
-              <TouchableOpacity style={styles.copyButton}>
+              <HapticButton style={styles.copyButton}>
                 <Text style={styles.copyIcon}>⎘</Text>
-              </TouchableOpacity>
+              </HapticButton>
             </View>
 
             {/* Share Text */}
@@ -156,29 +156,29 @@ export default function EGiftCardScreen({
 
             {/* Social Share Buttons */}
             <View style={styles.socialButtons}>
-              <TouchableOpacity style={styles.socialButton}>
+              <HapticButton style={styles.socialButton}>
                 <Text style={styles.socialIcon}>💬</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
+              </HapticButton>
+              <HapticButton style={styles.socialButton}>
                 <Text style={styles.socialIcon}>💬</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
+              </HapticButton>
+              <HapticButton style={styles.socialButton}>
                 <Text style={styles.socialIcon}>f</Text>
-              </TouchableOpacity>
+              </HapticButton>
             </View>
 
             {/* Continue Shopping Button */}
-            <TouchableOpacity
+            <HapticButton
               style={styles.continueButton}
               onPress={handleContinueShopping}
             >
               <Text style={styles.continueButtonText}>Continue Shopping</Text>
-            </TouchableOpacity>
+            </HapticButton>
 
             {/* Review Order Link */}
-            {/* <TouchableOpacity onPress={handleReviewOrder}>
+            {/* <HapticButton onPress={handleReviewOrder}>
               <Text style={styles.reviewLink}>Review your order</Text>
-            </TouchableOpacity> */}
+            </HapticButton> */}
           </View>
         </View>
       </Modal>

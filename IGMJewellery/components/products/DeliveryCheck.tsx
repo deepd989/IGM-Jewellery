@@ -1,14 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
 import { getEstimatedDeliveryDate } from "../../utils/deliveryDate";
+import { HapticButton } from "../basic components/hapticButton";
 
 export const DeliveryCheck: React.FC = () => {
   return (
@@ -34,9 +29,9 @@ export const DeliveryCheck: React.FC = () => {
           keyboardType="numeric"
           placeholderTextColor={COLORS.textSecondary}
         />
-        <TouchableOpacity>
+        <HapticButton>
           <Text style={styles.checkText}>Check</Text>
-        </TouchableOpacity>
+        </HapticButton>
         <Ionicons
           name="chevron-forward"
           size={16}
@@ -67,13 +62,13 @@ export const DeliveryCheck: React.FC = () => {
           <Text style={styles.highlightTitle}>Try at home</Text>
           <Text style={styles.highlightSubtitle}>Available for 400 066</Text>
         </View>
-        <TouchableOpacity style={styles.tryBtn}>
+        <HapticButton style={styles.tryBtn}>
           <Text style={styles.tryBtnText}>Add to Try at Home</Text>
-        </TouchableOpacity>
+        </HapticButton>
       </View>
 
       {/* Offer Coupon */}
-      <TouchableOpacity style={styles.couponContainer}>
+      <HapticButton style={styles.couponContainer}>
         <View style={styles.couponIcon}>
           <Ionicons name="pricetag-outline" size={20} color={COLORS.primary} />
         </View>
@@ -84,7 +79,7 @@ export const DeliveryCheck: React.FC = () => {
           </Text>
         </View>
         <Ionicons name="chevron-forward" size={20} color={COLORS.text} />
-      </TouchableOpacity>
+      </HapticButton>
     </View>
   );
 };

@@ -11,12 +11,12 @@ import {
   StyleSheet,
   Switch,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown"; // New Import
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../auth/authContext";
+import { HapticButton } from "../components/basic components/hapticButton";
 import { COLORS } from "../constants/theme";
 import { generateJewelleryImage } from "../helpers/generateJewelleryImage";
 import { Product } from "../interfaces/product.interface";
@@ -173,7 +173,7 @@ const TryOnScreen = () => {
   const renderProductItem = ({ item }: { item: Product }) => {
     const isSelected = selectedProduct?.id === item.id;
     return (
-      <TouchableOpacity
+      <HapticButton
         style={[styles.productCard, isSelected && styles.productCardSelected]}
         onPress={() => handleProductSelect(item)}
       >
@@ -193,16 +193,16 @@ const TryOnScreen = () => {
             />
           </View>
         )}
-      </TouchableOpacity>
+      </HapticButton>
     );
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <HapticButton onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.headerTitle}>Virtual Try-On</Text>
         <View style={{ width: 40 }} />
       </View>
@@ -216,7 +216,7 @@ const TryOnScreen = () => {
           Upload a clear photo to see the results.
         </Text>
 
-        <TouchableOpacity
+        <HapticButton
           style={styles.uploadBox}
           onPress={pickImage}
           disabled={uploading || loading}
@@ -245,7 +245,7 @@ const TryOnScreen = () => {
                 style={[styles.previewImg]}
               />
             ))}
-        </TouchableOpacity>
+        </HapticButton>
 
         <Text style={styles.label}>Select Jewelry</Text>
         <FlatList
@@ -308,13 +308,13 @@ const TryOnScreen = () => {
             value={useImageGloballyFlag}
           />
         </View>
-        <TouchableOpacity
+        <HapticButton
           style={[styles.primaryBtn, !isImageUploaded && styles.btnDisabled]}
           onPress={handleViewTryOn}
           disabled={!isImageUploaded}
         >
           <Text style={styles.primaryBtnText}>View Try-On</Text>
-        </TouchableOpacity>
+        </HapticButton>
       </ScrollView>
     </SafeAreaView>
   );

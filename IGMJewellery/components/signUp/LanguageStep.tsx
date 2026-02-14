@@ -1,15 +1,7 @@
-import React, { useMemo, useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  TextInput,
-  Dimensions,
-} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { SignUpProgressBar } from "../signUpProgressBar";
+import React, { useMemo, useState } from "react";
+import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
+import { HapticButton } from "../basic components/hapticButton";
 
 type Props = {
   value: string;
@@ -47,7 +39,6 @@ export default function LanguageStep({
 
   return (
     <View style={styles.safe}>
-
       {/* Title */}
       <Text style={styles.title}>Choose language</Text>
       <Text style={styles.subtitle}>
@@ -73,12 +64,9 @@ export default function LanguageStep({
         renderItem={({ item }) => {
           const selected = value === item.label;
           return (
-            <TouchableOpacity
+            <HapticButton
               onPress={() => onChange(item.label)}
-              style={[
-                styles.langRow,
-                selected && styles.langRowSelected,
-              ]}
+              style={[styles.langRow, selected && styles.langRowSelected]}
             >
               <Text style={styles.langText}>
                 {item.code ? `(${item.code}) ` : ""}
@@ -90,20 +78,20 @@ export default function LanguageStep({
                   <Ionicons name="checkmark" size={16} color="#fff" />
                 </View>
               )}
-            </TouchableOpacity>
+            </HapticButton>
           );
         }}
       />
 
       {/* Bottom CTA */}
       <View style={styles.bottom}>
-        <TouchableOpacity style={styles.primary} onPress={onNext}>
+        <HapticButton style={styles.primary} onPress={onNext}>
           <Text style={styles.primaryText}>Continue</Text>
-        </TouchableOpacity>
+        </HapticButton>
 
-        {/* <TouchableOpacity>
+        {/* <HapticButton>
           <Text style={styles.skip}>Skip</Text>
-        </TouchableOpacity> */}
+        </HapticButton> */}
       </View>
     </View>
   );

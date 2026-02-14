@@ -3,17 +3,11 @@ import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import { FontAwesome } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
-import {
-  Alert,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, Image, StyleSheet, Text, View } from "react-native";
 import { useAuth } from "../auth/authContext";
 import { generateJewelleryImage } from "../helpers/generateJewelleryImage";
 import { firstImageHelper } from "../helpers/imageUsageHelper";
+import { HapticButton } from "./basic components/hapticButton";
 
 interface ProductCardProps {
   product: Product;
@@ -131,7 +125,7 @@ const ProductCard2: React.FC<ProductCardProps> = ({
     );
   }
   return (
-    <TouchableOpacity style={[styles.card, { width }]} onPress={onPress}>
+    <HapticButton style={[styles.card, { width }]} onPress={onPress}>
       {/* Top badges */}
       <View style={styles.topRow}>
         {product && product.isNew && (
@@ -143,9 +137,9 @@ const ProductCard2: React.FC<ProductCardProps> = ({
           <View style={{ paddingHorizontal: 6, paddingVertical: 10 }} />
         )}
 
-        {/* <TouchableOpacity>
+        {/* <HapticButton>
           <FontAwesome name="heart-o" size={20} color="black" />
-        </TouchableOpacity> */}
+        </HapticButton> */}
       </View>
 
       {/* Image placeholder */}
@@ -199,7 +193,7 @@ const ProductCard2: React.FC<ProductCardProps> = ({
 
       {/* Buttons */}
       <View style={styles.buttonRow}>
-        <TouchableOpacity
+        <HapticButton
           style={[styles.button, styles.tryNow]}
           onPress={(e) => {
             router.push({
@@ -212,17 +206,17 @@ const ProductCard2: React.FC<ProductCardProps> = ({
           }}
         >
           <Text style={styles.tryNowText}>{label1Text}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+        </HapticButton>
+        <HapticButton
           style={[styles.button, styles.tryAtHome]}
           onPress={(event) => {
             handleAddToCart(event);
           }}
         >
           <Text style={styles.tryAtHomeText}>{label2Text}</Text>
-        </TouchableOpacity>
+        </HapticButton>
       </View>
-    </TouchableOpacity>
+    </HapticButton>
   );
 };
 

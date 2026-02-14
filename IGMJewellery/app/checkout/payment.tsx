@@ -13,10 +13,10 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../../components/basic components/hapticButton";
 import { CheckoutStepper } from "../../components/checkout/CheckoutStepper";
 import { CheckoutSummary } from "../../components/checkout/CheckoutSummary";
 import { COLORS, SPACING } from "../../constants/theme";
@@ -57,7 +57,7 @@ export default function PaymentScreen() {
   const [updatePaymentMethod] = useUpdatePaymentMethodMutation();
 
   const [selectedMethod, setSelectedMethod] = useState(
-    checkoutSession?.checkoutState.selectedPaymentMethod || "google_pay",
+    checkoutSession?.checkoutState.selectedPaymentMethod || "google_pay"
   );
 
   const handlePaymentMethodSelect = async (methodId: string) => {
@@ -138,12 +138,12 @@ export default function PaymentScreen() {
             color={COLORS.error}
           />
           <Text style={styles.errorText}>Checkout session not found</Text>
-          <TouchableOpacity
+          <HapticButton
             style={styles.retryButton}
             onPress={() => router.replace("/cart")}
           >
             <Text style={styles.retryButtonText}>Back to Cart</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </SafeAreaView>
     );
@@ -166,9 +166,9 @@ export default function PaymentScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <HapticButton onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={24} color="#000" />
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.headerTitle}>Payment</Text>
         <View style={{ width: 40 }} />
       </View>
@@ -199,7 +199,7 @@ export default function PaymentScreen() {
           </View>
 
           {PAYMENT_OPTIONS.map((opt) => (
-            <TouchableOpacity
+            <HapticButton
               key={opt.id}
               style={styles.methodItem}
               onPress={() => handlePaymentMethodSelect(opt.id)}
@@ -220,11 +220,11 @@ export default function PaymentScreen() {
                 size={22}
                 color="#000"
               />
-            </TouchableOpacity>
+            </HapticButton>
           ))}
         </View>
 
-        {/* <TouchableOpacity style={styles.codBox}>
+        {/* <HapticButton style={styles.codBox}>
           <View style={styles.squarePlaceholder}>
             <Ionicons name="cash-outline" size={24} color="#666" />
           </View>
@@ -233,11 +233,11 @@ export default function PaymentScreen() {
             <Text style={styles.methodSubtitle}>Pay via cash on delivery</Text>
           </View>
           <View style={styles.checkboxOutline} />
-        </TouchableOpacity> */}
+        </HapticButton> */}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Gift Cards</Text>
-          <TouchableOpacity
+          <HapticButton
             style={styles.giftCardBox}
             onPress={() => router.push("/coupons")}
           >
@@ -253,7 +253,7 @@ export default function PaymentScreen() {
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#666" />
-          </TouchableOpacity>
+          </HapticButton>
         </View>
 
         <View style={styles.finalSummary}>
@@ -269,11 +269,11 @@ export default function PaymentScreen() {
       </ScrollView>
 
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.payBtn} onPress={handleProceedToPay}>
+        <HapticButton style={styles.payBtn} onPress={handleProceedToPay}>
           <Text style={styles.payBtnText}>
             Proceed to Pay ₹{finalOrderDetails.total.toLocaleString()}
           </Text>
-        </TouchableOpacity>
+        </HapticButton>
       </View>
     </SafeAreaView>
   );

@@ -15,11 +15,11 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
-import { useClearTrialMutation } from "../../store/apis/cart";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../../components/basic components/hapticButton";
+import { useClearTrialMutation } from "../../store/apis/cart";
 
 export default function TrialAddressScreen() {
   const router = useRouter();
@@ -76,19 +76,16 @@ export default function TrialAddressScreen() {
         style={{ flex: 1 }}
       >
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backBtn}
-          >
+          <HapticButton onPress={() => router.back()} style={styles.backBtn}>
             <Ionicons name="chevron-back" size={24} color="#000" />
-          </TouchableOpacity>
+          </HapticButton>
           <View style={styles.pinHeader}>
             <Text style={styles.pinLabel}>Pincode</Text>
             <Text style={styles.pinValue}>400 066</Text>
           </View>
-          <TouchableOpacity>
+          <HapticButton>
             <Ionicons name="call-outline" size={24} color="#000" />
-          </TouchableOpacity>
+          </HapticButton>
         </View>
 
         <ScrollView
@@ -119,13 +116,13 @@ export default function TrialAddressScreen() {
           </View>
         </ScrollView>
 
-        <TouchableOpacity
+        <HapticButton
           style={styles.footerBtn}
           onPress={handleSubmit(onSubmit, onInvalid)}
           activeOpacity={0.8}
         >
           <Text style={styles.footerBtnText}>CONFIRM BOOKING</Text>
-        </TouchableOpacity>
+        </HapticButton>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

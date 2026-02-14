@@ -35,19 +35,19 @@ export interface ProductDetails {
 }
 
 export interface Product {
-  title:string;
+  title: string; // not getting title use name from api instead
   id: string;
   name: string;
-  description: string;
-  productType: ProductType;
-  givenPrice: number;
-  discountedPrice: number;
-  brand: Brand;
-  tags: string[]; 
-  thumbnailUrls: string[];
+  description: string; // use short_description from api
+  productType: ProductType; // getting is as 7,9 -> we need hardcode 7 to ring and 9 to earring
+  givenPrice: number; // use "price" from api
+  discountedPrice: number; // use random number from 5-10% off from given price
+  brand: Brand; // seprate api.
+  tags: string[];
+  thumbnailUrls: string[]; // media_gallery_entries
   isNew?: boolean;
-  sku?: string;
-  rating?: number;
+  sku?: string; //same as id
+  rating?: number; // p_ratings
   specifications?: ProductSpecification[];
   reviews?: Review[];
   occaision:OccasiomEnum[];

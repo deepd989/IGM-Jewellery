@@ -6,14 +6,8 @@ import {
   User,
 } from "lucide-react-native";
 import React from "react";
-import {
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import { HapticButton } from "../../components/basic components/hapticButton";
 
 const { width } = Dimensions.get("window");
 
@@ -99,10 +93,10 @@ const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
         </View>
 
         {/* CTA Button */}
-        <TouchableOpacity style={styles.ctaButton} onPress={nextStepFn}>
+        <HapticButton style={styles.ctaButton} onPress={nextStepFn}>
           <Text style={styles.ctaText}>Start Customisation</Text>
           <ArrowRight size={18} color="white" />
-        </TouchableOpacity>
+        </HapticButton>
 
         <View style={styles.dividerContainer}>
           <View style={styles.line} />

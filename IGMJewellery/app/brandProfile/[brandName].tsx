@@ -4,8 +4,9 @@ import { COLORS, SPACING } from "@/constants/theme";
 import { useGetBrandByNameQuery } from "@/store/apis/brandsApi";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../../components/basic components/hapticButton";
 import BottomNavBar from "../../components/bottomNavBar";
 
 export default function BrandDetailPage() {
@@ -19,14 +20,14 @@ export default function BrandDetailPage() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}>
+        <HapticButton onPress={() => router.back()} style={styles.iconBtn}>
           <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.headerTitle}>Brands</Text>
         <View style={styles.headerIcons}>
-          {/* <TouchableOpacity style={styles.iconBtn}>
+          {/* <HapticButton style={styles.iconBtn}>
                   <Ionicons name="heart-outline" size={24} color={COLORS.primary} />
-                </TouchableOpacity> */}
+                </HapticButton> */}
           <View style={styles.iconBtn}>
             <CartBadge iconSize={24} iconColor={COLORS.primary} />
           </View>

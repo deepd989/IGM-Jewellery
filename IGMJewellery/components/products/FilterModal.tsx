@@ -1,6 +1,6 @@
-import { FILTER_CATEGORIES } from '@/dummyData/filters';
-import { Ionicons } from '@expo/vector-icons';
-import React, { useEffect, useState } from 'react';
+import { FILTER_CATEGORIES } from "@/dummyData/filters";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -8,10 +8,10 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import { COLORS, SPACING } from '../../constants/theme';
+  View,
+} from "react-native";
+import { COLORS, SPACING } from "../../constants/theme";
+import { HapticButton } from "../basic components/hapticButton";
 
 interface FilterModalProps {
   visible: boolean;
@@ -20,16 +20,17 @@ interface FilterModalProps {
   initialFilters?: Record<string, string[]>;
 }
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
-export const FilterModal: React.FC<FilterModalProps> = ({ 
-  visible, 
-  onClose, 
+export const FilterModal: React.FC<FilterModalProps> = ({
+  visible,
+  onClose,
   onApply,
-  initialFilters = {}
+  initialFilters = {},
 }) => {
-  const [activeCategoryId, setActiveCategoryId] = useState('productType');
-  const [selections, setSelections] = useState<Record<string, string[]>>(initialFilters);
+  const [activeCategoryId, setActiveCategoryId] = useState("productType");
+  const [selections, setSelections] =
+    useState<Record<string, string[]>>(initialFilters);
 
   // Update selections when modal opens with new initial filters
   useEffect(() => {
@@ -38,15 +39,17 @@ export const FilterModal: React.FC<FilterModalProps> = ({
     }
   }, [visible, initialFilters]);
 
-  const activeCategory = FILTER_CATEGORIES.find(c => c.id === activeCategoryId) || FILTER_CATEGORIES[0];
+  const activeCategory =
+    FILTER_CATEGORIES.find((c) => c.id === activeCategoryId) ||
+    FILTER_CATEGORIES[0];
 
   const toggleSelection = (categoryId: string, optionId: string) => {
-    setSelections(prev => {
+    setSelections((prev) => {
       const current = prev[categoryId] || [];
       const exists = current.includes(optionId);
       let updated;
       if (exists) {
-        updated = current.filter(id => id !== optionId);
+        updated = current.filter((id) => id !== optionId);
       } else {
         updated = [...current, optionId];
       }
@@ -64,20 +67,29 @@ export const FilterModal: React.FC<FilterModalProps> = ({
   };
 
   const getTotalSelectedCount = () => {
-    return Object.values(selections).reduce((total, options) => total + options.length, 0);
+    return Object.values(selections).reduce(
+      (total, options) => total + options.length,
+      0
+    );
   };
 
-  const renderSidebarItem = ({ item }: { item: typeof FILTER_CATEGORIES[0] }) => {
+  const renderSidebarItem = ({
+    item,
+  }: {
+    item: (typeof FILTER_CATEGORIES)[0];
+  }) => {
     const isActive = item.id === activeCategoryId;
     const count = selections[item.id]?.length || 0;
 
     return (
-      <TouchableOpacity 
+      <HapticButton
         style={[styles.sidebarItem, isActive && styles.sidebarItemActive]}
         onPress={() => setActiveCategoryId(item.id)}
       >
         <View style={styles.sidebarLabelContainer}>
-          <Text style={[styles.sidebarText, isActive && styles.sidebarTextActive]}>
+          <Text
+            style={[styles.sidebarText, isActive && styles.sidebarTextActive]}
+          >
             {item.label}
           </Text>
           {count > 0 && (
@@ -86,48 +98,77 @@ export const FilterModal: React.FC<FilterModalProps> = ({
             </View>
           )}
         </View>
-      </TouchableOpacity>
+      </HapticButton>
     );
   };
 
-  const renderGridOption = ({ item }: { item: { id: string, label: string } }) => {
+  const renderGridOption = ({
+    item,
+  }: {
+    item: { id: string; label: string };
+  }) => {
     const isSelected = (selections[activeCategoryId] || []).includes(item.id);
     return (
-      <TouchableOpacity 
+      <HapticButton
         style={styles.gridItemContainer}
         onPress={() => toggleSelection(activeCategoryId, item.id)}
       >
-        <View style={[styles.gridItemBox, isSelected && styles.gridItemBoxSelected]}>
-           {isSelected && (
-             <Ionicons name="checkmark" size={24} color={COLORS.text} style={styles.checkIconCenter} />
-           )}
+        <View
+          style={[styles.gridItemBox, isSelected && styles.gridItemBoxSelected]}
+        >
+          {isSelected && (
+            <Ionicons
+              name="checkmark"
+              size={24}
+              color={COLORS.text}
+              style={styles.checkIconCenter}
+            />
+          )}
         </View>
-        <Text style={[styles.gridItemText, isSelected && styles.gridItemTextSelected]}>
+        <Text
+          style={[
+            styles.gridItemText,
+            isSelected && styles.gridItemTextSelected,
+          ]}
+        >
           {item.label}
         </Text>
-      </TouchableOpacity>
+      </HapticButton>
     );
   };
 
-  const renderListOption = ({ item }: { item: { id: string, label: string } }) => {
+  const renderListOption = ({
+    item,
+  }: {
+    item: { id: string; label: string };
+  }) => {
     const isSelected = (selections[activeCategoryId] || []).includes(item.id);
     return (
-      <TouchableOpacity 
+      <HapticButton
         style={styles.listItem}
         onPress={() => toggleSelection(activeCategoryId, item.id)}
       >
-        <Text style={[styles.listItemText, isSelected && styles.listItemTextSelected]}>
+        <Text
+          style={[
+            styles.listItemText,
+            isSelected && styles.listItemTextSelected,
+          ]}
+        >
           {item.label}
         </Text>
         <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
           {isSelected && <Ionicons name="checkmark" size={14} color="#FFF" />}
         </View>
-      </TouchableOpacity>
+      </HapticButton>
     );
   };
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+    >
       <SafeAreaView style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
@@ -136,13 +177,15 @@ export const FilterModal: React.FC<FilterModalProps> = ({
             <Text style={styles.headerTitle}>Filters</Text>
             {getTotalSelectedCount() > 0 && (
               <View style={styles.headerBadge}>
-                <Text style={styles.headerBadgeText}>{getTotalSelectedCount()}</Text>
+                <Text style={styles.headerBadgeText}>
+                  {getTotalSelectedCount()}
+                </Text>
               </View>
             )}
           </View>
-          <TouchableOpacity onPress={onClose}>
+          <HapticButton onPress={onClose}>
             <Ionicons name="close" size={24} color={COLORS.text} />
-          </TouchableOpacity>
+          </HapticButton>
         </View>
 
         {/* Body */}
@@ -151,7 +194,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({
           <View style={styles.sidebar}>
             <FlatList
               data={FILTER_CATEGORIES}
-              keyExtractor={item => item.id}
+              keyExtractor={(item) => item.id}
               renderItem={renderSidebarItem}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.sidebarContent}
@@ -160,11 +203,11 @@ export const FilterModal: React.FC<FilterModalProps> = ({
 
           {/* Main Content */}
           <View style={styles.content}>
-            {activeCategory.type === 'grid' ? (
+            {activeCategory.type === "grid" ? (
               <FlatList
                 key={`grid-${activeCategoryId}`}
                 data={activeCategory.options}
-                keyExtractor={item => item.id}
+                keyExtractor={(item) => item.id}
                 numColumns={3}
                 renderItem={renderGridOption}
                 contentContainerStyle={styles.gridContent}
@@ -174,7 +217,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({
               <FlatList
                 key={`list-${activeCategoryId}`}
                 data={activeCategory.options}
-                keyExtractor={item => item.id}
+                keyExtractor={(item) => item.id}
                 renderItem={renderListOption}
                 contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={false}
@@ -185,24 +228,29 @@ export const FilterModal: React.FC<FilterModalProps> = ({
 
         {/* Footer */}
         <View style={styles.footer}>
-          <TouchableOpacity 
-            style={styles.clearBtn} 
+          <HapticButton
+            style={styles.clearBtn}
             onPress={clearAll}
             disabled={getTotalSelectedCount() === 0}
           >
-            <Text style={[
-              styles.clearBtnText,
-              getTotalSelectedCount() === 0 && styles.clearBtnTextDisabled
-            ]}>
+            <Text
+              style={[
+                styles.clearBtnText,
+                getTotalSelectedCount() === 0 && styles.clearBtnTextDisabled,
+              ]}
+            >
               CLEAR ALL
             </Text>
-          </TouchableOpacity>
+          </HapticButton>
           <View style={styles.verticalDivider} />
-          <TouchableOpacity style={styles.applyBtn} onPress={handleApply}>
+          <HapticButton style={styles.applyBtn} onPress={handleApply}>
             <Text style={styles.applyBtnText}>
-              APPLY{getTotalSelectedCount() > 0 ? ` (${getTotalSelectedCount()})` : ''}
+              APPLY
+              {getTotalSelectedCount() > 0
+                ? ` (${getTotalSelectedCount()})`
+                : ""}
             </Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </SafeAreaView>
     </Modal>
@@ -212,24 +260,24 @@ export const FilterModal: React.FC<FilterModalProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: SPACING.m,
     paddingVertical: SPACING.m,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    borderBottomColor: "#F0F0F0",
   },
   headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.text,
     marginLeft: SPACING.s,
   },
@@ -238,23 +286,23 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     minWidth: 20,
     height: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 6,
     marginLeft: 8,
   },
   headerBadgeText: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   body: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   sidebar: {
-    width: '35%',
-    backgroundColor: '#F9F9F9',
+    width: "35%",
+    backgroundColor: "#F9F9F9",
   },
   sidebarContent: {
     paddingBottom: SPACING.xl,
@@ -264,14 +312,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.m,
   },
   sidebarItemActive: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderLeftWidth: 3,
     borderLeftColor: COLORS.primary,
   },
   sidebarLabelContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   sidebarText: {
     fontSize: 13,
@@ -280,7 +328,7 @@ const styles = StyleSheet.create({
   },
   sidebarTextActive: {
     color: COLORS.text,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   badge: {
     backgroundColor: COLORS.primary,
@@ -290,34 +338,34 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   badgeText: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 10,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   content: {
-    width: '65%',
-    backgroundColor: '#FFFFFF',
+    width: "65%",
+    backgroundColor: "#FFFFFF",
   },
   gridContent: {
     padding: SPACING.m,
   },
   gridItemContainer: {
-    width: '33.3%',
-    alignItems: 'center',
+    width: "33.3%",
+    alignItems: "center",
     marginBottom: SPACING.l,
     paddingHorizontal: 4,
   },
   gridItemBox: {
-    width: '100%',
+    width: "100%",
     aspectRatio: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: "#F5F5F5",
     borderRadius: 4,
     marginBottom: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   gridItemBoxSelected: {
-    backgroundColor: '#EAEAEA',
+    backgroundColor: "#EAEAEA",
     borderWidth: 1,
     borderColor: COLORS.primary,
   },
@@ -327,22 +375,22 @@ const styles = StyleSheet.create({
   gridItemText: {
     fontSize: 11,
     color: COLORS.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
   },
   gridItemTextSelected: {
     color: COLORS.text,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   listContent: {
     padding: SPACING.m,
   },
   listItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#FAFAFA',
+    borderBottomColor: "#FAFAFA",
   },
   listItemText: {
     fontSize: 14,
@@ -350,35 +398,35 @@ const styles = StyleSheet.create({
   },
   listItemTextSelected: {
     color: COLORS.text,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   checkbox: {
     width: 20,
     height: 20,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#CCC',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderColor: "#CCC",
+    justifyContent: "center",
+    alignItems: "center",
   },
   checkboxSelected: {
     backgroundColor: COLORS.primary,
     borderColor: COLORS.primary,
   },
   footer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
+    borderTopColor: "#F0F0F0",
     height: 60,
   },
   clearBtn: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   clearBtnText: {
     color: COLORS.text,
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 14,
   },
   clearBtnTextDisabled: {
@@ -387,17 +435,17 @@ const styles = StyleSheet.create({
   },
   verticalDivider: {
     width: 1,
-    backgroundColor: '#F0F0F0',
-    height: '100%',
+    backgroundColor: "#F0F0F0",
+    height: "100%",
   },
   applyBtn: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   applyBtnText: {
     color: COLORS.text,
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 14,
   },
 });

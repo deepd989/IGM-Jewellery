@@ -1,15 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
-import {
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../../components/basic components/hapticButton";
 
 export default function TrialConfirmationScreen() {
   const router = useRouter();
@@ -23,12 +17,12 @@ export default function TrialConfirmationScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity
+        <HapticButton
           onPress={() => router.replace("/(tabs)/categories")}
           style={styles.closeBtn}
         >
           <Ionicons name="close" size={24} color="#000" />
-        </TouchableOpacity>
+        </HapticButton>
         <Ionicons name="call-outline" size={24} color="#000" />
       </View>
 
@@ -76,15 +70,15 @@ export default function TrialConfirmationScreen() {
       </ScrollView>
 
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.secondaryBtn}>
+        <HapticButton style={styles.secondaryBtn}>
           <Text style={styles.secondaryText}>Check Order Status</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+        </HapticButton>
+        <HapticButton
           style={styles.primaryBtn}
           onPress={() => router.replace("/(tabs)/categories")}
         >
           <Text style={styles.primaryText}>Continue Shopping</Text>
-        </TouchableOpacity>
+        </HapticButton>
       </View>
     </SafeAreaView>
   );

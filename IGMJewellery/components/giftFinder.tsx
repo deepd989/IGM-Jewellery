@@ -1,34 +1,25 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  Dimensions,
-} from "react-native";
-import Modal from "react-native-modal";
-import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation, NavigationProp } from "@react-navigation/native";
+import MultiSlider from "@ptomasroos/react-native-multi-slider";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import React, { useState } from "react";
+import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import Modal from "react-native-modal";
 
-import { RELATIONSHIPS } from "@/constants/relationships";
 import { OCCASIONS } from "@/constants/occasions";
 import { ProductTypes } from "@/constants/productTypes";
+import { RELATIONSHIPS } from "@/constants/relationships";
 import { RouteParam } from "@/constants/routeNavigationConstants";
 import { useRouter } from "expo-router";
+import { HapticButton } from "./basic components/hapticButton";
 
 export default function GiftFinder() {
   const SCREEN_WIDTH = Dimensions.get("window").width;
   const navigation = useNavigation<NavigationProp<RouteParam>>();
-  const router = useRouter(); 
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedRelationship, setSelectedRelationship] = useState("");
   const [selectedOccasion, setSelectedOccasion] = useState("");
-  const [priceRange, setPriceRange] = useState<[number, number]>([
-    5000,
-    50000,
-  ]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([5000, 50000]);
 
   const [openDropdown, setOpenDropdown] = useState<
     "category" | "relationship" | "occasion" | "price" | null
@@ -57,12 +48,20 @@ export default function GiftFinder() {
       "Girlfriend",
       "Daughter",
       "Grandmother",
-      "Aunt"
+      "Aunt",
     ];
 
-    if (maleRelationships.some((rel) => relationship.toLowerCase().includes(rel.toLowerCase()))) {
+    if (
+      maleRelationships.some((rel) =>
+        relationship.toLowerCase().includes(rel.toLowerCase())
+      )
+    ) {
       return "Male";
-    } else if (femaleRelationships.some((rel) => relationship.toLowerCase().includes(rel.toLowerCase()))) {
+    } else if (
+      femaleRelationships.some((rel) =>
+        relationship.toLowerCase().includes(rel.toLowerCase())
+      )
+    ) {
       return "Female";
     }
     return "Unisex";
@@ -70,12 +69,12 @@ export default function GiftFinder() {
 
   const handleStartLooking = () => {
     const gender = getGenderFromRelationship(selectedRelationship);
-    const navigationData={
+    const navigationData = {
       categoryId: selectedCategory,
       gender: gender,
       occasion: selectedOccasion,
       productType: selectedCategory,
-    }
+    };
     router.push({
       pathname: "/product-list",
       params: navigationData,
@@ -87,15 +86,12 @@ export default function GiftFinder() {
     value: string,
     type: "category" | "relationship" | "occasion" | "price"
   ) => (
-    <TouchableOpacity
-      style={styles.dropdown}
-      onPress={() => setOpenDropdown(type)}
-    >
+    <HapticButton style={styles.dropdown} onPress={() => setOpenDropdown(type)}>
       <Text style={styles.dropdownText}>
         {value !== "" ? value : `Choose ${label}`}
       </Text>
       <Ionicons name="chevron-down" size={20} color="#333" />
-    </TouchableOpacity>
+    </HapticButton>
   );
 
   const renderListModal = (
@@ -110,7 +106,7 @@ export default function GiftFinder() {
       <View style={styles.modalBox}>
         <ScrollView>
           {data.map((item) => (
-            <TouchableOpacity
+            <HapticButton
               key={item}
               style={styles.modalItem}
               onPress={() => {
@@ -119,7 +115,7 @@ export default function GiftFinder() {
               }}
             >
               <Text style={styles.modalItemText}>{item}</Text>
-            </TouchableOpacity>
+            </HapticButton>
           ))}
         </ScrollView>
       </View>
@@ -150,10 +146,10 @@ export default function GiftFinder() {
         <Text style={styles.label}>on the occasion of</Text>
         {renderDropdown("Occasion", selectedOccasion, "occasion")}
 
-        <TouchableOpacity style={styles.button} onPress={handleStartLooking}>
+        <HapticButton style={styles.button} onPress={handleStartLooking}>
           <Text style={styles.buttonText}>Start looking</Text>
           <Ionicons name="search-outline" size={18} color="white" />
-        </TouchableOpacity>
+        </HapticButton>
       </View>
 
       {/* CATEGORY DROPDOWN */}
@@ -173,7 +169,9 @@ export default function GiftFinder() {
         <View style={styles.modalBox}>
           <Text style={styles.modalTitle}>Select Price Range</Text>
 
-          <View style={{ width: "100%", paddingHorizontal: 0, paddingVertical: 20 }}>
+          <View
+            style={{ width: "100%", paddingHorizontal: 0, paddingVertical: 20 }}
+          >
             <MultiSlider
               sliderLength={SCREEN_WIDTH - 100}
               values={[priceRange[0], priceRange[1]]}

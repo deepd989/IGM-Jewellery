@@ -10,8 +10,9 @@ import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../components/basic components/hapticButton";
 
 export default function Gift() {
   const giftOptions = [
@@ -22,9 +23,9 @@ export default function Gift() {
   const { data: products = [], isLoading, error } = useGetProductsQuery({});
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.iconBtn}>
+      <HapticButton onPress={() => router.back()} style={styles.iconBtn}>
         <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-      </TouchableOpacity>
+      </HapticButton>
       <ScrollView>
         <GiftExplore />
         <HorizontalRuleIGM />

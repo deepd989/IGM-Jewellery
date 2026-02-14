@@ -2,15 +2,9 @@ import GiftingCard from "@/components/giftingCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../components/basic components/hapticButton";
 import { COLORS } from "../constants/theme";
 import { GiftCardData, useGetAllGiftsQuery } from "../store/apis/giftApi";
 
@@ -45,9 +39,9 @@ const GiftCardRedeemStep1 = () => {
       : giftCards.filter((card) => card.status === activeTab);
 
   const renderBackIcon = () => (
-    <TouchableOpacity style={styles.backIcon} onPress={() => router.back()}>
+    <HapticButton style={styles.backIcon} onPress={() => router.back()}>
       <Ionicons name="chevron-back" size={20} color={COLORS.text} />
-    </TouchableOpacity>
+    </HapticButton>
   );
 
   const claimCard = (card: GiftCardData) => {
@@ -70,9 +64,9 @@ const GiftCardRedeemStep1 = () => {
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
+        <HapticButton style={styles.backButton}>
           {renderBackIcon()}
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.headerTitle}>Redeem Gift Card</Text>
         <View style={styles.headerSpacer} />
       </View>
@@ -95,7 +89,7 @@ const GiftCardRedeemStep1 = () => {
           contentContainerStyle={styles.tabsContent}
         >
           {tabs.map((tab) => (
-            <TouchableOpacity
+            <HapticButton
               key={tab.id}
               onPress={() => setActiveTab(tab.id)}
               style={[
@@ -113,7 +107,7 @@ const GiftCardRedeemStep1 = () => {
               >
                 {tab.label}
               </Text>
-            </TouchableOpacity>
+            </HapticButton>
           ))}
         </ScrollView>
 
@@ -147,7 +141,7 @@ const GiftCardRedeemStep1 = () => {
 
                   {/* Action Button */}
                   {card.status === "unclaimed" ? (
-                    <TouchableOpacity
+                    <HapticButton
                       style={styles.claimButton}
                       onPress={() => {
                         claimCard(card);
@@ -155,7 +149,7 @@ const GiftCardRedeemStep1 = () => {
                     >
                       <Text style={styles.claimButtonText}>Claim Now</Text>
                       {renderChevronRight()}
-                    </TouchableOpacity>
+                    </HapticButton>
                   ) : card.status === "claimed" ? (
                     <View style={styles.claimedButton}>
                       {renderCheckIcon()}

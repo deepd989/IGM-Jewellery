@@ -1,44 +1,47 @@
-import React, { useState, useMemo } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  TextInput, 
-  ScrollView,  
-  TouchableOpacity, 
+import { Brand, useGetBrandsQuery } from "@/store/apis/brandsApi";
+import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
+import { useRouter } from "expo-router";
+import { ChevronLeft } from "lucide-react-native";
+import React, { useMemo, useState } from "react";
+import {
   Dimensions,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Brand, useGetBrandsQuery } from '@/store/apis/brandsApi';
-import { Image } from 'expo-image';
-import { ChevronLeft } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../basic components/hapticButton";
 
 // --- Dynamic Responsiveness Logic ---
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 const SPACING = 16;
 const GRID_GAP = 12;
 
 const NUM_COLUMNS = width < 380 ? 2 : 3;
 const TOTAL_GAP_SPACE = (NUM_COLUMNS - 1) * GRID_GAP;
-const AVAILABLE_WIDTH = width - (SPACING * 2) - TOTAL_GAP_SPACE;
+const AVAILABLE_WIDTH = width - SPACING * 2 - TOTAL_GAP_SPACE;
 const ITEM_WIDTH = AVAILABLE_WIDTH / NUM_COLUMNS;
 
 const BrandCard = ({ brand }: { brand: Brand }) => {
   const router = useRouter();
   return (
-    <TouchableOpacity style={styles.cardContainer} onPress={() => {
-      router.push(`/brandProfile/${brand.businessNameKey}`);
-    }}>
-      <Image 
+    <HapticButton
+      style={styles.cardContainer}
+      onPress={() => {
+        router.push(`/brandProfile/${brand.businessNameKey}`);
+      }}
+    >
+      <Image
         source={{ uri: brand?.profileImageUri }}
         style={styles.cardImage}
         resizeMode="cover"
       />
       {/* Optional: Add business name text under image if desired */}
       {/* <Text numberOfLines={1} style={styles.brandNameText}>{brand.businessName}</Text> */}
-    </TouchableOpacity>
+    </HapticButton>
   );
 };
 
@@ -52,17 +55,23 @@ export const BrandGrid = ({ data }: { data: Brand[] }) => {
   );
 };
 
-export const BrandSection = ({ title, data }: { title: string, data: Brand[] }) => {
+export const BrandSection = ({
+  title,
+  data,
+}: {
+  title: string;
+  data: Brand[];
+}) => {
   if (data.length === 0) return null; // Hide section if no results match
 
   return (
     <View style={styles.sectionContainer}>
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>{title}</Text>
-        <TouchableOpacity style={styles.viewAllBtn}>
+        <HapticButton style={styles.viewAllBtn}>
           <Text style={styles.viewAllText}>View All</Text>
           <Ionicons name="chevron-forward" size={16} color="#000" />
-        </TouchableOpacity>
+        </HapticButton>
       </View>
       <BrandGrid data={data} />
     </View>
@@ -71,17 +80,17 @@ export const BrandSection = ({ title, data }: { title: string, data: Brand[] }) 
 
 export default function BrandList() {
   const router = useRouter();
-  const { data: brandsData = [], isLoading } = useGetBrandsQuery({});  
-  
+  const { data: brandsData = [], isLoading } = useGetBrandsQuery({});
+
   // State for search
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Filtered Data based on businessName
   const filteredBrands = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
     if (!query) return brandsData;
 
-    return brandsData.filter((brand) => 
+    return brandsData.filter((brand) =>
       brand.businessName?.toLowerCase().includes(query)
     );
   }, [searchQuery, brandsData]);
@@ -90,23 +99,25 @@ export default function BrandList() {
     <SafeAreaView style={styles.safeArea}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton} 
-          onPress={() => router.back()}
-        >
+        <HapticButton style={styles.backButton} onPress={() => router.back()}>
           <ChevronLeft color="#000" size={24} />
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.headerTitle}>Brands</Text>
-        <View style={{ width: 40 }} /> 
+        <View style={{ width: 40 }} />
       </View>
 
       <View style={styles.container}>
         {/* Search Bar */}
         <View style={styles.searchContainer}>
           <View style={styles.searchBar}>
-            <Ionicons name="search" size={20} color="#000" style={styles.searchIcon} />
-            <TextInput 
-              placeholder="Search by business name" 
+            <Ionicons
+              name="search"
+              size={20}
+              color="#000"
+              style={styles.searchIcon}
+            />
+            <TextInput
+              placeholder="Search by business name"
               placeholderTextColor="#999"
               style={styles.searchInput}
               value={searchQuery}
@@ -114,9 +125,9 @@ export default function BrandList() {
               autoCapitalize="none"
             />
             {searchQuery.length > 0 && (
-              <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <HapticButton onPress={() => setSearchQuery("")}>
                 <Ionicons name="close-circle" size={20} color="#ccc" />
-              </TouchableOpacity>
+              </HapticButton>
             )}
           </View>
         </View>
@@ -125,16 +136,24 @@ export default function BrandList() {
           {filteredBrands.length > 0 ? (
             <>
               <BrandSection title="Top Brands" data={filteredBrands} />
-              <BrandSection title="Ethnic Jewellery Brands" data={filteredBrands} />
-              <BrandSection title="Modern Jewellery Brands" data={filteredBrands} />
+              <BrandSection
+                title="Ethnic Jewellery Brands"
+                data={filteredBrands}
+              />
+              <BrandSection
+                title="Modern Jewellery Brands"
+                data={filteredBrands}
+              />
             </>
           ) : (
             <View style={styles.emptyState}>
               <Ionicons name="search-outline" size={50} color="#eee" />
-              <Text style={styles.emptyText}>No brands found matching "{searchQuery}"</Text>
+              <Text style={styles.emptyText}>
+                No brands found matching "{searchQuery}"
+              </Text>
             </View>
           )}
-          
+
           <View style={{ height: 40 }} />
         </ScrollView>
       </View>
@@ -145,16 +164,16 @@ export default function BrandList() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 15,
     height: 60,
   },
@@ -164,19 +183,19 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#333",
   },
   searchContainer: {
     paddingHorizontal: SPACING,
     paddingVertical: 10,
   },
   searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: "#e0e0e0",
     borderRadius: 30,
     paddingHorizontal: 15,
     height: 45,
@@ -187,56 +206,56 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: '#000',
+    color: "#000",
   },
   sectionContainer: {
     marginBottom: 25,
     paddingHorizontal: SPACING,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 15,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   viewAllBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   viewAllText: {
     fontSize: 14,
-    color: '#000',
+    color: "#000",
     marginRight: 2,
   },
   gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: GRID_GAP, 
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: GRID_GAP,
   },
   cardContainer: {
     width: ITEM_WIDTH,
-    height: ITEM_WIDTH * 0.85, 
-    backgroundColor: '#f5f5f5', 
+    height: ITEM_WIDTH * 0.85,
+    backgroundColor: "#f5f5f5",
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   cardImage: {
-    width: '100%', 
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: 60,
   },
   emptyText: {
     marginTop: 10,
-    color: '#999',
+    color: "#999",
     fontSize: 14,
-  }
+  },
 });

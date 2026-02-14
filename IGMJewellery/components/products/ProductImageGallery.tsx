@@ -2,27 +2,27 @@ import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation } from "@/store/apis/cart";
 import { useGetProductsQuery } from "@/store/apis/product";
 import {
-    useAddToWishlistMutation,
-    useGetWishlistQuery,
-    useRemoveFromWishlistMutation,
+  useAddToWishlistMutation,
+  useGetWishlistQuery,
+  useRemoveFromWishlistMutation,
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Dimensions,
-    FlatList,
-    Image,
-    Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  FlatList,
+  Image,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
+import { HapticButton } from "../basic components/hapticButton";
 
 interface ProductImageGalleryProps {
   images: string[];
@@ -53,18 +53,18 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     .filter(
       (p) =>
         p.id !== product.id &&
-        (p.brand === product.brand || p.productType === product.productType),
+        (p.brand === product.brand || p.productType === product.productType)
     )
     .slice(0, 10);
 
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.product.id === product.id,
+    (item) => item.product.id === product.id
   );
 
   const onScroll = (event: any) => {
     const slide = Math.ceil(
       event.nativeEvent.contentOffset.x /
-        event.nativeEvent.layoutMeasurement.width,
+        event.nativeEvent.layoutMeasurement.width
     );
     if (slide !== activeSlide) {
       setActiveSlide(slide);
@@ -85,7 +85,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
         if (error?.data === "Item already in wishlist") {
           Alert.alert(
             "Already in Wishlist",
-            "This item is already wishlisted.",
+            "This item is already wishlisted."
           );
         } else {
           Alert.alert("Error", "Failed to add to wishlist");
@@ -98,13 +98,13 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     <View style={styles.container}>
       {/* Header Actions (Share) Overlay */}
       <View style={styles.headerOverlay}>
-        <TouchableOpacity style={styles.iconBtn}>
+        <HapticButton style={styles.iconBtn}>
           <Ionicons
             name="share-social-outline"
             size={24}
             color={COLORS.primary}
           />
-        </TouchableOpacity>
+        </HapticButton>
       </View>
 
       <ScrollView
@@ -156,15 +156,15 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
 
         <View style={styles.mediaIcons}>
           {/* View Similar Icon */}
-          <TouchableOpacity
+          <HapticButton
             style={styles.mediaIcon}
             onPress={() => setShowSimilarModal(true)}
           >
             <Ionicons name="albums-outline" size={20} color={COLORS.primary} />
-          </TouchableOpacity>
+          </HapticButton>
 
           {/* Wishlist Heart Icon */}
-          <TouchableOpacity
+          <HapticButton
             style={styles.mediaIcon}
             onPress={handleToggleWishlist}
             disabled={isAddingToWishlist || isRemovingFromWishlist}
@@ -178,7 +178,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
                 color={COLORS.primary}
               />
             )}
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </View>
 
@@ -190,7 +190,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
         onRequestClose={() => setShowSimilarModal(false)}
       >
         <View style={styles.modalOverlay}>
-          <TouchableOpacity
+          <HapticButton
             style={styles.modalOverlayTouch}
             activeOpacity={1}
             onPress={() => setShowSimilarModal(false)}
@@ -201,12 +201,12 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
               <Text style={styles.modalTitle}>
                 View similar products across brands
               </Text>
-              <TouchableOpacity
+              <HapticButton
                 onPress={() => setShowSimilarModal(false)}
                 style={styles.closeButton}
               >
                 <Ionicons name="close" size={24} color={COLORS.text} />
-              </TouchableOpacity>
+              </HapticButton>
             </View>
 
             {/* Similar Products List */}
@@ -257,7 +257,7 @@ const SimilarProductCard = ({
   const [addToCart] = useAddToCartMutation();
 
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.product.id === product.id,
+    (item) => item.product.id === product.id
   );
 
   const handleToggleWishlist = async (e: any) => {
@@ -289,7 +289,7 @@ const SimilarProductCard = ({
   };
 
   return (
-    <TouchableOpacity
+    <HapticButton
       style={styles.similarCard}
       onPress={onPress}
       activeOpacity={0.9}
@@ -303,7 +303,7 @@ const SimilarProductCard = ({
         />
 
         {/* Wishlist Heart */}
-        <TouchableOpacity
+        <HapticButton
           style={styles.similarHeartIcon}
           onPress={handleToggleWishlist}
         >
@@ -312,7 +312,7 @@ const SimilarProductCard = ({
             size={18}
             color={isInWishlist ? COLORS.primary : COLORS.text}
           />
-        </TouchableOpacity>
+        </HapticButton>
       </View>
 
       {/* Product Details */}
@@ -334,7 +334,7 @@ const SimilarProductCard = ({
 
       {/* Action Buttons */}
       <View style={styles.similarActions}>
-        <TouchableOpacity style={styles.compareBtn} onPress={handleTryNow}>
+        <HapticButton style={styles.compareBtn} onPress={handleTryNow}>
           <Ionicons
             name="sparkles-outline"
             size={12}
@@ -342,15 +342,15 @@ const SimilarProductCard = ({
             style={{ marginRight: 4 }}
           />
           <Text style={styles.compareBtnText}>Try Now</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+        </HapticButton>
+        <HapticButton
           style={styles.addToCartBtnSmall}
           onPress={handleAddToCart}
         >
           <Text style={styles.addToCartBtnText}>Add to cart</Text>
-        </TouchableOpacity>
+        </HapticButton>
       </View>
-    </TouchableOpacity>
+    </HapticButton>
   );
 };
 

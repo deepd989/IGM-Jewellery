@@ -1,7 +1,8 @@
 import { OccasiomEnum, OCCASIONS } from "@/constants/occasions";
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { HapticButton } from "./basic components/hapticButton";
 import { SectionHeader } from "./section";
 
 export default function OccasionCardList() {
@@ -20,14 +21,14 @@ export default function OccasionCardList() {
       <SectionHeader value="Shop by Occasion" />
       <View style={styles.container}>
         {data.map((item, index) => (
-          <TouchableOpacity
+          <HapticButton
             key={index}
             style={styles.card}
             activeOpacity={0.7}
             onPress={() => redirect(item)}
           >
             <Text style={styles.label}>{item}</Text>
-          </TouchableOpacity>
+          </HapticButton>
         ))}
       </View>
     </>

@@ -1,12 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
 import { CartItem } from "./CartItem";
 import { OrderSummary } from "./OrderSummary";
@@ -14,6 +8,7 @@ import { OrderSummary } from "./OrderSummary";
 import { Product } from "@/interfaces/product.interface";
 import { useRouter } from "expo-router";
 import { useDismissFreebieMutation } from "../../store/apis/cart";
+import { HapticButton } from "../basic components/hapticButton";
 
 interface BagTabContentProps {
   cart: { product: Product; quantity: number }[];
@@ -71,9 +66,9 @@ export const BagTabContent: React.FC<BagTabContentProps> = ({
             <Text style={styles.freebieSubtitle}>{freebie.subtitle}</Text>
           </View>
 
-          <TouchableOpacity onPress={() => dismissFreebie()}>
+          <HapticButton onPress={() => dismissFreebie()}>
             <Ionicons name="close" size={20} color={COLORS.text} />
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       )}
 
@@ -89,7 +84,7 @@ export const BagTabContent: React.FC<BagTabContentProps> = ({
       ))}
 
       <Text style={styles.sectionHeader}>OFFERS & BENEFITS</Text>
-      <TouchableOpacity
+      <HapticButton
         style={styles.couponRow}
         onPress={() => router.push("/coupons")}
       >
@@ -103,7 +98,7 @@ export const BagTabContent: React.FC<BagTabContentProps> = ({
           </Text>
         </View>
         <Ionicons name="chevron-forward" size={20} color={COLORS.text} />
-      </TouchableOpacity>
+      </HapticButton>
 
       <Text style={styles.sectionHeader}>GIFTING ADD-ONS</Text>
       <ScrollView
@@ -112,7 +107,7 @@ export const BagTabContent: React.FC<BagTabContentProps> = ({
         style={styles.giftScroll}
       >
         {giftAddons.map((item) => (
-          <TouchableOpacity
+          <HapticButton
             key={item.id}
             style={styles.giftCard}
             onPress={() => toggleGiftAddon(item.id)}
@@ -133,7 +128,7 @@ export const BagTabContent: React.FC<BagTabContentProps> = ({
               {item.title}
             </Text>
             <Text style={styles.giftPrice}>₹{item.price}</Text>
-          </TouchableOpacity>
+          </HapticButton>
         ))}
       </ScrollView>
 
