@@ -1,91 +1,57 @@
 import { Product } from "@/interfaces/product.interface";
 import {
-    AddToWishlistRequest,
-    AddToWishlistResponse,
-    RemoveFromWishlistRequest,
-    WishlistItem,
-    WishlistState,
+  WishlistItem,
+  WishlistState,
 } from "@/interfaces/wishlist.interface";
-import { API_ACCESS_TOKEN, API_BASE_URL, API_ENDPOINTS } from "@/store/newApis/apiUrl.const";
+import {
+  clearWishlistStorage,
+  loadWishlist,
+  mergeGuestWishlist,
+  saveWishlist,
+} from "@/store/apis/wishlistStorage";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-// Default customer ID (will be replaced with actual auth in future)
-const DEFAULT_CUSTOMER_ID = 5;
-
-// Local state for wishlist items (API doesn't provide a get wishlist endpoint that we know of)
-let wishlistItems: WishlistItem[] = [];
-let compareList: Product[] = [];
+/**
+ * Module-level user ID for storage scoping.
+ * Set from auth context via setCurrentUserId().
+ * null = guest user.
+ */
+let currentUserId: string | null = null;
 
 /**
- * Add product to wishlist via API
+ * Call this from auth context when userId changes (login/logout).
+ * On login: merges any guest wishlist into the user's wishlist.
+ * On logout: clears in-memory state (storage persists for next login).
  */
-async function addToWishlistApi(
-  customerId: number,
-  product: Product,
-  qty: number = 1
-): Promise<AddToWishlistResponse> {
-  const productId = parseInt(product.id, 10);
-  
-  if (isNaN(productId)) {
-    throw new Error(`Invalid product ID: ${product.id}`);
+export async function setCurrentUserId(userId: string | null): Promise<void> {
+  const previousUserId = currentUserId;
+  currentUserId = userId;
+
+  if (userId && !previousUserId) {
+    // User just logged in — merge guest wishlist
+    const merged = await mergeGuestWishlist(userId);
+    wishlistItems = merged;
+  } else if (userId) {
+    // Already logged in user (or changed user) — load their wishlist
+    wishlistItems = await loadWishlist(userId);
+  } else {
+    // Logged out — load guest wishlist
+    wishlistItems = await loadWishlist(null);
   }
-
-  const requestBody: AddToWishlistRequest = {
-    customerId,
-    productId,
-    qty,
-  };
-
-  const response = await fetch(
-    `${API_BASE_URL}${API_ENDPOINTS.WISHLIST_ADD}`,
-    {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${API_ACCESS_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    }
-  );
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "Failed to add to wishlist");
-  }
-
-  return data as AddToWishlistResponse;
 }
 
+// In-memory state
+let wishlistItems: WishlistItem[] = [];
+let compareList: Product[] = [];
+let initialized = false;
+
 /**
- * Remove product from wishlist via API
+ * Ensure wishlist is loaded from storage on first access
  */
-async function removeFromWishlistApi(
-  customerId: number,
-  itemId: number
-): Promise<void> {
-  const requestBody: RemoveFromWishlistRequest = {
-    customerId,
-    itemId,
-  };
-
-  const response = await fetch(
-    `${API_BASE_URL}${API_ENDPOINTS.WISHLIST_REMOVE}`,
-    {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${API_ACCESS_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    }
-  );
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "Failed to remove from wishlist");
-  }
+async function ensureInitialized(): Promise<void> {
+  if (initialized) return;
+  wishlistItems = await loadWishlist(currentUserId);
+  initialized = true;
 }
 
 /**
@@ -103,26 +69,27 @@ export const wishlistApiService = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/" }),
   tagTypes: ["Wishlist"],
   endpoints: (builder) => ({
-    // Get wishlist (returns local state since there's no GET endpoint documented)
+    // Get wishlist (loads from phone storage on first call)
     getWishlist: builder.query<WishlistState, void>({
-      queryFn: () => {
-        console.log("getWishlist called, current state:", getWishlistState());
+      queryFn: async () => {
+        await ensureInitialized();
         return { data: getWishlistState() };
       },
       providesTags: ["Wishlist"],
     }),
 
-    // Add item to wishlist via API
+    // Add item to wishlist (persists to phone storage)
     addToWishlist: builder.mutation<WishlistState, Product>({
       queryFn: async (product) => {
         try {
-          // Check if already in wishlist locally
+          await ensureInitialized();
+
+          // Check if already in wishlist
           const exists = wishlistItems.some(
             (item) => item.product.id === product.id
           );
 
           if (exists) {
-            console.log("Product already in wishlist");
             return {
               error: {
                 status: 400,
@@ -131,18 +98,17 @@ export const wishlistApiService = createApi({
             };
           }
 
-          // Call API to add to wishlist
-          console.log("Adding to wishlist via API:", product.id);
-          const response = await addToWishlistApi(DEFAULT_CUSTOMER_ID, product);
-          console.log("API response:", response);
+          // Add to in-memory state
+          const newItem: WishlistItem = {
+            product,
+            addedAt: Date.now(),
+          };
+          wishlistItems = [...wishlistItems, newItem];
 
-          // Add to local state with itemId from API
-          wishlistItems = [
-            ...wishlistItems,
-            { product, itemId: response.item_id },
-          ];
+          // Persist to phone storage
+          await saveWishlist(currentUserId, wishlistItems);
 
-          console.log("addToWishlist - updated state:", getWishlistState());
+          console.log("addToWishlist — saved to storage, total:", wishlistItems.length);
           return { data: getWishlistState() };
         } catch (error: any) {
           console.error("addToWishlist error:", error);
@@ -157,15 +123,15 @@ export const wishlistApiService = createApi({
       invalidatesTags: ["Wishlist"],
     }),
 
-    // Remove item from wishlist via API
+    // Remove item from wishlist (persists to phone storage)
     removeFromWishlist: builder.mutation<WishlistState, string>({
       queryFn: async (productId) => {
         try {
-          // Find the item in local state to get the itemId
+          await ensureInitialized();
+
           const item = wishlistItems.find((i) => i.product.id === productId);
 
           if (!item) {
-            console.log("Product not found in wishlist");
             return {
               error: {
                 status: 404,
@@ -174,16 +140,15 @@ export const wishlistApiService = createApi({
             };
           }
 
-          // Call API to remove from wishlist
-          console.log("Removing from wishlist via API, itemId:", item.itemId);
-          await removeFromWishlistApi(DEFAULT_CUSTOMER_ID, item.itemId);
-
-          // Remove from local state
+          // Remove from in-memory state
           wishlistItems = wishlistItems.filter(
             (i) => i.product.id !== productId
           );
 
-          console.log("removeFromWishlist - updated state:", getWishlistState());
+          // Persist to phone storage
+          await saveWishlist(currentUserId, wishlistItems);
+
+          console.log("removeFromWishlist — saved to storage, total:", wishlistItems.length);
           return { data: getWishlistState() };
         } catch (error: any) {
           console.error("removeFromWishlist error:", error);
@@ -198,16 +163,14 @@ export const wishlistApiService = createApi({
       invalidatesTags: ["Wishlist"],
     }),
 
-    // Toggle item in compare list (local only, not API-backed)
+    // Toggle item in compare list (in-memory only, not persisted)
     toggleCompare: builder.mutation<WishlistState, Product>({
       queryFn: (product) => {
         const exists = compareList.some((item) => item.id === product.id);
 
         if (exists) {
-          // Remove from compare
           compareList = compareList.filter((item) => item.id !== product.id);
         } else {
-          // Add to compare (max 2 items)
           if (compareList.length >= 2) {
             return {
               error: {
@@ -216,34 +179,29 @@ export const wishlistApiService = createApi({
               },
             };
           }
-
           compareList = [...compareList, product];
         }
 
-        console.log("toggleCompare - updated state:", getWishlistState());
         return { data: getWishlistState() };
       },
       invalidatesTags: ["Wishlist"],
     }),
 
-    // Clear compare list (local only)
+    // Clear compare list (in-memory only)
     clearCompare: builder.mutation<WishlistState, void>({
       queryFn: () => {
         compareList = [];
-        console.log("clearCompare - updated state:", getWishlistState());
         return { data: getWishlistState() };
       },
       invalidatesTags: ["Wishlist"],
     }),
 
-    // Clear entire wishlist (would need API support for full implementation)
+    // Clear entire wishlist (clears both memory and phone storage)
     clearWishlist: builder.mutation<WishlistState, void>({
-      queryFn: () => {
-        // Note: This only clears local state. For full implementation,
-        // we'd need to call removeFromWishlist for each item
+      queryFn: async () => {
         wishlistItems = [];
         compareList = [];
-        console.log("clearWishlist - updated state:", getWishlistState());
+        await clearWishlistStorage(currentUserId);
         return { data: getWishlistState() };
       },
       invalidatesTags: ["Wishlist"],

@@ -1,11 +1,12 @@
 // src/auth/AuthContext.tsx
+import { setCurrentUserId } from "@/store/apis/wishlist";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import {
-  getAuth,
-  getGlobalApiUrl,
-  removeAuth,
-  saveAuth,
-  setGlobalApiUrl,
+    getAuth,
+    getGlobalApiUrl,
+    removeAuth,
+    saveAuth,
+    setGlobalApiUrl,
 } from "./authStorage";
 
 type AuthContextType = {
@@ -42,6 +43,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUserId(auth.userId);
       }
 
+      // Initialize wishlist storage with current user (or guest)
+      await setCurrentUserId(auth?.userId || null);
+
       setIsLoading(false);
     };
 
@@ -59,12 +63,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await saveAuth({ token, userId });
     setToken(token);
     setUserId(userId);
+    // Sync wishlist storage to logged-in user (merges guest wishlist)
+    await setCurrentUserId(userId);
   };
 
   const logout = async () => {
     await removeAuth();
     setToken(null);
     setUserId(null);
+    // Reset wishlist storage to guest
+    await setCurrentUserId(null);
   };
 
   const setApiUrl = async (url: string) => {
