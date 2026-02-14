@@ -73,7 +73,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const isInWishlist =
     propIsInWishlist !== undefined
       ? propIsInWishlist
-      : wishlistData?.items.some((item) => item.id === product.id);
+      : wishlistData?.items.some((item) => item.product.id === product.id);
 
   const isGrid = viewMode === "grid";
   const cardWidth = isGrid

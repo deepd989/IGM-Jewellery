@@ -15,7 +15,6 @@ import {
   Alert,
   FlatList,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   View,
@@ -32,7 +31,8 @@ export default function WishlistScreen() {
   const [toggleCompare] = useToggleCompareMutation();
   const [clearCompare] = useClearCompareMutation();
 
-  const wishlistItems = wishlistData?.items || [];
+  // Extract products from wishlist items (WishlistItem contains { product, itemId })
+  const wishlistItems = wishlistData?.items?.map((item) => item.product) || [];
   const compareList = wishlistData?.compareList || [];
 
   const toggleViewMode = () => {

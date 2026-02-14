@@ -2,6 +2,7 @@
  * Profile-related interface
  */
 export interface Profile {
+  customerId?: number; // Magento customer ID for API operations
   name: string;
   phone: string;
   email: string;

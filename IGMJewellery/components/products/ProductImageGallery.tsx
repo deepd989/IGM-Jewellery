@@ -58,7 +58,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
     .slice(0, 10);
 
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.id === product.id
+    (item) => item.product.id === product.id
   );
 
   const onScroll = (event: any) => {
@@ -257,7 +257,7 @@ const SimilarProductCard = ({
   const [addToCart] = useAddToCartMutation();
 
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.id === product.id
+    (item) => item.product.id === product.id
   );
 
   const handleToggleWishlist = async (e: any) => {
