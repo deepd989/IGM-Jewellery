@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
+  Alert,
   Dimensions,
   Modal,
   ScrollView,
@@ -8,6 +9,8 @@ import {
   Text,
   View,
 } from "react-native";
+import { useAuth } from "../../auth/authContext";
+import { useSendGiftMutation } from "../../store/apis/giftApi";
 import { HapticButton } from "../basic components/hapticButton";
 import RibbonGiftCard from "./ribbonGiftCard";
 
@@ -26,12 +29,39 @@ export default function EGiftCardScreen({
   occasion,
   message,
 }: EGiftCardScreenProps) {
+  const { userId } = useAuth();
   const [paymentMethod, setPaymentMethod] = useState("Pay using");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [sendGiftMethod] = useSendGiftMutation();
   const router = useRouter();
+  console.log("EGiftCardScreen Props:", {
+    phoneNumber,
+    amount,
+    occasion,
+    message,
+  });
 
-  const handleBuyGift = () => {
-    setShowSuccessModal(true);
+  const handleBuyGift = async () => {
+    try {
+      await sendGiftMethod({
+        userid: userId as string,
+        amount,
+        message,
+        receiverId: phoneNumber,
+        title: `Happy ${occasion}!`,
+      }).unwrap();
+
+      setShowSuccessModal(true);
+      //Todo: fetch user instance again to get the latest balance
+    } catch (error: any) {
+      // RTK Query errors usually follow a specific structure:
+      // { data: { error: "message" }, status: 404 }
+      const errorMessage =
+        error?.data?.error || "Something went wrong while sending the gift.";
+
+      Alert.alert("Gift Failed", errorMessage, [{ text: "OK" }]);
+      console.error("Send Gift Error:", error);
+    }
   };
 
   const handleContinueShopping = () => {

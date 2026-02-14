@@ -40,12 +40,12 @@ export default function RedeemGiftStep2() {
 
   // Extract params with defaults
   const cardId = params.id as string;
-  const senderName = params.senderName as string;
+  const senderName = params.senderid as string;
   const giftMessage = params.giftMessage as string;
   const date = params.date as string;
   const amount = params.amount as string;
   const title = params.title as string;
-  const senderPhone = params.senderPhone as string;
+  const senderPhone = params.senderid as string;
   const [deleteGift] = useDeleteGiftMutation();
 
   const handleCopyCardNumber = () => {

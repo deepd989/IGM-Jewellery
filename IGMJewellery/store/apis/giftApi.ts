@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export interface GiftCardData {
-  id: number;
+  id?: number;
   date: string;
   type: string;
   title: string;
@@ -9,15 +9,14 @@ export interface GiftCardData {
   status: "unclaimed" | "claimed" | "redeemed" | "expired";
   senderName: string;
   giftMessage: string;
-  senderPhone: string;
+  senderid: string;
 }
 
 export interface SendGiftRequest {
   receiverId: string;
   amount: number;
   message: string;
-  senderName: string;
-  // senderPhone: string; this should be there
+  title: string;
 }
 
 interface GiftsState {
@@ -34,7 +33,7 @@ const MOCK_GIFTS: GiftCardData[] = [
     status: "unclaimed",
     senderName: "Alice",
     giftMessage: "Wishing you a day filled with love and joy!",
-    senderPhone: "+91 9876543210",
+    senderid: "+91 9876543210",
   },
   {
     id: 2,
@@ -45,7 +44,7 @@ const MOCK_GIFTS: GiftCardData[] = [
     status: "unclaimed",
     senderName: "Bob",
     giftMessage: "Hope you feel better soon!",
-    senderPhone: "+91 9876543220",
+    senderid: "+91 9876543220",
   },
   {
     id: 3,
@@ -56,7 +55,7 @@ const MOCK_GIFTS: GiftCardData[] = [
     status: "redeemed",
     senderName: "Charlie",
     giftMessage: "Well done on your achievement!",
-    senderPhone: "+91 9876543221",
+    senderid: "+91 9876543221",
   },
   {
     id: 4,
@@ -67,7 +66,7 @@ const MOCK_GIFTS: GiftCardData[] = [
     status: "expired",
     senderName: "Diana",
     giftMessage: "Cheers to many more years together!",
-    senderPhone: "+91 9876543223",
+    senderid: "+91 9876543223",
   },
 ];
 
@@ -76,12 +75,15 @@ let currentState: GiftsState = { gifts: [...MOCK_GIFTS] };
 
 export const giftApi = createApi({
   reducerPath: "giftApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3000/" }),
   tagTypes: ["Gifts"],
   endpoints: (builder) => ({
     // 1. Fetch all gifts
-    getAllGifts: builder.query<GiftsState, void>({
-      queryFn: () => ({ data: currentState }),
+    getAllGifts: builder.query<GiftCardData[], string>({
+      query: (userid) => `users/${userid}`,
+      transformResponse: (response: { gifts: GiftCardData[] }) => {
+        return response.gifts;
+      },
       providesTags: ["Gifts"],
     }),
 
@@ -107,33 +109,24 @@ export const giftApi = createApi({
       invalidatesTags: ["Gifts"],
     }),
 
-    // 3. Send a gift
-    sendGift: builder.mutation<GiftCardData, SendGiftRequest>({
-      queryFn: (giftDetails: SendGiftRequest) => {
-        // Find the highest current ID to avoid duplicates
-        const newId = currentState.gifts.reduce(
-          (max, g) => Math.max(max, g.id),
-          0
-        );
-
-        const newGift: GiftCardData = {
-          id: newId + 1,
-          date: new Date().toLocaleDateString("en-US", {
-            month: "2-digit",
-            day: "2-digit",
-          }),
-          type: "IGM Gift Card",
-          title: "Gift Card",
-          amount: giftDetails.amount,
-          status: "unclaimed",
-          senderName: giftDetails.senderName,
-          giftMessage: giftDetails.message,
-          senderPhone: "",
-        };
-        // currentState.gifts = [...currentState.gifts, newGift];
-
-        return { data: newGift };
-      },
+    sendGift: builder.mutation<
+      GiftCardData,
+      SendGiftRequest & { userid: string }
+    >({
+      query: ({ userid, ...giftDetails }) => ({
+        url: "/addGift",
+        method: "POST",
+        body: {
+          userid: userid,
+          gift: {
+            date: new Date().toISOString(),
+            title: giftDetails.title,
+            amount: giftDetails.amount,
+            giftMessage: giftDetails.message,
+            receiverid: giftDetails.receiverId,
+          },
+        },
+      }),
       invalidatesTags: ["Gifts"],
     }),
   }),
