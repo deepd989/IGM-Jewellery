@@ -1,6 +1,9 @@
 export const API_URL = "https://www.experapps.xyz/rest/";
 export const API_BASE_URL = "https://www.experapps.xyz/rest/all/V1";
 
+// Local backend server that serves pre-resolved product data
+export const BACKEND_BASE_URL = "http://localhost:3000";
+
 // Access token for API authentication
 export const API_ACCESS_TOKEN = "i3c179msh3zyik4943d2cepu3l0hxezg";
 

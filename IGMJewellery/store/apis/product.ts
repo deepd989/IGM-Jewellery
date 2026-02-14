@@ -1,17 +1,8 @@
 import { ProductType } from "@/enums/productType.enum";
 import { Product } from "@/interfaces/product.interface";
-import { attributeResolver } from "@/magentoModels/conversionHelpers/attributeResolver";
-import { convertMagentoProducts } from "@/magentoModels/conversionHelpers/productConverter";
+import { convertResolvedProducts } from "@/magentoModels/conversionHelpers/productConverter";
 import { MagentoProduct } from "@/magentoModels/product.model";
-import {
-  SellerListItem,
-  SellerListResponse,
-} from "@/magentoModels/seller.model";
-import {
-  API_ACCESS_TOKEN,
-  API_BASE_URL,
-  API_ENDPOINTS,
-} from "@/store/newApis/apiUrl.const";
+import { BACKEND_BASE_URL } from "@/store/newApis/apiUrl.const";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // Cache for products fetched from API
@@ -20,67 +11,22 @@ let cacheTimestamp: number = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
 
 /**
- * Fetch all sellers from Magento API
+ * Response shape from /getAllProducts endpoint
+ * Each item has a pre-resolved product and the seller ID
  */
-async function fetchSellers(): Promise<SellerListItem[]> {
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}${API_ENDPOINTS.SELLERS}?searchCriteria=string`,
-      {
-        headers: {
-          Authorization: `Bearer ${API_ACCESS_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!response.ok) {
-      console.error(`Failed to fetch sellers: ${response.status}`);
-      return [];
-    }
-
-    const data: SellerListResponse = await response.json();
-    return data.items || [];
-  } catch (error) {
-    console.error("Error fetching sellers:", error);
-    return [];
-  }
+interface AllProductsResponseItem {
+  updated: MagentoProduct;
+  sellerId: string;
 }
 
 /**
- * Fetch products for a specific seller
- */
-async function fetchSellerProducts(
-  sellerId: string
-): Promise<MagentoProduct[]> {
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}${API_ENDPOINTS.SELLER_PRODUCTS(sellerId)}`,
-      {
-        headers: {
-          Authorization: `Bearer ${API_ACCESS_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!response.ok) {
-      console.error(
-        `Failed to fetch products for seller ${sellerId}: ${response.status}`
-      );
-      return [];
-    }
-
-    const products: MagentoProduct[] = await response.json();
-    return products || [];
-  } catch (error) {
-    console.error(`Error fetching products for seller ${sellerId}:`, error);
-    return [];
-  }
-}
-
-/**
- * Fetch all products from all sellers
+ * Fetch all products from the backend /getAllProducts endpoint.
+ * This single call replaces the old multi-step flow of:
+ *   1. Fetching sellers
+ *   2. Fetching products per seller
+ *   3. Resolving custom attribute IDs to labels
+ *
+ * The backend now handles all of that and returns pre-resolved products.
  */
 async function fetchAllProducts(): Promise<Product[]> {
   // Check cache first
@@ -90,38 +36,33 @@ async function fetchAllProducts(): Promise<Product[]> {
     return cachedProducts;
   }
 
-  console.log("Fetching products from Magento API...");
+  console.log("Fetching products from /getAllProducts...");
 
-  // Initialize attribute resolver first
-  await attributeResolver.initialize();
+  try {
+    const response = await fetch(`${BACKEND_BASE_URL}/getAllProducts`);
 
-  // Fetch all sellers
-  const sellers = await fetchSellers();
-  console.log(`Found ${sellers.length} sellers`);
+    if (!response.ok) {
+      console.error(`Failed to fetch products: ${response.status}`);
+      return cachedProducts || [];
+    }
 
-  // Fetch products for each seller in parallel
-  const allMagentoProducts: MagentoProduct[] = [];
+    const data: AllProductsResponseItem[] = await response.json();
+    console.log(`Received ${data.length} products from backend`);
 
-  await Promise.all(
-    sellers.map(async (sellerItem) => {
-      const sellerId = sellerItem.seller_data.seller_id;
-      const products = await fetchSellerProducts(sellerId);
-      console.log(`Seller ${sellerId}: ${products.length} products`);
-      allMagentoProducts.push(...products);
-    })
-  );
+    // Convert pre-resolved products to app's Product interface
+    const appProducts = convertResolvedProducts(data);
 
-  console.log(`Total Magento products: ${allMagentoProducts.length}`);
+    // Update cache
+    cachedProducts = appProducts;
+    cacheTimestamp = now;
 
-  // Convert to app's Product interface
-  const appProducts = convertMagentoProducts(allMagentoProducts);
-
-  // Update cache
-  cachedProducts = appProducts;
-  cacheTimestamp = now;
-
-  console.log(`Converted ${appProducts.length} products`);
-  return appProducts;
+    console.log(`Converted ${appProducts.length} products`);
+    return appProducts;
+  } catch (error) {
+    console.error("Error fetching products from /getAllProducts:", error);
+    // Return stale cache if available, otherwise empty
+    return cachedProducts || [];
+  }
 }
 
 interface ProductsQueryParams {

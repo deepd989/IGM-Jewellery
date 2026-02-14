@@ -4,7 +4,6 @@ import { Brand } from "@/enums/brand.enum";
 import { ProductType } from "@/enums/productType.enum";
 import { Product, ProductDetails } from "@/interfaces/product.interface";
 import { CustomAttribute, MagentoProduct } from "@/magentoModels/product.model";
-import { attributeResolver } from "./attributeResolver";
 
 // Default placeholder image when no images available
 const DEFAULT_PRODUCT_IMAGE = "https://via.placeholder.com/300x300?text=No+Image";
@@ -58,8 +57,16 @@ const OCCASION_MAP: Record<string, OccasiomEnum> = {
   "festival": OccasiomEnum.Diwali,
 };
 
+// Map user_type values to Gender enum
+const GENDER_MAP: Record<string, Gender> = {
+  "male": Gender.male,
+  "female": Gender.female,
+  "unisex": Gender.unisex,
+};
+
 /**
  * Get a custom attribute value from product
+ * Works with both raw and pre-resolved custom_attributes
  */
 function getCustomAttribute(
   product: MagentoProduct,
@@ -72,23 +79,30 @@ function getCustomAttribute(
 }
 
 /**
- * Parse product type from sub_cat or product name
+ * Parse product type from sub_cat (pre-resolved label) or product name
  */
 function parseProductType(product: MagentoProduct): ProductType {
-  // Try to get from sub_cat attribute
+  // Try to get from sub_cat attribute (already resolved to label like "Bangles", "Cocktail")
   const subCat = getCustomAttribute(product, "sub_cat");
-  if (subCat) {
-    const resolvedLabel = attributeResolver.resolve("sub_cat", subCat).toLowerCase();
-    const mappedType = PRODUCT_TYPE_MAP[resolvedLabel];
+  if (subCat && typeof subCat === "string") {
+    const mappedType = PRODUCT_TYPE_MAP[subCat.toLowerCase()];
     if (mappedType) return mappedType;
   }
 
-  // Try to get from p_type attribute
+  // Try to get from p_type attribute (already resolved to label like "Studded")
   const pType = getCustomAttribute(product, "p_type");
-  if (pType) {
-    const resolvedLabel = attributeResolver.resolve("p_type", pType).toLowerCase();
-    const mappedType = PRODUCT_TYPE_MAP[resolvedLabel];
+  if (pType && typeof pType === "string") {
+    const mappedType = PRODUCT_TYPE_MAP[pType.toLowerCase()];
     if (mappedType) return mappedType;
+  }
+
+  // Try from category_ids (already resolved to labels like ["Rings", "Engagement"])
+  const categoryIds = getCustomAttribute(product, "category_ids");
+  if (Array.isArray(categoryIds)) {
+    for (const cat of categoryIds) {
+      const mappedType = PRODUCT_TYPE_MAP[String(cat).toLowerCase()];
+      if (mappedType) return mappedType;
+    }
   }
 
   // Fallback: parse from product name
@@ -104,25 +118,22 @@ function parseProductType(product: MagentoProduct): ProductType {
 }
 
 /**
- * Parse brand from seller_id
+ * Parse brand from sellerId (passed from the API response wrapper)
  */
-function parseBrand(product: MagentoProduct): Brand {
-  const sellerId = getCustomAttribute(product, "seller_id");
-  if (sellerId) {
-    const brand = SELLER_TO_BRAND_MAP[String(sellerId)];
-    if (brand) return brand;
-  }
+function parseBrandFromSellerId(sellerId: string): Brand {
+  const brand = SELLER_TO_BRAND_MAP[sellerId];
+  if (brand) return brand;
   return Brand.Tanishq; // Default brand
 }
 
 /**
- * Parse occasions from occasion_tags
+ * Parse occasions from occasion_tags (pre-resolved label)
  */
 function parseOccasions(product: MagentoProduct): OccasiomEnum[] {
   const occasionTags = getCustomAttribute(product, "occasion_tags");
   if (!occasionTags) return [];
 
-  const resolved = attributeResolver.resolve("occasion_tags", occasionTags).toLowerCase();
+  const resolved = String(occasionTags).toLowerCase();
   const occasions: OccasiomEnum[] = [];
 
   for (const [keyword, occasion] of Object.entries(OCCASION_MAP)) {
@@ -135,9 +146,27 @@ function parseOccasions(product: MagentoProduct): OccasiomEnum[] {
 }
 
 /**
- * Get description from meta_description or generate default
+ * Parse gender from user_type attribute (pre-resolved label)
+ */
+function parseGender(product: MagentoProduct): Gender {
+  const userType = getCustomAttribute(product, "user_type");
+  if (userType && typeof userType === "string") {
+    const mapped = GENDER_MAP[userType.toLowerCase()];
+    if (mapped) return mapped;
+  }
+  return Gender.unisex; // Default to unisex
+}
+
+/**
+ * Get description from short_description, meta_description, or generate default
  */
 function getDescription(product: MagentoProduct): string {
+  // Try short_description first (may contain HTML, strip tags)
+  const shortDesc = getCustomAttribute(product, "short_description");
+  if (shortDesc && typeof shortDesc === "string" && shortDesc.trim()) {
+    return shortDesc.replace(/<\/?[^>]+(>|$)/g, "").trim();
+  }
+
   const metaDesc = getCustomAttribute(product, "meta_description");
   if (metaDesc && typeof metaDesc === "string" && metaDesc.trim()) {
     return metaDesc.trim();
@@ -150,11 +179,8 @@ function getDescription(product: MagentoProduct): string {
  */
 function getThumbnailUrls(product: MagentoProduct): string[] {
   if (product.media_gallery_entries && product.media_gallery_entries.length > 0) {
-    // Media gallery entries typically have a file path that needs base URL
-    // For now, return placeholder since actual image URLs may need different handling
     return product.media_gallery_entries.map((entry: any) => {
       if (entry.file) {
-        // Construct full URL - this may need adjustment based on actual API
         return `https://www.experapps.xyz/media/catalog/product${entry.file}`;
       }
       return DEFAULT_PRODUCT_IMAGE;
@@ -164,27 +190,21 @@ function getThumbnailUrls(product: MagentoProduct): string[] {
 }
 
 /**
- * Generate tags from product attributes
+ * Generate tags from product attributes (pre-resolved labels)
  */
 function generateTags(product: MagentoProduct): string[] {
   const tags: string[] = [];
 
-  // Add metal type tag
+  // Add metal type tag (already resolved label like "Gold")
   const metalType = getCustomAttribute(product, "metal_type");
-  if (metalType) {
-    const resolvedMetal = attributeResolver.resolve("metal_type", metalType);
-    if (resolvedMetal && resolvedMetal !== String(metalType)) {
-      tags.push(resolvedMetal.toLowerCase());
-    }
+  if (metalType && typeof metalType === "string") {
+    tags.push(metalType.toLowerCase());
   }
 
-  // Add design style tag
-  const designStyle = getCustomAttribute(product, "design_style");
-  if (designStyle) {
-    const resolvedStyle = attributeResolver.resolve("design_style", designStyle);
-    if (resolvedStyle && resolvedStyle !== String(designStyle)) {
-      tags.push(resolvedStyle.toLowerCase());
-    }
+  // Add stone type tag
+  const stoneType = getCustomAttribute(product, "stone_type");
+  if (stoneType && typeof stoneType === "string") {
+    tags.push(stoneType.toLowerCase());
   }
 
   // Check if new (created within last 30 days)
@@ -199,58 +219,32 @@ function generateTags(product: MagentoProduct): string[] {
 }
 
 /**
- * Extract and resolve product details from custom attributes
+ * Extract product details from pre-resolved custom attributes
+ * All values are already human-readable strings
  */
 function extractProductDetails(product: MagentoProduct): ProductDetails {
   const details: ProductDetails = {};
 
-  // Metal type (resolved from ID to label)
+  // Metal type (already resolved, e.g. "Gold")
   const metalType = getCustomAttribute(product, "metal_type");
-  if (metalType) {
-    const resolved = attributeResolver.resolve("metal_type", metalType);
-    if (resolved && resolved !== String(metalType)) {
-      details.metalType = resolved;
-    }
+  if (metalType && typeof metalType === "string") {
+    details.metalType = metalType;
   }
 
-  // Metal purity - check gold, platinum, or silver
+  // Metal purity (already resolved, e.g. "18K", "14K")
   const goldPurity = getCustomAttribute(product, "gold_purity");
-  if (goldPurity) {
-    const resolved = attributeResolver.resolve("gold_purity", goldPurity);
-    if (resolved && resolved !== String(goldPurity)) {
-      details.metalPurity = resolved;
-    }
-  }
-  if (!details.metalPurity) {
-    const platinumPurity = getCustomAttribute(product, "platinum_purity");
-    if (platinumPurity) {
-      const resolved = attributeResolver.resolve("platinum_purity", platinumPurity);
-      if (resolved && resolved !== String(platinumPurity)) {
-        details.metalPurity = resolved;
-      }
-    }
-  }
-  if (!details.metalPurity) {
-    const silverPurity = getCustomAttribute(product, "silver_purity");
-    if (silverPurity) {
-      const resolved = attributeResolver.resolve("silver_purity", silverPurity);
-      if (resolved && resolved !== String(silverPurity)) {
-        details.metalPurity = resolved;
-      }
-    }
+  if (goldPurity && typeof goldPurity === "string") {
+    details.metalPurity = goldPurity;
   }
 
-  // Metal finish
+  // Metal finish (already resolved, e.g. "Satin")
   const metalFinish = getCustomAttribute(product, "metal_finish");
-  if (metalFinish) {
-    const resolved = attributeResolver.resolve("metal_finish", metalFinish);
-    if (resolved && resolved !== String(metalFinish)) {
-      details.metalFinish = resolved;
-    }
+  if (metalFinish && typeof metalFinish === "string") {
+    details.metalFinish = metalFinish;
   }
 
-  // Weights (numeric values, format with unit)
-  const netWeight = getCustomAttribute(product, "net_wt");
+  // Net weight
+  const netWeight = getCustomAttribute(product, "net_weight");
   if (netWeight && typeof netWeight === "string") {
     const numVal = parseFloat(netWeight);
     if (!isNaN(numVal) && numVal > 0) {
@@ -258,7 +252,8 @@ function extractProductDetails(product: MagentoProduct): ProductDetails {
     }
   }
 
-  const grossWeight = getCustomAttribute(product, "gross_wt");
+  // Gross weight
+  const grossWeight = getCustomAttribute(product, "gross_weight");
   if (grossWeight && typeof grossWeight === "string") {
     const numVal = parseFloat(grossWeight);
     if (!isNaN(numVal) && numVal > 0) {
@@ -266,8 +261,8 @@ function extractProductDetails(product: MagentoProduct): ProductDetails {
     }
   }
 
-  // Dimensions (numeric values, format with unit)
-  const height = getCustomAttribute(product, "dim_height");
+  // Dimensions - use ring_height_mm, ring_width_mm, ring_depth_mm
+  const height = getCustomAttribute(product, "ring_height_mm");
   if (height && typeof height === "string") {
     const numVal = parseFloat(height);
     if (!isNaN(numVal) && numVal > 0) {
@@ -275,7 +270,7 @@ function extractProductDetails(product: MagentoProduct): ProductDetails {
     }
   }
 
-  const width = getCustomAttribute(product, "dim_width");
+  const width = getCustomAttribute(product, "ring_width_mm");
   if (width && typeof width === "string") {
     const numVal = parseFloat(width);
     if (!isNaN(numVal) && numVal > 0) {
@@ -283,7 +278,7 @@ function extractProductDetails(product: MagentoProduct): ProductDetails {
     }
   }
 
-  const depth = getCustomAttribute(product, "dim_depth");
+  const depth = getCustomAttribute(product, "ring_depth_mm");
   if (depth && typeof depth === "string") {
     const numVal = parseFloat(depth);
     if (!isNaN(numVal) && numVal > 0) {
@@ -291,7 +286,7 @@ function extractProductDetails(product: MagentoProduct): ProductDetails {
     }
   }
 
-  // Diamond weight
+  // Diamond weight (already a numeric string like "0.9")
   const diamondWeight = getCustomAttribute(product, "d1_wt");
   if (diamondWeight && typeof diamondWeight === "string") {
     const numVal = parseFloat(diamondWeight);
@@ -300,31 +295,22 @@ function extractProductDetails(product: MagentoProduct): ProductDetails {
     }
   }
 
-  // Diamond clarity (resolved from ID to label)
+  // Diamond clarity (already resolved, e.g. "VVS")
   const d1Clarity = getCustomAttribute(product, "d1_clarity");
-  if (d1Clarity) {
-    const resolved = attributeResolver.resolve("d1_clarity", d1Clarity);
-    if (resolved && resolved !== String(d1Clarity)) {
-      details.diamondClarity = resolved;
-    }
+  if (d1Clarity && typeof d1Clarity === "string") {
+    details.diamondClarity = d1Clarity;
   }
 
-  // Diamond color (resolved from ID to label)
+  // Diamond color (already resolved, e.g. "G - H")
   const d1Color = getCustomAttribute(product, "d1_colour");
-  if (d1Color) {
-    const resolved = attributeResolver.resolve("d1_colour", d1Color);
-    if (resolved && resolved !== String(d1Color)) {
-      details.diamondColor = resolved;
-    }
+  if (d1Color && typeof d1Color === "string") {
+    details.diamondColor = d1Color;
   }
 
-  // Stone type
-  const stoneType = getCustomAttribute(product, "s_type");
-  if (stoneType) {
-    const resolved = attributeResolver.resolve("s_type", stoneType);
-    if (resolved && resolved !== String(stoneType)) {
-      details.stoneType = resolved;
-    }
+  // Stone type (already resolved, e.g. "Natural Diamond")
+  const sType = getCustomAttribute(product, "s_type");
+  if (sType && typeof sType === "string") {
+    details.stoneType = sType;
   }
 
   return details;
@@ -341,9 +327,39 @@ function isNewProduct(product: MagentoProduct): boolean {
 }
 
 /**
- * Convert MagentoProduct to app's Product interface
+ * Compute discounted price from price, discount, and additional_discount
  */
-export function convertMagentoProduct(magentoProduct: MagentoProduct): Product {
+function computeDiscountedPrice(product: MagentoProduct): number {
+  const price = product.price;
+  const discount = parseFloat(String(getCustomAttribute(product, "discount") || "0"));
+  const additionalDiscount = parseFloat(String(getCustomAttribute(product, "additional_discount") || "0"));
+  
+  const totalDiscount = (isNaN(discount) ? 0 : discount) + (isNaN(additionalDiscount) ? 0 : additionalDiscount);
+  const discounted = price - totalDiscount;
+  return discounted > 0 ? discounted : price;
+}
+
+/**
+ * Get product rating from p_ratings attribute
+ */
+function getRating(product: MagentoProduct): number {
+  const pRatings = getCustomAttribute(product, "p_ratings");
+  if (pRatings) {
+    const parsed = parseFloat(String(pRatings));
+    if (!isNaN(parsed) && parsed > 0) return parsed;
+  }
+  // Fallback: random rating between 4.0-5.0
+  return 4.0 + Math.random() * 1.0;
+}
+
+/**
+ * Convert a pre-resolved MagentoProduct to app's Product interface
+ * Used with the /getAllProducts endpoint response
+ * 
+ * @param magentoProduct - The pre-resolved product from the API (custom_attributes already have labels)
+ * @param sellerId - The seller ID from the response wrapper (e.g., "4")
+ */
+export function convertResolvedProduct(magentoProduct: MagentoProduct, sellerId: string): Product {
   return {
     id: String(magentoProduct.id),
     title: magentoProduct.name,
@@ -351,21 +367,39 @@ export function convertMagentoProduct(magentoProduct: MagentoProduct): Product {
     description: getDescription(magentoProduct),
     productType: parseProductType(magentoProduct),
     givenPrice: magentoProduct.price,
-    discountedPrice: magentoProduct.price, // No discount data in API, use same price
-    brand: parseBrand(magentoProduct),
+    discountedPrice: computeDiscountedPrice(magentoProduct),
+    brand: parseBrandFromSellerId(sellerId),
     tags: generateTags(magentoProduct),
     thumbnailUrls: getThumbnailUrls(magentoProduct),
     isNew: isNewProduct(magentoProduct),
     sku: magentoProduct.sku,
-    rating: 4.0 + Math.random() * 1.0, // Generate random rating between 4.0-5.0
+    rating: getRating(magentoProduct),
     occaision: parseOccasions(magentoProduct),
-    gender: Gender.unisex, // Default to unisex as API doesn't provide gender
+    gender: parseGender(magentoProduct),
     productDetails: extractProductDetails(magentoProduct),
   };
 }
 
 /**
- * Convert array of MagentoProducts to app's Product interface
+ * Convert array of pre-resolved products from /getAllProducts response
+ */
+export function convertResolvedProducts(
+  items: Array<{ updated: MagentoProduct; sellerId: string }>
+): Product[] {
+  return items.map((item) => convertResolvedProduct(item.updated, item.sellerId));
+}
+
+// ---- Legacy converters (kept for backward compatibility if needed) ----
+
+/**
+ * @deprecated Use convertResolvedProduct instead. This was used with raw Magento API data.
+ */
+export function convertMagentoProduct(magentoProduct: MagentoProduct): Product {
+  return convertResolvedProduct(magentoProduct, "4"); // Default seller
+}
+
+/**
+ * @deprecated Use convertResolvedProducts instead. This was used with raw Magento API data.
  */
 export function convertMagentoProducts(magentoProducts: MagentoProduct[]): Product[] {
   return magentoProducts.map(convertMagentoProduct);
