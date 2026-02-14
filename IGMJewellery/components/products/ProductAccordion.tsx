@@ -71,6 +71,22 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
     router.push(`/brandProfile/${brandKey}`);
   };
 
+  // Extract product details with fallbacks
+  const details = product.productDetails || {};
+  const metalPurity = details.metalPurity || "N/A";
+  const metalType = details.metalType || "N/A";
+  const netWeight = details.netWeight || "N/A";
+  const grossWeight = details.grossWeight || "N/A";
+  const diamondWeight = details.diamondWeight || "N/A";
+  const diamondInfo = [details.diamondColor, details.diamondClarity]
+    .filter(Boolean)
+    .join(" ") || "N/A";
+  const width = details.width ? `${details.width} (Width)` : "N/A (Width)";
+  const height = details.height ? `${details.height} (Height)` : "N/A (Height)";
+  const grossWtDisplay = details.grossWeight
+    ? `${details.grossWeight} (Gross wt)`
+    : "N/A (Gross wt)";
+
   return (
     <View style={styles.container}>
       {/* Visual Menu Bar - purely illustrative based on screenshot */}
@@ -101,21 +117,21 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
         isOpen={openSection === "PRODUCT DETAIL"}
         onToggle={() => toggleSection("PRODUCT DETAIL")}
       >
-        <Text style={styles.sku}>SKU {product.sku || "UE399-G0000"}</Text>
+        <Text style={styles.sku}>SKU {product.sku || "N/A"}</Text>
         <View style={styles.detailGrid}>
           <View style={styles.detailCol}>
             <Text style={styles.detailLabel}>MATERIAL</Text>
             <View style={styles.tagRow}>
-              <Text style={styles.tag}>14 KT</Text>
-              <Text style={styles.tag}>Yellow Gold</Text>
+              <Text style={styles.tag}>{metalPurity}</Text>
+              <Text style={styles.tag}>{metalType}</Text>
             </View>
             <View style={styles.tagRow}>
-              <Text style={styles.tag}>0.00 g</Text>
-              <Text style={styles.tag}>0.880 g</Text>
+              <Text style={styles.tag}>{netWeight}</Text>
+              <Text style={styles.tag}>{grossWeight}</Text>
             </View>
             <View style={styles.tagRow}>
-              <Text style={styles.tag}>0.024 C</Text>
-              <Text style={styles.tag}>FG SI</Text>
+              <Text style={styles.tag}>{diamondWeight}</Text>
+              <Text style={styles.tag}>{diamondInfo}</Text>
             </View>
           </View>
 
@@ -123,9 +139,9 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
 
           <View style={styles.detailCol}>
             <Text style={styles.detailLabel}>DIMENSIONS</Text>
-            <Text style={styles.tag}>3 mm (Width)</Text>
-            <Text style={styles.tag}>3 mm (Height)</Text>
-            <Text style={styles.tag}>0.610 g (Gross wt)</Text>
+            <Text style={styles.tag}>{width}</Text>
+            <Text style={styles.tag}>{height}</Text>
+            <Text style={styles.tag}>{grossWtDisplay}</Text>
           </View>
         </View>
       </AccordionItem>
@@ -136,7 +152,7 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
         onToggle={() => toggleSection("PRODUCT DESCRIPTION")}
       >
         <Text style={styles.descriptionTitle}>
-          Gold Unisex ring 24k, Kalyan Jewellers
+          {product.name}, {product.brand}
         </Text>
         <Text style={styles.descriptionText}>
           {product.description ||

@@ -21,9 +21,16 @@ class AttributeResolverService {
     "collection_id",// Collection name
     "p_type",       // Product type
     "metal_type",   // Metal type
+    "metal_finish", // Metal finish
+    "gold_purity",  // Gold purity (14k, 18k, 22k)
+    "platinum_purity", // Platinum purity
+    "silver_purity",   // Silver purity
     "occasion_tags",// Occasion tags
     "design_style", // Design style
-    "gender",       // Gender (if available)
+    "d1_clarity",   // Diamond clarity
+    "d1_colour",    // Diamond color
+    "d1_type",      // Diamond type
+    "s_type",       // Stone type
   ];
 
   /**
