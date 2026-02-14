@@ -1,15 +1,9 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Keyboard,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Keyboard, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../auth/authContext";
+import { HapticButton } from "../components/basic components/hapticButton";
 
 const OTP_LENGTH = 5;
 const TIMER_SECONDS = 60;
@@ -90,12 +84,12 @@ export default function OtpScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <TouchableOpacity
+        <HapticButton
           onPress={() => router.back()}
           style={{ paddingVertical: 8 }}
         >
           <Text style={{ color: "#000", fontSize: 16 }}>←</Text>
-        </TouchableOpacity>
+        </HapticButton>
 
         <Text style={styles.title}>Enter code</Text>
         <Text style={styles.subtitle}>
@@ -130,13 +124,13 @@ export default function OtpScreen() {
         {/* --- Error Message Display --- */}
         {error && <Text style={styles.errorText}>{error}</Text>}
 
-        <TouchableOpacity disabled={timeLeft > 0} onPress={resendCode}>
+        <HapticButton disabled={timeLeft > 0} onPress={resendCode}>
           <Text style={styles.timerText}>
             {timeLeft > 0
               ? `Send code again 00:${String(timeLeft).padStart(2, "0")}`
               : "Send Again"}
           </Text>
-        </TouchableOpacity>
+        </HapticButton>
       </View>
     </SafeAreaView>
   );

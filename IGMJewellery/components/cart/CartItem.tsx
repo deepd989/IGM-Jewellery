@@ -7,11 +7,11 @@ import {
   Platform,
   StyleSheet,
   Text,
-  TouchableOpacity,
   UIManager,
   View,
 } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
+import { HapticButton } from "../basic components/hapticButton";
 
 if (
   Platform.OS === "android" &&
@@ -57,9 +57,9 @@ export const CartItem: React.FC<CartItemProps> = ({
         <Text style={styles.deliveryText}>Delivery by 19th Nov</Text>
       </View>
 
-      <TouchableOpacity style={styles.removeBtn} onPress={onRemove}>
+      <HapticButton style={styles.removeBtn} onPress={onRemove}>
         <Ionicons name="close" size={20} color={COLORS.text} />
-      </TouchableOpacity>
+      </HapticButton>
 
       <View style={styles.contentRow}>
         <View style={styles.imageContainer}>
@@ -73,7 +73,7 @@ export const CartItem: React.FC<CartItemProps> = ({
         <View style={styles.details}>
           <Text style={styles.brand}>{product.brand}</Text>
           <Text style={styles.title}>{product.title}</Text>
-          <TouchableOpacity
+          <HapticButton
             onPress={toggleExpand}
             activeOpacity={0.7}
             style={styles.specsContainer}
@@ -91,19 +91,19 @@ export const CartItem: React.FC<CartItemProps> = ({
               color={COLORS.text}
               style={styles.expandIcon}
             />
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </View>
 
       <View style={styles.footerRow}>
         <View style={styles.quantityContainer}>
-          <TouchableOpacity style={styles.qtyBtn} onPress={onDecrement}>
+          <HapticButton style={styles.qtyBtn} onPress={onDecrement}>
             <Ionicons name="remove" size={18} color={COLORS.text} />
-          </TouchableOpacity>
+          </HapticButton>
           <Text style={styles.qtyText}>{quantity}</Text>
-          <TouchableOpacity style={styles.qtyBtn} onPress={onIncrement}>
+          <HapticButton style={styles.qtyBtn} onPress={onIncrement}>
             <Ionicons name="add" size={18} color={COLORS.text} />
-          </TouchableOpacity>
+          </HapticButton>
         </View>
 
         <View style={styles.priceContainer}>

@@ -4,17 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import React from "react";
 import { useForm } from "react-hook-form";
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import * as z from "zod";
+import { HapticButton } from "../../components/basic components/hapticButton";
 import { SPACING } from "../../constants/theme";
-import { SafeAreaView } from "react-native-safe-area-context";  
 
 const scheduleSchema = z.object({
   date: z.string().min(1, "Please select a date"),
@@ -77,15 +71,15 @@ export default function ScheduleTrialScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <HapticButton onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={24} color="#000" />
-        </TouchableOpacity>
+        </HapticButton>
         <View style={styles.pincodeHeader}>
           <Text style={styles.pinLabel}>Pincode</Text>
-          <TouchableOpacity style={styles.pinRow}>
+          <HapticButton style={styles.pinRow}>
             <Text style={styles.pinValue}>400 066</Text>
             <Ionicons name="chevron-down" size={16} color="#000" />
-          </TouchableOpacity>
+          </HapticButton>
         </View>
         <View style={styles.helpRow}>
           <Text style={styles.helpText}>Help?</Text>
@@ -110,14 +104,14 @@ export default function ScheduleTrialScreen() {
             <Text style={styles.sectionTitle}>
               Your designs ({trialList.length})
             </Text>
-            <TouchableOpacity onPress={() => router.back()}>
+            <HapticButton onPress={() => router.back()}>
               <Text style={styles.viewCart}>View Trial Cart</Text>
-            </TouchableOpacity>
+            </HapticButton>
           </View>
           <View style={styles.designGrid}>
             {trialList.slice(0, 5).map((item, i) => (
               <View key={item.product.id} style={styles.designPlaceholder}>
-                <TouchableOpacity
+                <HapticButton
                   style={styles.removeDesign}
                   onPress={() => {
                     Alert.alert(
@@ -128,7 +122,7 @@ export default function ScheduleTrialScreen() {
                   }}
                 >
                   <Ionicons name="close" size={14} color="#000" />
-                </TouchableOpacity>
+                </HapticButton>
               </View>
             ))}
           </View>
@@ -146,7 +140,7 @@ export default function ScheduleTrialScreen() {
             style={styles.horizontalScroll}
           >
             {DATES.map((d) => (
-              <TouchableOpacity
+              <HapticButton
                 key={d.label}
                 style={[
                   styles.dateCard,
@@ -170,7 +164,7 @@ export default function ScheduleTrialScreen() {
                 >
                   {d.date}
                 </Text>
-              </TouchableOpacity>
+              </HapticButton>
             ))}
           </ScrollView>
         </View>
@@ -179,7 +173,7 @@ export default function ScheduleTrialScreen() {
           <Text style={styles.sectionTitle}>Select time slot</Text>
           <View style={styles.slotsGrid}>
             {SLOTS.map((s) => (
-              <TouchableOpacity
+              <HapticButton
                 key={s}
                 style={[
                   styles.slotItem,
@@ -195,15 +189,15 @@ export default function ScheduleTrialScreen() {
                 >
                   {s}
                 </Text>
-              </TouchableOpacity>
+              </HapticButton>
             ))}
           </View>
         </View>
       </ScrollView>
 
-      <TouchableOpacity style={styles.footerBtn} onPress={handleSubmit(onNext)}>
+      <HapticButton style={styles.footerBtn} onPress={handleSubmit(onNext)}>
         <Text style={styles.footerBtnText}>Next: Enter Address</Text>
-      </TouchableOpacity>
+      </HapticButton>
     </SafeAreaView>
   );
 }

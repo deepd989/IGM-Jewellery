@@ -1,14 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import {
-    Modal,
-    Pressable,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
-import { COLORS, SPACING } from '../../constants/theme';
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { COLORS, SPACING } from "../../constants/theme";
+import { HapticButton } from "../basic components/hapticButton";
 
 interface SortModalProps {
   visible: boolean;
@@ -18,19 +12,19 @@ interface SortModalProps {
 }
 
 const SORT_OPTIONS = [
-  'Latest',
-  'Discount',
-  'Featured',
-  'Price: Low to high',
-  'Price: High to low',
-  'Customer Rating',
+  "Latest",
+  "Discount",
+  "Featured",
+  "Price: Low to high",
+  "Price: High to low",
+  "Customer Rating",
 ];
 
-export const SortModal: React.FC<SortModalProps> = ({ 
-  visible, 
-  onClose, 
-  selectedSort, 
-  onSelect 
+export const SortModal: React.FC<SortModalProps> = ({
+  visible,
+  onClose,
+  selectedSort,
+  onSelect,
 }) => {
   return (
     <Modal
@@ -40,37 +34,53 @@ export const SortModal: React.FC<SortModalProps> = ({
       onRequestClose={onClose}
     >
       <Pressable style={styles.overlay} onPress={onClose}>
-        <Pressable style={styles.container} onPress={e => e.stopPropagation()}>
-          
+        <Pressable
+          style={styles.container}
+          onPress={(e) => e.stopPropagation()}
+        >
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerTitleRow}>
-              <Ionicons name="filter" size={18} color={COLORS.text} style={styles.headerIcon} />
+              <Ionicons
+                name="filter"
+                size={18}
+                color={COLORS.text}
+                style={styles.headerIcon}
+              />
               <Text style={styles.headerTitle}>Sort Designs by</Text>
             </View>
           </View>
-          
+
           {/* Options */}
           <View style={styles.content}>
             {SORT_OPTIONS.map((option) => {
               const isSelected = selectedSort === option;
               return (
-                <TouchableOpacity 
-                  key={option} 
-                  style={styles.optionRow} 
+                <HapticButton
+                  key={option}
+                  style={styles.optionRow}
                   onPress={() => {
                     onSelect(option);
                     onClose();
                   }}
                   activeOpacity={0.7}
                 >
-                  <Text style={[styles.optionText, isSelected && styles.optionTextActive]}>
+                  <Text
+                    style={[
+                      styles.optionText,
+                      isSelected && styles.optionTextActive,
+                    ]}
+                  >
                     {option}
                   </Text>
                   {isSelected && (
-                    <Ionicons name="checkmark-circle" size={24} color={COLORS.primary} />
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={24}
+                      color={COLORS.primary}
+                    />
                   )}
-                </TouchableOpacity>
+                </HapticButton>
               );
             })}
           </View>
@@ -83,41 +93,41 @@ export const SortModal: React.FC<SortModalProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
   },
   container: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingBottom: 40,
     paddingTop: 20,
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
     paddingHorizontal: SPACING.m,
   },
   headerTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   headerIcon: {
     marginRight: 8,
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.text,
   },
   content: {
     paddingHorizontal: SPACING.m,
   },
   optionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 16,
     // borderBottomWidth: 1,
     // borderBottomColor: '#F5F5F5',
@@ -125,10 +135,10 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 16,
     color: COLORS.textSecondary,
-    fontWeight: '400',
+    fontWeight: "400",
   },
   optionTextActive: {
     color: COLORS.text,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });

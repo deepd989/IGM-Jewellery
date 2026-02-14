@@ -1,8 +1,9 @@
 import { Product } from "@/interfaces/product.interface";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../../constants/theme";
+import { HapticButton } from "../basic components/hapticButton";
 
 interface TrialItemCardProps {
   product: Product;
@@ -38,9 +39,9 @@ export const TrialItemCard: React.FC<TrialItemCardProps> = ({
             <Ionicons name="pricetag-outline" size={10} color="#666" />
             <Text style={styles.tagText}>Try Before Buy</Text>
           </View>
-          <TouchableOpacity onPress={onRemove}>
+          <HapticButton onPress={onRemove}>
             <Ionicons name="close" size={22} color="#000" />
-          </TouchableOpacity>
+          </HapticButton>
         </View>
 
         <Text style={styles.brand}>{product.brand}</Text>

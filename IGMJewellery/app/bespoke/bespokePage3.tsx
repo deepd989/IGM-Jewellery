@@ -7,9 +7,9 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import { HapticButton } from "../../components/basic components/hapticButton";
 
 const BespokePage3 = ({ nextStepFn }: { nextStepFn: () => void }) => {
   const [description, setDescription] = useState("");
@@ -34,10 +34,10 @@ const BespokePage3 = ({ nextStepFn }: { nextStepFn: () => void }) => {
         </View>
 
         {/* Upload Box */}
-        <TouchableOpacity style={styles.uploadBox} activeOpacity={0.7}>
+        <HapticButton style={styles.uploadBox} activeOpacity={0.7}>
           <Plus color="#000" size={32} strokeWidth={1.5} />
           <Text style={styles.uploadText}>Upload reference</Text>
-        </TouchableOpacity>
+        </HapticButton>
 
         {/* Form Fields */}
         <View style={styles.form}>
@@ -92,11 +92,11 @@ const BespokePage3 = ({ nextStepFn }: { nextStepFn: () => void }) => {
 
       {/* Footer Button */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.confirmButton} onPress={nextStepFn}>
+        <HapticButton style={styles.confirmButton} onPress={nextStepFn}>
           <Text style={styles.confirmButtonText}>
             Confirm Customisation request
           </Text>
-        </TouchableOpacity>
+        </HapticButton>
       </View>
     </KeyboardAvoidingView>
   );

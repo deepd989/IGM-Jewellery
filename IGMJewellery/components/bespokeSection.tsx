@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { HapticButton } from "./basic components/hapticButton";
 
 export default function BespokeSection() {
   const router = useRouter();
@@ -33,17 +34,12 @@ export default function BespokeSection() {
       </View>
 
       {/* CTA */}
-      <TouchableOpacity
-        style={styles.cta}
-        onPress={() => router.push("/bespoke")}
-        accessibilityRole="button"
-        accessibilityLabel="Explore bespoke jewellery"
-      >
+      <HapticButton style={styles.cta} onPress={() => router.push("/bespoke")}>
         <Text style={styles.ctaText}>Explore Bespoke</Text>
         <View style={styles.iconCircle}>
           <Ionicons name="arrow-forward" size={16} color="#000" />
         </View>
-      </TouchableOpacity>
+      </HapticButton>
     </View>
   );
 }

@@ -22,9 +22,10 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../../components/basic components/hapticButton";
 import { CheckoutStepper } from "../../components/checkout/CheckoutStepper";
 import { CheckoutSummary } from "../../components/checkout/CheckoutSummary";
 import { AddressCard } from "../../components/shared/AddressCard";
@@ -34,7 +35,6 @@ import {
   BillingAddress,
   DeliveryAddress,
 } from "../../interfaces/address.interface";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AddressScreen() {
   const router = useRouter();
@@ -191,12 +191,12 @@ export default function AddressScreen() {
             color={COLORS.error}
           />
           <Text style={styles.errorText}>Unable to load checkout</Text>
-          <TouchableOpacity
+          <HapticButton
             style={styles.retryButton}
             onPress={() => router.replace("/cart")}
           >
             <Text style={styles.retryButtonText}>Back to Cart</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </SafeAreaView>
     );
@@ -209,12 +209,9 @@ export default function AddressScreen() {
         style={{ flex: 1 }}
       >
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backBtn}
-          >
+          <HapticButton onPress={() => router.back()} style={styles.backBtn}>
             <Ionicons name="chevron-back" size={24} color="#000" />
-          </TouchableOpacity>
+          </HapticButton>
           <Text style={styles.headerTitle}>Address</Text>
           <View style={{ width: 40 }} />
         </View>
@@ -243,7 +240,7 @@ export default function AddressScreen() {
               />
             )}
 
-            <TouchableOpacity
+            <HapticButton
               style={[styles.addNewRow, !useSaved && styles.addNewRowActive]}
               onPress={() => setUseSaved(false)}
             >
@@ -252,7 +249,7 @@ export default function AddressScreen() {
                 name={!useSaved ? "radio-button-on" : "radio-button-off"}
                 size={20}
               />
-            </TouchableOpacity>
+            </HapticButton>
 
             {!useSaved && (
               <View style={styles.form}>
@@ -269,7 +266,7 @@ export default function AddressScreen() {
               <Text style={styles.sectionTitle}>Billing Address</Text>
 
               {/* Same as Shipping */}
-              <TouchableOpacity
+              <HapticButton
                 style={styles.radioRow}
                 onPress={() => setBillingMode("same")}
               >
@@ -283,10 +280,10 @@ export default function AddressScreen() {
                   size={22}
                   color="#000"
                 />
-              </TouchableOpacity>
+              </HapticButton>
 
               {/* Different Billing Address */}
-              <TouchableOpacity
+              <HapticButton
                 style={styles.radioRow}
                 onPress={() => setBillingMode("different")}
               >
@@ -302,7 +299,7 @@ export default function AddressScreen() {
                   size={22}
                   color="#000"
                 />
-              </TouchableOpacity>
+              </HapticButton>
             </View>
 
             {billingMode === "different" && (
@@ -324,9 +321,9 @@ export default function AddressScreen() {
             </Text>
             <Text style={styles.summaryLink}>VIEW ORDER SUMMARY</Text>
           </View>
-          <TouchableOpacity style={styles.btn} onPress={onSubmit}>
+          <HapticButton style={styles.btn} onPress={onSubmit}>
             <Text style={styles.btnText}>Save & Continue</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

@@ -19,14 +19,14 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import * as z from "zod";
+import { HapticButton } from "../../components/basic components/hapticButton";
 import { CheckoutStepper } from "../../components/checkout/CheckoutStepper";
 import { CheckoutSummary } from "../../components/checkout/CheckoutSummary";
 import { COLORS, SPACING } from "../../constants/theme";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const giftingSchema = z.object({
   giftWrapId: z.string().optional(),
@@ -100,12 +100,12 @@ export default function GiftingScreen() {
             color={COLORS.error}
           />
           <Text style={styles.errorText}>Checkout session not found</Text>
-          <TouchableOpacity
+          <HapticButton
             style={styles.retryButton}
             onPress={() => router.replace("/cart")}
           >
             <Text style={styles.retryButtonText}>Back to Cart</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </SafeAreaView>
     );
@@ -129,12 +129,9 @@ export default function GiftingScreen() {
         style={{ flex: 1 }}
       >
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backBtn}
-          >
+          <HapticButton onPress={() => router.back()} style={styles.backBtn}>
             <Ionicons name="chevron-back" size={24} color="#000" />
-          </TouchableOpacity>
+          </HapticButton>
           <Text style={styles.headerTitle}>Gifting</Text>
           <View style={{ width: 40 }} />
         </View>
@@ -161,7 +158,7 @@ export default function GiftingScreen() {
               {GIFT_WRAPS.map((wrap) => {
                 const isSelected = wrap.id === selectedWrapId;
                 return (
-                  <TouchableOpacity
+                  <HapticButton
                     key={wrap.id}
                     style={[
                       styles.wrapCard,
@@ -180,7 +177,7 @@ export default function GiftingScreen() {
                       </View>
                     )}
                     <Text style={styles.wrapTitle}>{wrap.title}</Text>
-                  </TouchableOpacity>
+                  </HapticButton>
                 );
               })}
             </ScrollView>
@@ -226,12 +223,12 @@ export default function GiftingScreen() {
                   <Text style={styles.howItWorks}>How it works?</Text>
                 </Text>
               </View>
-              <TouchableOpacity style={styles.recordAction}>
+              <HapticButton style={styles.recordAction}>
                 <View style={styles.micCircle}>
                   <Ionicons name="mic" size={24} color="#FFF" />
                 </View>
                 <Text style={styles.recordText}>Start recording</Text>
-              </TouchableOpacity>
+              </HapticButton>
             </View>
           </View>
 
@@ -242,7 +239,7 @@ export default function GiftingScreen() {
               {RECIPIENT_TAGS.map((tag, index) => {
                 const isSelected = selectedRecipient === tag;
                 return (
-                  <TouchableOpacity
+                  <HapticButton
                     key={`${tag}-${index}`}
                     style={[styles.chip, isSelected && styles.chipActive]}
                     onPress={() => setValue("recipientType", tag)}
@@ -255,12 +252,12 @@ export default function GiftingScreen() {
                     >
                       {tag}
                     </Text>
-                  </TouchableOpacity>
+                  </HapticButton>
                 );
               })}
-              <TouchableOpacity style={styles.chipMore}>
+              <HapticButton style={styles.chipMore}>
                 <Text style={styles.chipMoreText}>More</Text>
-              </TouchableOpacity>
+              </HapticButton>
             </View>
           </View>
         </ScrollView>
@@ -276,16 +273,13 @@ export default function GiftingScreen() {
                 ₹{checkoutSession.orderDetails.subtotal.toLocaleString()}
               </Text>
             </View>
-            <TouchableOpacity>
+            <HapticButton>
               <Text style={styles.viewSummaryText}>VIEW ORDER SUMMARY</Text>
-            </TouchableOpacity>
+            </HapticButton>
           </View>
-          <TouchableOpacity
-            style={styles.saveBtn}
-            onPress={handleSubmit(onSubmit)}
-          >
+          <HapticButton style={styles.saveBtn} onPress={handleSubmit(onSubmit)}>
             <Text style={styles.saveBtnText}>Save & Continue</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

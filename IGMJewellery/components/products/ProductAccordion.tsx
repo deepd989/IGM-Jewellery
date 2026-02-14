@@ -7,12 +7,12 @@ import {
   Platform,
   StyleSheet,
   Text,
-  TouchableOpacity,
   UIManager,
   View,
 } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
 import { BRAND_KEY_MAP } from "../../utils/brandKeyMap";
+import { HapticButton } from "../basic components/hapticButton";
 
 // Enable LayoutAnimation on Android
 if (
@@ -38,25 +38,21 @@ const AccordionItem = ({
   onToggle: () => void;
 }) => (
   <View style={styles.itemContainer}>
-    <TouchableOpacity
-      style={styles.header}
-      onPress={onToggle}
-      activeOpacity={0.8}
-    >
+    <HapticButton style={styles.header} onPress={onToggle} activeOpacity={0.8}>
       <Text style={styles.headerText}>{title}</Text>
       <Ionicons
         name={isOpen ? "chevron-up" : "chevron-down"}
         size={20}
         color={COLORS.text}
       />
-    </TouchableOpacity>
+    </HapticButton>
     {isOpen && <View style={styles.content}>{children}</View>}
   </View>
 );
 
 export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
   const [openSection, setOpenSection] = useState<string | null>(
-    "PRODUCT DETAIL",
+    "PRODUCT DETAIL"
   );
   const router = useRouter();
 
@@ -168,13 +164,13 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
               Celebrate every day in style with the subtle grace of these drop
               earrings crafted in 22 Karat Yellow Gold in a leaf design.
             </Text>
-            <TouchableOpacity
+            <HapticButton
               style={styles.exploreBtn}
               onPress={handleExploreBrand}
             >
               <Text style={styles.exploreBtnText}>Explore Brand</Text>
               <Ionicons name="chevron-forward" size={14} color="#FFF" />
-            </TouchableOpacity>
+            </HapticButton>
           </View>
         </View>
       </AccordionItem>

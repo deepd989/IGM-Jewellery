@@ -31,10 +31,10 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../components/basic components/hapticButton";
 
 export default function HomeScreen() {
   const [expanded, setExpanded] = useState(false);
@@ -115,7 +115,7 @@ export default function HomeScreen() {
               returnKeyType="send" // or "done", "go", "search"
               onSubmitEditing={handleSubmit}
             />
-            <TouchableOpacity
+            <HapticButton
               onPress={() => {
                 router.push({
                   pathname: "/exploreAi",
@@ -124,8 +124,8 @@ export default function HomeScreen() {
               }}
             >
               <Ionicons name="mic-outline" size={22} />
-            </TouchableOpacity>
-            {/* <TouchableOpacity
+            </HapticButton>
+            {/* <HapticButton
               style={{
                 borderRadius: 50,
                 height: 30,
@@ -142,7 +142,7 @@ export default function HomeScreen() {
               }}
             >
               <AudioLines />
-            </TouchableOpacity> */}
+            </HapticButton> */}
           </View>
 
           <View>
@@ -175,7 +175,7 @@ export default function HomeScreen() {
                 "Mom’s gift",
                 "Anniversary",
               ].map((chip, idx) => (
-                <TouchableOpacity
+                <HapticButton
                   onPress={() => {
                     setInputChip(chip);
                   }}
@@ -183,15 +183,15 @@ export default function HomeScreen() {
                   style={styles.chip}
                 >
                   <Text style={styles.chipText}>{chip}</Text>
-                </TouchableOpacity>
+                </HapticButton>
               ))}
             </View>
 
-            <TouchableOpacity onPress={() => setExpanded(!expanded)}>
+            <HapticButton onPress={() => setExpanded(!expanded)}>
               <Text style={styles.moreText}>
                 {expanded ? "Show less" : "More"}
               </Text>
-            </TouchableOpacity>
+            </HapticButton>
           </View>
         </View>
         {/* Featured Product Card */}
@@ -226,14 +226,14 @@ export default function HomeScreen() {
             For any queries, feel free to contact us:
           </Text>
           <View style={styles.contactRow}>
-            <TouchableOpacity style={styles.contactBtn}>
+            <HapticButton style={styles.contactBtn}>
               <Ionicons name="call-outline" size={20} />
               <Text style={styles.contactBtnText}>Call Us</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.contactBtn}>
+            </HapticButton>
+            <HapticButton style={styles.contactBtn}>
               <Ionicons name="chatbubble-outline" size={20} />
               <Text style={styles.contactBtnText}>Chat With Us</Text>
-            </TouchableOpacity>
+            </HapticButton>
           </View>
         </View>
         <PaymentMethods />

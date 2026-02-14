@@ -1,7 +1,8 @@
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useAuth } from "../../auth/authContext";
+import { HapticButton } from "../basic components/hapticButton";
 
 export default function WelcomeStep({ onNext }: { onNext: () => void }) {
   const router = useRouter();
@@ -12,9 +13,9 @@ export default function WelcomeStep({ onNext }: { onNext: () => void }) {
       <Text style={styles.subtitle}>
         Your personalized experience is ready.
       </Text>
-      <TouchableOpacity style={styles.primary} onPress={onNext}>
+      <HapticButton style={styles.primary} onPress={onNext}>
         <Text style={styles.primaryText}>Start exploring</Text>
-      </TouchableOpacity>
+      </HapticButton>
     </View>
   );
 }

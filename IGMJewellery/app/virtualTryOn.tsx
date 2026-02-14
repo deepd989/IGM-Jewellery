@@ -6,10 +6,10 @@ import {
   Platform,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { WebView } from "react-native-webview";
+import { HapticButton } from "../components/basic components/hapticButton";
 import { COLORS, SPACING } from "../constants/theme";
 
 export default function TryOnScreen() {
@@ -42,9 +42,9 @@ export default function TryOnScreen() {
     <View style={styles.container}>
       {/* Custom Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleClose} style={styles.backBtn}>
+        <HapticButton onPress={handleClose} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={28} color={COLORS.text} />
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.headerTitle} numberOfLines={1}>
           Try On - {productTitle || "Product"}
         </Text>
@@ -71,9 +71,9 @@ export default function TryOnScreen() {
           <Text style={styles.errorSubtext}>
             Please check your connection and try again
           </Text>
-          <TouchableOpacity style={styles.retryButton} onPress={handleClose}>
+          <HapticButton style={styles.retryButton} onPress={handleClose}>
             <Text style={styles.retryButtonText}>Go Back</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       )}
 

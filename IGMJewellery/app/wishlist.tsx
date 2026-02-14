@@ -2,25 +2,24 @@ import { CartBadge } from "@/components/cart/CardBadge";
 import { ProductCard } from "@/components/products/ProductCard";
 import { Product } from "@/interfaces/product.interface";
 import {
-    useClearCompareMutation,
-    useGetWishlistQuery,
-    useRemoveFromWishlistMutation,
-    useToggleCompareMutation,
+  useClearCompareMutation,
+  useGetWishlistQuery,
+  useRemoveFromWishlistMutation,
+  useToggleCompareMutation,
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    FlatList,
-    Platform,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
+import { HapticButton } from "../components/basic components/hapticButton";
 import { COLORS, SPACING } from "../constants/theme";
 
 export default function WishlistScreen() {
@@ -33,7 +32,7 @@ export default function WishlistScreen() {
   const [clearCompare] = useClearCompareMutation();
 
   // Extract products from wishlist items (WishlistItem contains { product, itemId })
-  const wishlistItems = wishlistData?.items?.map(item => item.product) || [];
+  const wishlistItems = wishlistData?.items?.map((item) => item.product) || [];
   const compareList = wishlistData?.compareList || [];
 
   const toggleViewMode = () => {
@@ -71,7 +70,7 @@ export default function WishlistScreen() {
     if (compareList.length < 2) {
       Alert.alert(
         "Select Products",
-        "Please select 2 products to compare them.",
+        "Please select 2 products to compare them."
       );
       return;
     }
@@ -79,7 +78,7 @@ export default function WishlistScreen() {
     // Navigate to compare screen (you can implement this)
     Alert.alert(
       "Compare Products",
-      `Comparing: ${compareList.map((p) => p.title).join(" vs ")}`,
+      `Comparing: ${compareList.map((p) => p.title).join(" vs ")}`
     );
   };
 
@@ -102,9 +101,9 @@ export default function WishlistScreen() {
           You can choose 2 products to compare
         </Text>
         {compareList.length > 0 && (
-          <TouchableOpacity onPress={handleClearCompare}>
+          <HapticButton onPress={handleClearCompare}>
             <Text style={styles.clearText}>Clear ({compareList.length})</Text>
-          </TouchableOpacity>
+          </HapticButton>
         )}
       </View>
     </View>
@@ -128,20 +127,17 @@ export default function WishlistScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backBtn}
-          >
+          <HapticButton onPress={() => router.back()} style={styles.backBtn}>
             <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-          </TouchableOpacity>
+          </HapticButton>
           <Text style={styles.headerTitle}>Wishlist</Text>
           <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.iconBtn}>
+            <HapticButton style={styles.iconBtn}>
               <Ionicons name="search-outline" size={22} color={COLORS.text} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.iconBtn}>
+            </HapticButton>
+            <HapticButton style={styles.iconBtn}>
               <Ionicons name="heart-outline" size={22} color={COLORS.text} />
-            </TouchableOpacity>
+            </HapticButton>
             <View style={styles.iconBtn}>
               <CartBadge iconSize={22} iconColor={COLORS.text} />
             </View>
@@ -159,17 +155,14 @@ export default function WishlistScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backBtn}
-          >
+          <HapticButton onPress={() => router.back()} style={styles.backBtn}>
             <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-          </TouchableOpacity>
+          </HapticButton>
           <Text style={styles.headerTitle}>Wishlist</Text>
           <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.iconBtn}>
+            <HapticButton style={styles.iconBtn}>
               <Ionicons name="search-outline" size={22} color={COLORS.text} />
-            </TouchableOpacity>
+            </HapticButton>
             <View style={styles.iconBtn}>
               <CartBadge iconSize={22} iconColor={COLORS.text} />
             </View>
@@ -185,12 +178,12 @@ export default function WishlistScreen() {
           <Text style={styles.emptySubtext}>
             Start adding products you love to your wishlist
           </Text>
-          <TouchableOpacity
+          <HapticButton
             style={styles.shopNowBtn}
             onPress={() => router.push("/product-list")}
           >
             <Text style={styles.shopNowText}>Start Shopping</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </SafeAreaView>
     );
@@ -200,20 +193,20 @@ export default function WishlistScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <HapticButton onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.headerTitle}>Wishlist</Text>
         <View style={styles.headerRight}>
-          <TouchableOpacity
+          <HapticButton
             style={styles.iconBtn}
             onPress={() => router.push("/searchPage")}
           >
             <Ionicons name="search-outline" size={22} color={COLORS.text} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn}>
+          </HapticButton>
+          <HapticButton style={styles.iconBtn}>
             <Ionicons name="heart" size={22} color={COLORS.primary} />
-          </TouchableOpacity>
+          </HapticButton>
           <View style={styles.iconBtn}>
             <CartBadge iconSize={22} iconColor={COLORS.text} />
           </View>
@@ -235,22 +228,22 @@ export default function WishlistScreen() {
       />
 
       {/* View Toggle FAB */}
-      <TouchableOpacity style={styles.leftFab} onPress={toggleViewMode}>
+      <HapticButton style={styles.leftFab} onPress={toggleViewMode}>
         <Ionicons
           name={viewMode === "grid" ? "list" : "grid"}
           size={22}
           color="#000"
         />
-      </TouchableOpacity>
+      </HapticButton>
 
       {/* Compare Button */}
       {compareList.length > 0 && (
-        <TouchableOpacity
+        <HapticButton
           style={styles.compareButton}
           onPress={handleStartComparing}
         >
           <Text style={styles.compareButtonText}>START COMPARING PRODUCTS</Text>
-        </TouchableOpacity>
+        </HapticButton>
       )}
     </SafeAreaView>
   );

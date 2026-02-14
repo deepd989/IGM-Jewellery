@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HapticButton } from "../../components/basic components/hapticButton";
 import BespokePage1 from "./bespokePage1";
 import BespokePage2 from "./bespokePage2";
 import BespokePage3 from "./bespokePage3";
@@ -25,9 +26,9 @@ export default function BespokeStepperPage() {
   const next = () => setStep((s) => Math.min(3, s + 1));
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <TouchableOpacity onPress={back} style={styles.backBtn}>
+      <HapticButton onPress={back} style={styles.backBtn}>
         <Ionicons name="chevron-back" size={22} />
-      </TouchableOpacity>
+      </HapticButton>
       <View style={{ marginTop: 5, flex: 1 }}>
         {step === 0 && <BespokePage1 nextStepFn={next}></BespokePage1>}
 

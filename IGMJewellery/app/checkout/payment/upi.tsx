@@ -17,13 +17,13 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import * as z from "zod";
+import { HapticButton } from "../../../components/basic components/hapticButton";
 import { CheckoutStepper } from "../../../components/checkout/CheckoutStepper";
 import { COLORS, SPACING } from "../../../constants/theme";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const upiSchema = z.object({
   upiId: z
@@ -72,7 +72,7 @@ export default function UpiDetailsScreen() {
     const total = checkoutSession.orderDetails.total + giftAddonsCost;
     const itemCount = checkoutSession.orderDetails.items.reduce(
       (acc, item) => acc + item.quantity,
-      0,
+      0
     );
 
     return { total, itemCount };
@@ -116,7 +116,7 @@ export default function UpiDetailsScreen() {
     } catch (error: any) {
       Alert.alert(
         "Payment Failed",
-        error?.data || "Failed to process payment. Please try again.",
+        error?.data || "Failed to process payment. Please try again."
       );
     } finally {
       setIsProcessing(false);
@@ -144,12 +144,12 @@ export default function UpiDetailsScreen() {
             color={COLORS.error}
           />
           <Text style={styles.errorText}>Session expired</Text>
-          <TouchableOpacity
+          <HapticButton
             style={styles.retryButton}
             onPress={() => router.replace("/cart")}
           >
             <Text style={styles.retryButtonText}>Back to Cart</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </SafeAreaView>
     );
@@ -162,12 +162,9 @@ export default function UpiDetailsScreen() {
         style={{ flex: 1 }}
       >
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backBtn}
-          >
+          <HapticButton onPress={() => router.back()} style={styles.backBtn}>
             <Ionicons name="chevron-back" size={24} color="#000" />
-          </TouchableOpacity>
+          </HapticButton>
           <Text style={styles.headerTitle}>UPI Details</Text>
           <View style={{ width: 40 }} />
         </View>
@@ -210,7 +207,7 @@ export default function UpiDetailsScreen() {
               control={control}
               name="remember"
               render={({ field: { onChange, value } }) => (
-                <TouchableOpacity
+                <HapticButton
                   style={styles.checkboxRow}
                   onPress={() => onChange(!value)}
                 >
@@ -222,11 +219,11 @@ export default function UpiDetailsScreen() {
                   <Text style={styles.checkboxText}>
                     Remember for future transactions
                   </Text>
-                </TouchableOpacity>
+                </HapticButton>
               )}
             />
 
-            <TouchableOpacity
+            <HapticButton
               style={[
                 styles.submitBtn,
                 isProcessing && styles.submitBtnDisabled,
@@ -241,7 +238,7 @@ export default function UpiDetailsScreen() {
                   Verify & Pay ₹{orderDetails.total.toLocaleString()}
                 </Text>
               )}
-            </TouchableOpacity>
+            </HapticButton>
           </View>
         </View>
       </KeyboardAvoidingView>

@@ -3,16 +3,10 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { useRouter } from "expo-router";
 import React from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { HapticButton } from "../../components/basic components/hapticButton";
 
 export default function LanguageCurrencyScreen() {
   const router = useRouter();
@@ -22,29 +16,29 @@ export default function LanguageCurrencyScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <HapticButton onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={24} color="#000" />
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.headerTitle}>Language & Currency</Text>
-        <TouchableOpacity style={styles.helpBadge}>
+        <HapticButton style={styles.helpBadge}>
           <Text style={styles.helpText}>Help?</Text>
           <Ionicons name="call-outline" size={18} />
-        </TouchableOpacity>
+        </HapticButton>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.group}>
           <Text style={styles.label}>Select Language</Text>
-          <TouchableOpacity style={styles.picker}>
+          <HapticButton style={styles.picker}>
             <Text style={styles.pickerVal}>(EN) {prefs.language}</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
 
         <View style={styles.group}>
           <Text style={styles.label}>Choose Currency</Text>
-          <TouchableOpacity style={styles.picker}>
+          <HapticButton style={styles.picker}>
             <Text style={styles.pickerVal}>(₹) {prefs.currency}</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
 
         <View style={styles.contactSection}>
@@ -52,14 +46,14 @@ export default function LanguageCurrencyScreen() {
             For any queries, feel free to contact us:
           </Text>
           <View style={styles.contactRow}>
-            <TouchableOpacity style={styles.contactBtn}>
+            <HapticButton style={styles.contactBtn}>
               <Ionicons name="call-outline" size={20} />
               <Text style={styles.contactBtnText}>Call Us</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.contactBtn}>
+            </HapticButton>
+            <HapticButton style={styles.contactBtn}>
               <Ionicons name="chatbubble-outline" size={20} />
               <Text style={styles.contactBtnText}>Chat With Us</Text>
-            </TouchableOpacity>
+            </HapticButton>
           </View>
         </View>
       </ScrollView>

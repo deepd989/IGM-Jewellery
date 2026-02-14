@@ -7,7 +7,6 @@ import {
   Platform,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -24,6 +23,7 @@ import {
   useUpdateQuantityMutation,
 } from "@/store/apis/cart";
 import { useInitializeCheckoutMutation } from "@/store/apis/checkout";
+import { HapticButton } from "../components/basic components/hapticButton";
 import { BagTabContent } from "../components/cart/BagTabContent";
 import { RemoveConfirmationModal } from "../components/cart/RemoveConfirmationModal";
 
@@ -82,18 +82,18 @@ export default function CartScreen() {
   const calculateTotals = () => {
     const subtotal = cart.reduce(
       (acc, item) => acc + item.product.discountedPrice * item.quantity,
-      0,
+      0
     );
     const savings = cart.reduce(
       (acc, item) =>
         acc +
         (item.product.givenPrice! - item.product.discountedPrice) *
           item.quantity,
-      0,
+      0
     );
     const addons = giftAddons.reduce(
       (acc, item) => (item.isChecked ? acc + item.price : acc),
-      0,
+      0
     );
     return { subtotal, savings, addons };
   };
@@ -120,7 +120,7 @@ export default function CartScreen() {
     if (cart.length === 0) {
       Alert.alert(
         "Empty Cart",
-        "Please add items to your cart before checkout",
+        "Please add items to your cart before checkout"
       );
       return;
     }
@@ -132,7 +132,7 @@ export default function CartScreen() {
       Alert.alert(
         "Error",
         error?.data || "Failed to start checkout. Please try again.",
-        [{ text: "OK" }],
+        [{ text: "OK" }]
       );
     }
   };
@@ -148,7 +148,7 @@ export default function CartScreen() {
       console.log("Trial list exceeds maximum limit:", trialList.length);
       Alert.alert(
         "Maximum Limit Exceeded",
-        "You can select maximum 5 items for home trial",
+        "You can select maximum 5 items for home trial"
       );
       return;
     }
@@ -159,7 +159,7 @@ export default function CartScreen() {
       console.log("Trial list exceeds maximum limit:", trialList.length);
       Alert.alert(
         "Multiple Brands",
-        "Home trial is available for items from 1 brand only. Please select items from the same brand.",
+        "Home trial is available for items from 1 brand only. Please select items from the same brand."
       );
       return;
     }
@@ -174,12 +174,9 @@ export default function CartScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backBtn}
-          >
+          <HapticButton onPress={() => router.back()} style={styles.backBtn}>
             <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-          </TouchableOpacity>
+          </HapticButton>
           <Text style={styles.headerTitle}>Shopping Cart</Text>
           <View style={{ width: 24 }} />
         </View>
@@ -196,12 +193,9 @@ export default function CartScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backBtn}
-          >
+          <HapticButton onPress={() => router.back()} style={styles.backBtn}>
             <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-          </TouchableOpacity>
+          </HapticButton>
           <Text style={styles.headerTitle}>Shopping Cart</Text>
           <View style={{ width: 24 }} />
         </View>
@@ -215,12 +209,12 @@ export default function CartScreen() {
           <Text style={styles.emptySubtitle}>
             Add items to your cart to see them here
           </Text>
-          <TouchableOpacity
+          <HapticButton
             style={styles.browseButton}
             onPress={() => router.push("/product-list")}
           >
             <Text style={styles.browseButtonText}>Browse Products</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       </SafeAreaView>
     );
@@ -229,32 +223,29 @@ export default function CartScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <HapticButton onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-        </TouchableOpacity>
+        </HapticButton>
         <Text style={styles.headerTitle}>
           {isBag ? "Shopping Bag" : "Home Trial"}
         </Text>
         <View></View>
-        <TouchableOpacity>
+        <HapticButton>
           <Ionicons name="heart-outline" size={24} color={COLORS.text} />
-        </TouchableOpacity>
+        </HapticButton>
       </View>
 
       <View style={styles.tabs}>
         {/* 
         Trial bag is set off
          */}
-        <TouchableOpacity
-          style={[styles.tab]}
-          onPress={() => setActiveTab("bag")}
-        >
+        <HapticButton style={[styles.tab]} onPress={() => setActiveTab("bag")}>
           <Text style={[styles.tabText, isBag && styles.activeTabText]}>
             Shopping Bag {cart.length > 0 && `(${cart.length})`}
           </Text>
           {isBag && <View style={styles.activeDiamond} />}
-        </TouchableOpacity>
-        <TouchableOpacity
+        </HapticButton>
+        <HapticButton
           style={[styles.tab]}
           onPress={() => setActiveTab("trial")}
         >
@@ -262,7 +253,7 @@ export default function CartScreen() {
             Home trial ({trialList.length})
           </Text>
           {!isBag && <View style={styles.activeDiamond} />}
-        </TouchableOpacity>
+        </HapticButton>
       </View>
 
       {isBag ? (
@@ -284,12 +275,12 @@ export default function CartScreen() {
               color={COLORS.textSecondary}
             />
             <Text style={styles.emptyTabText}>Your shopping bag is empty</Text>
-            <TouchableOpacity
+            <HapticButton
               style={styles.browseButton}
               onPress={() => router.push("/product-list")}
             >
               <Text style={styles.browseButtonText}>Browse Products</Text>
-            </TouchableOpacity>
+            </HapticButton>
           </View>
         )
       ) : trialList.length > 0 ? (
@@ -305,12 +296,12 @@ export default function CartScreen() {
           <Text style={styles.emptyTabSubtext}>
             Add items to your home trial list from product pages
           </Text>
-          <TouchableOpacity
+          <HapticButton
             style={styles.browseButton}
             onPress={() => router.push("/product-list")}
           >
             <Text style={styles.browseButtonText}>Browse Products</Text>
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       )}
 
@@ -330,15 +321,15 @@ export default function CartScreen() {
                 <Text style={styles.footerLink}>View details</Text>
               </>
             ) : (
-              <TouchableOpacity
+              <HapticButton
                 style={styles.browseBtn}
                 onPress={() => router.push("/product-list")}
               >
                 <Text style={styles.browseText}>Browse trial designs</Text>
-              </TouchableOpacity>
+              </HapticButton>
             )}
           </View>
-          <TouchableOpacity
+          <HapticButton
             style={[
               styles.mainBtn,
               isInitializingCheckout && styles.mainBtnDisabled,
@@ -353,7 +344,7 @@ export default function CartScreen() {
                 {isBag ? "CHECKOUT" : "Schedule trial"}
               </Text>
             )}
-          </TouchableOpacity>
+          </HapticButton>
         </View>
       )}
 

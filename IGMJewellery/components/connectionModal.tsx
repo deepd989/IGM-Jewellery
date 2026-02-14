@@ -5,10 +5,10 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { useAuth } from "../auth/authContext";
+import { HapticButton } from "./basic components/hapticButton";
 
 export default function HealthCheckModal({
   setModalVisible,
@@ -65,14 +65,14 @@ export default function HealthCheckModal({
               keyboardType="url"
             />
 
-            <TouchableOpacity style={styles.goButton} onPress={checkHealth}>
+            <HapticButton style={styles.goButton} onPress={checkHealth}>
               {status === "loading" ? (
                 <ActivityIndicator color="#fff" />
               ) : (
                 <Text style={styles.textStyle}>Go</Text>
               )}
-            </TouchableOpacity>
-            <TouchableOpacity
+            </HapticButton>
+            <HapticButton
               style={[
                 styles.goButton,
                 { backgroundColor: "#ccc", marginTop: 10 },
@@ -80,7 +80,7 @@ export default function HealthCheckModal({
               onPress={() => setModalVisible(false)}
             >
               <Text style={{ color: "#333" }}>Close</Text>
-            </TouchableOpacity>
+            </HapticButton>
 
             {status === "connected" && (
               <Text style={styles.connectedText}>● Connected</Text>

@@ -1,15 +1,10 @@
 import { Product } from "@/interfaces/product.interface";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
 import { getEstimatedDeliveryDate } from "../../utils/deliveryDate";
+import { HapticButton } from "../basic components/hapticButton";
 
 interface ProductInfoProps {
   product: Product;
@@ -69,7 +64,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
           </View>
         ))}
         {/* Size Dropdown Mimic */}
-        <TouchableOpacity style={styles.sizeChip}>
+        <HapticButton style={styles.sizeChip}>
           <Text style={styles.sizeText}>Size 12</Text>
           <Ionicons
             name="chevron-down"
@@ -77,17 +72,17 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
             color={COLORS.text}
             style={{ marginLeft: 4 }}
           />
-        </TouchableOpacity>
+        </HapticButton>
       </ScrollView>
 
       {/* Action Buttons Row 1 - Visualization & Config */}
       <View style={styles.actionsRow}>
-        <TouchableOpacity style={styles.actionBtn}>
+        <HapticButton style={styles.actionBtn}>
           <Text style={styles.actionBtnText}>Try On</Text>
           <Ionicons name="chevron-down" size={16} color={COLORS.text} />
-        </TouchableOpacity>
+        </HapticButton>
 
-        <TouchableOpacity style={styles.actionBtn} onPress={onCustomize}>
+        <HapticButton style={styles.actionBtn} onPress={onCustomize}>
           <Ionicons
             name="sparkles"
             size={14}
@@ -95,7 +90,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
             style={{ marginRight: 6 }}
           />
           <Text style={styles.actionBtnText}>Customize</Text>
-        </TouchableOpacity>
+        </HapticButton>
       </View>
 
       {/* Footer Actions removed from here and moved to Sticky Footer in ProductDetailScreen */}
