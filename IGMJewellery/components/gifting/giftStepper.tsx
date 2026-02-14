@@ -14,14 +14,12 @@ export default function GiftStepper() {
 
   // Data collected from Step 2
   const [giftData, setGiftData] = useState<{
-    selectedCategory: string;
     selectedAmount: number;
     occasion: string;
     message: string;
     phoneNumber: string;
     selectedDate: string;
   }>({
-    selectedCategory: "Birthday",
     selectedAmount: 0,
     occasion: "Birthday",
     message: "",

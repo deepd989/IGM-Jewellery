@@ -8,14 +8,14 @@ interface GiftCardScreenProps {
   onNext: () => void;
   onDataChange: (data: {
     occasion: string;
-    selectedAmount: number | string;
+    selectedAmount: number;
     message: string;
     phoneNumber: string;
     selectedDate: string;
   }) => void;
   initialData?: {
     occasion?: string;
-    selectedAmount?: number | string;
+    selectedAmount?: number;
     message?: string;
     phoneNumber?: string;
     selectedDate?: string;
@@ -55,7 +55,7 @@ export default function GiftCardScreen({
   const notifyParent = (
     updates: Partial<{
       occasion: string;
-      selectedAmount: number | string;
+      selectedAmount: number;
       message: string;
       phoneNumber: string;
       selectedDate: string;

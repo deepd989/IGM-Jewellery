@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../auth/authContext";
 import { HapticButton } from "../components/basic components/hapticButton";
 import { COLORS } from "../constants/theme";
 import { GiftCardData, useGetAllGiftsQuery } from "../store/apis/giftApi";
@@ -14,8 +15,11 @@ const RibbonCard = ({ children }) => <View>{children}</View>;
 const GiftCardRedeemStep1 = () => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("all");
-  const { data: giftState = { gifts: [] }, isLoading } = useGetAllGiftsQuery();
-  const giftCards = giftState?.gifts ?? [];
+  const { userId } = useAuth();
+  console.log("User ID from auth context:", userId);
+  const { data, isLoading } = useGetAllGiftsQuery(userId as string);
+  const giftCards = data;
+  console.log("Gift Cards Data:", giftCards);
 
   // 2. You can now use giftCards directly in your JSX
   if (isLoading)
@@ -171,7 +175,8 @@ const GiftCardRedeemStep1 = () => {
           ) : (
             <View style={styles.emptyState}>
               <Text style={styles.emptyStateText}>
-                No {activeTab} gift cards
+                No gift cards found in this category. Tell your loved ones to
+                gift you some! 🎁
               </Text>
             </View>
           )}

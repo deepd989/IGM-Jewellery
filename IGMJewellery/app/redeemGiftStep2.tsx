@@ -12,9 +12,10 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../auth/authContext";
 import { HapticButton } from "../components/basic components/hapticButton";
 import { COLORS } from "../constants/theme";
-import { useDeleteGiftMutation } from "../store/apis/giftApi";
+import { useRedeemGiftMutation } from "../store/apis/giftApi";
 
 // Simple Icon Components using text/unicode
 const ChevronLeft = () => (
@@ -39,14 +40,15 @@ export default function RedeemGiftStep2() {
   const [isClaimed, setIsClaimed] = useState(false);
 
   // Extract params with defaults
+  const { userId } = useAuth();
   const cardId = params.id as string;
-  const senderName = params.senderName as string;
+  const senderName = params.senderid as string;
   const giftMessage = params.giftMessage as string;
   const date = params.date as string;
   const amount = params.amount as string;
   const title = params.title as string;
-  const senderPhone = params.senderPhone as string;
-  const [deleteGift] = useDeleteGiftMutation();
+  const senderPhone = params.senderid as string;
+  const [redeemGift] = useRedeemGiftMutation();
 
   const handleCopyCardNumber = () => {
     Clipboard.setString(cardId);
@@ -55,7 +57,10 @@ export default function RedeemGiftStep2() {
 
   const handleClaimGiftCard = async (cardId: string) => {
     try {
-      await deleteGift(Number(cardId)).unwrap();
+      const resp = await redeemGift({
+        userid: userId as string,
+        giftid: cardId,
+      }).unwrap();
       setIsClaimed(true);
       setShowSuccessModal(true);
     } catch (error) {
