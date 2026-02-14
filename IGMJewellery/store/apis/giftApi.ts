@@ -88,25 +88,16 @@ export const giftApi = createApi({
     }),
 
     // 2. Delete a gift
-    deleteGift: builder.mutation<{ success: boolean }, number>({
-      queryFn: (giftId) => {
-        const initialLength = currentState.gifts.length;
-        // Filter out the gift from currentState
-        let newGiftsArray = currentState.gifts.filter((g) => g.id !== giftId);
-        currentState = { ...currentState, gifts: newGiftsArray };
-        if (currentState.gifts.length < initialLength) {
-          return { data: { success: true } };
-        }
-
-        return {
-          error: {
-            status: 404,
-            statusText: "Not Found",
-            data: "Gift not found",
-          },
-        };
-      },
-      invalidatesTags: ["Gifts"],
+    redeemGift: builder.mutation<
+      { success: boolean; walletBalance: number }, // Adjusted to match your API response
+      { userid: string; giftid: string }
+    >({
+      query: ({ userid, giftid }) => ({
+        url: "/redeemGiftUserId",
+        method: "POST",
+        body: { userid, giftid },
+      }),
+      invalidatesTags: (result, error) => (error ? [] : ["Gifts"]),
     }),
 
     sendGift: builder.mutation<
@@ -134,6 +125,6 @@ export const giftApi = createApi({
 
 export const {
   useGetAllGiftsQuery,
-  useDeleteGiftMutation,
+  useRedeemGiftMutation,
   useSendGiftMutation,
 } = giftApi;

@@ -19,6 +19,7 @@ const GiftCardRedeemStep1 = () => {
   console.log("User ID from auth context:", userId);
   const { data, isLoading } = useGetAllGiftsQuery(userId as string);
   const giftCards = data;
+  console.log("Gift Cards Data:", giftCards);
 
   // 2. You can now use giftCards directly in your JSX
   if (isLoading)
