@@ -34,6 +34,35 @@ export default function AiSearchComponent() {
   const [productExpanded, setProductExpanded] = useState(false);
   const [priceExpanded, setPriceExpanded] = useState(false);
 
+  const buildSearchQuery = () => {
+    const parts = [];
+
+    if (searchText) parts.push(searchText);
+    if (
+      selectedProduct &&
+      !searchText.toLowerCase().includes(selectedProduct.toLowerCase())
+    ) {
+      parts.push(selectedProduct);
+    }
+
+    if (selectedWhoFor) parts.push(`for ${selectedWhoFor}`);
+
+    if (selectedOccasion) parts.push(selectedOccasion);
+    if (priceRange) {
+      parts.push(`between ₹${priceRange[0]} and ₹${priceRange[1]}`);
+    }
+    return parts.join(" ").trim();
+  };
+
+  const handleStartLooking = () => {
+    const textInput = buildSearchQuery();
+
+    router.push({
+      pathname: "/exploreAi",
+      params: { value: textInput },
+    });
+  };
+
   const toggleAccordion = (section) => {
     switch (section) {
       case "occasion":
@@ -270,7 +299,7 @@ export default function AiSearchComponent() {
         <View style={styles.bottomButtonContainer}>
           <HapticButton
             style={styles.startLookingButton}
-            onPress={() => router.push("/product-list")}
+            onPress={handleStartLooking}
           >
             <Text style={styles.startLookingIcon}>🔍</Text>
             <Text style={styles.startLookingText}>Start Looking</Text>

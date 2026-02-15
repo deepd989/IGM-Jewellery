@@ -1,4 +1,5 @@
 import { COLORS } from "@/constants/theme";
+import { useSearchJewelryMutation } from "@/store/apis/textSearchApi";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
@@ -14,7 +15,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../basic components/hapticButton";
-import VoiceVideoInterface from "./aiVoice";
 
 interface IMessage {
   id: string;
@@ -42,49 +42,85 @@ export default function AiChatComponent({
   );
   const flatListRef = useRef<FlatList>(null);
 
-  // Send initial message when component mounts
+  // RTK Query Hook
+  const [searchJewelry, { isLoading: replyLoading }] =
+    useSearchJewelryMutation();
+
+  /**
+   * Core Logic: Sends message to Gemini and handles the JSON response
+   */
+  const handleAiLogic = async (
+    userText: string,
+    currentHistory: IMessage[]
+  ) => {
+    try {
+      // Get previous AI messages to provide context to Gemini
+      const previousBotMessages = currentHistory
+        .filter((m) => m.sender === "ai")
+        .map((m) => m.text);
+
+      const response = await searchJewelry({
+        userMessage: userText,
+        previousBotMessages,
+      }).unwrap();
+
+      if (response.isReply) {
+        // Option A: AI is replying or asking a follow-up question
+        const aiResponse: IMessage = {
+          id: Math.random().toString(36).substring(2, 11),
+          text: response.message,
+          sender: "ai",
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, aiResponse]);
+      } else {
+        // TODO: redirect to product listing page with filters applied based on response.searchQuery
+        console.log("Filters found:", response.searchQuery);
+        // router.push({
+        //   pathname: "/product-list",
+        //   query: { filters: JSON.stringify(response.searchQuery) },
+        // });
+      }
+    } catch (error) {
+      console.error("Gemini API Error:", error);
+      // Fallback message
+      const errorMsg: IMessage = {
+        id: Math.random().toString(36).substring(2, 11),
+        text: "Sorry, I'm having trouble connecting. Please try again.",
+        sender: "ai",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+    }
+  };
+
+  // Handle Initial Message mount
   useEffect(() => {
     if (initialMessage.trim()) {
-      const newMessage: IMessage = {
-        id: Date.now().toString(),
+      const startMsg: IMessage = {
+        id: Math.random().toString(36).substring(2, 11),
         text: initialMessage.trim(),
         sender: "user",
         timestamp: new Date(),
       };
-      setMessages([newMessage]);
-
-      setTimeout(() => {
-        const aiResponse: IMessage = {
-          id: (Date.now() + 1).toString(),
-          text: "Let me help you find what you want.\nAre you looking for something for yourself?",
-          sender: "ai",
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, aiResponse]);
-      }, 1000);
+      setMessages([startMsg]);
+      handleAiLogic(initialMessage.trim(), []);
     }
   }, [initialMessage]);
 
-  const handleSend = () => {
-    if (inputText.trim()) {
-      const newMessage: IMessage = {
-        id: Date.now().toString(),
-        text: inputText.trim(),
+  const onSendPress = () => {
+    if (inputText.trim() && !replyLoading) {
+      const userText = inputText.trim();
+      const userMsg: IMessage = {
+        id: Math.random().toString(36).substring(2, 11),
+        text: userText,
         sender: "user",
         timestamp: new Date(),
       };
-      setMessages([...messages, newMessage]);
-      setInputText("");
 
-      setTimeout(() => {
-        const aiResponse: IMessage = {
-          id: (Date.now() + 2).toString(),
-          text: "Let me help you find what you want.\nAre you looking for something for yourself?",
-          sender: "ai",
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, aiResponse]);
-      }, 1000);
+      const newHistory = [...messages, userMsg];
+      setMessages(newHistory);
+      setInputText("");
     }
   };
 
@@ -100,25 +136,16 @@ export default function AiChatComponent({
 
   const handleTranscript = (text: string) => {
     setShowVoiceVideoInterface(false);
-
     if (text.trim()) {
-      const newMessage: IMessage = {
+      const userMsg: IMessage = {
         id: Date.now().toString(),
         text: text.trim(),
         sender: "user",
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, newMessage]);
-
-      setTimeout(() => {
-        const aiResponse: IMessage = {
-          id: (Date.now() + 3).toString(),
-          text: "Let me help you find what you want.\nAre you looking for something for yourself?",
-          sender: "ai",
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, aiResponse]);
-      }, 1000);
+      const newHistory = [...messages, userMsg];
+      setMessages(newHistory);
+      handleAiLogic(text.trim(), newHistory);
     }
   };
 
@@ -128,7 +155,7 @@ export default function AiChatComponent({
       <View style={styles.messageContainer}>
         {!isUser && (
           <View style={styles.aiAvatar}>
-            <Ionicons name="musical-notes" size={16} color="#fff" />
+            <Ionicons name="sparkles" size={14} color="#fff" />
           </View>
         )}
         <View
@@ -151,17 +178,34 @@ export default function AiChatComponent({
     );
   };
 
+  const renderTypingIndicator = () => (
+    <View style={styles.messageContainer}>
+      <View style={styles.aiAvatar}>
+        <Ionicons name="sparkles" size={14} color="#fff" />
+      </View>
+      <View style={[styles.messageBubble, styles.aiBubble]}>
+        <View style={styles.typingIndicator}>
+          <View style={[styles.typingDot, { animationDelay: "0ms" }]} />
+          <View style={[styles.typingDot, { animationDelay: "150ms" }]} />
+          <View style={[styles.typingDot, { animationDelay: "300ms" }]} />
+        </View>
+      </View>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <HapticButton onPress={() => router.back()} style={styles.backButton}>
-        <Ionicons name="chevron-back" size={24} color={COLORS.text || "#053844"} />
+        <Ionicons
+          name="chevron-back"
+          size={24}
+          color={COLORS.text || "#053844"}
+        />
       </HapticButton>
 
       <KeyboardAvoidingView
         style={styles.container}
-        // "padding" is better for iOS, "height" or undefined works better for Android
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        // This offset accounts for the header/safe area height
         keyboardVerticalOffset={10}
       >
         <FlatList
@@ -180,6 +224,9 @@ export default function AiChatComponent({
             }
           }}
           showsVerticalScrollIndicator={false}
+          ListFooterComponent={() =>
+            replyLoading ? renderTypingIndicator() : null
+          }
         />
 
         <View style={styles.inputContainer}>
@@ -190,7 +237,7 @@ export default function AiChatComponent({
             value={inputText}
             onChangeText={setInputText}
             multiline
-            maxLength={1000}
+            editable={!replyLoading}
           />
           <HapticButton
             style={[styles.iconButton, isRecording && styles.recordingButton]}
@@ -210,13 +257,14 @@ export default function AiChatComponent({
           >
             <Ionicons name="videocam" size={24} color="#666" />
           </HapticButton>
+
           {inputText.trim().length > 0 && (
             <HapticButton
-              style={styles.sendButton}
-              onPress={handleSend}
-              activeOpacity={0.8}
+              style={[styles.sendButton, replyLoading && { opacity: 0.5 }]}
+              onPress={onSendPress}
+              disabled={replyLoading}
             >
-              <Ionicons name="send" size={20} color="#fff" />
+              <Ionicons name="send" size={18} color="#fff" />
             </HapticButton>
           )}
         </View>
@@ -236,11 +284,11 @@ export default function AiChatComponent({
           >
             <Ionicons name="close" size={28} color="#053844" />
           </HapticButton>
-          <VoiceVideoInterface
+          {/* <VoiceVideoInterface
             mode={interfaceMode}
             onTranscript={handleTranscript}
             onClose={() => setShowVoiceVideoInterface(false)}
-          />
+          /> */}
         </SafeAreaView>
       </Modal>
     </SafeAreaView>
@@ -248,39 +296,19 @@ export default function AiChatComponent({
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  container: {
-    flex: 1,
-  },
-  messagesList: {
-    padding: 16,
-    paddingBottom: 20,
-    flexGrow: 1,
-  },
+  safeArea: { flex: 1, backgroundColor: "#fff" },
+  container: { flex: 1 },
+  messagesList: { padding: 16, paddingBottom: 20 },
   messageContainer: {
     flexDirection: "row",
     marginBottom: 16,
     alignItems: "flex-end",
   },
   messageBubble: {
-    maxWidth: "75%",
+    maxWidth: "80%",
     borderRadius: 20,
     padding: 12,
     paddingHorizontal: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
   },
   userBubble: {
     backgroundColor: "#053844",
@@ -311,28 +339,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   userAvatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "#D0D0D0",
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#E0E0E0",
     marginLeft: 8,
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "flex-end",
     padding: 12,
-    paddingBottom: 12, // More padding for iOS home indicator
     borderTopWidth: 1,
-    borderTopColor: "#E0E0E0",
-    backgroundColor: "#fff",
+    borderTopColor: "#EEE",
   },
   input: {
     flex: 1,
     backgroundColor: "#F5F5F5",
     borderRadius: 20,
     paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingVertical: 8,
     fontSize: 15,
     maxHeight: 100,
   },
@@ -370,10 +395,19 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: "#fff",
     justifyContent: "center",
+  },
+  typingIndicator: {
+    flexDirection: "row",
     alignItems: "center",
-    elevation: 3,
+    gap: 4,
+    paddingVertical: 4,
   },
-  backButton: {
-    padding: 10,
+  typingDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#666",
+    opacity: 0.4,
   },
+  backButton: { padding: 10 },
 });
