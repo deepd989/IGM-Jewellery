@@ -4,12 +4,10 @@ export const FILTER_CATEGORIES = [
     label: 'Product Type',
     type: 'grid' as const,
     options: [
-      { id: 'ring', label: 'Ring' },
-      { id: 'necklace', label: 'Necklace' },
-      { id: 'bracelet', label: 'Bracelet' },
-      { id: 'earring', label: 'Earring' },
-      { id: 'pendant', label: 'Pendant' },
-      { id: 'chain', label: 'Chain' },
+      { id: 'Ring', label: 'Ring' },
+      { id: 'Necklace', label: 'Necklace' },
+      { id: 'Bracelet', label: 'Bracelet' },
+      { id: 'Earring', label: 'Earring' },
     ]
   },
   {
@@ -27,10 +25,10 @@ export const FILTER_CATEGORIES = [
     label: 'Metal',
     type: 'list' as const,
     options: [
-      { id: 'gold', label: 'Gold' },
-      { id: 'silver', label: 'Silver' },
-      { id: 'platinum', label: 'Platinum' },
-      { id: 'rose-gold', label: 'Rose Gold' },
+      { id: 'Gold', label: 'Gold' },
+      { id: 'Silver', label: 'Silver' },
+      { id: 'Platinum', label: 'Platinum' },
+      { id: 'Rose Gold', label: 'Rose Gold' },
     ]
   },
   {
@@ -38,12 +36,8 @@ export const FILTER_CATEGORIES = [
     label: 'Gemstone',
     type: 'grid' as const,
     options: [
-      { id: 'diamond', label: 'Diamond' },
-      { id: 'ruby', label: 'Ruby' },
-      { id: 'emerald', label: 'Emerald' },
-      { id: 'sapphire', label: 'Sapphire' },
-      { id: 'pearl', label: 'Pearl' },
-      { id: 'none', label: 'None' },
+      { id: 'Natural Diamond', label: 'Diamond' },
+      { id: 'Gemstone', label: 'Gemstone' },
     ]
   },
   {
@@ -63,22 +57,12 @@ export const FILTER_CATEGORIES = [
     label: 'Occasion',
     type: 'list' as const,
     options: [
-      { id: 'daily-wear', label: 'Daily Wear' },
-      { id: 'wedding', label: 'Wedding' },
-      { id: 'party', label: 'Party' },
-      { id: 'festive', label: 'Festive' },
-      { id: 'gift', label: 'Gift' },
+      { id: 'Daily Wear', label: 'Daily Wear' },
+      { id: 'Wedding', label: 'Wedding' },
+      { id: 'Anniversary', label: 'Anniversary' },
+      { id: 'Birthday', label: 'Birthday' },
+      { id: 'Party Wear', label: 'Party Wear' },
+      { id: 'Diwali', label: 'Diwali' },
     ]
   },
-  {
-    id: 'collection',
-    label: 'Collection',
-    type: 'list' as const,
-    options: [
-      { id: 'new-arrival', label: 'New Arrivals' },
-      { id: 'bestseller', label: 'Bestsellers' },
-      { id: 'exclusive', label: 'Exclusive' },
-      { id: 'sale', label: 'Sale' },
-    ]
-  }
 ];

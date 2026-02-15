@@ -92,7 +92,9 @@ const applyFilters = (
 
       case "brand":
         filteredProducts = filteredProducts.filter((p) =>
-          selectedOptions.includes(p.brand)
+          selectedOptions.some(
+            (opt) => p.brand.toLowerCase() === opt.toLowerCase()
+          )
         );
         break;
 
@@ -120,54 +122,38 @@ const applyFilters = (
 
       case "gemstone":
         filteredProducts = filteredProducts.filter((p) =>
-          selectedOptions.some(
-            (gem) =>
-              p.tags.some((tag) =>
-                tag.toLowerCase().includes(gem.toLowerCase())
-              ) ||
-              p.title.toLowerCase().includes(gem.toLowerCase()) ||
-              p.description.toLowerCase().includes(gem.toLowerCase())
-          )
+          selectedOptions.some((gem) => {
+            const stoneType = p.productDetails?.stoneType?.toLowerCase() || "";
+            return stoneType.includes(gem.toLowerCase());
+          })
         );
         break;
 
       case "metal":
         filteredProducts = filteredProducts.filter((p) =>
-          selectedOptions.some(
-            (metal) =>
-              p.tags.some((tag) =>
-                tag.toLowerCase().includes(metal.toLowerCase())
-              ) ||
-              p.title.toLowerCase().includes(metal.toLowerCase()) ||
-              p.description.toLowerCase().includes(metal.toLowerCase())
-          )
+          selectedOptions.some((metal) => {
+            const metalType =
+              p.productDetails?.metalType?.toLowerCase() || "";
+            return metalType.includes(metal.toLowerCase());
+          })
         );
-        break;
-
-      case "collection":
-        filteredProducts = filteredProducts.filter((p) => {
-          return selectedOptions.some((collection) => {
-            switch (collection) {
-              case "new-arrival":
-                return p.isNew === true;
-              case "bestseller":
-                return (p.rating || 0) >= 4.5;
-              case "sale":
-                return p.tags.includes("sale");
-              case "exclusive":
-                return (
-                  p.tags.includes("exclusive") || p.tags.includes("premium")
-                );
-              default:
-                return true;
-            }
-          });
-        });
         break;
 
       case "occasion":
         filteredProducts = filteredProducts.filter((prod) =>
-          prod.occaision.some((occ) => selectedOptions.includes(occ))
+          prod.occaision.some((occ) =>
+            selectedOptions.some(
+              (opt) => occ.toLowerCase() === opt.toLowerCase()
+            )
+          )
+        );
+        break;
+
+      case "gender":
+        filteredProducts = filteredProducts.filter((prod) =>
+          selectedOptions.some(
+            (opt) => prod.gender.toLowerCase() === opt.toLowerCase()
+          )
         );
         break;
     }
