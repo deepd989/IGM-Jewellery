@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#000",
+    color: "#053844",
     marginBottom: 8,
   },
   subtitle: {
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#000",
+    color: "#053844",
     marginBottom: 4,
     lineHeight: 22,
   },
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   button: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 24,
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   exploreButton: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     borderRadius: 30,
     paddingVertical: 16,
     paddingHorizontal: 40,

@@ -30,13 +30,13 @@ export default function FAQScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#000" />
+          <Ionicons name="chevron-back" size={24} color="#053844" />
         </HapticButton>
         <Text style={styles.headerTitle}>FAQs</Text>
         <HapticButton>
           <View style={styles.helpBadge}>
             <Text style={styles.helpText}>Help?</Text>
-            <Ionicons name="call-outline" size={18} color="#000" />
+            <Ionicons name="call-outline" size={18} color="#053844" />
           </View>
         </HapticButton>
       </View>
@@ -48,7 +48,7 @@ export default function FAQScreen() {
             placeholder="Search your queries"
             style={styles.searchInput}
           />
-          <Ionicons name="mic-outline" size={20} color="#000" />
+          <Ionicons name="mic-outline" size={20} color="#053844" />
         </View>
       </View>
 
@@ -87,7 +87,7 @@ export default function FAQScreen() {
                 <Ionicons
                   name={expandedId === faq.id ? "chevron-up" : "chevron-down"}
                   size={20}
-                  color="#000"
+                  color="#053844"
                 />
               </HapticButton>
               {expandedId === faq.id && (
@@ -151,9 +151,9 @@ const styles = StyleSheet.create({
   searchInput: { flex: 1, marginLeft: 8, fontSize: 14 },
   tabContainer: { borderBottomWidth: 1, borderBottomColor: "#F0F0F0" },
   tab: { paddingHorizontal: 16, paddingVertical: 12, marginRight: 8 },
-  activeTab: { borderBottomWidth: 2, borderBottomColor: "#000" },
+  activeTab: { borderBottomWidth: 2, borderBottomColor: "#053844" },
   tabText: { color: "#888", fontWeight: "600" },
-  activeTabText: { color: "#000" },
+  activeTabText: { color: "#053844" },
   scroll: { paddingBottom: 100 },
   faqItem: { borderBottomWidth: 1, borderBottomColor: "#F9F9F9" },
   faqHeader: {

@@ -490,7 +490,7 @@ const styles = StyleSheet.create({
   },
   footerLink: {
     fontSize: 11,
-    color: "#000",
+    color: "#053844",
     fontWeight: "600",
     textDecorationLine: "underline",
   },
@@ -500,10 +500,10 @@ const styles = StyleSheet.create({
   browseText: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#000",
+    color: "#053844",
   },
   mainBtn: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 4,

@@ -139,7 +139,7 @@ export default function JewelryLanding() {
               style={[styles.fullButton, styles.secondaryButton]}
               onPress={() => router.push("/home")}
             >
-              <Text style={[styles.buttonText, { color: "#000" }]}>
+              <Text style={[styles.buttonText, { color: "#053844" }]}>
                 Explore as Guest
               </Text>
             </HapticButton>
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: "700",
-    color: "#000",
+    color: "#053844",
     textAlign: "center",
     marginBottom: 6,
   },
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   fullButton: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     width: "100%",
     paddingVertical: 14,
     borderRadius: 8,

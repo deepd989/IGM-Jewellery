@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     flex: 1,
     marginLeft: 8,
-    color: "#000",
+    color: "#053844",
   },
   headerSpacer: {
     width: 40,
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 8,
     textAlign: "center",
-    color: "#000",
+    color: "#053844",
   },
   subtitle: {
     fontSize: 14,
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
   cardNumberText: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#000",
+    color: "#053844",
   },
   giftCardContainer: {
     paddingHorizontal: 32,
@@ -366,19 +366,19 @@ const styles = StyleSheet.create({
   brandIcon: {
     width: 12,
     height: 12,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     transform: [{ rotate: "45deg" }],
   },
   brandText: {
     fontSize: 12,
     fontWeight: "500",
-    color: "#000",
+    color: "#053844",
   },
   cardTitle: {
     fontSize: 28,
     fontWeight: "700",
     marginBottom: 8,
-    color: "#000",
+    color: "#053844",
   },
   cardMessage: {
     fontSize: 14,
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
   cardAmount: {
     fontSize: 24,
     fontWeight: "700",
-    color: "#000",
+    color: "#053844",
   },
   messageSection: {
     paddingHorizontal: 16,
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     marginBottom: 2,
-    color: "#000",
+    color: "#053844",
   },
   senderPhone: {
     fontSize: 14,
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     marginBottom: 12,
-    color: "#000",
+    color: "#053844",
   },
   notesList: {
     gap: 8,
@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   claimButton: {
-    backgroundColor: "#000000",
+    backgroundColor: "#053844",
     paddingVertical: 16,
     borderRadius: 8,
     alignItems: "center",
@@ -494,7 +494,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: "#000000",
+    backgroundColor: "#053844",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 24,
@@ -503,7 +503,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "700",
     marginBottom: 12,
-    color: "#000",
+    color: "#053844",
   },
   successMessage: {
     fontSize: 14,
@@ -521,10 +521,10 @@ const styles = StyleSheet.create({
   successCardNumberText: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#000",
+    color: "#053844",
   },
   continueButton: {
-    backgroundColor: "#000000",
+    backgroundColor: "#053844",
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 8,

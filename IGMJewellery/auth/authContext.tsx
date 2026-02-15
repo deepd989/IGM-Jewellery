@@ -1,4 +1,7 @@
 // src/auth/AuthContext.tsx
+import { cartApiService, setCurrentCartUserId } from "@/store/apis/cart";
+import { setCurrentUserId, wishlistApiService } from "@/store/apis/wishlist";
+import { store } from "@/store/store";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   getAuth,
@@ -7,6 +10,15 @@ import {
   saveAuth,
   setGlobalApiUrl,
 } from "./authStorage";
+
+/**
+ * After loading data from phone storage, invalidate RTK Query caches
+ * so components re-render with the correct data.
+ */
+function invalidateCaches() {
+  store.dispatch(cartApiService.util.invalidateTags(["Cart"]));
+  store.dispatch(wishlistApiService.util.invalidateTags(["Wishlist"]));
+}
 
 type AuthContextType = {
   isAuthenticated: boolean;
@@ -42,6 +54,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUserId(auth.userId);
       }
 
+      // Initialize wishlist & cart storage with current user (or guest)
+      await setCurrentUserId(auth?.userId || null);
+      await setCurrentCartUserId(auth?.userId || null);
+      invalidateCaches();
+
       setIsLoading(false);
     };
 
@@ -59,12 +76,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await saveAuth({ token, userId });
     setToken(token);
     setUserId(userId);
+    // Sync wishlist & cart storage to logged-in user (merges guest data)
+    await setCurrentUserId(userId);
+    await setCurrentCartUserId(userId);
+    invalidateCaches();
   };
 
   const logout = async () => {
     await removeAuth();
     setToken(null);
     setUserId(null);
+    // Reset wishlist & cart storage to guest
+    await setCurrentUserId(null);
+    await setCurrentCartUserId(null);
+    invalidateCaches();
   };
 
   const setApiUrl = async (url: string) => {

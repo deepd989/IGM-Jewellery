@@ -21,9 +21,9 @@ export default function TrialConfirmationScreen() {
           onPress={() => router.replace("/(tabs)/categories")}
           style={styles.closeBtn}
         >
-          <Ionicons name="close" size={24} color="#000" />
+          <Ionicons name="close" size={24} color="#053844" />
         </HapticButton>
-        <Ionicons name="call-outline" size={24} color="#000" />
+        <Ionicons name="call-outline" size={24} color="#053844" />
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -38,7 +38,7 @@ export default function TrialConfirmationScreen() {
 
         <View style={styles.idBox}>
           <Text style={styles.idText}>Request No. {requestId}</Text>
-          <Ionicons name="copy-outline" size={16} color="#000" />
+          <Ionicons name="copy-outline" size={16} color="#053844" />
         </View>
 
         <View style={styles.infoCard}>
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   primaryBtn: {
     flex: 1.5,
     height: 54,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",

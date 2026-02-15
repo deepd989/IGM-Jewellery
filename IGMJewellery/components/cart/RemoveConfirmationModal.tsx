@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   wishlistBtn: {
     flex: 1,
     height: 52,
-    backgroundColor: "#000000",
+    backgroundColor: "#053844",
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",

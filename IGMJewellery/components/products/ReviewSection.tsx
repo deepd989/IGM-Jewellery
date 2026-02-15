@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
   },
   ratingBadgeSmall: {
     flexDirection: "row",
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,

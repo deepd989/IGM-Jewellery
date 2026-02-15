@@ -43,31 +43,31 @@ export default function HomePageCard() {
         <MaterialCommunityIcons
           name="necklace"
           size={32}
-          color="#000"
+          color="#053844"
           onPress={() => setCardTitle(ProductType.Necklace)}
         />
         <MaterialCommunityIcons
           name="ring"
           size={32}
-          color="#000"
+          color="#053844"
           onPress={() => setCardTitle(ProductType.Ring)}
         />
         <MaterialCommunityIcons
           name="diamond-stone"
           size={32}
-          color="#000"
+          color="#053844"
           onPress={() => setCardTitle(ProductType.DiamondStone)}
         />
         <MaterialCommunityIcons
           name="gold"
           size={32}
-          color="#000"
+          color="#053844"
           onPress={() => setCardTitle(ProductType.Gold)}
         />
         <MaterialCommunityIcons
           name="gift"
           size={32}
-          color="#000"
+          color="#053844"
           onPress={() => setCardTitle(ProductType.Gift)}
         />
         <HapticButton onPress={() => setCardTitle(ProductType.Earring)}>
@@ -183,7 +183,7 @@ export const NecklaceCard: React.FC<Props> = ({
           />
           {/* { product &&
           <HapticButton style={necklaceCardStyle.wishlistButton}>
-            <AntDesign name="heart" size={22} color="#000" />
+            <AntDesign name="heart" size={22} color="#053844" />
           </HapticButton>} */}
           {product && (
             <View style={necklaceCardStyle.deliveryTag}>
@@ -294,7 +294,7 @@ const necklaceCardStyle = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#000",
+    color: "#053844",
   },
 
   priceRow: {
@@ -306,7 +306,7 @@ const necklaceCardStyle = StyleSheet.create({
   price: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#000",
+    color: "#053844",
   },
 
   oldPrice: {
@@ -330,7 +330,7 @@ const necklaceCardStyle = StyleSheet.create({
     alignSelf: "center",
     width: 150 * 1.8,
     height: 42,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     borderRadius: 24,
     flexDirection: "row",
     justifyContent: "center",

@@ -70,7 +70,7 @@ export const BrandSection = ({
         <Text style={styles.sectionTitle}>{title}</Text>
         <HapticButton style={styles.viewAllBtn}>
           <Text style={styles.viewAllText}>View All</Text>
-          <Ionicons name="chevron-forward" size={16} color="#000" />
+          <Ionicons name="chevron-forward" size={16} color="#053844" />
         </HapticButton>
       </View>
       <BrandGrid data={data} />
@@ -100,7 +100,7 @@ export default function BrandList() {
       {/* Header */}
       <View style={styles.header}>
         <HapticButton style={styles.backButton} onPress={() => router.back()}>
-          <ChevronLeft color="#000" size={24} />
+          <ChevronLeft color="#053844" size={24} />
         </HapticButton>
         <Text style={styles.headerTitle}>Brands</Text>
         <View style={{ width: 40 }} />
@@ -113,7 +113,7 @@ export default function BrandList() {
             <Ionicons
               name="search"
               size={20}
-              color="#000"
+              color="#053844"
               style={styles.searchIcon}
             />
             <TextInput
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: "#000",
+    color: "#053844",
   },
   sectionContainer: {
     marginBottom: 25,
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
   viewAllText: {
     fontSize: 14,
-    color: "#000",
+    color: "#053844",
     marginRight: 2,
   },
   gridContainer: {

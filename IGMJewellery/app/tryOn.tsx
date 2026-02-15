@@ -57,7 +57,7 @@ const TryOnScreen = () => {
 
   // Updated state for selections to work with dropdown
   const [outfit, setOutfit] = useState("Casual wear");
-  const [color, setColor] = useState("#000000");
+  const [color, setColor] = useState("#053844");
 
   // Dropdown formatted data
   const outfitTypes = [
@@ -71,7 +71,7 @@ const TryOnScreen = () => {
   ];
 
   const colorOptions = [
-    { label: "Black", value: "#000000" },
+    { label: "Black", value: "#053844" },
     { label: "White", value: "#FFFFFF" },
     { label: "Grey", value: "#808080" },
     { label: "Blue", value: "#0000FF" },
@@ -189,7 +189,7 @@ const TryOnScreen = () => {
             <Ionicons
               name="checkmark-circle"
               size={20}
-              color={COLORS.primary || "#000"}
+              color={COLORS.primary || "#053844"}
             />
           </View>
         )}
@@ -223,7 +223,7 @@ const TryOnScreen = () => {
         >
           {!showOutputImage &&
             (loading ? (
-              <ActivityIndicator color="#000" size="large" />
+              <ActivityIndicator color="#053844" size="large" />
             ) : userImage ? (
               <Image source={{ uri: userImage }} style={styles.previewImg} />
             ) : (
@@ -236,7 +236,7 @@ const TryOnScreen = () => {
           {showOutputImage &&
             (outputLoading ? (
               <View>
-                <ActivityIndicator color="#000" size="large" />
+                <ActivityIndicator color="#053844" size="large" />
                 <Text>Generating your look...</Text>
               </View>
             ) : (
@@ -301,7 +301,7 @@ const TryOnScreen = () => {
             </Text>
           </View>
           <Switch
-            trackColor={{ false: "#D1D1D1", true: COLORS.primary || "#000" }}
+            trackColor={{ false: "#D1D1D1", true: COLORS.primary || "#053844" }}
             thumbColor={useImageGloballyFlag ? "#fff" : "#f4f3f4"}
             ios_backgroundColor="#D1D1D1"
             onValueChange={toggleSwitch}
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fafafa",
   },
   placeholderStyle: { fontSize: 16, color: "#888" },
-  selectedTextStyle: { fontSize: 16, color: "#000" },
+  selectedTextStyle: { fontSize: 16, color: "#053844" },
 
   colorCircle: {
     width: 18,
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(0,0,0,0.1)",
   },
   primaryBtn: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     padding: 18,
     borderRadius: 12,
     marginTop: 40,
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   productCardSelected: {
-    borderColor: "#000",
+    borderColor: "#053844",
     borderWidth: 2,
     backgroundColor: "#f0f0f0",
   },
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
   toggleLabel: {
     fontSize: 15,
     fontWeight: "600",
-    color: "#000",
+    color: "#053844",
   },
   toggleSubLabel: {
     fontSize: 12,

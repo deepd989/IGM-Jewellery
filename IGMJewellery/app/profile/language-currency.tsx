@@ -17,7 +17,7 @@ export default function LanguageCurrencyScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#000" />
+          <Ionicons name="chevron-back" size={24} color="#053844" />
         </HapticButton>
         <Text style={styles.headerTitle}>Language & Currency</Text>
         <HapticButton style={styles.helpBadge}>

@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   },
 
   activeTabText: {
-    color: "#000",
+    color: "#053844",
     fontWeight: "600",
   },
 
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     marginTop: 6,
   },
 

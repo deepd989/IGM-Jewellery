@@ -17,7 +17,7 @@ export default function BankDetailsScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#000" />
+          <Ionicons name="chevron-back" size={24} color="#053844" />
         </HapticButton>
         <Text style={styles.headerTitle}>Bank/UPI Details</Text>
         <View style={{ width: 40 }} />
@@ -42,13 +42,13 @@ export default function BankDetailsScreen() {
               </View>
               <View style={styles.actions}>
                 <HapticButton style={styles.actionBtn}>
-                  <Ionicons name="pencil-outline" size={20} color="#000" />
+                  <Ionicons name="pencil-outline" size={20} color="#053844" />
                 </HapticButton>
                 <HapticButton
                   style={[styles.actionBtn, { marginLeft: 16 }]}
                   onPress={() => dispatch(removePaymentMethod(method.id))}
                 >
-                  <Ionicons name="trash-outline" size={20} color="#000" />
+                  <Ionicons name="trash-outline" size={20} color="#053844" />
                 </HapticButton>
               </View>
             </View>
@@ -56,7 +56,7 @@ export default function BankDetailsScreen() {
         </View>
 
         <HapticButton style={styles.addBtn}>
-          <Ionicons name="add" size={24} color="#000" />
+          <Ionicons name="add" size={24} color="#053844" />
           <Text style={styles.addText}>Add payment method</Text>
         </HapticButton>
       </ScrollView>

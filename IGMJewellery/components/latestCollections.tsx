@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     top: -10,
     width: 10,
     height: 10,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     transform: [{ rotate: "45deg" }],
   },
 
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   },
 
   brandLabelActive: {
-    color: "#000",
+    color: "#053844",
     fontWeight: "600",
   },
 

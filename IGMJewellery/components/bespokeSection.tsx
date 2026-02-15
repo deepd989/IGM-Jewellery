@@ -37,7 +37,7 @@ export default function BespokeSection() {
       <HapticButton style={styles.cta} onPress={() => router.push("/bespoke")}>
         <Text style={styles.ctaText}>Explore Bespoke</Text>
         <View style={styles.iconCircle}>
-          <Ionicons name="arrow-forward" size={16} color="#000" />
+          <Ionicons name="arrow-forward" size={16} color="#053844" />
         </View>
       </HapticButton>
     </View>
@@ -84,13 +84,13 @@ const styles = StyleSheet.create({
   },
   stepText: {
     fontSize: 15,
-    color: "#000",
+    color: "#053844",
   },
   cta: {
     flexDirection: "row",
     alignSelf: "center",
     alignItems: "center",
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     borderRadius: 28,
     paddingVertical: 12,
     paddingHorizontal: 20,

@@ -293,7 +293,7 @@ export default function BrandProfile({
               <Ionicons
                 name={viewMode === "grid" ? "list" : "grid"}
                 size={22}
-                color="#000"
+                color="#053844"
               />
             </HapticButton>
 
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
   businessName: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#000",
+    color: "#053844",
     marginBottom: 10,
   },
   tagline: {
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
   },
   storeButtonText: {
     fontSize: 14,
-    color: "#000",
+    color: "#053844",
     fontWeight: "500",
   },
   tabContainer: {
@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   activeTabText: {
-    color: "#000",
+    color: "#053844",
     fontWeight: "600",
   },
   activeTabIndicator: {
@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
     left: "25%",
     right: "25%",
     height: 3,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
   },
   contentContainer: {
     padding: 20,
@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: "600",
-    color: "#000",
+    color: "#053844",
     marginBottom: 15,
   },
   sectionText: {
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
   statsValue: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#000",
+    color: "#053844",
   },
   productsContainer: {
     margin: 10,
@@ -601,7 +601,7 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     height: 50,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     borderRadius: 12,
     flexDirection: "row",
     alignItems: "center",
@@ -643,7 +643,7 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
   filterBadgeText: {
-    color: "#000",
+    color: "#053844",
     fontSize: 11,
     fontWeight: "700",
   },

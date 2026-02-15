@@ -1,4 +1,11 @@
 import { Product } from "@/interfaces/product.interface";
+import {
+    clearCartStorage,
+    loadCart,
+    mergeGuestCart,
+    PersistedCartData,
+    saveCart,
+} from "@/store/apis/cartStorage";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export interface CartItem {
@@ -30,27 +37,100 @@ interface CartState {
   } | null;
 }
 
-// Mock initial state
-const INITIAL_STATE: CartState = {
-  items: [],
-  trialItems: [],
-  giftAddons: [
-    { id: "1", title: "Write a Note (Card)", price: 100, isChecked: false },
-    { id: "2", title: "Premium Gift Wrap", price: 100, isChecked: false },
-    { id: "3", title: "Record a message", price: 100, isChecked: false },
-    { id: "4", title: "Deluxe Gift Box", price: 150, isChecked: false },
-  ],
-  freebie: {
-    id: "freebie-1",
-    title: "Necklace Box",
-    subtitle: "Congratulations! Available on orders above ₹5,000",
-    minOrderValue: 5000,
-    isVisible: true,
-  },
+// Default gift addons (not user-specific, same for everyone)
+const DEFAULT_GIFT_ADDONS: GiftAddon[] = [
+  { id: "1", title: "Write a Note (Card)", price: 100, isChecked: false },
+  { id: "2", title: "Premium Gift Wrap", price: 100, isChecked: false },
+  { id: "3", title: "Record a message", price: 100, isChecked: false },
+  { id: "4", title: "Deluxe Gift Box", price: 150, isChecked: false },
+];
+
+const DEFAULT_FREEBIE = {
+  id: "freebie-1",
+  title: "Necklace Box",
+  subtitle: "Congratulations! Available on orders above ₹5,000",
+  minOrderValue: 5000,
+  isVisible: true,
 };
 
-// In-memory state for mock API
-let currentState: CartState = { ...INITIAL_STATE };
+/**
+ * Module-level user ID for storage scoping.
+ * Set from auth context via setCurrentCartUserId().
+ */
+let currentUserId: string | null = null;
+
+// In-memory state
+let currentState: CartState = {
+  items: [],
+  trialItems: [],
+  giftAddons: [...DEFAULT_GIFT_ADDONS],
+  freebie: { ...DEFAULT_FREEBIE },
+};
+let initialized = false;
+
+/**
+ * Call from auth context on login/logout/bootstrap.
+ */
+export async function setCurrentCartUserId(userId: string | null): Promise<void> {
+  const previousUserId = currentUserId;
+  currentUserId = userId;
+
+  if (userId && !previousUserId) {
+    // Login — merge guest cart
+    const merged = await mergeGuestCart(userId);
+    currentState = {
+      ...currentState,
+      items: merged.items,
+      trialItems: merged.trialItems,
+    };
+  } else if (userId) {
+    // Changed user — load their cart
+    const data = await loadCart(userId);
+    currentState = {
+      ...currentState,
+      items: data.items,
+      trialItems: data.trialItems,
+    };
+  } else {
+    // Logout — load guest cart
+    const data = await loadCart(null);
+    currentState = {
+      ...currentState,
+      items: data.items,
+      trialItems: data.trialItems,
+    };
+  }
+
+  // Reset addons on user change
+  currentState.giftAddons = [...DEFAULT_GIFT_ADDONS];
+  currentState.freebie = { ...DEFAULT_FREEBIE };
+  initialized = true;
+}
+
+/**
+ * Ensure cart is loaded from phone storage on first access
+ */
+async function ensureInitialized(): Promise<void> {
+  if (initialized) return;
+  const data = await loadCart(currentUserId);
+  currentState = {
+    ...currentState,
+    items: data.items,
+    trialItems: data.trialItems,
+  };
+  initialized = true;
+}
+
+/**
+ * Persist current cart items + trial items to phone storage
+ */
+async function persistCart(): Promise<void> {
+  const data: PersistedCartData = {
+    items: currentState.items,
+    trialItems: currentState.trialItems,
+  };
+  await saveCart(currentUserId, data);
+}
 
 export const cartApiService = createApi({
   reducerPath: "cart",
@@ -59,9 +139,9 @@ export const cartApiService = createApi({
   endpoints: (builder) => ({
     // Get shopping cart
     getCart: builder.query<CartState, void>({
-      queryFn: () => {
-        console.log("getCart called, current state:", currentState);
-        return { data: currentState };
+      queryFn: async () => {
+        await ensureInitialized();
+        return { data: { ...currentState } };
       },
       providesTags: ["Cart"],
     }),
@@ -71,7 +151,9 @@ export const cartApiService = createApi({
       CartState,
       { product: Product; quantity?: number }
     >({
-      queryFn: ({ product, quantity = 1 }) => {
+      queryFn: async ({ product, quantity = 1 }) => {
+        await ensureInitialized();
+
         const items = [...currentState.items];
         const index = items.findIndex((item) => item.product.id === product.id);
         if (index >= 0) {
@@ -79,29 +161,33 @@ export const cartApiService = createApi({
             ...items[index],
             quantity: items[index].quantity + quantity,
           };
-        } else items.push({ product, quantity });
+        } else {
+          items.push({ product, quantity });
+        }
 
-        currentState = {
-          ...currentState,
-          items,
-        };
-        console.log("addToCart - updated state:", currentState);
-        return { data: currentState };
+        currentState = { ...currentState, items };
+        await persistCart();
+
+        console.log("addToCart — saved to storage, total:", items.length);
+        return { data: { ...currentState } };
       },
       invalidatesTags: ["Cart"],
     }),
 
     // Remove item from cart
     removeFromCart: builder.mutation<CartState, string>({
-      queryFn: (productId) => {
-        let items = [...currentState.items].filter(
-          (item) => item.product.id !== productId
-        );
+      queryFn: async (productId) => {
+        await ensureInitialized();
+
         currentState = {
           ...currentState,
-          items,
+          items: currentState.items.filter(
+            (item) => item.product.id !== productId
+          ),
         };
-        console.log("removeFromCart - updated state:", currentState);
+        await persistCart();
+
+        console.log("removeFromCart — saved to storage, total:", currentState.items.length);
         return { data: { ...currentState } };
       },
       invalidatesTags: ["Cart"],
@@ -112,7 +198,9 @@ export const cartApiService = createApi({
       CartState,
       { productId: string; quantity: number }
     >({
-      queryFn: ({ productId, quantity }) => {
+      queryFn: async ({ productId, quantity }) => {
+        await ensureInitialized();
+
         currentState = {
           ...currentState,
           items: currentState.items.map((item) =>
@@ -121,23 +209,23 @@ export const cartApiService = createApi({
               : item
           ),
         };
-        console.log("updateQuantity - updated state:", currentState);
-        return { data: currentState };
+        await persistCart();
+
+        return { data: { ...currentState } };
       },
       invalidatesTags: ["Cart"],
     }),
 
-    // Add to trial - FIXED
+    // Add to trial
     addToTrial: builder.mutation<CartState, Product>({
-      queryFn: (product) => {
-        console.log("addToTrial called for product:", product.id);
+      queryFn: async (product) => {
+        await ensureInitialized();
 
         const exists = currentState.trialItems.some(
           (item) => item.product.id === product.id
         );
 
         if (exists) {
-          console.log("Product already in trial list");
           return {
             error: {
               status: 400,
@@ -150,17 +238,18 @@ export const cartApiService = createApi({
           ...currentState,
           trialItems: [...currentState.trialItems, { product }],
         };
+        await persistCart();
 
-        console.log("addToTrial - updated state:", currentState);
-        return { data: currentState };
+        console.log("addToTrial — saved to storage, total:", currentState.trialItems.length);
+        return { data: { ...currentState } };
       },
       invalidatesTags: ["Cart"],
     }),
 
-    // Remove from trial - FIXED
+    // Remove from trial
     removeFromTrial: builder.mutation<CartState, string>({
-      queryFn: (productId) => {
-        console.log("removeFromTrial called for:", productId);
+      queryFn: async (productId) => {
+        await ensureInitialized();
 
         currentState = {
           ...currentState,
@@ -168,14 +257,14 @@ export const cartApiService = createApi({
             (item) => item.product.id !== productId
           ),
         };
+        await persistCart();
 
-        console.log("removeFromTrial - updated state:", currentState);
-        return { data: currentState };
+        return { data: { ...currentState } };
       },
       invalidatesTags: ["Cart"],
     }),
 
-    // Toggle gift addon
+    // Toggle gift addon (in-memory only — not user-specific)
     toggleGiftAddon: builder.mutation<CartState, string>({
       queryFn: (addonId) => {
         currentState = {
@@ -186,71 +275,70 @@ export const cartApiService = createApi({
               : addon
           ),
         };
-        console.log("toggleGiftAddon - updated state:", currentState);
-        return { data: currentState };
+        return { data: { ...currentState } };
       },
       invalidatesTags: ["Cart"],
     }),
 
+    // Clear trial items
     clearTrial: builder.mutation<CartState, void>({
-      queryFn: () => {
-        currentState = {
-          ...currentState,
-          trialItems: [],
-        };
-        console.log("clearTrial - updated state:", currentState);
-        return { data: currentState };
+      queryFn: async () => {
+        currentState = { ...currentState, trialItems: [] };
+        await persistCart();
+        return { data: { ...currentState } };
       },
       invalidatesTags: ["Cart"],
     }),
 
-    // Clear cart
+    // Clear entire cart
     clearCart: builder.mutation<CartState, void>({
-      queryFn: () => {
+      queryFn: async () => {
         currentState = {
           items: [],
-          trialItems: currentState.trialItems,
+          trialItems: [],
           giftAddons: currentState.giftAddons.map((a) => ({
             ...a,
             isChecked: false,
           })),
+          freebie: currentState.freebie,
         };
-        console.log("clearCart - updated state:", currentState);
-        return { data: currentState };
+        await clearCartStorage(currentUserId);
+        return { data: { ...currentState } };
       },
       invalidatesTags: ["Cart"],
     }),
 
-    // Move to wishlist (placeholder - would integrate with wishlist service)
+    // Move to wishlist (removes from cart, persists)
     moveToWishlist: builder.mutation<CartState, string>({
-      queryFn: (productId) => {
+      queryFn: async (productId) => {
+        await ensureInitialized();
+
         currentState = {
           ...currentState,
           items: currentState.items.filter(
             (item) => item.product.id !== productId
           ),
         };
-        console.log("moveToWishlist - updated state:", currentState);
-        return { data: currentState };
+        await persistCart();
+
+        return { data: { ...currentState } };
       },
       invalidatesTags: ["Cart"],
     }),
 
+    // Dismiss freebie banner
     dismissFreebie: builder.mutation<CartState, void>({
       queryFn: () => {
         if (!currentState.freebie) {
-          return { data: currentState };
+          return { data: { ...currentState } };
         }
 
         currentState = {
           ...currentState,
-          freebie: {
-            ...currentState.freebie,
-            isVisible: false,
-          },
+          freebie: { ...currentState.freebie, isVisible: false },
         };
 
-        return { data: currentState };
+        return { data: { ...currentState } };
       },
       invalidatesTags: ["Cart"],
     }),

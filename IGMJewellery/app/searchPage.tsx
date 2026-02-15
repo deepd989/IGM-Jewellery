@@ -280,9 +280,9 @@ export default function AiSearchComponent() {
                       onValuesChange={(values) =>
                         setPriceRange(values as [number, number])
                       }
-                      selectedStyle={{ backgroundColor: "#000" }}
+                      selectedStyle={{ backgroundColor: "#053844" }}
                       markerStyle={{
-                        backgroundColor: "#000",
+                        backgroundColor: "#053844",
                         height: 20,
                         width: 20,
                         borderRadius: 10,
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: "600",
-    color: "#000",
+    color: "#053844",
   },
   closeButton: {
     padding: 5,
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
   closeIcon: {
     fontSize: 28,
     fontWeight: "300",
-    color: "#000",
+    color: "#053844",
   },
   searchContainer: {
     flexDirection: "row",
@@ -365,7 +365,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: "#000",
+    color: "#053844",
   },
   categoryContainer: {
     paddingHorizontal: 20,
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
   mainTitle: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#000",
+    color: "#053844",
     marginBottom: 8,
   },
   subtitle: {
@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
   accordionTitle: {
     fontSize: 16,
     fontWeight: "500",
-    color: "#000",
+    color: "#053844",
     flex: 1,
   },
   chevron: {
@@ -461,12 +461,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   optionButtonSelected: {
-    backgroundColor: "#000",
-    borderColor: "#000",
+    backgroundColor: "#053844",
+    borderColor: "#053844",
   },
   optionText: {
     fontSize: 14,
-    color: "#000",
+    color: "#053844",
   },
   optionTextSelected: {
     color: "#FFF",
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
   priceRangeText: {
     fontSize: 16,
     fontWeight: "500",
-    color: "#000",
+    color: "#053844",
     marginBottom: 10,
   },
   priceHint: {
@@ -524,7 +524,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     paddingVertical: 16,
     paddingHorizontal: 40,
     borderRadius: 25,
@@ -560,7 +560,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     paddingVertical: 16,
     borderRadius: 30,
     ...Platform.select({

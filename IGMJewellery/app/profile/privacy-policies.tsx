@@ -17,13 +17,13 @@ export default function PrivacyPoliciesScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#000" />
+          <Ionicons name="chevron-back" size={24} color="#053844" />
         </HapticButton>
         <Text style={styles.headerTitle}>Privacy Policies</Text>
         <HapticButton>
           <View style={styles.helpBadge}>
             <Text style={styles.helpText}>Help?</Text>
-            <Ionicons name="call-outline" size={18} color="#000" />
+            <Ionicons name="call-outline" size={18} color="#053844" />
           </View>
         </HapticButton>
       </View>
@@ -106,9 +106,9 @@ const styles = StyleSheet.create({
   helpText: { fontSize: 13, marginRight: 8 },
   tabContainer: { borderBottomWidth: 1, borderBottomColor: "#F0F0F0" },
   tab: { paddingHorizontal: 16, paddingVertical: 12, marginRight: 8 },
-  activeTab: { borderBottomWidth: 2, borderBottomColor: "#000" },
+  activeTab: { borderBottomWidth: 2, borderBottomColor: "#053844" },
   tabText: { color: "#888", fontWeight: "600" },
-  activeTabText: { color: "#000" },
+  activeTabText: { color: "#053844" },
   scroll: { padding: 16, paddingBottom: 100 },
   introTitle: { fontSize: 15, fontWeight: "700", marginBottom: 20 },
   content: { gap: 16 },

@@ -72,25 +72,25 @@ export default function ScheduleTrialScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#000" />
+          <Ionicons name="chevron-back" size={24} color="#053844" />
         </HapticButton>
         <View style={styles.pincodeHeader}>
           <Text style={styles.pinLabel}>Pincode</Text>
           <HapticButton style={styles.pinRow}>
             <Text style={styles.pinValue}>400 066</Text>
-            <Ionicons name="chevron-down" size={16} color="#000" />
+            <Ionicons name="chevron-down" size={16} color="#053844" />
           </HapticButton>
         </View>
         <View style={styles.helpRow}>
           <Text style={styles.helpText}>Help?</Text>
-          <Ionicons name="call-outline" size={20} color="#000" />
+          <Ionicons name="call-outline" size={20} color="#053844" />
         </View>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.heroBox}>
           <View style={styles.homeIcon}>
-            <Ionicons name="home" size={24} color="#000" />
+            <Ionicons name="home" size={24} color="#053844" />
           </View>
           <Text style={styles.heroTitle}>Try at home service</Text>
           <Text style={styles.heroDesc}>
@@ -121,7 +121,7 @@ export default function ScheduleTrialScreen() {
                     );
                   }}
                 >
-                  <Ionicons name="close" size={14} color="#000" />
+                  <Ionicons name="close" size={14} color="#053844" />
                 </HapticButton>
               </View>
             ))}
@@ -305,13 +305,13 @@ const styles = StyleSheet.create({
   },
   slotText: { fontSize: 13, color: "#333" },
   activeCard: {
-    borderColor: "#000",
+    borderColor: "#053844",
     borderWidth: 1.5,
     backgroundColor: "#FFF",
   },
-  activeText: { color: "#000", fontWeight: "800" },
+  activeText: { color: "#053844", fontWeight: "800" },
   footerBtn: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     margin: 16,
     height: 54,
     borderRadius: 8,

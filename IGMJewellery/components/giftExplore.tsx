@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   exploreButton: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     borderRadius: 30,
     paddingVertical: 16,
     paddingHorizontal: 40,

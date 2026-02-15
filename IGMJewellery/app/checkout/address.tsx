@@ -210,7 +210,7 @@ export default function AddressScreen() {
       >
         <View style={styles.header}>
           <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="chevron-back" size={24} color="#000" />
+            <Ionicons name="chevron-back" size={24} color="#053844" />
           </HapticButton>
           <Text style={styles.headerTitle}>Address</Text>
           <View style={{ width: 40 }} />
@@ -278,7 +278,7 @@ export default function AddressScreen() {
                       : "radio-button-off"
                   }
                   size={22}
-                  color="#000"
+                  color="#053844"
                 />
               </HapticButton>
 
@@ -297,7 +297,7 @@ export default function AddressScreen() {
                       : "radio-button-off"
                   }
                   size={22}
-                  color="#000"
+                  color="#053844"
                 />
               </HapticButton>
             </View>
@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   btn: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 6,
@@ -442,6 +442,6 @@ const styles = StyleSheet.create({
   radioText: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#000",
+    color: "#053844",
   },
 });

@@ -310,12 +310,12 @@ const styles = StyleSheet.create({
   },
   tryNow: {
     borderWidth: 1,
-    borderColor: "#000",
+    borderColor: "#053844",
     justifyContent: "center",
     alignItems: "center",
   },
   tryAtHome: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
   },
   tryNowText: {
     fontWeight: "bold",

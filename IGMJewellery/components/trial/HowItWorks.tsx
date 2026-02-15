@@ -19,7 +19,7 @@ export const HowItWorks: React.FC = () => {
       {steps.map((step, index) => (
         <View key={index} style={styles.stepRow}>
           <View style={styles.iconCircle}>
-            <Ionicons name={step.icon as any} size={20} color="#000" />
+            <Ionicons name={step.icon as any} size={20} color="#053844" />
           </View>
           <View style={styles.stepContent}>
             <Text style={styles.stepTitle}>{step.title}</Text>

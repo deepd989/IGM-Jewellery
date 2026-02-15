@@ -39,7 +39,7 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab }) => {
           <View
             style={[
               styles.centerIconContainer,
-              isActive && { backgroundColor: "#000" },
+              isActive && { backgroundColor: "#053844" },
             ]}
           >
             <Ionicons
@@ -57,7 +57,7 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab }) => {
         <Ionicons
           name={iconName}
           size={24}
-          color={isActive ? "#000" : "#999"}
+          color={isActive ? "#053844" : "#999"}
         />
         <Text style={[styles.label, isActive && styles.activeLabel]}>
           {label}
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   activeLabel: {
-    color: "#000",
+    color: "#053844",
     fontWeight: "600",
   },
 });

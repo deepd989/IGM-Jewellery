@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   },
   backIconText: {
     fontSize: 20,
-    color: "#000000",
+    color: "#053844",
   },
   headerTitle: {
     fontSize: 18,
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   tabActive: {
-    backgroundColor: "#000000",
+    backgroundColor: "#053844",
   },
   tabInactive: {
     backgroundColor: "#FFFFFF",
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   diamond: {
     width: 8,
     height: 8,
-    backgroundColor: "#000000",
+    backgroundColor: "#053844",
     transform: [{ rotate: "45deg" }],
   },
   cardType: {
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   claimButton: {
-    backgroundColor: "#000000",
+    backgroundColor: "#053844",
     borderRadius: 24,
     paddingVertical: 14,
     paddingHorizontal: 24,

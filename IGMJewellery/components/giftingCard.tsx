@@ -55,7 +55,7 @@ export default function GiftingCard({showExploreButton=false,showHeader=false,am
         <Pressable style={styles.button} onPress={() => router.push('/gift')}>
           <Text style={styles.buttonText}>Explore gifting</Text>
           <View style={styles.iconCircle}>
-            <Ionicons name="arrow-forward" size={18} color="#000" />
+            <Ionicons name="arrow-forward" size={18} color="#053844" />
           </View>
         </Pressable>}
 
@@ -63,7 +63,7 @@ export default function GiftingCard({showExploreButton=false,showHeader=false,am
         <Pressable style={styles.button} onPress={() => router.push('/giftStepperPage')}>
           <Text style={styles.buttonText}>Send A Gift</Text>
           <View style={styles.iconCircle}>
-            <Ionicons name="arrow-forward" size={18} color="#000" />
+            <Ionicons name="arrow-forward" size={18} color="#053844" />
           </View>
         </Pressable>}
     </View>

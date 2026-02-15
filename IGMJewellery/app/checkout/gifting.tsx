@@ -130,7 +130,7 @@ export default function GiftingScreen() {
       >
         <View style={styles.header}>
           <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="chevron-back" size={24} color="#000" />
+            <Ionicons name="chevron-back" size={24} color="#053844" />
           </HapticButton>
           <Text style={styles.headerTitle}>Gifting</Text>
           <View style={{ width: 40 }} />
@@ -173,7 +173,7 @@ export default function GiftingScreen() {
                     />
                     {isSelected && (
                       <View style={styles.checkBadge}>
-                        <Ionicons name="checkbox" size={20} color="#000" />
+                        <Ionicons name="checkbox" size={20} color="#053844" />
                       </View>
                     )}
                     <Text style={styles.wrapTitle}>{wrap.title}</Text>
@@ -216,7 +216,7 @@ export default function GiftingScreen() {
             </View>
             <View style={styles.recordContainer}>
               <View style={styles.recordHeader}>
-                <Ionicons name="mic-outline" size={22} color="#000" />
+                <Ionicons name="mic-outline" size={22} color="#053844" />
                 <Text style={styles.recordDesc}>
                   Your personalised voice message will be sent to the recipient
                   as a QR code to be scanned.{" "}
@@ -363,7 +363,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#000",
+    color: "#053844",
   },
   optionalLabel: {
     fontSize: 12,
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
   wrapTitle: {
     fontSize: 13,
     textAlign: "center",
-    color: "#000",
+    color: "#053844",
     fontWeight: "500",
   },
   noteContainer: {
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
   noteInput: {
     flex: 1,
     fontSize: 13,
-    color: "#000",
+    color: "#053844",
     textAlignVertical: "top",
   },
   charCounter: {
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 8,
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
   recordText: {
     fontSize: 12,
     fontWeight: "500",
-    color: "#000",
+    color: "#053844",
   },
   chipsRow: {
     flexDirection: "row",
@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
   },
   chipActive: {
-    borderColor: "#000",
+    borderColor: "#053844",
     backgroundColor: "#F5F5F5",
   },
   chipText: {
@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
   },
   chipTextActive: {
     fontWeight: "700",
-    color: "#000",
+    color: "#053844",
   },
   chipMore: {
     paddingHorizontal: 12,
@@ -520,11 +520,11 @@ const styles = StyleSheet.create({
   viewSummaryText: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#000",
+    color: "#053844",
     textDecorationLine: "underline",
   },
   saveBtn: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 6,

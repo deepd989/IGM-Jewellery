@@ -33,7 +33,7 @@ export const AddressCard: React.FC<AddressCardProps> = ({
           <Ionicons
             name={isSelected ? "checkbox" : "square-outline"}
             size={20}
-            color="#000"
+            color="#053844"
           />
         )}
       </View>
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
   },
   selected: {
-    borderColor: "#000",
+    borderColor: "#053844",
     borderWidth: 1.5,
   },
   header: {
