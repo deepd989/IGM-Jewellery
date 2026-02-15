@@ -102,7 +102,7 @@ export default function ProfileScreen() {
           style={styles.pointsBadge}
           onPress={() => router.push("/profile/loyalty")}
         >
-          <Ionicons name="trophy" size={14} color="#000" />
+          <Ionicons name="trophy" size={14} color="#053844" />
           <Text style={styles.pointsText}>{profile.points} Points</Text>
         </HapticButton>
       </View>
@@ -141,7 +141,7 @@ export default function ProfileScreen() {
               style={styles.statCard}
               onPress={() => stat.path && router.push(stat.path as any)}
             >
-              <Ionicons name={stat.icon as any} size={24} color="#000" />
+              <Ionicons name={stat.icon as any} size={24} color="#053844" />
               <Text style={styles.statTitle}>{stat.title}</Text>
               <Text style={styles.statDesc}>{stat.desc}</Text>
             </HapticButton>

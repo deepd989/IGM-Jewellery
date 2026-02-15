@@ -21,7 +21,7 @@ export const TrialTabContent: React.FC<TrialTabContentProps> = ({
       contentContainerStyle={styles.scrollContent}
     >
       <View style={styles.trialBanner}>
-        <Ionicons name="information-circle-outline" size={18} color="#000" />
+        <Ionicons name="information-circle-outline" size={18} color="#053844" />
         <Text style={styles.trialBannerText}>
           Home Trial available for{" "}
           <Text style={{ fontWeight: "700" }}>

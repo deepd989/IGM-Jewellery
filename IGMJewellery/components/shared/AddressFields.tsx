@@ -83,7 +83,7 @@ export const AddressFields: React.FC<AddressFieldsProps> = ({ control, errors, s
               <View style={[styles.dropdown, errors.city && styles.errorInput]}>
                 <Text style={styles.dropLabel}>City</Text>
                 <Text style={styles.dropValue}>{value || 'Mumbai'}</Text>
-                <Ionicons name="chevron-down" size={14} color="#000" />
+                <Ionicons name="chevron-down" size={14} color="#053844" />
               </View>
             )}
           />

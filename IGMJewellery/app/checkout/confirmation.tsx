@@ -60,7 +60,7 @@ export default function ConfirmationScreen() {
           onPress={() => router.replace("/(tabs)/categories")}
           style={styles.backBtn}
         >
-          <Ionicons name="chevron-back" size={24} color="#000" />
+          <Ionicons name="chevron-back" size={24} color="#053844" />
         </HapticButton>
         <Text style={styles.headerTitle}>Order Confirmation</Text>
         <View style={{ width: 40 }} />
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
 
   primaryBtn: {
     height: 52,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",

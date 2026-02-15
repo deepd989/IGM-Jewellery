@@ -9,5 +9,5 @@ export function SectionHeader({ value }: { value: string }) {
 }
 
 const styles = StyleSheet.create({
-  hey: { fontSize: 24, fontWeight: "700", color: "#000" },
+  hey: { fontSize: 24, fontWeight: "700", color: "#053844" },
 });

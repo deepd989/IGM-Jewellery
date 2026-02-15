@@ -558,7 +558,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
         <Ionicons
           name={viewMode === "grid" ? "list" : "grid"}
           size={22}
-          color="#000"
+          color="#053844"
         />
       </HapticButton>
 
@@ -575,7 +575,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
           style={styles.closeFab}
           onPress={() => setIsMenuOpen(false)}
         >
-          <Ionicons name="close" size={24} color="#000" />
+          <Ionicons name="close" size={24} color="#053844" />
         </HapticButton>
       )}
 

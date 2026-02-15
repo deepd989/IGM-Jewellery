@@ -163,7 +163,7 @@ export default function UpiDetailsScreen() {
       >
         <View style={styles.header}>
           <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="chevron-back" size={24} color="#000" />
+            <Ionicons name="chevron-back" size={24} color="#053844" />
           </HapticButton>
           <Text style={styles.headerTitle}>UPI Details</Text>
           <View style={{ width: 40 }} />
@@ -214,7 +214,7 @@ export default function UpiDetailsScreen() {
                   <Ionicons
                     name={value ? "checkbox" : "square-outline"}
                     size={20}
-                    color="#000"
+                    color="#053844"
                   />
                   <Text style={styles.checkboxText}>
                     Remember for future transactions
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   submitBtn: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     height: 54,
     borderRadius: 8,
     justifyContent: "center",

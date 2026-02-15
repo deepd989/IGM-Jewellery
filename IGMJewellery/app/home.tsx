@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
 
   tryButton: {
     marginTop: 14,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     paddingVertical: 12,
     borderRadius: 30,
     alignItems: "center",

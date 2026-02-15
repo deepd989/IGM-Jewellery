@@ -25,12 +25,12 @@ export default function TrialDetailsScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#000" />
+          <Ionicons name="chevron-back" size={24} color="#053844" />
         </HapticButton>
         <Text style={styles.headerTitle}>Try at Home</Text>
         <HapticButton style={styles.helpRow}>
           <Text style={styles.helpText}>Help?</Text>
-          <Ionicons name="call-outline" size={20} color="#000" />
+          <Ionicons name="call-outline" size={20} color="#053844" />
         </HapticButton>
       </View>
 
@@ -44,7 +44,7 @@ export default function TrialDetailsScreen() {
             <Ionicons
               name="checkmark-circle"
               size={14}
-              color="#000"
+              color="#053844"
               style={{ marginRight: 4 }}
             />
           )}
@@ -86,7 +86,7 @@ export default function TrialDetailsScreen() {
           <View style={styles.timelineHeader}>
             <Text style={styles.sectionTitle}>Status</Text>
             <View style={styles.timelineStatusLabel}>
-              <Ionicons name="checkmark-circle" size={16} color="#000" />
+              <Ionicons name="checkmark-circle" size={16} color="#053844" />
               <Text style={styles.timelineLabelText}>{trial.statusLabel}</Text>
             </View>
           </View>
@@ -139,23 +139,23 @@ export default function TrialDetailsScreen() {
           <Text style={styles.sectionTitle}>Booking Details</Text>
           <View style={styles.bookingList}>
             <View style={styles.bookingItem}>
-              <Ionicons name="calendar-outline" size={20} color="#000" />
+              <Ionicons name="calendar-outline" size={20} color="#053844" />
               <Text style={styles.bookingText}>
                 Date: Sunday, November 30, 2025
               </Text>
             </View>
             <View style={styles.bookingItem}>
-              <Ionicons name="time-outline" size={20} color="#000" />
+              <Ionicons name="time-outline" size={20} color="#053844" />
               <Text style={styles.bookingText}>Time: 12:00 PM</Text>
             </View>
             <View style={styles.bookingItem}>
-              <Ionicons name="home-outline" size={20} color="#000" />
+              <Ionicons name="home-outline" size={20} color="#053844" />
               <Text style={styles.bookingText}>
                 Address: Andheri West, Mumbai
               </Text>
             </View>
             <View style={styles.bookingItem}>
-              <Ionicons name="storefront-outline" size={20} color="#000" />
+              <Ionicons name="storefront-outline" size={20} color="#053844" />
               <Text style={styles.bookingText}>
                 Nearest Store: {trial.nearestStore}
               </Text>
@@ -261,9 +261,9 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     borderWidth: 1,
-    borderColor: "#000",
+    borderColor: "#053844",
   },
   activeProgressDot: {
     position: "absolute",
@@ -274,9 +274,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "#FFF",
     borderWidth: 1,
-    borderColor: "#000",
+    borderColor: "#053844",
   },
-  progressLine: { height: 3, backgroundColor: "#000" },
+  progressLine: { height: 3, backgroundColor: "#053844" },
   timelineDates: { flexDirection: "row", justifyContent: "space-between" },
   dateLabel: { fontSize: 11, color: "#888", marginBottom: 4 },
   dateValue: { fontSize: 13, fontWeight: "700" },

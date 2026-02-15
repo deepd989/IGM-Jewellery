@@ -58,7 +58,7 @@ export const CouponCard: React.FC<CouponCardProps> = ({ coupon, onApply }) => {
                 <Ionicons
                   name="sunny"
                   size={14}
-                  color="#000"
+                  color="#053844"
                   style={{ marginRight: 4 }}
                 />
                 <Text style={styles.statusText}>Available</Text>

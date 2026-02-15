@@ -77,14 +77,14 @@ export default function TrialAddressScreen() {
       >
         <View style={styles.header}>
           <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="chevron-back" size={24} color="#000" />
+            <Ionicons name="chevron-back" size={24} color="#053844" />
           </HapticButton>
           <View style={styles.pinHeader}>
             <Text style={styles.pinLabel}>Pincode</Text>
             <Text style={styles.pinValue}>400 066</Text>
           </View>
           <HapticButton>
-            <Ionicons name="call-outline" size={24} color="#000" />
+            <Ionicons name="call-outline" size={24} color="#053844" />
           </HapticButton>
         </View>
 
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   formContainer: { padding: 16 },
   sectionTitle: { fontSize: 15, fontWeight: "700", marginBottom: 16 },
   footerBtn: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     height: 60,
     justifyContent: "center",
     alignItems: "center",

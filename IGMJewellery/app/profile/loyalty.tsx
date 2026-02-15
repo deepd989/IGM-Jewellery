@@ -15,7 +15,7 @@ export default function LoyaltyScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#000" />
+          <Ionicons name="chevron-back" size={24} color="#053844" />
         </HapticButton>
         <Text style={styles.headerTitle}>Loyalty Points</Text>
         <View style={{ width: 40 }} />
@@ -24,7 +24,7 @@ export default function LoyaltyScreen() {
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.heroSection}>
           <View style={styles.pointsCircle}>
-            <Ionicons name="trophy-outline" size={24} color="#000" />
+            <Ionicons name="trophy-outline" size={24} color="#053844" />
             <Text style={styles.bigPoints}>{profile.points}</Text>
           </View>
           <Text style={styles.thankYou}>
@@ -32,7 +32,7 @@ export default function LoyaltyScreen() {
           </Text>
           <Text style={styles.since}>Customer since {profile.memberSince}</Text>
           <View style={styles.tierBadge}>
-            <Ionicons name="diamond" size={12} color="#000" />
+            <Ionicons name="diamond" size={12} color="#053844" />
             <Text style={styles.tierText}>{profile.tier}</Text>
           </View>
         </View>
@@ -43,7 +43,7 @@ export default function LoyaltyScreen() {
             <Ionicons
               name="star"
               size={20}
-              color="#000"
+              color="#053844"
               style={styles.starCursor}
             />
           </View>
@@ -87,7 +87,7 @@ export default function LoyaltyScreen() {
           {[1, 2, 3, 4].map((i) => (
             <View key={i} style={styles.pointRow}>
               <View style={styles.checkIcon}>
-                <Ionicons name="checkmark" size={16} color="#000" />
+                <Ionicons name="checkmark" size={16} color="#053844" />
               </View>
               <View style={styles.pointInfo}>
                 <Text style={styles.pointValue}>+200</Text>
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: 2,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     position: "absolute",
     left: 0,
   },
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   valueText: { fontSize: 18, fontWeight: "600" },
   redeemBtn: {
     fontSize: 12,
-    color: "#000",
+    color: "#053844",
     fontWeight: "700",
     textDecorationLine: "underline",
     marginTop: 4,

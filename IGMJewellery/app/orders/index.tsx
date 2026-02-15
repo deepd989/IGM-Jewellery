@@ -15,7 +15,7 @@ export default function AllOrdersScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#000" />
+          <Ionicons name="chevron-back" size={24} color="#053844" />
         </HapticButton>
         <Text style={styles.headerTitle}>All Orders</Text>
         <View style={{ width: 40 }} />
@@ -27,7 +27,7 @@ export default function AllOrdersScreen() {
           <TextInput placeholder="Search in order" style={styles.searchInput} />
         </View>
         <HapticButton style={styles.filterBtn}>
-          <Ionicons name="options-outline" size={20} color="#000" />
+          <Ionicons name="options-outline" size={20} color="#053844" />
           <Text style={styles.filterText}>FILTER</Text>
         </HapticButton>
       </View>
@@ -51,7 +51,7 @@ export default function AllOrdersScreen() {
                         : "bus-outline"
                     }
                     size={22}
-                    color="#000"
+                    color="#053844"
                   />
                 </View>
                 <View style={styles.orderMeta}>
@@ -96,7 +96,7 @@ export default function AllOrdersScreen() {
                             : "ellipse-outline"
                         }
                         size={14}
-                        color="#000"
+                        color="#053844"
                       />
                       <Text style={styles.statusLabel}>
                         {item.status} on {item.statusDate}
@@ -113,7 +113,7 @@ export default function AllOrdersScreen() {
                         <Ionicons
                           name="refresh-outline"
                           size={12}
-                          color="#000"
+                          color="#053844"
                         />
                         <Text style={styles.exchangeText}>
                           Exchange/replacement eligible till{" "}
@@ -161,7 +161,7 @@ export default function AllOrdersScreen() {
               key={i}
               name={icon as any}
               size={28}
-              color="#000"
+              color="#053844"
               style={{ marginHorizontal: 10 }}
             />
           ))}

@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
     height: 300,
     borderRadius: 150,
     overflow: "hidden",
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
   },
   camera: {
     width: "100%",
@@ -493,7 +493,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sendTranscriptBtn: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     paddingHorizontal: 32,
     paddingVertical: 12,
     borderRadius: 24,

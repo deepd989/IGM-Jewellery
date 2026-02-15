@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   cardSelected: {
-    borderColor: "#000",
+    borderColor: "#053844",
   },
   cardText: {
     fontSize: 16,
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: "#000",
+    borderColor: "#053844",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
   },
 
   /* Prefer */
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
 
   /* CTA */
   continueBtn: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     paddingVertical: 16,
     borderRadius: 12,
     marginBottom: 12,
