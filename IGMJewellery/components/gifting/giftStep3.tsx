@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    color: "#000",
+    color: "#053844",
     marginBottom: 8,
   },
   subtitle: {
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
   amount: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#000",
+    color: "#053844",
   },
   loadingBar: {
     backgroundColor: "#e0e0e0",
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#000",
+    color: "#053844",
     marginBottom: 16,
     letterSpacing: 0.5,
   },
@@ -296,18 +296,18 @@ const styles = StyleSheet.create({
   },
   summaryValue: {
     fontSize: 15,
-    color: "#000",
+    color: "#053844",
     fontWeight: "500",
   },
   totalLabel: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#000",
+    color: "#053844",
   },
   totalValue: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#000",
+    color: "#053844",
   },
   termsContainer: {
     paddingHorizontal: 20,
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   termsLink: {
-    color: "#000",
+    color: "#053844",
     fontWeight: "600",
   },
   bottomBar: {
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
   bottomPrice: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#000",
+    color: "#053844",
     marginBottom: 4,
   },
   paymentSelector: {
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   buyButton: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 8,
@@ -405,14 +405,14 @@ const styles = StyleSheet.create({
   },
   closeIcon: {
     fontSize: 24,
-    color: "#000",
+    color: "#053844",
     fontWeight: "300",
   },
   successIcon: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 24,
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
   congratsTitle: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#000",
+    color: "#053844",
     marginBottom: 12,
   },
   congratsMessage: {
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
   },
   boldAmount: {
     fontWeight: "bold",
-    color: "#000",
+    color: "#053844",
   },
   cardNumberContainer: {
     flexDirection: "row",
@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
   },
   copyIcon: {
     fontSize: 18,
-    color: "#000",
+    color: "#053844",
   },
   shareText: {
     fontSize: 15,
@@ -482,7 +482,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   continueButton: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     paddingHorizontal: 48,
     paddingVertical: 16,
     borderRadius: 8,

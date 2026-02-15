@@ -233,7 +233,7 @@ export default function WishlistScreen() {
         <Ionicons
           name={viewMode === "grid" ? "list" : "grid"}
           size={22}
-          color="#000"
+          color="#053844"
         />
       </HapticButton>
 

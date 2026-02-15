@@ -154,7 +154,7 @@ export default function AiChatComponent({
   return (
     <SafeAreaView style={styles.safeArea}>
       <HapticButton onPress={() => router.back()} style={styles.backButton}>
-        <Ionicons name="chevron-back" size={24} color={COLORS.text || "#000"} />
+        <Ionicons name="chevron-back" size={24} color={COLORS.text || "#053844"} />
       </HapticButton>
 
       <KeyboardAvoidingView
@@ -234,7 +234,7 @@ export default function AiChatComponent({
             onPress={() => setShowVoiceVideoInterface(false)}
             activeOpacity={0.7}
           >
-            <Ionicons name="close" size={28} color="#000" />
+            <Ionicons name="close" size={28} color="#053844" />
           </HapticButton>
           <VoiceVideoInterface
             mode={interfaceMode}
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     }),
   },
   userBubble: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     marginLeft: "auto",
     borderBottomRightRadius: 4,
   },
@@ -299,13 +299,13 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   aiText: {
-    color: "#000",
+    color: "#053844",
   },
   aiAvatar: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     marginRight: 8,
     justifyContent: "center",
     alignItems: "center",
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     justifyContent: "center",
     alignItems: "center",
     marginLeft: 4,

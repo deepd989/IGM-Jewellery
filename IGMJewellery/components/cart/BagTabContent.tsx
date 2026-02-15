@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  checkCircleActive: { backgroundColor: "#000", borderColor: "#000" },
+  checkCircleActive: { backgroundColor: "#053844", borderColor: "#053844" },
   giftTitle: { fontSize: 11, color: COLORS.textSecondary, marginBottom: 4 },
   giftPrice: { fontSize: 13, fontWeight: "700" },
 });

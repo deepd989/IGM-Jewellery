@@ -31,7 +31,7 @@ export const CheckoutSummary: React.FC<CheckoutSummaryProps> = ({ order }) => {
             <Ionicons
               name={isExpanded ? "chevron-up" : "chevron-down"}
               size={20}
-              color="#000"
+              color="#053844"
             />
           </View>
           <Text style={styles.itemSummary}>
@@ -88,12 +88,12 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#000",
+    color: "#053844",
     marginRight: 4,
   },
   itemSummary: {
     fontSize: 14,
-    color: "#000",
+    color: "#053844",
     fontWeight: "500",
   },
   content: {

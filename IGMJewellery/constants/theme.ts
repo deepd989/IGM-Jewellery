@@ -57,7 +57,8 @@ export const Fonts = Platform.select({
 
 
 export const COLORS = {
-  primary: '#1A1A1A', // Elegant Black
+  primary: '#053844', // Deep Teal Green
+  primaryLight: '#E5F1F4', // Light Teal Green
   secondary: '#D4AF37', // Gold
   background: '#FFFFFF',
   surface: '#F9F9F9',

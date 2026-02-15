@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   subtitle: { marginTop: 8, textAlign: "center", color: "#666" },
   primary: {
     marginTop: 24,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     paddingVertical: 12,
     borderRadius: 8,
     marginHorizontal: 16,

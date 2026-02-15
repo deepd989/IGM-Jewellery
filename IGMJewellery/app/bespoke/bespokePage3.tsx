@@ -35,7 +35,7 @@ const BespokePage3 = ({ nextStepFn }: { nextStepFn: () => void }) => {
 
         {/* Upload Box */}
         <HapticButton style={styles.uploadBox} activeOpacity={0.7}>
-          <Plus color="#000" size={32} strokeWidth={1.5} />
+          <Plus color="#053844" size={32} strokeWidth={1.5} />
           <Text style={styles.uploadText}>Upload reference</Text>
         </HapticButton>
 
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     width: "70%",
     alignSelf: "center",
     borderWidth: 1,
-    borderColor: "#000",
+    borderColor: "#053844",
     borderRadius: 12,
     backgroundColor: "#F9F9F9",
     justifyContent: "center",
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: Platform.OS === "ios" ? 12 : 8,
     fontSize: 14,
-    color: "#000",
+    color: "#053844",
   },
   textArea: {
     height: 50,
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     borderTopColor: "#EEE",
   },
   confirmButton: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     borderRadius: 8,
     height: 55,
     justifyContent: "center",

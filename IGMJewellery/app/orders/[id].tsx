@@ -30,12 +30,12 @@ export default function OrderDetailsScreen() {
       {/* Header */}
       <View style={styles.header}>
         <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#000" />
+          <Ionicons name="chevron-back" size={24} color="#053844" />
         </HapticButton>
         <Text style={styles.headerTitle}>Order Details</Text>
         <HapticButton style={styles.helpRow}>
           <Text style={styles.helpText}>Help?</Text>
-          <Ionicons name="call-outline" size={20} color="#000" />
+          <Ionicons name="call-outline" size={20} color="#053844" />
         </HapticButton>
       </View>
 
@@ -84,7 +84,7 @@ export default function OrderDetailsScreen() {
             <Ionicons
               name={isDelivered ? "cube-outline" : "bus-outline"}
               size={22}
-              color="#000"
+              color="#053844"
             />
           </View>
           <View style={styles.trackingInfo}>
@@ -100,7 +100,7 @@ export default function OrderDetailsScreen() {
             )}
           </View>
           <HapticButton>
-            <Ionicons name="copy-outline" size={18} color="#000" />
+            <Ionicons name="copy-outline" size={18} color="#053844" />
           </HapticButton>
         </View>
 
@@ -118,14 +118,14 @@ export default function OrderDetailsScreen() {
 
             <View style={styles.actionBtnRow}>
               <HapticButton style={styles.outlineActionBtn}>
-                <Ionicons name="refresh-outline" size={20} color="#000" />
+                <Ionicons name="refresh-outline" size={20} color="#053844" />
                 <Text style={styles.actionBtnText}>Replace</Text>
               </HapticButton>
               <HapticButton style={styles.outlineActionBtn}>
                 <Ionicons
                   name="return-up-back-outline"
                   size={20}
-                  color="#000"
+                  color="#053844"
                 />
                 <Text style={styles.actionBtnText}>Return</Text>
               </HapticButton>
@@ -185,7 +185,7 @@ export default function OrderDetailsScreen() {
             <Ionicons
               name="person-outline"
               size={20}
-              color="#000"
+              color="#053844"
               style={styles.addrIcon}
             />
             <View style={styles.addrContent}>

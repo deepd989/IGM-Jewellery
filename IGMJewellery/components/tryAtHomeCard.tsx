@@ -36,7 +36,7 @@ export default function TryAtHomeCard() {
           </View>
 
           <Pressable style={styles.arrowButton} onPress={() => {router.push({pathname:'/underDev',params:{featureName:'Try at Home Feature'}});}}>
-            <Ionicons name="arrow-forward" size={22} color="#000" />
+            <Ionicons name="arrow-forward" size={22} color="#053844" />
           </Pressable>
         </View>
 
@@ -57,11 +57,11 @@ export default function TryAtHomeCard() {
         </View> */}
 
          <View style={styles.iconRow}>
-                    <MaterialCommunityIcons name="necklace" size={32} color="#000" />
-                    <MaterialCommunityIcons name="ring" size={32} color="#000" />
-                    <MaterialCommunityIcons name="diamond-stone" size={32} color="#000" />
-                    <MaterialCommunityIcons name="gold" size={32} color="#000" />
-                    <MaterialCommunityIcons name="gift" size={32} color="#000" />
+                    <MaterialCommunityIcons name="necklace" size={32} color="#053844" />
+                    <MaterialCommunityIcons name="ring" size={32} color="#053844" />
+                    <MaterialCommunityIcons name="diamond-stone" size={32} color="#053844" />
+                    <MaterialCommunityIcons name="gold" size={32} color="#053844" />
+                    <MaterialCommunityIcons name="gift" size={32} color="#053844" />
                     <EarringIcon width={40} height={40} />
                   </View>
 
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     alignItems: "center",
     justifyContent: "center",
   },

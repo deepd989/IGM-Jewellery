@@ -36,7 +36,7 @@ export default function TrialOrdersScreen() {
       {/* Header */}
       <View style={styles.header}>
         <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#000" />
+          <Ionicons name="chevron-back" size={24} color="#053844" />
         </HapticButton>
         <Text style={styles.headerTitle}>Try At Home</Text>
         <View style={{ width: 40 }} />
@@ -49,7 +49,7 @@ export default function TrialOrdersScreen() {
           <TextInput placeholder="Search in order" style={styles.searchInput} />
         </View>
         <HapticButton style={styles.filterBtn}>
-          <Ionicons name="options-outline" size={20} color="#000" />
+          <Ionicons name="options-outline" size={20} color="#053844" />
           <Text style={styles.filterText}>FILTER</Text>
         </HapticButton>
       </View>
@@ -79,7 +79,7 @@ export default function TrialOrdersScreen() {
                     <Ionicons
                       name={getStatusIcon(trial.status) as any}
                       size={22}
-                      color="#000"
+                      color="#053844"
                     />
                   </View>
                   <View style={styles.meta}>
@@ -89,7 +89,7 @@ export default function TrialOrdersScreen() {
                     </Text>
                   </View>
                 </View>
-                <Ionicons name="chevron-forward" size={20} color="#000" />
+                <Ionicons name="chevron-forward" size={20} color="#053844" />
               </View>
 
               <View style={styles.itemsPreview}>
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     position: "relative",
   },
-  progressBar: { height: 3, backgroundColor: "#000", borderRadius: 2 },
+  progressBar: { height: 3, backgroundColor: "#053844", borderRadius: 2 },
   dateRow: { flexDirection: "row", justifyContent: "space-between" },
   dateLabel: { fontSize: 11, color: "#888", marginBottom: 4 },
   dateVal: { fontSize: 13, fontWeight: "700" },

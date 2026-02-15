@@ -40,7 +40,7 @@ export const TrialItemCard: React.FC<TrialItemCardProps> = ({
             <Text style={styles.tagText}>Try Before Buy</Text>
           </View>
           <HapticButton onPress={onRemove}>
-            <Ionicons name="close" size={22} color="#000" />
+            <Ionicons name="close" size={22} color="#053844" />
           </HapticButton>
         </View>
 
@@ -133,13 +133,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: "700",
-    color: "#000",
+    color: "#053844",
     marginBottom: 4,
   },
   price: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#000",
+    color: "#053844",
   },
   footer: {
     marginTop: "auto",

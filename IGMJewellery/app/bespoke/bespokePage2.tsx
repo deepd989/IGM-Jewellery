@@ -99,21 +99,21 @@ const styles = StyleSheet.create({
   },
   selectedCard: {
     backgroundColor: "#E5E5E5", // Slightly darker like your image
-    borderColor: "#000",
+    borderColor: "#053844",
     borderWidth: 2,
   },
   optionText: {
     fontSize: 18,
     fontWeight: "500",
     letterSpacing: 4, // Replicates the wide spacing in your screenshot
-    color: "#000",
+    color: "#053844",
   },
   iconContainer: {
     position: "absolute",
     right: 20,
     top: 15,
     borderWidth: 1.5,
-    borderColor: "#000",
+    borderColor: "#053844",
     borderRadius: 100,
     padding: 4,
   },
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   nextButton: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     height: 55,
     borderRadius: 8,
     justifyContent: "center",

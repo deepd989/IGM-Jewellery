@@ -88,7 +88,7 @@ export default function OtpScreen() {
           onPress={() => router.back()}
           style={{ paddingVertical: 8 }}
         >
-          <Text style={{ color: "#000", fontSize: 16 }}>←</Text>
+          <Text style={{ color: "#053844", fontSize: 16 }}>←</Text>
         </HapticButton>
 
         <Text style={styles.title}>Enter code</Text>
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   inputFilled: {
-    borderColor: "#000",
+    borderColor: "#053844",
   },
   inputError: {
     borderColor: "#FF3B30", // Red border

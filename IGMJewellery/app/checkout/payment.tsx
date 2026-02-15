@@ -167,7 +167,7 @@ export default function PaymentScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#000" />
+          <Ionicons name="chevron-back" size={24} color="#053844" />
         </HapticButton>
         <Text style={styles.headerTitle}>Payment</Text>
         <View style={{ width: 40 }} />
@@ -218,7 +218,7 @@ export default function PaymentScreen() {
                     : "radio-button-off"
                 }
                 size={22}
-                color="#000"
+                color="#053844"
               />
             </HapticButton>
           ))}
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#000",
+    borderColor: "#053844",
     marginBottom: 16,
   },
   methodItem: {
@@ -418,7 +418,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderWidth: 1,
-    borderColor: "#000",
+    borderColor: "#053844",
     borderRadius: 4,
   },
   finalSummary: {
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
     borderTopColor: "#F0F0F0",
   },
   payBtn: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     height: 54,
     borderRadius: 8,
     justifyContent: "center",

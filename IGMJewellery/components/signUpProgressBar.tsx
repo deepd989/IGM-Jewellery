@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
       stepActive: {
         height: 2,
         flex: 1,                    // take the rest of the space equally
-        backgroundColor: "#000",
+        backgroundColor: "#053844",
         borderRadius: 2,
       },
       stepInactive: {

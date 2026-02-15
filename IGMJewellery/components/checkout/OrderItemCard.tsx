@@ -25,7 +25,7 @@ export const OrderItemCard: React.FC<OrderItemCardProps> = ({ item, style }) => 
           Size: {item.selectedSize || '12'}   Qty: {item.quantity}
         </Text>
         <View style={styles.deliveryTag}>
-          <Ionicons name="bus-outline" size={12} color="#000" />
+          <Ionicons name="bus-outline" size={12} color="#053844" />
           <Text style={styles.deliveryText}>Delivery by 19th Nov</Text>
         </View>
         <View style={styles.priceRow}>

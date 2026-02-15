@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#000",
+    color: "#053844",
     marginBottom: 8,
   },
   subtitle: {
@@ -300,12 +300,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   categoryButtonActive: {
-    backgroundColor: "#000",
-    borderColor: "#000",
+    backgroundColor: "#053844",
+    borderColor: "#053844",
   },
   categoryText: {
     fontSize: 14,
-    color: "#000",
+    color: "#053844",
   },
   categoryTextActive: {
     color: "#fff",
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 28,
     fontWeight: "700",
-    color: "#000",
+    color: "#053844",
     marginBottom: 8,
   },
   cardSubtitle: {
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
   },
   cardAmount: {
     fontSize: 18,
-    color: "#000",
+    color: "#053844",
     fontWeight: "500",
   },
   cardDecoration: {
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#000",
+    color: "#053844",
     marginBottom: 12,
   },
   optionalText: {
@@ -393,12 +393,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   amountButtonActive: {
-    backgroundColor: "#000",
-    borderColor: "#000",
+    backgroundColor: "#053844",
+    borderColor: "#053844",
   },
   amountText: {
     fontSize: 16,
-    color: "#000",
+    color: "#053844",
     fontWeight: "500",
   },
   amountTextActive: {
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
   },
   countryCodeText: {
     fontSize: 16,
-    color: "#000",
+    color: "#053844",
   },
   phoneInput: {
     flex: 1,
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
   },
   scheduleQuestion: {
     fontSize: 14,
-    color: "#000",
+    color: "#053844",
     marginBottom: 16,
   },
   dateContainer: {
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
   },
   dateButtonActive: {
     backgroundColor: "#fff",
-    borderColor: "#000",
+    borderColor: "#053844",
     borderWidth: 2,
   },
   dateLabel: {
@@ -469,14 +469,14 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   dateLabelActive: {
-    color: "#000",
+    color: "#053844",
   },
   dateDay: {
     fontSize: 20,
     fontWeight: "600",
-    color: "#000",
+    color: "#053844",
   },
   dateDayActive: {
-    color: "#000",
+    color: "#053844",
   },
 });

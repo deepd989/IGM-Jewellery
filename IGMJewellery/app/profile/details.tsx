@@ -40,7 +40,7 @@ export default function ProfileDetailsScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color="#000" />
+          <Ionicons name="chevron-back" size={24} color="#053844" />
         </HapticButton>
         <Text style={styles.headerTitle}>Profile Details</Text>
         <View style={{ width: 40 }} />
@@ -128,10 +128,10 @@ export default function ProfileDetailsScreen() {
                 <Text style={styles.addressTag}>Default</Text>
                 <View style={styles.addressActions}>
                   <HapticButton>
-                    <Ionicons name="pencil-outline" size={20} color="#000" />
+                    <Ionicons name="pencil-outline" size={20} color="#053844" />
                   </HapticButton>
                   <HapticButton style={{ marginLeft: 16 }}>
-                    <Ionicons name="trash-outline" size={20} color="#000" />
+                    <Ionicons name="trash-outline" size={20} color="#053844" />
                   </HapticButton>
                 </View>
               </View>
@@ -142,7 +142,7 @@ export default function ProfileDetailsScreen() {
             </View>
 
             <HapticButton style={styles.addAddressBtn}>
-              <Ionicons name="add" size={20} color="#000" />
+              <Ionicons name="add" size={20} color="#053844" />
               <Text style={styles.addAddressText}>Add address</Text>
             </HapticButton>
           </View>
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
   },
   addAddressText: { fontSize: 14, fontWeight: "600", marginLeft: 8 },
   saveBtn: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     margin: 16,
     height: 54,
     borderRadius: 8,

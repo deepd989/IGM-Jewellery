@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   diamondActive: {
-    borderColor: "#000",
+    borderColor: "#053844",
   },
   diamondInactive: {
     borderColor: "#E0E0E0",
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   innerDiamond: {
     width: 6,
     height: 6,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
   },
   stepText: {
     position: "absolute",
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   stepTextActive: {
-    color: "#000",
+    color: "#053844",
     fontWeight: "700",
   },
 });

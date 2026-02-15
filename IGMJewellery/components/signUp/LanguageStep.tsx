@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     bottom: 24,
   },
   primary: {
-    backgroundColor: "#000",
+    backgroundColor: "#053844",
     height: 52,
     borderRadius: 12,
     alignItems: "center",
@@ -190,6 +190,6 @@ const styles = StyleSheet.create({
   skip: {
     textAlign: "center",
     marginTop: 12,
-    color: "#000",
+    color: "#053844",
   },
 });
