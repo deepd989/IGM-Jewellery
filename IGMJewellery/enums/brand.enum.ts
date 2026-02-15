@@ -1,8 +1,2 @@
-export enum Brand{
-    Tanishq = "tanishq",
-    KalyanJewellers = "kalyan_jewellers",
-    Malabar = "malabar",
-    CaratLane = "caratlane",
-    Bluestone = "bluestone",
-    PCJewellers = "pcj"
-}
+// Brand is now a simple string type since brand names come from the API
+export type Brand = string;

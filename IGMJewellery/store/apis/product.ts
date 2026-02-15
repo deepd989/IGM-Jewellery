@@ -92,7 +92,9 @@ const applyFilters = (
 
       case "brand":
         filteredProducts = filteredProducts.filter((p) =>
-          selectedOptions.includes(p.brand)
+          selectedOptions.some(
+            (opt) => p.brand.toLowerCase() === opt.toLowerCase()
+          )
         );
         break;
 

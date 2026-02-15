@@ -120,9 +120,7 @@ function parseProductType(product: MagentoProduct): ProductType {
  * Parse brand from sellerId (passed from the API response wrapper)
  */
 function parseBrandFromSellerId(sellerId: string): Brand {
-  const brand = sellerId;
-  if (brand) return brand;
-  return Brand.Tanishq; // Default brand
+  return sellerId || "Unknown";
 }
 
 /**

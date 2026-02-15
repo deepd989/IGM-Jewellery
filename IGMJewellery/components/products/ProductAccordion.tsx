@@ -3,15 +3,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  LayoutAnimation,
-  Platform,
-  StyleSheet,
-  Text,
-  UIManager,
-  View,
+    LayoutAnimation,
+    Platform,
+    StyleSheet,
+    Text,
+    UIManager,
+    View,
 } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
-import { BRAND_KEY_MAP } from "../../utils/brandKeyMap";
+import { getBrandKey } from "../../utils/brandKeyMap";
 import { HapticButton } from "../basic components/hapticButton";
 
 // Enable LayoutAnimation on Android
@@ -62,12 +62,7 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
   };
 
   const handleExploreBrand = () => {
-    const brandKey = BRAND_KEY_MAP[product.brand];
-
-    if (!brandKey) {
-      console.warn("Brand key not found for:", product.brand);
-      return;
-    }
+    const brandKey = getBrandKey(product.brand);
     router.push(`/brandProfile/${brandKey}`);
   };
 
