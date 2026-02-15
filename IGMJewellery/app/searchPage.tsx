@@ -299,7 +299,7 @@ export default function AiSearchComponent() {
         <View style={styles.bottomButtonContainer}>
           <HapticButton
             style={styles.startLookingButton}
-            onPress={handleStartLooking()}
+            onPress={handleStartLooking}
           >
             <Text style={styles.startLookingIcon}>🔍</Text>
             <Text style={styles.startLookingText}>Start Looking</Text>

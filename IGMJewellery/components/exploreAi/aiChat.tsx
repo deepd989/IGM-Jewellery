@@ -15,7 +15,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../basic components/hapticButton";
-import VoiceVideoInterface from "./aiVoice";
 
 interface IMessage {
   id: string;
@@ -281,11 +280,11 @@ export default function AiChatComponent({
           >
             <Ionicons name="close" size={28} color="#000" />
           </HapticButton>
-          <VoiceVideoInterface
+          {/* <VoiceVideoInterface
             mode={interfaceMode}
             onTranscript={handleTranscript}
             onClose={() => setShowVoiceVideoInterface(false)}
-          />
+          /> */}
         </SafeAreaView>
       </Modal>
     </SafeAreaView>
