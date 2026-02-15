@@ -48,8 +48,12 @@ const OCCASION_MAP: Record<string, OccasiomEnum> = {
   wedding: OccasiomEnum.Wedding,
   graduation: OccasiomEnum.Graduation,
   diwali: OccasiomEnum.Diwali,
+  dhanteras: OccasiomEnum.Diwali,
   festive: OccasiomEnum.Diwali,
   festival: OccasiomEnum.Diwali,
+  "daily wear": OccasiomEnum.DailyWear,
+  "office wear": OccasiomEnum.DailyWear,
+  "party wear": OccasiomEnum.PartyWear,
 };
 
 // Map user_type values to Gender enum
@@ -305,10 +309,15 @@ function extractProductDetails(product: MagentoProduct): ProductDetails {
     details.diamondColor = d1Color;
   }
 
-  // Stone type (already resolved, e.g. "Natural Diamond")
+  // Stone type — try s_type first, fall back to stone_type
   const sType = getCustomAttribute(product, "s_type");
   if (sType && typeof sType === "string") {
     details.stoneType = sType;
+  } else {
+    const stoneType = getCustomAttribute(product, "stone_type");
+    if (stoneType && typeof stoneType === "string") {
+      details.stoneType = stoneType;
+    }
   }
 
   return details;
@@ -326,8 +335,7 @@ function isNewProduct(product: MagentoProduct): boolean {
 
 /**
  * Compute discounted price from price, discount, and additional_discount.
- * Discount values are treated as percentages (e.g. 10 = 10% off).
- * Falls back to absolute subtraction if discount > 100.
+ * Both discount and additional_discount are absolute amounts (e.g. 250 = ₹250 off).
  */
 function computeDiscountedPrice(product: MagentoProduct): number {
   const price = product.price;
@@ -338,19 +346,9 @@ function computeDiscountedPrice(product: MagentoProduct): number {
     String(getCustomAttribute(product, "additional_discount") || "0")
   );
 
-  const d = isNaN(discount) ? 0 : discount;
-  const ad = isNaN(additionalDiscount) ? 0 : additionalDiscount;
-  const totalDiscount = d + ad;
-
-  if (totalDiscount <= 0) return price;
-
-  // Treat as percentage discount (most common case)
-  if (totalDiscount <= 100) {
-    const discounted = price * (1 - totalDiscount / 100);
-    return Math.round(discounted * 100) / 100;
-  }
-
-  // Fallback: treat as absolute value
+  const totalDiscount =
+    (isNaN(discount) ? 0 : discount) +
+    (isNaN(additionalDiscount) ? 0 : additionalDiscount);
   const discounted = price - totalDiscount;
   return discounted > 0 ? discounted : price;
 }

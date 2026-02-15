@@ -90,7 +90,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       .filter(Boolean);
   };
 
-  // Initialize filters from navigation params and props
+  // Initialize filters from navigation params, props, and chip selection
   useEffect(() => {
     const newFilters: Record<string, string[]> = {};
 
@@ -126,7 +126,20 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       newFilters.collection = collectionValues;
     }
 
-    // Handle gender filter
+    // Handle gender filter from departmentId (categories page sends departmentId)
+    if (departmentId) {
+      const deptGenderMap: Record<string, string> = {
+        mens: "male",
+        womens: "female",
+        kids: "kids",
+      };
+      const mappedGender = deptGenderMap[departmentId];
+      if (mappedGender) {
+        newFilters.gender = [mappedGender];
+      }
+    }
+
+    // Handle direct gender param (overrides department mapping)
     const genderValues = parseFilterParam(gender);
     if (genderValues.length > 0) {
       newFilters.gender = genderValues;
@@ -150,11 +163,33 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       });
     }
 
-    // Only update if filters actually changed
-    if (JSON.stringify(newFilters) !== JSON.stringify(activeFilters)) {
-      setActiveFilters(newFilters);
+    // Apply chip-based collection filters
+    switch (selectedFilter) {
+      case "Latest":
+        newFilters.collection = ["new-arrival"];
+        break;
+      case "Best Sellers":
+        newFilters.collection = ["bestseller"];
+        break;
+      case "Store Pick-up":
+        break;
+      case "All":
+      default:
+        // Keep existing collection filters (if any) but remove chip-based ones
+        if (newFilters.collection) {
+          newFilters.collection = newFilters.collection.filter(
+            (c) => !["new-arrival", "bestseller"].includes(c)
+          );
+          if (newFilters.collection.length === 0) {
+            delete newFilters.collection;
+          }
+        }
+        break;
     }
+
+    setActiveFilters(newFilters);
   }, [
+    departmentId,
     categoryId,
     productType,
     occasion,
@@ -163,39 +198,8 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     gender,
     params.priceRange,
     filters,
+    selectedFilter,
   ]);
-
-  // Apply chip-based filters
-  useEffect(() => {
-    const chipFilters: Record<string, string[]> = { ...activeFilters };
-
-    switch (selectedFilter) {
-      case "Latest":
-        chipFilters.collection = ["new-arrival"];
-        break;
-      case "Best Sellers":
-        chipFilters.collection = ["bestseller"];
-        break;
-      case "Store Pick-up":
-        // You can add a specific filter for store pickup if needed
-        // For now, we'll just show all products
-        break;
-      case "All":
-      default:
-        // Remove chip-based collection filters, keep other filters
-        if (chipFilters.collection) {
-          chipFilters.collection = chipFilters.collection.filter(
-            (c) => !["new-arrival", "bestseller"].includes(c)
-          );
-          if (chipFilters.collection.length === 0) {
-            delete chipFilters.collection;
-          }
-        }
-        break;
-    }
-
-    setActiveFilters(chipFilters);
-  }, [selectedFilter]);
 
   // Helper to map category to product type
   const getCategoryProductType = (catId: string): string | null => {
