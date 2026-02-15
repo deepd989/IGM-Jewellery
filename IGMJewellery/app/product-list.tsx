@@ -2,15 +2,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    FlatList,
+    Image,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 
 import { CartBadge } from "@/components/cart/CardBadge";
@@ -62,7 +62,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
 
   // Sorting State
   const [isSortVisible, setIsSortVisible] = useState(false);
-  const [selectedSort, setSelectedSort] = useState("Featured");
+  const [selectedSort, setSelectedSort] = useState("Latest");
 
   // Filtering State
   const [isFilterVisible, setIsFilterVisible] = useState(false);
@@ -625,7 +625,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
             style={{ marginRight: 8 }}
           />
           <Text style={styles.bottomBarText}>SORT</Text>
-          {selectedSort !== "Featured" && <View style={styles.activeDot} />}
+          {selectedSort !== "Latest" && <View style={styles.activeDot} />}
         </HapticButton>
 
         <View style={styles.bottomBarDivider} />

@@ -325,7 +325,9 @@ function isNewProduct(product: MagentoProduct): boolean {
 }
 
 /**
- * Compute discounted price from price, discount, and additional_discount
+ * Compute discounted price from price, discount, and additional_discount.
+ * Discount values are treated as percentages (e.g. 10 = 10% off).
+ * Falls back to absolute subtraction if discount > 100.
  */
 function computeDiscountedPrice(product: MagentoProduct): number {
   const price = product.price;
@@ -336,15 +338,26 @@ function computeDiscountedPrice(product: MagentoProduct): number {
     String(getCustomAttribute(product, "additional_discount") || "0")
   );
 
-  const totalDiscount =
-    (isNaN(discount) ? 0 : discount) +
-    (isNaN(additionalDiscount) ? 0 : additionalDiscount);
+  const d = isNaN(discount) ? 0 : discount;
+  const ad = isNaN(additionalDiscount) ? 0 : additionalDiscount;
+  const totalDiscount = d + ad;
+
+  if (totalDiscount <= 0) return price;
+
+  // Treat as percentage discount (most common case)
+  if (totalDiscount <= 100) {
+    const discounted = price * (1 - totalDiscount / 100);
+    return Math.round(discounted * 100) / 100;
+  }
+
+  // Fallback: treat as absolute value
   const discounted = price - totalDiscount;
   return discounted > 0 ? discounted : price;
 }
 
 /**
- * Get product rating from p_ratings attribute
+ * Get product rating from p_ratings attribute.
+ * Uses a deterministic hash-based fallback so sorting works consistently.
  */
 function getRating(product: MagentoProduct): number {
   const pRatings = getCustomAttribute(product, "p_ratings");
@@ -352,8 +365,13 @@ function getRating(product: MagentoProduct): number {
     const parsed = parseFloat(String(pRatings));
     if (!isNaN(parsed) && parsed > 0) return parsed;
   }
-  // Fallback: random rating between 4.0-5.0
-  return 4.0 + Math.random() * 1.0;
+  // Deterministic fallback based on product ID (stable across renders)
+  const id = String(product.id);
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash * 31 + id.charCodeAt(i)) | 0;
+  }
+  return 4.0 + (Math.abs(hash) % 100) / 100; // 4.00 – 4.99
 }
 
 /**
