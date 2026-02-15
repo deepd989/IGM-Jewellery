@@ -6,62 +6,57 @@ import { Product, ProductDetails } from "@/interfaces/product.interface";
 import { CustomAttribute, MagentoProduct } from "@/magentoModels/product.model";
 
 // Default placeholder image when no images available
-const DEFAULT_PRODUCT_IMAGE = "https://via.placeholder.com/300x300?text=No+Image";
+const DEFAULT_PRODUCT_IMAGE =
+  "https://via.placeholder.com/300x300?text=No+Image";
 
 // Map of sub_cat resolved labels to ProductType enum
 const PRODUCT_TYPE_MAP: Record<string, ProductType> = {
   // Category mappings based on typical jewelry categories
-  "ring": ProductType.Ring,
-  "rings": ProductType.Ring,
-  "engagement": ProductType.Ring,
-  "wedding": ProductType.Ring,
-  "cocktail": ProductType.Ring,
-  "band": ProductType.Ring,
-  "solitaire": ProductType.Ring,
-  "necklace": ProductType.Necklace,
-  "necklaces": ProductType.Necklace,
-  "chain": ProductType.Necklace,
-  "pendant": ProductType.Necklace,
-  "earring": ProductType.Earring,
-  "earrings": ProductType.Earring,
-  "studs": ProductType.Earring,
-  "bali": ProductType.Earring,
-  "hoops": ProductType.Earring,
-  "bracelet": ProductType.Bracelet,
-  "bracelets": ProductType.Bracelet,
-  "bangle": ProductType.Bracelet,
-  "bangles": ProductType.Bracelet,
-  "diamond": ProductType.DiamondStone,
-  "diamonds": ProductType.DiamondStone,
-  "gold": ProductType.Gold,
-  "gift": ProductType.Gift,
-  "gifts": ProductType.Gift,
+  ring: ProductType.Ring,
+  rings: ProductType.Ring,
+  engagement: ProductType.Ring,
+  wedding: ProductType.Ring,
+  cocktail: ProductType.Ring,
+  band: ProductType.Ring,
+  solitaire: ProductType.Ring,
+  necklace: ProductType.Necklace,
+  necklaces: ProductType.Necklace,
+  chain: ProductType.Necklace,
+  pendant: ProductType.Necklace,
+  earring: ProductType.Earring,
+  earrings: ProductType.Earring,
+  studs: ProductType.Earring,
+  bali: ProductType.Earring,
+  hoops: ProductType.Earring,
+  bracelet: ProductType.Bracelet,
+  bracelets: ProductType.Bracelet,
+  bangle: ProductType.Bracelet,
+  bangles: ProductType.Bracelet,
+  diamond: ProductType.DiamondStone,
+  diamonds: ProductType.DiamondStone,
+  gold: ProductType.Gold,
+  gift: ProductType.Gift,
+  gifts: ProductType.Gift,
 };
 
 // Map seller_id to Brand enum (based on known seller IDs from API response)
-const SELLER_TO_BRAND_MAP: Record<string, Brand> = {
-  "4": Brand.Tanishq,      // roma-design
-  "5": Brand.Malabar,      // rajashri-design  
-  "2": Brand.KalyanJewellers, // saeedshop
-  "7": Brand.Tanishq,      // tanishq.co.in
-};
 
 // Map occasion resolved labels to OccasionEnum
 const OCCASION_MAP: Record<string, OccasiomEnum> = {
-  "birthday": OccasiomEnum.Birthday,
-  "anniversary": OccasiomEnum.Anniversary,
-  "wedding": OccasiomEnum.Wedding,
-  "graduation": OccasiomEnum.Graduation,
-  "diwali": OccasiomEnum.Diwali,
-  "festive": OccasiomEnum.Diwali,
-  "festival": OccasiomEnum.Diwali,
+  birthday: OccasiomEnum.Birthday,
+  anniversary: OccasiomEnum.Anniversary,
+  wedding: OccasiomEnum.Wedding,
+  graduation: OccasiomEnum.Graduation,
+  diwali: OccasiomEnum.Diwali,
+  festive: OccasiomEnum.Diwali,
+  festival: OccasiomEnum.Diwali,
 };
 
 // Map user_type values to Gender enum
 const GENDER_MAP: Record<string, Gender> = {
-  "male": Gender.male,
-  "female": Gender.female,
-  "unisex": Gender.unisex,
+  male: Gender.male,
+  female: Gender.female,
+  unisex: Gender.unisex,
 };
 
 /**
@@ -121,7 +116,7 @@ function parseProductType(product: MagentoProduct): ProductType {
  * Parse brand from sellerId (passed from the API response wrapper)
  */
 function parseBrandFromSellerId(sellerId: string): Brand {
-  const brand = SELLER_TO_BRAND_MAP[sellerId];
+  const brand = sellerId;
   if (brand) return brand;
   return Brand.Tanishq; // Default brand
 }
@@ -178,10 +173,13 @@ function getDescription(product: MagentoProduct): string {
  * Get thumbnail URLs from media_gallery_entries or use placeholder
  */
 function getThumbnailUrls(product: MagentoProduct): string[] {
-  if (product.media_gallery_entries && product.media_gallery_entries.length > 0) {
+  if (
+    product.media_gallery_entries &&
+    product.media_gallery_entries.length > 0
+  ) {
     return product.media_gallery_entries.map((entry: any) => {
       if (entry.file) {
-        return `https://www.experapps.xyz/media/catalog/product${entry.file}`;
+        return `${entry.file}`;
       }
       return DEFAULT_PRODUCT_IMAGE;
     });
@@ -331,10 +329,16 @@ function isNewProduct(product: MagentoProduct): boolean {
  */
 function computeDiscountedPrice(product: MagentoProduct): number {
   const price = product.price;
-  const discount = parseFloat(String(getCustomAttribute(product, "discount") || "0"));
-  const additionalDiscount = parseFloat(String(getCustomAttribute(product, "additional_discount") || "0"));
-  
-  const totalDiscount = (isNaN(discount) ? 0 : discount) + (isNaN(additionalDiscount) ? 0 : additionalDiscount);
+  const discount = parseFloat(
+    String(getCustomAttribute(product, "discount") || "0")
+  );
+  const additionalDiscount = parseFloat(
+    String(getCustomAttribute(product, "additional_discount") || "0")
+  );
+
+  const totalDiscount =
+    (isNaN(discount) ? 0 : discount) +
+    (isNaN(additionalDiscount) ? 0 : additionalDiscount);
   const discounted = price - totalDiscount;
   return discounted > 0 ? discounted : price;
 }
@@ -355,11 +359,14 @@ function getRating(product: MagentoProduct): number {
 /**
  * Convert a pre-resolved MagentoProduct to app's Product interface
  * Used with the /getAllProducts endpoint response
- * 
+ *
  * @param magentoProduct - The pre-resolved product from the API (custom_attributes already have labels)
  * @param sellerId - The seller ID from the response wrapper (e.g., "4")
  */
-export function convertResolvedProduct(magentoProduct: MagentoProduct, sellerId: string): Product {
+export function convertResolvedProduct(
+  magentoProduct: MagentoProduct,
+  sellerId: string
+): Product {
   return {
     id: String(magentoProduct.id),
     title: magentoProduct.name,
@@ -368,7 +375,11 @@ export function convertResolvedProduct(magentoProduct: MagentoProduct, sellerId:
     productType: parseProductType(magentoProduct),
     givenPrice: magentoProduct.price,
     discountedPrice: computeDiscountedPrice(magentoProduct),
-    brand: parseBrandFromSellerId(sellerId),
+    brand: parseBrandFromSellerId(
+      magentoProduct.custom_attributes.find(
+        (attribute) => attribute.attribute_code === "seller_id"
+      )?.value as string
+    ),
     tags: generateTags(magentoProduct),
     thumbnailUrls: getThumbnailUrls(magentoProduct),
     isNew: isNewProduct(magentoProduct),
@@ -386,7 +397,9 @@ export function convertResolvedProduct(magentoProduct: MagentoProduct, sellerId:
 export function convertResolvedProducts(
   items: Array<{ updated: MagentoProduct; sellerId: string }>
 ): Product[] {
-  return items.map((item) => convertResolvedProduct(item.updated, item.sellerId));
+  return items.map((item) =>
+    convertResolvedProduct(item.updated, item.sellerId)
+  );
 }
 
 // ---- Legacy converters (kept for backward compatibility if needed) ----
@@ -401,6 +414,8 @@ export function convertMagentoProduct(magentoProduct: MagentoProduct): Product {
 /**
  * @deprecated Use convertResolvedProducts instead. This was used with raw Magento API data.
  */
-export function convertMagentoProducts(magentoProducts: MagentoProduct[]): Product[] {
+export function convertMagentoProducts(
+  magentoProducts: MagentoProduct[]
+): Product[] {
   return magentoProducts.map(convertMagentoProduct);
 }
