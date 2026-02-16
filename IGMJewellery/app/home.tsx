@@ -7,9 +7,7 @@ import EventCard from "@/components/eventCard";
 import GiftFinder from "@/components/giftFinder";
 import GiftingCard from "@/components/giftingCard";
 import HashtagComponent from "@/components/hashtagComponent";
-import HomePageCard from "@/components/homePageCard";
 import HorizontalRuleIGM from "@/components/horizontalRuleIGM";
-import LatestCollections from "@/components/latestCollections";
 import OccasionCardList from "@/components/occaisionsHome";
 import PaymentMethods from "@/components/paymentMethods";
 import SearchBar from "@/components/searchBar";
@@ -17,6 +15,7 @@ import { TopPicks } from "@/components/topPicks";
 import { getUserPincode } from "@/scripts/location";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { Sparkles } from "lucide-react-native";
 import React, {
@@ -27,6 +26,7 @@ import React, {
 } from "react";
 import {
   BackHandler,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -34,7 +34,13 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AnnouncementSection from "../components/announcementSectionHome";
 import { HapticButton } from "../components/basic components/hapticButton";
+import BrandsHorizontalScroll from "../components/brandsHorizontalScroll";
+import CategoriesHorizontalScroll from "../components/categoriesHorizontallScroll";
+import BrandCollectionCards from "../components/shopByCollectionsNew";
+import TrustBar from "../components/trustBarBanner";
+import { COLORS } from "../constants/theme";
 
 export default function HomeScreen() {
   const [expanded, setExpanded] = useState(false);
@@ -48,7 +54,7 @@ export default function HomeScreen() {
     refetch,
   } = useGetProductsQuery({});
   const router = useRouter();
-  const [textInput, setInputChip] = useState<string>("");
+  const [textInput, setTextInput] = useState<string>("");
   const [pincode, setPincode] = useState(null);
 
   useEffect(() => {
@@ -83,129 +89,122 @@ export default function HomeScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <View style={styles.header}>
         <Text style={styles.deliveryText}>
           Deliver to{" "}
-          <Text style={{ fontWeight: "bold" }}>{pincode || "Fetching..."}</Text>
+          <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
+            {pincode || "Fetching..."}
+          </Text>
         </Text>
       </View>
       <SearchBar />
       <ScrollView style={styles.container}>
-        <View>
-          <View style={styles.centerBox}>
-            <View style={styles.iconContainer}>
-              <Sparkles size={48} color="#d4d4d4" strokeWidth={1.5} />
+        <LinearGradient
+          colors={["#EDF6F8", "#C2E2EA"]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={styles.container}
+        >
+          <View style={(styles.centerBox, styles.viewZeywarIsListening)}>
+            <View style={styles.badgeContainer}>
+              <View style={styles.aiBadge}>
+                <Sparkles size={16} color="#FFF" fill="#FFF" />
+                <Text style={styles.aiBadgeText}>Ai powered</Text>
+              </View>
             </View>
 
-            {/* Greeting Text */}
-            <Text style={styles.greetingBold}>Hey there!</Text>
-            <Text style={styles.greetingLight}>What sparkle</Text>
-            <Text style={styles.greetingLight}>are we looking for today?</Text>
-          </View>
+            {/* 2. Main Title */}
+            <Text style={styles.mainTitle}>
+              What sparkle are we looking for today?
+            </Text>
 
-          {/* Voice Search Box */}
-          <View style={styles.voiceBox}>
-            <TextInput
-              placeholder="Sonar is listening"
-              placeholderTextColor="#999"
-              style={styles.input}
-              value={textInput}
-              onChangeText={setInputChip}
-              returnKeyType="send" // or "done", "go", "search"
-              onSubmitEditing={handleSubmit}
-            />
-            <HapticButton
-              onPress={() => {
-                router.push({
-                  pathname: "/exploreAi",
-                  params: { mode: "voice" },
-                });
-              }}
-            >
-              <Ionicons name="mic-outline" size={22} />
-            </HapticButton>
-            {/* <HapticButton
-              style={{
-                borderRadius: 50,
-                height: 30,
-                width: 30,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#EBEBEB",
-              }}
-              onPress={() => {
-                router.push({
-                  pathname: "/exploreAi",
-                  params: { mode: "video" },
-                });
-              }}
-            >
-              <AudioLines />
-            </HapticButton> */}
-          </View>
-
-          <View>
-            <View
-              style={[
-                styles.chipsRow,
-                !expanded && firstRowHeight !== null
-                  ? { height: firstRowHeight, overflow: "hidden" }
-                  : {},
-              ]}
-              onLayout={(e) => {
-                if (firstRowHeight === null) {
-                  setFirstRowHeight(e.nativeEvent.layout.height);
-                }
-              }}
-            >
-              {[
-                "Ai powered",
-                "TBZ latest collection",
-                "Rings",
-                "Wedding",
-                "Men’s gifting",
-                "Mom’s gift",
-                "Anniversary",
-                "Ai powered",
-                "TBZ latest collection",
-                "Rings",
-                "Wedding",
-                "Men’s gifting",
-                "Mom’s gift",
-                "Anniversary",
-              ].map((chip, idx) => (
+            {/* 3. Enhanced Search Bar */}
+            <View style={styles.searchBox}>
+              <TextInput
+                placeholder="Zeywar Ai is listening"
+                placeholderTextColor="#1A3B4A"
+                style={styles.inputText}
+                value={textInput}
+                returnKeyType="send" // or "done", "go", "search"
+                onSubmitEditing={handleSubmit}
+                onChangeText={(text) => setTextInput(text)}
+              />
+              <View style={styles.iconGroup}>
                 <HapticButton
                   onPress={() => {
-                    setInputChip(chip);
+                    router.push({
+                      pathname: "/exploreAi",
+                      params: { mode: "voice" },
+                    });
                   }}
-                  key={idx}
-                  style={styles.chip}
                 >
-                  <Text style={styles.chipText}>{chip}</Text>
+                  <Ionicons name="mic-outline" size={22} />
                 </HapticButton>
-              ))}
+              </View>
             </View>
 
-            <HapticButton onPress={() => setExpanded(!expanded)}>
-              <Text style={styles.moreText}>
-                {expanded ? "Show less" : "More"}
-              </Text>
-            </HapticButton>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.carouselContainer}
+            >
+              {[
+                {
+                  name: "Necklace",
+                  img: require("../assets/images/dummyImages/dummyNecklace.png"),
+                },
+                {
+                  name: "Bracelets",
+                  img: require("../assets/images/dummyImages/dummyBracelete.png"),
+                },
+                {
+                  name: "Earrings",
+                  img: require("../assets/images/dummyImages/dummyEarring.png"),
+                },
+                {
+                  name: "Rings",
+                  img: require("../assets/images/dummyImages/dummyRing.png"),
+                },
+                {
+                  name: "Diamonds",
+                  img: require("../assets/images/dummyImages/dummyDiamond.png"),
+                },
+              ].map((item, index) => (
+                <View key={index} style={styles.cardWrapper}>
+                  <View style={styles.imageCard}>
+                    <Image
+                      source={item.img}
+                      style={styles.productImage}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <Text style={styles.cardLabel}>{item.name}</Text>
+                </View>
+              ))}
+            </ScrollView>
           </View>
-        </View>
+        </LinearGradient>
+        <AnnouncementSection />
+        <HorizontalRuleIGM />
+        <BrandCollectionCards />
+        {/* <LatestCollections /> */}
         {/* Featured Product Card */}
-        <HomePageCard />
+        {/* <HomePageCard /> */}
+        <HorizontalRuleIGM />
+        <CategoriesHorizontalScroll />
+        {/* <HorizontalRuleIGM /> */}
+        <TrustBar />
+        {/* <CategoriesHorizontalScroll /> */}
+        <BrandsHorizontalScroll />
+        <HorizontalRuleIGM />
+        <TopPicks products={products} />
         <HorizontalRuleIGM />
         <BrandGridTileView />
         <HorizontalRuleIGM />
         <GiftFinder />
         <HorizontalRuleIGM />
         <OccasionCardList />
-        <HorizontalRuleIGM />
-        <TopPicks products={products} />
-        <HorizontalRuleIGM />
-        <LatestCollections />
         {/* <HorizontalRuleIGM /> */}
         {/* <TryAtHomeCard /> */}
         <HorizontalRuleIGM />
@@ -246,7 +245,7 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#fff" },
+  container: { flex: 1, padding: 8, backgroundColor: "white" },
 
   header: {
     flexDirection: "row",
@@ -255,7 +254,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 5,
   },
-  deliveryText: { fontSize: 14, color: "#444" },
+  viewZeywarIsListening: {
+    padding: 16,
+    borderRadius: 12,
+  },
+  deliveryText: { fontSize: 14, color: COLORS.primary },
   bold: { fontWeight: "600" },
 
   centerBox: { alignItems: "center", marginTop: 30 },
@@ -272,7 +275,7 @@ const styles = StyleSheet.create({
     gap: 12,
     backgroundColor: "#F8F8F8",
   },
-  input: { flex: 1, backgroundColor: "#F8F8F8" },
+  input: { flex: 1, backgroundColor: "white" },
 
   chipsRow: {
     flexDirection: "row",
@@ -364,4 +367,96 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
   },
   contactBtnText: { marginLeft: 8, fontWeight: "600" },
+  badgeContainer: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  aiBadge: {
+    flexDirection: "row",
+    backgroundColor: "#1A3B4A", // Dark navy/teal
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 20,
+    alignItems: "center",
+    gap: 6,
+  },
+  aiBadgeText: {
+    color: "#FFF",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  mainTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#1A3B4A",
+    textAlign: "center",
+    marginBottom: 30,
+  },
+  searchBox: {
+    flexDirection: "row",
+    backgroundColor: "#FFF",
+    height: 70,
+    borderRadius: 12, // More rectangular than before
+    alignItems: "center",
+    paddingHorizontal: 16,
+    marginBottom: 30,
+    // Subtle shadow
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+  },
+  inputText: {
+    flex: 1,
+    fontSize: 18,
+    color: "#1A3B4A",
+  },
+  brandBold: {
+    fontWeight: "800",
+    fontStyle: "italic",
+  },
+  iconGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15,
+  },
+  waveformCircle: {
+    backgroundColor: "#4A7C87", // Muted teal
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  carouselContainer: {
+    paddingRight: 20,
+  },
+  cardWrapper: {
+    alignItems: "center",
+    marginRight: 12,
+  },
+  imageCard: {
+    width: 85,
+    height: 100,
+    backgroundColor: "#FFF",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  productImage: {
+    width: "80%",
+    height: "80%",
+  },
+  cardLabel: {
+    fontSize: 14,
+    color: "#1A3B4A",
+    fontWeight: "500",
+  },
+  micIcon: {
+    padding: 8, // Increases the touch target area
+    marginRight: 5,
+    color: "#1A3B4A", // Matching the dark teal theme color
+  },
 });

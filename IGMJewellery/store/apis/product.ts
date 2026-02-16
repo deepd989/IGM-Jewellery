@@ -2,7 +2,7 @@ import { ProductType } from "@/enums/productType.enum";
 import { Product } from "@/interfaces/product.interface";
 import { convertResolvedProducts } from "@/magentoModels/conversionHelpers/productConverter";
 import { MagentoProduct } from "@/magentoModels/product.model";
-import { BACKEND_BASE_URL } from "@/store/newApis/apiUrl.const";
+import { WRAPPER_API } from "@/store/newApis/apiUrl.const";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // Cache for products fetched from API
@@ -39,7 +39,7 @@ async function fetchAllProducts(): Promise<Product[]> {
   console.log("Fetching products from /getAllProducts...");
 
   try {
-    const response = await fetch(`${BACKEND_BASE_URL}/getAllProducts`);
+    const response = await fetch(`${WRAPPER_API}/getAllProducts`);
 
     if (!response.ok) {
       console.error(`Failed to fetch products: ${response.status}`);
