@@ -2,15 +2,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    Image,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  FlatList,
+  ImageBackground,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from "react-native";
 
 import { CartBadge } from "@/components/cart/CardBadge";
@@ -30,13 +30,41 @@ type ListingScreenProps = {
 };
 
 // const FILTER_CHIPS = ["All", "Latest", "Best Sellers", "Store Pick-up"];
-const FILTER_CHIPS: string[] = [];
+const FILTER_CHIPS = ["All", "Latest", "Best Sellers",];
 const MENU_ITEMS = [
   { key: "Bespoke Jewellery", path: "/bespoke" },
   { key: "Our Brands", path: "/brands" },
   { key: "Call an expert", path: "/underDev" },
   { key: "Chat with Sonar", path: "/exploreAi" },
 ];
+
+// Map category / product type to Ionicons icon names
+const CATEGORY_ICON_MAP: Record<string, string> = {
+  earring: "ear-outline",
+  earrings: "ear-outline",
+  ring: "ellipse-outline",
+  rings: "ellipse-outline",
+  necklace: "ribbon-outline",
+  necklaces: "ribbon-outline",
+  pendant: "diamond-outline",
+  pendants: "diamond-outline",
+  bracelet: "infinite-outline",
+  bracelets: "infinite-outline",
+  bangle: "radio-button-off-outline",
+  bangles: "radio-button-off-outline",
+  mangalsutra: "link-outline",
+  chain: "link-outline",
+  chains: "link-outline",
+  anklet: "footsteps-outline",
+  anklets: "footsteps-outline",
+  wedding: "heart-outline",
+  gift: "gift-outline",
+  gold: "sunny-outline",
+  diamond: "diamond-outline",
+};
+
+const BANNER_IMAGE_URI =
+  "https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=800";
 
 export default function ListingScreen({ filters }: ListingScreenProps) {
   const router = useRouter();
@@ -163,30 +191,6 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       });
     }
 
-    // Apply chip-based collection filters
-    switch (selectedFilter) {
-      case "Latest":
-        newFilters.collection = ["new-arrival"];
-        break;
-      case "Best Sellers":
-        newFilters.collection = ["bestseller"];
-        break;
-      case "Store Pick-up":
-        break;
-      case "All":
-      default:
-        // Keep existing collection filters (if any) but remove chip-based ones
-        if (newFilters.collection) {
-          newFilters.collection = newFilters.collection.filter(
-            (c) => !["new-arrival", "bestseller"].includes(c)
-          );
-          if (newFilters.collection.length === 0) {
-            delete newFilters.collection;
-          }
-        }
-        break;
-    }
-
     setActiveFilters(newFilters);
   }, [
     departmentId,
@@ -198,7 +202,6 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     gender,
     params.priceRange,
     filters,
-    selectedFilter,
   ]);
 
   // Helper to map category to product type
@@ -276,6 +279,19 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
 
   const handleChipPress = (chip: string) => {
     setSelectedFilter(chip);
+    // Map chips to sort order since collection filter isn't supported
+    switch (chip) {
+      case "Latest":
+        setSelectedSort("Latest");
+        break;
+      case "Best Sellers":
+        setSelectedSort("Popularity");
+        break;
+      case "All":
+      default:
+        setSelectedSort("Latest");
+        break;
+    }
   };
 
   // Generate page title based on navigation context
@@ -344,11 +360,14 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
 
   const renderHeader = () => (
     <View>
-      {/* Page Header */}
+      {/* Page Header with back + actions */}
       <View style={styles.header}>
-        <HapticButton onPress={() => router.back()} style={styles.iconBtn}>
-          <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-        </HapticButton>
+        <View style={styles.headerLeft}>
+          <HapticButton onPress={() => router.back()} style={styles.iconBtn}>
+            <Ionicons name="chevron-back" size={24} color={COLORS.text} />
+          </HapticButton>
+          <Text style={styles.headerTitle}>Explore</Text>
+        </View>
 
         <View style={styles.headerActions}>
           <HapticButton
@@ -380,21 +399,26 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
         </View>
       </View>
 
-      {/* Category Icon & Title */}
-      <View style={styles.titleSection}>
+      {/* Banner & Category Icon */}
+      <ImageBackground
+        source={{ uri: BANNER_IMAGE_URI }}
+        style={styles.bannerBackground}
+        imageStyle={styles.bannerImage}
+      >
+        <View style={styles.bannerOverlay} />
         <View style={styles.categoryIconCircle}>
-          <Image
-            source={{
-              uri: "https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=200",
-            }}
-            style={styles.categoryImage}
+          <Ionicons
+            name={
+              (CATEGORY_ICON_MAP[
+                (productType || categoryId || getPageTitle()).toLowerCase()
+              ] as any) || "sparkles-outline"
+            }
+            size={28}
+            color={COLORS.primary}
           />
         </View>
-        <Text style={styles.pageTitle}>{getPageTitle()}</Text>
-        <Text style={styles.resultsCount}>
-          {products.length} {products.length === 1 ? "Product" : "Products"}
-        </Text>
-      </View>
+      </ImageBackground>
+      <Text style={styles.pageTitle}>{getPageTitle()}</Text>
 
       {/* Filter Chips */}
       <ScrollView
@@ -748,6 +772,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.m,
     paddingVertical: SPACING.s,
   },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: COLORS.text,
+    marginLeft: 4,
+  },
   headerActions: {
     flexDirection: "row",
     alignItems: "center",
@@ -755,36 +789,41 @@ const styles = StyleSheet.create({
   iconBtn: {
     marginLeft: SPACING.s,
   },
-  titleSection: {
+
+  // Banner & category icon
+  bannerBackground: {
+    width: "100%",
+    height: 140,
+    justifyContent: "flex-end",
     alignItems: "center",
-    marginBottom: SPACING.m,
-    marginTop: SPACING.s,
+    marginBottom: 30, // half of icon circle overflows below
+  },
+  bannerImage: {
+    borderRadius: 0,
+    opacity: 0.85,
+  },
+  bannerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.15)",
   },
   categoryIconCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "#F5F5F5",
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: "#EDF6F8",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: SPACING.s,
-    overflow: "hidden",
-  },
-  categoryImage: {
-    width: "60%",
-    height: "60%",
-    resizeMode: "contain",
-    opacity: 0.6,
+    position: "absolute",
+    bottom: -32, // half overlaps the banner
+    borderWidth: 3,
+    borderColor: "#FFFFFF",
   },
   pageTitle: {
     fontSize: 18,
     fontWeight: "600",
     color: COLORS.text,
-  },
-  resultsCount: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    marginTop: 4,
+    textAlign: "center",
+    marginBottom: SPACING.m,
   },
   filterContainer: {
     paddingHorizontal: SPACING.m,

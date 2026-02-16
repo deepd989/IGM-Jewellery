@@ -225,7 +225,7 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
               <Text style={styles.infoSectionTitle}>
                 1. GEMSTONE INFORMATION
               </Text>
-              <Text style={styles.knowMore}>Know More</Text>
+              
             </View>
             <View style={styles.infoTable}>
               {gemstoneRows.map((row, i) => (
@@ -242,7 +242,7 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
               <Text style={styles.infoSectionTitle}>
                 {hasGemstone ? "2." : "1."} DIAMOND INFORMATION
               </Text>
-              <Text style={styles.knowMore}>Know More</Text>
+              
             </View>
             <View style={styles.infoTable}>
               {diamondRows.map((row, i) => (
@@ -282,7 +282,15 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
 
           <View style={styles.storyFeatures}>
             <Text style={styles.storyFeaturesText}>
-              100% Certified {"  |  "} 15 Days return {"  |  "} 1 year Warranty
+              100% Certified
+            </Text>
+            <Text style={styles.storyFeaturesDivider}>|</Text>
+            <Text style={styles.storyFeaturesText}>
+              15 Days return
+            </Text>
+            <Text style={styles.storyFeaturesDivider}>|</Text>
+            <Text style={styles.storyFeaturesText}>
+              1 year Warranty
             </Text>
           </View>
 
@@ -476,17 +484,28 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.m,
   },
   storyFeatures: {
-    backgroundColor: "#F9F9F9",
-    width: "100%",
-    padding: 12,
-    borderRadius: 4,
+    flexDirection: "row",
     alignItems: "center",
+    backgroundColor: COLORS.primaryLight,
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    width: "100%",
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    justifyContent: "center",
     marginBottom: SPACING.m,
   },
   storyFeaturesText: {
     fontSize: 12,
-    color: COLORS.textSecondary,
-    fontWeight: "500",
+    color: COLORS.primary,
+    fontWeight: "600",
+  },
+  storyFeaturesDivider: {
+    fontSize: 12,
+    color: COLORS.primary,
+    marginHorizontal: 8,
+    fontWeight: "400",
   },
   storyBrandBox: {
     alignItems: "center",
