@@ -30,8 +30,8 @@ const PRODUCT_TYPE_MAP: Record<string, ProductType> = {
   hoops: ProductType.Earring,
   bracelet: ProductType.Bracelet,
   bracelets: ProductType.Bracelet,
-  bangle: ProductType.Bracelet,
-  bangles: ProductType.Bracelet,
+  bangle: ProductType.Bangles,
+  bangles: ProductType.Bangles,
   diamond: ProductType.DiamondStone,
   diamonds: ProductType.DiamondStone,
   gold: ProductType.Gold,
@@ -82,18 +82,18 @@ function getCustomAttribute(
  */
 function parseProductType(product: MagentoProduct): ProductType {
   // Try to get from sub_cat attribute (already resolved to label like "Bangles", "Cocktail")
-  const subCat = getCustomAttribute(product, "sub_cat");
-  if (subCat && typeof subCat === "string") {
-    const mappedType = PRODUCT_TYPE_MAP[subCat.toLowerCase()];
-    if (mappedType) return mappedType;
-  }
+  // const subCat = getCustomAttribute(product, "sub_cat");
+  // if (subCat && typeof subCat === "string") {
+  //   const mappedType = PRODUCT_TYPE_MAP[subCat.toLowerCase()];
+  //   if (mappedType) return mappedType;
+  // }
 
-  // Try to get from p_type attribute (already resolved to label like "Studded")
-  const pType = getCustomAttribute(product, "p_type");
-  if (pType && typeof pType === "string") {
-    const mappedType = PRODUCT_TYPE_MAP[pType.toLowerCase()];
-    if (mappedType) return mappedType;
-  }
+  // // Try to get from p_type attribute (already resolved to label like "Studded")
+  // const pType = getCustomAttribute(product, "p_type");
+  // if (pType && typeof pType === "string") {
+  //   const mappedType = PRODUCT_TYPE_MAP[pType.toLowerCase()];
+  //   if (mappedType) return mappedType;
+  // }
 
   // Try from category_ids (already resolved to labels like ["Rings", "Engagement"])
   const categoryIds = getCustomAttribute(product, "category_ids");
@@ -105,12 +105,12 @@ function parseProductType(product: MagentoProduct): ProductType {
   }
 
   // Fallback: parse from product name
-  const nameLower = product.name.toLowerCase();
-  for (const [keyword, type] of Object.entries(PRODUCT_TYPE_MAP)) {
-    if (nameLower.includes(keyword)) {
-      return type;
-    }
-  }
+  // const nameLower = product.name.toLowerCase();
+  // for (const [keyword, type] of Object.entries(PRODUCT_TYPE_MAP)) {
+  //   if (nameLower.includes(keyword)) {
+  //     return type;
+  //   }
+  // }
 
   // Default to Ring if nothing matches
   return ProductType.Ring;

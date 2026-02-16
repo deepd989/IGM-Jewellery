@@ -38,6 +38,7 @@ import AnnouncementSection from "../components/announcementSectionHome";
 import { HapticButton } from "../components/basic components/hapticButton";
 import BrandsHorizontalScroll from "../components/brandsHorizontalScroll";
 import CategoriesHorizontalScroll from "../components/categoriesHorizontallScroll";
+import HomePageCard from "../components/homePageCard";
 import BrandCollectionCards from "../components/shopByCollectionsNew";
 import TrustBar from "../components/trustBarBanner";
 import { COLORS } from "../constants/theme";
@@ -188,17 +189,14 @@ export default function HomeScreen() {
         <AnnouncementSection />
         <HorizontalRuleIGM />
         <BrandCollectionCards />
-        {/* <LatestCollections /> */}
-        {/* Featured Product Card */}
-        {/* <HomePageCard /> */}
         <HorizontalRuleIGM />
         <CategoriesHorizontalScroll />
-        {/* <HorizontalRuleIGM /> */}
         <TrustBar />
-        {/* <CategoriesHorizontalScroll /> */}
         <BrandsHorizontalScroll />
         <HorizontalRuleIGM />
         <TopPicks products={products} />
+        <HorizontalRuleIGM />
+        <HomePageCard />
         <HorizontalRuleIGM />
         <BrandGridTileView />
         <HorizontalRuleIGM />

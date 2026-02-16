@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 8,
     left: 8,
-    backgroundColor: "#E0E0E0",
+    backgroundColor: COLORS.secondary,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 10,
     fontWeight: "600",
-    color: COLORS.text,
+    color: "white",
   },
   favIcon: {
     position: "absolute",

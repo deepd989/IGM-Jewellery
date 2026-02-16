@@ -1,350 +1,458 @@
 import { ProductType } from "@/enums/productType.enum";
-import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import React, { useEffect, useMemo } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useAuth } from "../auth/authContext";
-import { generateJewelleryImage } from "../helpers/generateJewelleryImage";
-import { firstImageHelper } from "../helpers/imageUsageHelper";
+import { COLORS } from "../constants/theme";
+import {
+  useAddToWishlistMutation,
+  useGetWishlistQuery,
+  useRemoveFromWishlistMutation,
+} from "../store/apis/wishlist";
 import { HapticButton } from "./basic components/hapticButton";
 import EarringIcon from "./ui/earingsComponentSvg";
 
+const { width } = Dimensions.get("window");
+
 export default function HomePageCard() {
   const { userId } = useAuth();
-  const {
-    data: products = [],
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useGetProductsQuery({});
-  const [cardTitle, setCardTitle] = React.useState<ProductType>(
+  const { data: products = [] } = useGetProductsQuery({});
+  const [cardTitle, setCardTitle] = React.useState<string>(
     ProductType.Necklace
   );
-  return (
-    <View
-      style={{
-        backgroundColor: "#F8F8F8",
-        paddingTop: 6,
-        marginTop: 100,
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        borderColor: "grey",
-        borderWidth: 2,
-        marginBottom: 40,
-      }}
-    >
-      {/* Category Icons (static placeholders) */}
-      <View style={styles.iconRow}>
-        <MaterialCommunityIcons
-          name="necklace"
-          size={32}
-          color="#053844"
-          onPress={() => setCardTitle(ProductType.Necklace)}
-        />
-        <MaterialCommunityIcons
-          name="ring"
-          size={32}
-          color="#053844"
-          onPress={() => setCardTitle(ProductType.Ring)}
-        />
-        <MaterialCommunityIcons
-          name="diamond-stone"
-          size={32}
-          color="#053844"
-          onPress={() => setCardTitle(ProductType.DiamondStone)}
-        />
-        <MaterialCommunityIcons
-          name="gold"
-          size={32}
-          color="#053844"
-          onPress={() => setCardTitle(ProductType.Gold)}
-        />
-        <MaterialCommunityIcons
-          name="gift"
-          size={32}
-          color="#053844"
-          onPress={() => setCardTitle(ProductType.Gift)}
-        />
-        <HapticButton onPress={() => setCardTitle(ProductType.Earring)}>
-          <EarringIcon width={40} height={40} />
-        </HapticButton>
-      </View>
-      <View
-        style={{
-          height: 2,
-          backgroundColor: "#ccc",
-          width: "100%",
-        }}
-      />
-      {/* Necklace Section */}
-      {/* <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{cardTitle}</Text>
-            <Ionicons name="chevron-forward" size={18} />
-          </View> */}
+  let filteredProduct = products[0];
+  products.forEach((p) => {
+    const filteredProducts = products.filter(
+      (prod) => prod.productType === cardTitle
+    );
+    filteredProduct =
+      filteredProducts[filteredProducts.length - 1] || products[0];
+  });
 
-      {/* Product Card */}
-      <NecklaceCard
-        productType={cardTitle}
-        product={products.filter((p) => p.productType === cardTitle)[0]}
-        onTryOn={() => {
-          router.push({
-            pathname: "/tryOn",
-            params: { userId: userId },
-          });
-        }}
-        deliveryDate="Delivery by Sep 25"
-      />
+  useEffect(() => {
+    console.log("cardTitle changed:", cardTitle);
+  }, [cardTitle]);
+
+  return (
+    <View style={styles.outerContainer}>
+      {/* Category Icons Row */}
+      <View style={styles.iconRow}>
+        <View
+          style={{
+            alignItems: "center",
+            paddingBottom: 4,
+            borderBottomWidth: 2,
+            borderBottomColor:
+              cardTitle === ProductType.Necklace ? "#053844" : "transparent",
+          }}
+        >
+          <MaterialCommunityIcons
+            name="necklace"
+            size={28}
+            color="#053844"
+            onPress={() => setCardTitle(ProductType.Necklace)}
+          />
+          <Text
+            style={{
+              marginTop: 5,
+              fontSize: 10,
+              color: "#053844",
+              textAlign: "center",
+            }}
+          >
+            Necklace
+          </Text>
+        </View>
+        <View
+          style={{
+            alignItems: "center",
+            paddingBottom: 4,
+            borderBottomWidth: 2,
+            borderBottomColor:
+              cardTitle === ProductType.Ring ? "#053844" : "transparent",
+          }}
+        >
+          <MaterialCommunityIcons
+            name="ring"
+            size={28}
+            color="#053844"
+            onPress={() => setCardTitle(ProductType.Ring)}
+          />
+          <Text
+            style={{
+              marginTop: 5,
+              fontSize: 10,
+              color: "#053844",
+              textAlign: "center",
+            }}
+          >
+            Ring
+          </Text>
+        </View>
+        <View
+          style={{
+            alignItems: "center",
+            paddingBottom: 4,
+            borderBottomWidth: 2,
+            borderBottomColor:
+              cardTitle === "Bracelet" ? "#053844" : "transparent",
+          }}
+        >
+          <MaterialCommunityIcons
+            name="diamond-stone"
+            size={28}
+            color="#053844"
+            onPress={() => setCardTitle("Bracelet")}
+          />
+          <Text
+            style={{
+              marginTop: 5,
+              fontSize: 10,
+              color: "#053844",
+              textAlign: "center",
+            }}
+          >
+            Bracelet
+          </Text>
+        </View>
+        <View
+          style={{
+            alignItems: "center",
+            paddingBottom: 4,
+            borderBottomWidth: 2,
+            borderBottomColor:
+              cardTitle === "Bangles" ? "#053844" : "transparent",
+          }}
+        >
+          <MaterialCommunityIcons
+            name="gold"
+            size={28}
+            color="#053844"
+            onPress={() => setCardTitle("Bangles")}
+          />
+          <Text
+            style={{
+              marginTop: 5,
+              fontSize: 10,
+              color: "#053844",
+              textAlign: "center",
+            }}
+          >
+            Bangles
+          </Text>
+        </View>
+        <TouchableOpacity onPress={() => setCardTitle(ProductType.Earring)}>
+          <View
+            style={{
+              alignItems: "center",
+              paddingBottom: 4,
+              borderBottomWidth: 2,
+              borderBottomColor:
+                cardTitle === ProductType.Earring ? "#053844" : "transparent",
+            }}
+          >
+            <EarringIcon width={32} height={32} />
+            <Text
+              style={{
+                marginTop: 5,
+                fontSize: 10,
+                color: "#053844",
+                textAlign: "center",
+              }}
+            >
+              Earring
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      <SeeHowItLooksOnYouCard product={filteredProduct} />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  iconRow: {
-    marginTop: 20,
-    flexGrow: 0,
-    justifyContent: "space-evenly",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
-  },
-  iconItem: { fontSize: 22, marginRight: 20 },
+export const SeeHowItLooksOnYouCard = ({ product }) => {
+  const { data: wishlistData } = useGetWishlistQuery();
 
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 30,
-    alignItems: "center",
-  },
-  sectionTitle: { fontSize: 20, fontWeight: "600" },
-});
+  const [addToWishlist, { isLoading: isAddingToWishlist }] =
+    useAddToWishlistMutation();
+  const [removeFromWishlist, { isLoading: isRemovingFromWishlist }] =
+    useRemoveFromWishlistMutation();
 
-interface Props {
-  productType: ProductType;
-  product: Product; // undefined in case there are no products of that type
-  onTryOn: () => void;
-  deliveryDate: string;
-}
+  const isInWishlist = wishlistData?.items.some(
+    (item) => item.product.id === product.id
+  );
+  const handleToggleWishlist = async (e: any) => {
+    e.stopPropagation();
 
-export const NecklaceCard: React.FC<Props> = ({
-  productType,
-  product,
-  deliveryDate,
-  onTryOn,
-}) => {
-  const { apiUrl, userId, imageGlobal } = useAuth();
-  const [firstImageBase64State, setFirstImageBase64State] = useState("");
-  console.log(product?.title, product?.id);
-  useEffect(() => {
-    // 1. Reset the image state so the old product's image doesn't flicker
-    // while the new one is loading
-    setFirstImageBase64State("");
-
-    // 2. Only run the generator if a product actually exists
-    if (product) {
-      generateJewelleryImage(
-        apiUrl,
-        userId as string,
-        product,
-        "casual wear",
-        "black",
-        setFirstImageBase64State
-      );
+    if (isInWishlist) {
+      try {
+        await removeFromWishlist(product.id).unwrap();
+      } catch (error) {
+        Alert.alert("Error", "Failed to remove from wishlist");
+      }
+    } else {
+      try {
+        await addToWishlist(product).unwrap();
+      } catch (error: any) {
+        if (error?.data === "Item already in wishlist") {
+          Alert.alert(
+            "Already in Wishlist",
+            "This item is already wishlisted."
+          );
+        } else {
+          Alert.alert("Error", "Failed to add to wishlist");
+        }
+      }
     }
+  };
+  console.log("product type is ", product?.productType, product?.name);
+  const deliveryDate = useMemo(() => {
+    const delivery = new Date();
+    delivery.setDate(delivery.getDate() + 2);
+    return delivery.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  }, []);
 
-    // ADD DEPENDENCIES HERE:
-  }, [product, apiUrl, userId]);
+  if (!product) return null;
 
   return (
     <View style={necklaceCardStyle.wrapper}>
       <HapticButton
         style={necklaceCardStyle.card}
-        activeOpacity={0.9}
-        onPress={() => {
-          router.push({ pathname: "/product-list" });
-        }}
+        onPress={() =>
+          router.push({
+            pathname: "/product-list",
+            params: { categoryName: product.productType },
+          })
+        }
       >
-        {/* Product Image */}
+        {/* White Product Image Area */}
+        <View style={necklaceCardStyle.imageArea}>
+          <HapticButton
+            style={necklaceCardStyle.wishlistButton}
+            onPress={handleToggleWishlist}
+            disabled={isAddingToWishlist || isRemovingFromWishlist}
+          >
+            {isAddingToWishlist || isRemovingFromWishlist ? (
+              <ActivityIndicator size="small" color={COLORS.primary} />
+            ) : (
+              <Ionicons
+                name={isInWishlist ? "heart" : "heart-outline"}
+                size={20}
+                color={isInWishlist ? COLORS.primary : COLORS.text}
+              />
+            )}
+          </HapticButton>
 
-        <View style={necklaceCardStyle.imageWrapper}>
           <Image
             source={{
-              uri: firstImageHelper(
-                firstImageBase64State,
-                product?.thumbnailUrls[0],
-                imageGlobal
-              ),
+              uri: product.thumbnailUrls[0],
             }}
             style={necklaceCardStyle.image}
+            contentFit="contain"
           />
-          {/* { product &&
-          <HapticButton style={necklaceCardStyle.wishlistButton}>
-            <AntDesign name="heart" size={22} color="#053844" />
-          </HapticButton>} */}
-          {product && (
-            <View style={necklaceCardStyle.deliveryTag}>
-              <AntDesign name="truck" size={14} color="#555" />
-              <Text style={necklaceCardStyle.deliveryText}>{deliveryDate}</Text>
-            </View>
-          )}
+
+          <View style={necklaceCardStyle.deliveryTag}>
+            <MaterialCommunityIcons
+              name="truck-delivery-outline"
+              size={16}
+              color="#053844"
+            />
+            <Text style={necklaceCardStyle.deliveryText}>{deliveryDate}</Text>
+          </View>
         </View>
 
-        {/* Details */}
-        {
-          product &&
-            product.discountedPrice != undefined &&
-            product.givenPrice != undefined && (
-              <View style={necklaceCardStyle.details}>
-                <Text style={necklaceCardStyle.title}>
-                  {product?.title || "Not Available"}
-                </Text>
+        {/* Text and Pricing Details */}
+        <View style={necklaceCardStyle.detailsContainer}>
+          <View style={necklaceCardStyle.leftCol}>
+            <Text style={necklaceCardStyle.title}>{product.title}</Text>
+            <Text style={necklaceCardStyle.brand}>{product.brand}</Text>
+          </View>
 
-                <View style={necklaceCardStyle.priceRow}>
-                  <Text style={necklaceCardStyle.price}>
-                    ₹{product?.discountedPrice.toLocaleString()}
-                  </Text>
-                  <Text style={necklaceCardStyle.oldPrice}>
-                    ₹{product?.givenPrice.toLocaleString()}
-                  </Text>
-                </View>
+          <View style={necklaceCardStyle.rightCol}>
+            <Text style={necklaceCardStyle.price}>
+              ₹{product.discountedPrice.toLocaleString()}
+            </Text>
+            <Text style={necklaceCardStyle.oldPrice}>
+              ₹{product.givenPrice.toLocaleString()}
+            </Text>
+          </View>
+        </View>
 
-                <Text style={necklaceCardStyle.brand}>{product?.brand}</Text>
-              </View>
-            )
-          // </View>
-        }
-      </HapticButton>
+        {/* Pagination Dots (Placeholder) */}
+        <View style={necklaceCardStyle.pagination}>
+          {/* <View style={[necklaceCardStyle.dot, necklaceCardStyle.dotActive]} />
+          <View style={necklaceCardStyle.dot} />
+          <View style={necklaceCardStyle.dot} /> */}
+        </View>
 
-      {/* Floating "See how it looks on you" Button */}
-      <HapticButton style={necklaceCardStyle.tryOnButton} onPress={onTryOn}>
-        <Ionicons name="sparkles-outline" size={18} color="#fff" />
-        <Text style={necklaceCardStyle.tryOnText}>See how it looks on you</Text>
+        {/* Floating Action Button */}
+        <HapticButton
+          style={necklaceCardStyle.tryOnButton}
+          onPress={(e) => {
+            e.stopPropagation();
+            router.push({
+              pathname: "/virtualTryOn2",
+              params: { productTitle: product.title },
+            });
+          }}
+        >
+          <Ionicons name="sparkles" size={18} color="#fff" />
+          <Text style={necklaceCardStyle.tryOnText}>
+            See how it looks on you
+          </Text>
+        </HapticButton>
       </HapticButton>
     </View>
   );
 };
 
-const necklaceCardStyle = StyleSheet.create({
-  wrapper: {},
-
-  card: {
-    backgroundColor: "#F8F8F8",
+const styles = StyleSheet.create({
+  outerContainer: {
+    backgroundColor: "white", // Light blue background from image
+    padding: 16,
     borderRadius: 12,
-    padding: 14,
-    marginVertical: 10,
-    elevation: 1,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
+    marginTop: 60,
   },
+  iconRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+    paddingHorizontal: 10,
+  },
+});
 
-  imageWrapper: {
+const necklaceCardStyle = StyleSheet.create({
+  wrapper: {
+    alignItems: "center",
+    paddingBottom: 20, // Space for the button to hang off the bottom
+  },
+  card: {
+    backgroundColor: "#EBF2F5",
     width: "100%",
-    height: 160,
-    backgroundColor: "#f5f5f5",
+    borderRadius: 15,
+    padding: 16, // creates that subtle inner border look
+  },
+  imageArea: {
+    backgroundColor: "#FFF",
     borderRadius: 10,
-    overflow: "hidden",
-    position: "relative",
-  },
-
-  image: {
+    height: 240,
     width: "100%",
-    height: "100%",
-    resizeMode: "contain",
-  },
-
-  wishlistButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    backgroundColor: "#fff",
-    padding: 6,
-    borderRadius: 20,
-    elevation: 3,
-  },
-
-  deliveryTag: {
-    position: "absolute",
-    bottom: 10,
-    right: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    elevation: 2,
-  },
-
-  deliveryText: {
-    fontSize: 12,
-    color: "#666",
-    marginLeft: 4,
-  },
-
-  details: {
-    marginTop: 12,
-  },
-
-  title: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#053844",
-  },
-
-  priceRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 4,
-  },
-
-  price: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#053844",
-  },
-
-  oldPrice: {
-    fontSize: 14,
-    color: "#888",
-    marginLeft: 10,
-    textDecorationLine: "line-through",
-  },
-
-  brand: {
-    marginTop: 4,
-    fontSize: 14,
-    color: "#666",
-  },
-
-  // Floating Button
-  tryOnButton: {
-    position: "absolute",
-    bottom: -30,
-    // Center horizontally
-    alignSelf: "center",
-    width: 150 * 1.8,
-    height: 42,
-    backgroundColor: "#053844",
-    borderRadius: 24,
-    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 3 },
+    position: "relative",
   },
-
+  image: {
+    width: "80%",
+    height: "80%",
+  },
+  wishlistButton: {
+    position: "absolute",
+    top: 15,
+    right: 15,
+    zIndex: 10,
+  },
+  deliveryTag: {
+    position: "absolute",
+    bottom: 12,
+    right: 12,
+    backgroundColor: "#D1E3E7",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  deliveryText: {
+    fontSize: 11,
+    color: "#053844",
+    marginLeft: 4,
+    fontWeight: "500",
+  },
+  detailsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingTop: 20,
+    paddingHorizontal: 10,
+  },
+  leftCol: {
+    flex: 1,
+  },
+  rightCol: {
+    alignItems: "flex-end",
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#000",
+  },
+  brand: {
+    fontSize: 14,
+    color: "#6A8B92",
+    marginTop: 2,
+  },
+  price: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#000",
+  },
+  oldPrice: {
+    fontSize: 14,
+    color: "#6A8B92",
+    textDecorationLine: "line-through",
+  },
+  pagination: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 5,
+    marginTop: 15,
+    marginBottom: 20,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#BDCACC",
+  },
+  dotActive: {
+    backgroundColor: "#053844",
+    width: 14,
+  },
+  tryOnButton: {
+    position: "absolute",
+    bottom: -15, // Hangs off the bottom of the card
+    alignSelf: "center",
+    backgroundColor: "#053844",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 25,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 5,
+  },
   tryOnText: {
-    color: "#fff",
-    marginLeft: 6,
+    color: "#FFF",
     fontSize: 14,
     fontWeight: "600",
+    marginLeft: 8,
   },
 });
