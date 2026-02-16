@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { COLORS } from "../constants/theme";
 import { HapticButton } from "./basic components/hapticButton";
 
 interface BottomNavBarProps {
@@ -28,6 +29,8 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab }) => {
     route,
   }) => {
     const isActive = activeTab === label;
+    const iconStyle = isActive ? iconName : iconName + "-outline";
+    console.log(iconName, isActive, iconStyle);
 
     const handlePress = () => {
       router.push(route as any);
@@ -39,14 +42,10 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab }) => {
           <View
             style={[
               styles.centerIconContainer,
-              isActive && { backgroundColor: "#053844" },
+              { backgroundColor: COLORS.primary },
             ]}
           >
-            <Ionicons
-              name={iconName}
-              size={28}
-              color={isActive ? "#fff" : "#999"}
-            />
+            <Ionicons name={iconStyle} size={28} color={"white"} />
           </View>
         </HapticButton>
       );
@@ -54,11 +53,7 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab }) => {
 
     return (
       <HapticButton style={styles.navItem} onPress={handlePress}>
-        <Ionicons
-          name={iconName}
-          size={24}
-          color={isActive ? "#053844" : "#999"}
-        />
+        <Ionicons name={iconStyle} size={24} color={COLORS.primary} />
         <Text style={[styles.label, isActive && styles.activeLabel]}>
           {label}
         </Text>
@@ -68,16 +63,16 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab }) => {
 
   return (
     <View style={styles.navBar}>
-      <NavItem iconName="home-outline" label="Home" route="/home" />
-      <NavItem iconName="grid-outline" label="Categories" route="/categories" />
+      <NavItem iconName="home" label="Home" route="/home" />
+      <NavItem iconName="grid" label="Categories" route="/categories" />
       <NavItem
-        iconName="sparkles-outline"
+        iconName="sparkles"
         label="AiDiscover"
         isCenter
         route="/exploreAi"
       />
-      <NavItem iconName="gift-outline" label="Gifting" route="/gift" />
-      <NavItem iconName="person-outline" label="Profile" route="/profile" />
+      <NavItem iconName="gift" label="Gifting" route="/gift" />
+      <NavItem iconName="person" label="Profile" route="/profile" />
     </View>
   );
 };
@@ -123,12 +118,12 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 12,
-    color: "#999",
+    color: COLORS.primary,
     marginTop: 4,
-    fontWeight: "500",
+    fontWeight: "300",
   },
   activeLabel: {
-    color: "#053844",
+    color: COLORS.primary,
     fontWeight: "600",
   },
 });

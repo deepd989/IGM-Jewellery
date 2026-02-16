@@ -5,7 +5,6 @@ import {
 } from "@/interfaces/category.interface";
 
 import BottomNavBar from "@/components/bottomNavBar";
-import { CartBadge } from "@/components/cart/CardBadge";
 import {
   useGetCategoriesByDepartmentQuery,
   useGetDepartmentsQuery,
@@ -25,7 +24,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../../components/basic components/hapticButton";
+import { CartBadge } from "../../components/cart/CardBadge";
 import { COLORS, SPACING } from "../../constants/theme";
+import { useGetWishlistQuery } from "../../store/apis/wishlist";
 
 const { width } = Dimensions.get("window");
 
@@ -114,6 +115,8 @@ const GridItem = ({
 /* ================= SCREEN ================= */
 
 export default function CategoriesScreen() {
+  const { data: wishlistData } = useGetWishlistQuery();
+  const wishlistCount = wishlistData?.items.length || 0;
   const router = useRouter();
   const [activeDepartmentId, setActiveDepartmentId] = useState("womens");
   const [activeCategoryId, setActiveCategoryId] = useState("");
@@ -161,13 +164,40 @@ export default function CategoriesScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* HEADER */}
+      {/* HEADER WITH CENTERED TITLE */}
       <View style={styles.header}>
-        <HapticButton onPress={() => router.back()}>
+        {/* Left Action */}
+        <HapticButton onPress={() => router.back()} style={styles.headerLeft}>
           <Ionicons name="chevron-back" size={24} />
         </HapticButton>
-        <Text style={styles.headerTitle}>Categories</Text>
-        <CartBadge iconSize={24} iconColor={COLORS.primary} />
+
+        {/* Centered Title Layer */}
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitle}>Categories</Text>
+        </View>
+
+        {/* Right Actions */}
+        <View style={styles.headerRight}>
+          <HapticButton
+            style={styles.iconBtn}
+            onPress={() => router.push("/wishlist")}
+          >
+            <Ionicons
+              name={wishlistCount > 0 ? "heart" : "heart-outline"}
+              size={26}
+              color={wishlistCount > 0 ? COLORS.primary : COLORS.text}
+            />
+            {wishlistCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{wishlistCount}</Text>
+              </View>
+            )}
+          </HapticButton>
+
+          <View style={styles.iconBtn}>
+            <CartBadge iconSize={26} iconColor={COLORS.text} />
+          </View>
+        </View>
       </View>
 
       {/* TOP TABS */}
@@ -250,16 +280,57 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  /* Header */
+  /* Centered Header Styles */
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: SPACING.m,
     paddingVertical: SPACING.s,
+    height: 54, // Fixed height helps with centering alignment
+    position: "relative",
+  },
+  headerTitleContainer: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: -1, // Keep behind buttons to ensure touch events work
   },
   headerTitle: {
     fontSize: 20,
+    fontWeight: "700",
+    color: COLORS.text,
+  },
+  headerLeft: {
+    zIndex: 1,
+  },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    zIndex: 1,
+  },
+  iconBtn: {
+    marginLeft: SPACING.m,
+  },
+  badge: {
+    position: "absolute",
+    top: -2,
+    right: -2,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: "#FFFFFF",
+    fontSize: 10,
     fontWeight: "700",
   },
 
@@ -318,7 +389,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
 
-  /* Sidebar (FIXED SPACING) */
+  /* Sidebar */
   sidebar: {
     width: "32%",
     backgroundColor: "#FFF",

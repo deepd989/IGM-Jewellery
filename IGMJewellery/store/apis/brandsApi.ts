@@ -15,8 +15,8 @@ export interface Brand {
   bwThumbnailUri?: string;
   profileImageUri: string;
   businessNameKey: string; // optional key for internal use
-  businessName: string; // used as unique key
-  tagline: string;
+  businessName: string; // shop_title
+  tagline: string; // privacy
   ratingText: string;
   storeButtonLabel: string;
   aboutSections: BrandAboutSection[];

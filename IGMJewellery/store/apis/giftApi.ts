@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { WRAPPER_API } from "../newApis/apiUrl.const";
 
 export interface GiftCardData {
   id?: number;
@@ -21,7 +22,7 @@ export interface SendGiftRequest {
 
 export const giftApi = createApi({
   reducerPath: "giftApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3000/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: WRAPPER_API + "/" }),
   tagTypes: ["Gifts"],
   endpoints: (builder) => ({
     // 1. Fetch all gifts

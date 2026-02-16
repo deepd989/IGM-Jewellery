@@ -355,7 +355,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
             style={styles.iconBtn}
             onPress={() => router.push("/searchPage")}
           >
-            <Ionicons name="search-outline" size={22} color={COLORS.text} />
+            <Ionicons name="search-outline" size={24} color={COLORS.text} />
           </HapticButton>
 
           <HapticButton
@@ -364,7 +364,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
           >
             <Ionicons
               name={wishlistCount > 0 ? "heart" : "heart-outline"}
-              size={22}
+              size={24}
               color={wishlistCount > 0 ? COLORS.primary : COLORS.text}
             />
             {wishlistCount > 0 && (
@@ -375,7 +375,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
           </HapticButton>
 
           <View style={styles.iconBtn}>
-            <CartBadge iconSize={22} iconColor={COLORS.text} />
+            <CartBadge iconSize={24} iconColor={COLORS.text} />
           </View>
         </View>
       </View>
@@ -753,7 +753,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   iconBtn: {
-    marginLeft: SPACING.s,
+    marginLeft: SPACING.m,
   },
   titleSection: {
     alignItems: "center",

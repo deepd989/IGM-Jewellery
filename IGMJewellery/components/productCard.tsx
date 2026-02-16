@@ -1,6 +1,6 @@
 import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, Image, StyleSheet, Text, View } from "react-native";
@@ -205,7 +205,10 @@ const ProductCard2: React.FC<ProductCardProps> = ({
             });
           }}
         >
-          <Text style={styles.tryNowText}>{label1Text}</Text>
+          <Text style={styles.tryNowText}>
+            <Ionicons name="sparkles" style={{ fontSize: 14 }}></Ionicons>
+            {" " + label1Text}
+          </Text>
         </HapticButton>
         <HapticButton
           style={[styles.button, styles.tryAtHome]}
@@ -309,16 +312,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   tryNow: {
-    borderWidth: 1,
+    borderWidth: 0,
     borderColor: "#053844",
     justifyContent: "center",
     alignItems: "center",
+    padding: 2,
   },
   tryAtHome: {
     backgroundColor: "#053844",
   },
   tryNowText: {
-    fontWeight: "bold",
     textAlign: "center",
   },
   tryAtHomeText: {

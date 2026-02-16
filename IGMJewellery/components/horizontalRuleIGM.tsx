@@ -1,6 +1,7 @@
 // components/HorizontalRule.tsx
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { COLORS } from "../constants/theme";
 
 export default function HorizontalRuleIGM() {
   return (
@@ -15,19 +16,20 @@ export default function HorizontalRuleIGM() {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
+    alignSelf: "center",
     alignItems: "center",
-    width: "100%",
-    marginVertical: 40,
+    width: "50%",
+    marginVertical: 80,
   },
   line: {
     flex: 1,
     height: 1.4,
-    backgroundColor: "#333",
+    backgroundColor: COLORS.primary,
   },
   diamond: {
     width: 10,
     height: 10,
-    backgroundColor: "#333",
+    backgroundColor: COLORS.primary,
     transform: [{ rotate: "45deg" }],
     marginHorizontal: 8,
   },
