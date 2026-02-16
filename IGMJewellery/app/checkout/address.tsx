@@ -1,13 +1,13 @@
 import {
-  useGetCheckoutSessionQuery,
-  useGetSavedAddressesQuery,
-  useInitializeCheckoutMutation,
-  useUpdateBillingAddressMutation,
-  useUpdateDeliveryAddressMutation,
+    useGetCheckoutSessionQuery,
+    useGetSavedAddressesQuery,
+    useInitializeCheckoutMutation,
+    useUpdateBillingAddressMutation,
+    useUpdateDeliveryAddressMutation,
 } from "@/store/apis/checkout";
 import {
-  AddressFormData,
-  addressSchema,
+    AddressFormData,
+    addressSchema,
 } from "@/validation-schema/address-schema";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,14 +15,14 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../../components/basic components/hapticButton";
@@ -32,8 +32,8 @@ import { AddressCard } from "../../components/shared/AddressCard";
 import { AddressFields } from "../../components/shared/AddressFields";
 import { COLORS, SPACING } from "../../constants/theme";
 import {
-  BillingAddress,
-  DeliveryAddress,
+    BillingAddress,
+    DeliveryAddress,
 } from "../../interfaces/address.interface";
 
 export default function AddressScreen() {
@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  headerTitle: { fontSize: 18, fontWeight: "700" },
+  headerTitle: { fontSize: 18, fontWeight: "700", color: COLORS.text },
   scroll: { paddingBottom: 100 },
   section: { padding: 16 },
   addNewRow: {
@@ -392,12 +392,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   addNewRowActive: { borderBottomWidth: 1, borderBottomColor: "#F0F0F0" },
-  sectionTitle: { fontSize: 14, fontWeight: "700" },
+  sectionTitle: { fontSize: 14, fontWeight: "700", color: COLORS.text },
   form: { marginTop: 16 },
   divider: { height: 1, backgroundColor: "#F0F0F0", marginVertical: 24 },
   billingHeader: { marginBottom: 16 },
   checkboxRow: { flexDirection: "row", alignItems: "center", marginTop: 12 },
-  checkboxText: { fontSize: 13, marginLeft: 8, color: "#333" },
+  checkboxText: { fontSize: 13, marginLeft: 8, color: COLORS.text },
   footer: {
     position: "absolute",
     bottom: 0,
@@ -412,11 +412,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingBottom: Platform.OS === "ios" ? 30 : 20,
   },
-  footerPrice: { fontSize: 18, fontWeight: "800" },
+  footerPrice: { fontSize: 18, fontWeight: "800", color: COLORS.text },
   summaryLink: {
     fontSize: 10,
     fontWeight: "700",
     textDecorationLine: "underline",
+    color: COLORS.text,
   },
   btn: {
     backgroundColor: "#053844",

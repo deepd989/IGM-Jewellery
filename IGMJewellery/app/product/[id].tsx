@@ -4,6 +4,7 @@ import { ProductAccordion } from "@/components/products/ProductAccordion";
 import { ProductImageGallery } from "@/components/products/ProductImageGallery";
 import { ProductInfo } from "@/components/products/ProductInfo";
 import { ReviewSection } from "@/components/products/ReviewSection";
+import { TryOnSelectorModal } from "@/components/products/TryOnSelectorModal";
 
 import { CartBadge } from "@/components/cart/CardBadge";
 import { useGetProductByIdQuery } from "@/store/apis/product";
@@ -14,13 +15,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    Alert,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../auth/authContext";
@@ -33,6 +34,7 @@ export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const [isCustomizeVisible, setIsCustomizeVisible] = useState(false);
+  const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
   const { userId, apiUrl, imageGlobal } = useAuth();
   const [firstImageBase64State, setFirstImageBase64State] = useState("");
 
@@ -200,6 +202,7 @@ export default function ProductDetailScreen() {
           <ProductInfo
             product={product}
             onCustomize={() => setIsCustomizeVisible(true)}
+            onTryOn={() => setIsTryOnSelectorVisible(true)}
           />
         </View>
 
@@ -253,6 +256,30 @@ export default function ProductDetailScreen() {
         visible={isCustomizeVisible}
         onClose={() => setIsCustomizeVisible(false)}
         product={product}
+      />
+
+      <TryOnSelectorModal
+        visible={isTryOnSelectorVisible}
+        onClose={() => setIsTryOnSelectorVisible(false)}
+        onSelectVR={() => {
+          router.push({
+            pathname: "/virtualTryOn",
+            params: {
+              productId: product.id,
+              productTitle: product.title,
+              tryOnUrl: (product as any).vrTryOnUrl || "",
+            },
+          });
+        }}
+        onSelectAI={() => {
+          router.push({
+            pathname: "/tryOn",
+            params: {
+              productId: product.id,
+              productTitle: product.title,
+            },
+          });
+        }}
       />
     </SafeAreaView>
   );

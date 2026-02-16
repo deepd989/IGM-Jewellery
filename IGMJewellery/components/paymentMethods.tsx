@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { COLORS } from '../constants/theme';
 
 export default function PaymentMethods() {
   return (
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 13,
-    color: '#333',
+    color: COLORS.text,
     marginBottom: 16,
     fontWeight: '500',
   },
@@ -63,6 +64,6 @@ const styles = StyleSheet.create({
   logoText: {
     fontSize: 9,
     fontWeight: '600',
-    color: '#333',
+    color: COLORS.text,
   },
 });

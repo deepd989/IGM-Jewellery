@@ -62,7 +62,7 @@ export const COLORS = {
   secondary: '#D4AF37', // Gold
   background: '#FFFFFF',
   surface: '#F9F9F9',
-  text: '#1C1C1E',
+  text: '#053844',
   textSecondary: '#8E8E93',
   border: '#E5E5EA',
   error: '#FF3B30',

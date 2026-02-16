@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { SPACING } from "../../constants/theme";
+import { COLORS, SPACING } from "../../constants/theme";
 import { HapticButton } from "../basic components/hapticButton";
 
 interface AddressCardProps {
@@ -64,16 +64,17 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: "700",
+    color: COLORS.text,
   },
   address: {
     fontSize: 13,
-    color: "#333",
+    color: COLORS.text,
     lineHeight: 18,
     marginBottom: 8,
   },
   contact: {
     fontSize: 12,
     fontWeight: "500",
-    color: "#666",
+    color: COLORS.textSecondary,
   },
 });

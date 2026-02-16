@@ -1,8 +1,8 @@
 import { GIFT_WRAPS, RECIPIENT_TAGS } from "@/dummyData/gifting";
 import { useGetCartQuery } from "@/store/apis/cart";
 import {
-  useGetCheckoutSessionQuery,
-  useUpdateGiftingOptionsMutation,
+    useGetCheckoutSessionQuery,
+    useUpdateGiftingOptionsMutation,
 } from "@/store/apis/checkout";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,16 +10,16 @@ import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    ActivityIndicator,
+    Alert,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as z from "zod";
@@ -346,6 +346,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
+    color: COLORS.text,
   },
   scrollContent: {
     paddingBottom: 150,
@@ -471,7 +472,7 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontSize: 12,
-    color: "#444",
+    color: COLORS.textSecondary,
   },
   chipTextActive: {
     fontWeight: "700",
@@ -511,6 +512,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "800",
     marginRight: 8,
+    color: COLORS.text,
   },
   oldPayable: {
     fontSize: 13,

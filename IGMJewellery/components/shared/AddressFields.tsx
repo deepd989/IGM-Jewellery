@@ -165,15 +165,15 @@ const styles = StyleSheet.create({
   container: { gap: 12 },
   row: { flexDirection: 'row', gap: 12 },
   half: { flex: 1 },
-  input: { height: 50, backgroundColor: '#F5F5F5', borderRadius: 4, paddingHorizontal: 12, fontSize: 13 },
+  input: { height: 50, backgroundColor: '#F5F5F5', borderRadius: 4, paddingHorizontal: 12, fontSize: 13, color: '#053844' },
   errorInput: { borderWidth: 1, borderColor: 'red' },
   errorText: { color: 'red', fontSize: 10, marginTop: 2 },
   dropdown: { height: 50, backgroundColor: '#F5F5F5', borderRadius: 4, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 },
   dropLabel: { fontSize: 11, color: '#8E8E93', marginRight: 8 },
-  dropValue: { flex: 1, fontSize: 13, fontWeight: '600' },
-  sectionTitle: { fontSize: 14, fontWeight: '700', marginTop: 16, marginBottom: 8 },
+  dropValue: { flex: 1, fontSize: 13, fontWeight: '600', color: '#053844' },
+  sectionTitle: { fontSize: 14, fontWeight: '700', marginTop: 16, marginBottom: 8, color: '#053844' },
   prefix: { width: 50, height: 50, backgroundColor: '#F5F5F5', borderRadius: 4, justifyContent: 'center', alignItems: 'center' },
   emailBox: { height: 50, backgroundColor: '#F5F5F5', borderRadius: 4, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 },
   emailLabel: { fontSize: 11, color: '#8E8E93', marginRight: 12 },
-  emailInput: { flex: 1, fontSize: 13, fontWeight: '600' }
+  emailInput: { flex: 1, fontSize: 13, fontWeight: '600', color: '#053844' }
 });
