@@ -3,12 +3,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    LayoutAnimation,
-    Platform,
-    StyleSheet,
-    Text,
-    UIManager,
-    View,
+  LayoutAnimation,
+  Platform,
+  StyleSheet,
+  Text,
+  UIManager,
+  View,
 } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
 import { getBrandKey } from "../../utils/brandKeyMap";
@@ -26,6 +26,16 @@ interface AccordionProps {
   product: Product;
 }
 
+// ─── Reusable info table row ───
+const InfoRow = ({ label, value }: { label: string; value: string }) => (
+  <View style={styles.infoRow}>
+    <Text style={styles.infoLabel}>{label}</Text>
+    <View style={styles.infoDivider} />
+    <Text style={styles.infoValue}>{value}</Text>
+  </View>
+);
+
+// ─── Accordion toggle ───
 const AccordionItem = ({
   title,
   children,
@@ -52,7 +62,7 @@ const AccordionItem = ({
 
 export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
   const [openSection, setOpenSection] = useState<string | null>(
-    "PRODUCT DETAIL"
+    "PRODUCT DETAILS"
   );
   const router = useRouter();
 
@@ -67,24 +77,90 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
   };
 
   // Extract product details with fallbacks
-  const details = product.productDetails || {};
-  const metalPurity = details.metalPurity || "N/A";
-  const metalType = details.metalType || "N/A";
-  const netWeight = details.netWeight || "N/A";
-  const grossWeight = details.grossWeight || "N/A";
-  const diamondWeight = details.diamondWeight || "N/A";
-  const diamondInfo = [details.diamondColor, details.diamondClarity]
+  const d = product.productDetails || {};
+
+  // Build metal purity + type label  e.g. "18K White Gold"
+  const metalLabel = [d.metalPurity, d.metalColor, d.metalType]
     .filter(Boolean)
-    .join(" ") || "N/A";
-  const width = details.width ? `${details.width} (Width)` : "N/A (Width)";
-  const height = details.height ? `${details.height} (Height)` : "N/A (Height)";
-  const grossWtDisplay = details.grossWeight
-    ? `${details.grossWeight} (Gross wt)`
-    : "N/A (Gross wt)";
+    .join(" ");
+
+  // Approximate dimension string  e.g. "16.97 × 5.42 mm"
+  const approxDimension =
+    d.height && d.width
+      ? `${parseFloat(d.height)} × ${parseFloat(d.width)} mm`
+      : undefined;
+
+  // ─── Build gemstone rows (only if stoneType exists) ───
+  const hasGemstone = !!d.stoneType;
+  const gemstoneRows: { label: string; value: string }[] = [];
+  if (hasGemstone) {
+    // No. of <shape> <type>
+    const stoneLabel = [d.diamondShape, d.stoneType].filter(Boolean).join(" ");
+    if (d.diamondCount) {
+      gemstoneRows.push({
+        label: `No. of ${stoneLabel || "Stones"}`,
+        value: d.diamondCount,
+      });
+    }
+    if (approxDimension) {
+      gemstoneRows.push({
+        label: "Approximate Dimension",
+        value: approxDimension,
+      });
+    }
+    if (d.diamondWeight) {
+      gemstoneRows.push({
+        label: "Approximate Tot Carat Weight",
+        value: d.diamondWeight,
+      });
+    }
+    if (d.diamondClarity) {
+      gemstoneRows.push({ label: "Quality Grade", value: d.diamondClarity });
+    }
+    if (d.diamondSettingType) {
+      gemstoneRows.push({
+        label: "Setting Type",
+        value: d.diamondSettingType.toUpperCase(),
+      });
+    }
+  }
+
+  // ─── Build diamond rows (only if diamond info present) ───
+  const hasDiamond = !!(d.diamondCount || d.diamondWeight);
+  const diamondRows: { label: string; value: string }[] = [];
+  if (hasDiamond) {
+    const diamondLabel = d.diamondShape
+      ? `${d.diamondShape.toLowerCase()} diamonds`
+      : "diamonds";
+    if (d.diamondCount) {
+      diamondRows.push({
+        label: `No. of ${diamondLabel}`,
+        value: d.diamondCount,
+      });
+    }
+    if (d.diamondWeight) {
+      diamondRows.push({
+        label: "Natural Diamond Tot Weight",
+        value: d.diamondWeight,
+      });
+    }
+    if (d.diamondClarity) {
+      diamondRows.push({ label: "Quality Grade", value: d.diamondClarity });
+    }
+    if (d.diamondColor) {
+      diamondRows.push({ label: "Color Grade", value: d.diamondColor });
+    }
+    if (d.diamondSettingType) {
+      diamondRows.push({
+        label: "Setting Type",
+        value: d.diamondSettingType.toUpperCase(),
+      });
+    }
+  }
 
   return (
     <View style={styles.container}>
-      {/* Visual Menu Bar - purely illustrative based on screenshot */}
+      {/* Visual Menu Bar */}
       <View style={styles.menuBar}>
         <View style={styles.menuItem}>
           <Ionicons
@@ -93,7 +169,7 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
             color={COLORS.primary}
             style={styles.menuIcon}
           />
-          <Text style={styles.menuText}>Product Detail</Text>
+          <Text style={styles.menuText}>Product Details</Text>
           <View style={styles.activeDot} />
         </View>
         <View style={[styles.menuItem, { opacity: 0.3 }]}>
@@ -107,47 +183,84 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
         </View>
       </View>
 
+      {/* ══════════════ PRODUCT DETAILS ══════════════ */}
       <AccordionItem
-        title="PRODUCT DETAIL"
-        isOpen={openSection === "PRODUCT DETAIL"}
-        onToggle={() => toggleSection("PRODUCT DETAIL")}
+        title="PRODUCT DETAILS"
+        isOpen={openSection === "PRODUCT DETAILS"}
+        onToggle={() => toggleSection("PRODUCT DETAILS")}
       >
+        {/* SKU */}
         <Text style={styles.sku}>SKU {product.sku || "N/A"}</Text>
-        <View style={styles.detailGrid}>
-          <View style={styles.detailCol}>
-            <Text style={styles.detailLabel}>MATERIAL</Text>
-            <View style={styles.tagRow}>
-              <Text style={styles.tag}>{metalPurity}</Text>
-              <Text style={styles.tag}>{metalType}</Text>
+
+        {/* Metal summary */}
+        {metalLabel ? (
+          <Text style={styles.metalLine}>
+            Metal Purity: {metalLabel}
+          </Text>
+        ) : null}
+        {d.grossWeight ? (
+          <Text style={styles.metalLine}>
+            Metal Weight: {d.grossWeight}
+          </Text>
+        ) : null}
+
+        {/* Certificate badge */}
+        {d.certOrg ? (
+          <View style={styles.certRow}>
+            <Ionicons
+              name="shield-checkmark"
+              size={18}
+              color={COLORS.primary}
+            />
+            <Text style={styles.certText}>
+              Certificate of Authenticity ({d.certOrg})
+            </Text>
+          </View>
+        ) : null}
+
+        {/* ── GEMSTONE INFORMATION ── */}
+        {hasGemstone && gemstoneRows.length > 0 && (
+          <View style={styles.infoSection}>
+            <View style={styles.infoSectionHeader}>
+              <Text style={styles.infoSectionTitle}>
+                1. GEMSTONE INFORMATION
+              </Text>
+              <Text style={styles.knowMore}>Know More</Text>
             </View>
-            <View style={styles.tagRow}>
-              <Text style={styles.tag}>{netWeight}</Text>
-              <Text style={styles.tag}>{grossWeight}</Text>
-            </View>
-            <View style={styles.tagRow}>
-              <Text style={styles.tag}>{diamondWeight}</Text>
-              <Text style={styles.tag}>{diamondInfo}</Text>
+            <View style={styles.infoTable}>
+              {gemstoneRows.map((row, i) => (
+                <InfoRow key={i} label={row.label} value={row.value} />
+              ))}
             </View>
           </View>
+        )}
 
-          <View style={styles.verticalDivider} />
-
-          <View style={styles.detailCol}>
-            <Text style={styles.detailLabel}>DIMENSIONS</Text>
-            <Text style={styles.tag}>{width}</Text>
-            <Text style={styles.tag}>{height}</Text>
-            <Text style={styles.tag}>{grossWtDisplay}</Text>
+        {/* ── DIAMOND INFORMATION ── */}
+        {hasDiamond && diamondRows.length > 0 && (
+          <View style={styles.infoSection}>
+            <View style={styles.infoSectionHeader}>
+              <Text style={styles.infoSectionTitle}>
+                {hasGemstone ? "2." : "1."} DIAMOND INFORMATION
+              </Text>
+              <Text style={styles.knowMore}>Know More</Text>
+            </View>
+            <View style={styles.infoTable}>
+              {diamondRows.map((row, i) => (
+                <InfoRow key={i} label={row.label} value={row.value} />
+              ))}
+            </View>
           </View>
-        </View>
+        )}
       </AccordionItem>
 
+      {/* ══════════════ DESCRIPTION ══════════════ */}
       <AccordionItem
-        title="PRODUCT DESCRIPTION"
-        isOpen={openSection === "PRODUCT DESCRIPTION"}
-        onToggle={() => toggleSection("PRODUCT DESCRIPTION")}
+        title="DESCRIPTION"
+        isOpen={openSection === "DESCRIPTION"}
+        onToggle={() => toggleSection("DESCRIPTION")}
       >
         <Text style={styles.descriptionTitle}>
-          {product.name}, {product.brand}
+          {product.productType} {product.name}, {product.brand}
         </Text>
         <Text style={styles.descriptionText}>
           {product.description ||
@@ -155,25 +268,32 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
         </Text>
       </AccordionItem>
 
+      {/* ══════════════ PRODUCT STORY ══════════════ */}
       <AccordionItem
-        title="OUR STORY"
-        isOpen={openSection === "OUR STORY"}
-        onToggle={() => toggleSection("OUR STORY")}
+        title="PRODUCT STORY"
+        isOpen={openSection === "PRODUCT STORY"}
+        onToggle={() => toggleSection("PRODUCT STORY")}
       >
         <View style={styles.storyContent}>
+          <Text style={styles.storyDesc}>
+            {product.description ||
+              "Celebrate every day in style with the subtle grace of these drop earrings crafted in 22 Karat Yellow Gold in a leaf design."}
+          </Text>
+
           <View style={styles.storyFeatures}>
-            <Text style={styles.storyText}>
-              100% Certified | 15 Days return | 1 year Warranty
+            <Text style={styles.storyFeaturesText}>
+              100% Certified {"  |  "} 15 Days return {"  |  "} 1 year Warranty
             </Text>
           </View>
+
           <View style={styles.storyBrandBox}>
             <View style={styles.placeholderLogo} />
             <Text style={styles.storyTitle}>
               ABOUT {product.brand.toUpperCase()}
             </Text>
-            <Text style={styles.storyDesc}>
-              Celebrate every day in style with the subtle grace of these drop
-              earrings crafted in 22 Karat Yellow Gold in a leaf design.
+            <Text style={styles.storyDescAlt}>
+              {product.description ||
+                "Celebrate every day in style with the subtle grace of these drop earrings crafted in 22 Karat Yellow Gold in a leaf design."}
             </Text>
             <HapticButton
               style={styles.exploreBtn}
@@ -195,6 +315,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 8,
     borderTopColor: "#F9F9F9",
   },
+
+  // ── Menu Bar ──
   menuBar: {
     flexDirection: "row",
     paddingTop: SPACING.m,
@@ -217,7 +339,7 @@ const styles = StyleSheet.create({
   },
   activeDot: {
     position: "absolute",
-    bottom: -SPACING.s - 1, // To sit on the border
+    bottom: -SPACING.s - 1,
     width: 6,
     height: 6,
     borderRadius: 3,
@@ -228,7 +350,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
 
-  // Accordion Item
+  // ── Accordion general ──
   itemContainer: {
     borderBottomWidth: 1,
     borderBottomColor: "#F0F0F0",
@@ -251,48 +373,86 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.m,
   },
 
-  // Product Detail Content
+  // ── Product Details ──
   sku: {
     fontSize: 12,
     fontWeight: "700",
     color: COLORS.text,
-    marginBottom: SPACING.m,
-  },
-  detailGrid: {
-    flexDirection: "row",
-  },
-  detailCol: {
-    flex: 1,
-  },
-  verticalDivider: {
-    width: 1,
-    backgroundColor: "#F0F0F0",
-    marginHorizontal: SPACING.m,
-  },
-  detailLabel: {
-    fontSize: 11,
-    color: COLORS.textSecondary,
     marginBottom: SPACING.s,
-    letterSpacing: 0.5,
   },
-  tagRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    marginBottom: 8,
-  },
-  tag: {
-    backgroundColor: "#F5F5F5",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-    fontSize: 12,
+  metalLine: {
+    fontSize: 13,
     color: COLORS.text,
-    overflow: "hidden",
-    marginBottom: 8,
+    marginBottom: 4,
+    lineHeight: 20,
+  },
+  certRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: SPACING.s,
+    marginBottom: SPACING.m,
+    gap: 8,
+  },
+  certText: {
+    fontSize: 13,
+    color: COLORS.primary,
+    fontWeight: "500",
+    textDecorationLine: "underline",
   },
 
-  // General Detail Content
+  // ── Info sections (Gemstone / Diamond) ──
+  infoSection: {
+    marginTop: SPACING.m,
+  },
+  infoSectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: SPACING.s,
+  },
+  infoSectionTitle: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: COLORS.text,
+  },
+  knowMore: {
+    fontSize: 13,
+    color: COLORS.primary,
+    textDecorationLine: "underline",
+  },
+  infoTable: {
+    borderTopWidth: 1,
+    borderTopColor: "#F0F0F0",
+  },
+  infoRow: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: "#F0F0F0",
+    minHeight: 44,
+  },
+  infoLabel: {
+    flex: 1,
+    fontSize: 13,
+    color: COLORS.text,
+    fontWeight: "500",
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    backgroundColor: "#FAFAFA",
+  },
+  infoDivider: {
+    width: 1,
+    backgroundColor: "#F0F0F0",
+  },
+  infoValue: {
+    flex: 0.7,
+    fontSize: 13,
+    color: COLORS.text,
+    fontWeight: "600",
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+  },
+
+  // ── Description ──
   descriptionTitle: {
     fontSize: 14,
     fontWeight: "600",
@@ -305,9 +465,15 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 
-  // Story Content
+  // ── Product Story ──
   storyContent: {
     alignItems: "center",
+  },
+  storyDesc: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    lineHeight: 20,
+    marginBottom: SPACING.m,
   },
   storyFeatures: {
     backgroundColor: "#F9F9F9",
@@ -317,9 +483,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: SPACING.m,
   },
-  storyText: {
+  storyFeaturesText: {
     fontSize: 12,
     color: COLORS.textSecondary,
+    fontWeight: "500",
   },
   storyBrandBox: {
     alignItems: "center",
@@ -329,6 +496,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     backgroundColor: "#F5F5F5",
+    borderRadius: 30,
     marginBottom: SPACING.m,
   },
   storyTitle: {
@@ -337,7 +505,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.s,
     textTransform: "uppercase",
   },
-  storyDesc: {
+  storyDescAlt: {
     fontSize: 13,
     color: COLORS.textSecondary,
     textAlign: "center",
