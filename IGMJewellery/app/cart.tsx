@@ -2,12 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    Alert,
+    Platform,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SPACING } from "../constants/theme";
@@ -15,12 +15,12 @@ import { COLORS, SPACING } from "../constants/theme";
 import { TrialTabContent } from "@/components/trial/TrailTabContent";
 import { Product } from "@/interfaces/product.interface";
 import {
-  useGetCartQuery,
-  useMoveToWishlistMutation,
-  useRemoveFromCartMutation,
-  useRemoveFromTrialMutation,
-  useToggleGiftAddonMutation,
-  useUpdateQuantityMutation,
+    useGetCartQuery,
+    useMoveToWishlistMutation,
+    useRemoveFromCartMutation,
+    useRemoveFromTrialMutation,
+    useToggleGiftAddonMutation,
+    useUpdateQuantityMutation,
 } from "@/store/apis/cart";
 import { useInitializeCheckoutMutation } from "@/store/apis/checkout";
 import { HapticButton } from "../components/basic components/hapticButton";
@@ -245,6 +245,7 @@ export default function CartScreen() {
           </Text>
           {isBag && <View style={styles.activeDiamond} />}
         </HapticButton>
+        {/* Home Trial tab hidden for now
         <HapticButton
           style={[styles.tab]}
           onPress={() => setActiveTab("trial")}
@@ -254,6 +255,7 @@ export default function CartScreen() {
           </Text>
           {!isBag && <View style={styles.activeDiamond} />}
         </HapticButton>
+        */}
       </View>
 
       {isBag ? (
@@ -487,6 +489,7 @@ const styles = StyleSheet.create({
   footerPrice: {
     fontSize: 18,
     fontWeight: "800",
+    color: COLORS.text,
   },
   footerLink: {
     fontSize: 11,

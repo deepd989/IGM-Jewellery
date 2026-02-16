@@ -99,14 +99,8 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
             <HapticButton onPress={onClose} style={styles.backBtn}>
               <Ionicons name="chevron-back" size={24} color={COLORS.text} />
             </HapticButton>
-            <View style={styles.headerIcons}>
-              <HapticButton style={styles.iconBtn}>
-                <Ionicons name="heart-outline" size={22} color={COLORS.text} />
-              </HapticButton>
-              <HapticButton style={styles.iconBtn}>
-                <Ionicons name="bag-outline" size={22} color={COLORS.text} />
-              </HapticButton>
-            </View>
+            <Text style={styles.headerTitle}>Configuration</Text>
+            <View style={{ width: 40 }} />
           </View>
 
           <ScrollView
@@ -159,9 +153,11 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
                               {size.measurement}
                             </Text>
                             {size.recommended && (
-                              <Text style={styles.sizeStatus}>
-                                Ready to ship
-                              </Text>
+                              <View style={styles.statusBadge}>
+                                <Text style={styles.statusBadgeText}>
+                                  Ready to ship
+                                </Text>
+                              </View>
                             )}
                           </View>
                         ) : (
@@ -202,7 +198,11 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
                     >
                       <Text style={styles.metalPurity}>{metal.purity}</Text>
                       <Text style={styles.metalLabel}>{metal.label}</Text>
-                      <Text style={styles.metalStatus}>{metal.status}</Text>
+                      <View style={styles.statusBadge}>
+                        <Text style={styles.statusBadgeText}>
+                          {metal.status}
+                        </Text>
+                      </View>
                     </HapticButton>
                   );
                 })}
@@ -294,18 +294,27 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  headerIcons: {
-    flexDirection: "row",
-    gap: SPACING.m,
-  },
-  iconBtn: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: COLORS.text,
   },
   scrollContent: {
     paddingBottom: 100,
+  },
+
+  // Status badge (shared by size & metal sections)
+  statusBadge: {
+    backgroundColor: COLORS.primaryLight,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 4,
+    marginTop: 4,
+  },
+  statusBadgeText: {
+    fontSize: 10,
+    color: COLORS.primary,
+    fontWeight: "600",
   },
 
   // Size Section
@@ -425,11 +434,6 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     marginBottom: 2,
   },
-  sizeStatus: {
-    fontSize: 11,
-    color: COLORS.text,
-    fontWeight: "500",
-  },
 
   // Metal Color Section
   section: {
@@ -463,10 +467,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: COLORS.textSecondary,
     marginBottom: SPACING.xs,
-  },
-  metalStatus: {
-    fontSize: 10,
-    color: COLORS.textSecondary,
   },
 
   // Purity Section

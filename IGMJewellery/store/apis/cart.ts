@@ -22,6 +22,7 @@ export interface GiftAddon {
   title: string;
   price: number;
   isChecked: boolean;
+  image?: string;
 }
 
 interface CartState {
@@ -39,10 +40,10 @@ interface CartState {
 
 // Default gift addons (not user-specific, same for everyone)
 const DEFAULT_GIFT_ADDONS: GiftAddon[] = [
-  { id: "1", title: "Write a Note (Card)", price: 100, isChecked: false },
-  { id: "2", title: "Premium Gift Wrap", price: 100, isChecked: false },
-  { id: "3", title: "Record a message", price: 100, isChecked: false },
-  { id: "4", title: "Deluxe Gift Box", price: 150, isChecked: false },
+  { id: "1", title: "Write a Note (Card)", price: 100, isChecked: false, image: "https://images.unsplash.com/photo-1579751626657-72bc17010498?q=80&w=200" },
+  { id: "2", title: "Premium Gift Wrap", price: 100, isChecked: false, image: "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=200" },
+  { id: "3", title: "Record a message", price: 100, isChecked: false, image: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?q=80&w=200" },
+  { id: "4", title: "Deluxe Gift Box", price: 150, isChecked: false, image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=200" },
 ];
 
 const DEFAULT_FREEBIE = {

@@ -59,11 +59,11 @@ const ReviewItem = ({ item }: { item: (typeof MOCK_REVIEWS)[0] }) => (
     </View>
 
     {/* Placeholder for uploaded photos */}
-    <View style={styles.photoRow}>
+    {/* <View style={styles.photoRow}>
       {[1, 2, 3, 4].map((i) => (
         <View key={i} style={styles.photoPlaceholder} />
       ))}
-    </View>
+    </View> */}
   </View>
 );
 
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
 
   summaryBanner: {
-    backgroundColor: "#111",
+    backgroundColor: COLORS.primary,
     padding: SPACING.m,
     borderRadius: 8,
     alignItems: "center",

@@ -243,6 +243,12 @@ function extractProductDetails(product: MagentoProduct): ProductDetails {
     details.metalFinish = metalFinish;
   }
 
+  // Metal color (e.g. "Yellow", "White", "Rose")
+  const metalColor = getCustomAttribute(product, "metal_color");
+  if (metalColor && typeof metalColor === "string") {
+    details.metalColor = metalColor;
+  }
+
   // Net weight
   const netWeight = getCustomAttribute(product, "net_weight");
   if (netWeight && typeof netWeight === "string") {
@@ -261,8 +267,10 @@ function extractProductDetails(product: MagentoProduct): ProductDetails {
     }
   }
 
-  // Dimensions - use ring_height_mm, ring_width_mm, ring_depth_mm
-  const height = getCustomAttribute(product, "ring_height_mm");
+  // Dimensions - try ring dimensions first, then earring dimensions
+  const ringHeight = getCustomAttribute(product, "ring_height_mm");
+  const earringHeight = getCustomAttribute(product, "earring_height_mm");
+  const height = ringHeight || earringHeight;
   if (height && typeof height === "string") {
     const numVal = parseFloat(height);
     if (!isNaN(numVal) && numVal > 0) {
@@ -270,7 +278,9 @@ function extractProductDetails(product: MagentoProduct): ProductDetails {
     }
   }
 
-  const width = getCustomAttribute(product, "ring_width_mm");
+  const ringWidth = getCustomAttribute(product, "ring_width_mm");
+  const earringWidth = getCustomAttribute(product, "earring_width_mm");
+  const width = ringWidth || earringWidth;
   if (width && typeof width === "string") {
     const numVal = parseFloat(width);
     if (!isNaN(numVal) && numVal > 0) {
@@ -286,12 +296,12 @@ function extractProductDetails(product: MagentoProduct): ProductDetails {
     }
   }
 
-  // Diamond weight (already a numeric string like "0.9")
+  // Diamond weight (already a numeric string like "0.512")
   const diamondWeight = getCustomAttribute(product, "d1_wt");
   if (diamondWeight && typeof diamondWeight === "string") {
     const numVal = parseFloat(diamondWeight);
     if (!isNaN(numVal) && numVal > 0) {
-      details.diamondWeight = `${numVal.toFixed(3)} C`;
+      details.diamondWeight = `${numVal.toFixed(3)} ct`;
     }
   }
 
@@ -301,10 +311,34 @@ function extractProductDetails(product: MagentoProduct): ProductDetails {
     details.diamondClarity = d1Clarity;
   }
 
-  // Diamond color (already resolved, e.g. "G - H")
+  // Diamond color (already resolved, e.g. "F - G")
   const d1Color = getCustomAttribute(product, "d1_colour");
   if (d1Color && typeof d1Color === "string") {
     details.diamondColor = d1Color;
+  }
+
+  // Diamond count (e.g. "64")
+  const d1Number = getCustomAttribute(product, "d1_number");
+  if (d1Number) {
+    details.diamondCount = String(d1Number);
+  }
+
+  // Diamond shape (e.g. "Round")
+  const d1Shape = getCustomAttribute(product, "d1_shape");
+  if (d1Shape && typeof d1Shape === "string") {
+    details.diamondShape = d1Shape;
+  }
+
+  // Diamond type (e.g. "Accent Stones")
+  const d1Type = getCustomAttribute(product, "d1_type");
+  if (d1Type && typeof d1Type === "string") {
+    details.diamondType = d1Type;
+  }
+
+  // Diamond setting type (e.g. "Prong")
+  const d1SettingType = getCustomAttribute(product, "d1_setting_type");
+  if (d1SettingType && typeof d1SettingType === "string") {
+    details.diamondSettingType = d1SettingType;
   }
 
   // Stone type — try s_type first, fall back to stone_type
@@ -316,6 +350,12 @@ function extractProductDetails(product: MagentoProduct): ProductDetails {
     if (stoneType && typeof stoneType === "string") {
       details.stoneType = stoneType;
     }
+  }
+
+  // Certification org (e.g. "GIA", "IGI")
+  const certOrg = getCustomAttribute(product, "cert_org");
+  if (certOrg && typeof certOrg === "string") {
+    details.certOrg = certOrg;
   }
 
   return details;

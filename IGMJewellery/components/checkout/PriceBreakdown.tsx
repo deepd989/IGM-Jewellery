@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 13,
     fontWeight: '500',
+    color: '#053844',
   },
   freeText: {
     fontSize: 13,
@@ -89,5 +90,6 @@ const styles = StyleSheet.create({
   totalValue: {
     fontSize: 16,
     fontWeight: '800',
+    color: '#053844',
   },
 });

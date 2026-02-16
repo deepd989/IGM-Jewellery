@@ -2,6 +2,7 @@ import { CartItem } from '@/interfaces/order-details.interface';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
+import { COLORS } from '../../constants/theme';
 
 
 interface OrderItemCardProps {
@@ -69,6 +70,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
     marginBottom: 2,
+    color: COLORS.text,
   },
   specs: {
     fontSize: 11,
@@ -88,6 +90,7 @@ const styles = StyleSheet.create({
   deliveryText: {
     fontSize: 9,
     marginLeft: 4,
+    color: COLORS.text,
   },
   priceRow: {
     flexDirection: 'row',
@@ -102,5 +105,6 @@ const styles = StyleSheet.create({
   newPrice: {
     fontSize: 13,
     fontWeight: '700',
+    color: COLORS.text,
   },
 });
