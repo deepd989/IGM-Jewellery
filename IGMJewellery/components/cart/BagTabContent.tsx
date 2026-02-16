@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
 import { CartItem } from "./CartItem";
 import { OrderSummary } from "./OrderSummary";
@@ -113,6 +113,13 @@ export const BagTabContent: React.FC<BagTabContentProps> = ({
             onPress={() => toggleGiftAddon(item.id)}
           >
             <View style={styles.giftImagePlaceholder}>
+              {item.image && (
+                <Image
+                  source={{ uri: item.image }}
+                  style={styles.giftImage}
+                  resizeMode="cover"
+                />
+              )}
               <View
                 style={[
                   styles.checkCircle,
@@ -173,13 +180,14 @@ const styles = StyleSheet.create({
   },
   freebieInfo: { flex: 1 },
   freebieTag: { fontSize: 11, color: COLORS.textSecondary },
-  freebieTitle: { fontSize: 15, fontWeight: "700" },
+  freebieTitle: { fontSize: 15, fontWeight: "700", color: COLORS.text },
   freebieSubtitle: { fontSize: 11, color: COLORS.textSecondary },
   sectionHeader: {
     fontSize: 14,
     fontWeight: "700",
     marginTop: SPACING.l,
     marginBottom: SPACING.m,
+    color: COLORS.text,
   },
   couponRow: {
     flexDirection: "row",
@@ -199,14 +207,15 @@ const styles = StyleSheet.create({
     marginRight: SPACING.m,
   },
   couponTextCol: { flex: 1 },
-  couponTitle: { fontSize: 15, fontWeight: "700" },
+  couponTitle: { fontSize: 15, fontWeight: "700", color: COLORS.text },
   couponSubtitle: { fontSize: 12, color: COLORS.textSecondary },
   giftScroll: { flexDirection: "row", marginBottom: SPACING.m },
   giftCard: { width: 100, marginRight: 12 },
   giftImagePlaceholder: {
     width: 100,
     height: 100,
-    backgroundColor: "#F9F9F9",
+    backgroundColor: "#F5F5F5",
+    overflow: "hidden",
     borderRadius: 8,
     marginBottom: 8,
     position: "relative",
@@ -226,5 +235,10 @@ const styles = StyleSheet.create({
   },
   checkCircleActive: { backgroundColor: "#053844", borderColor: "#053844" },
   giftTitle: { fontSize: 11, color: COLORS.textSecondary, marginBottom: 4 },
-  giftPrice: { fontSize: 13, fontWeight: "700" },
+  giftImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 8,
+  },
+  giftPrice: { fontSize: 13, fontWeight: "700", color: COLORS.text },
 });

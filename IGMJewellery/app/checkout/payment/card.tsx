@@ -1,8 +1,8 @@
 import { useClearCartMutation, useGetCartQuery } from "@/store/apis/cart";
 import {
-  useClearCheckoutSessionMutation,
-  useCreateOrderMutation,
-  useGetCheckoutSessionQuery,
+    useClearCheckoutSessionMutation,
+    useCreateOrderMutation,
+    useGetCheckoutSessionQuery,
 } from "@/store/apis/checkout";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,15 +10,15 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as z from "zod";
@@ -384,6 +384,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
+    color: COLORS.text,
   },
   summaryStub: {
     flexDirection: "row",
@@ -395,9 +396,11 @@ const styles = StyleSheet.create({
   stubText: {
     fontSize: 14,
     fontWeight: "600",
+    color: COLORS.text,
   },
   stubValue: {
     fontSize: 14,
+    color: COLORS.text,
   },
   formSection: {
     padding: 16,
@@ -406,6 +409,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "700",
     marginBottom: 16,
+    color: COLORS.text,
   },
   input: {
     height: 54,
@@ -414,6 +418,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     fontSize: 14,
     marginBottom: 8,
+    color: COLORS.text,
   },
   inputError: {
     borderWidth: 1,
@@ -431,6 +436,7 @@ const styles = StyleSheet.create({
   checkboxText: {
     fontSize: 14,
     marginLeft: 8,
+    color: COLORS.text,
   },
   submitBtn: {
     backgroundColor: "#053844",

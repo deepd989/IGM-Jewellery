@@ -63,8 +63,7 @@ const CATEGORY_ICON_MAP: Record<string, string> = {
   diamond: "diamond-outline",
 };
 
-const BANNER_IMAGE_URI =
-  "https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=800";
+const BANNER_IMAGE = require("@/assets/images/product_list_banner.png");
 
 export default function ListingScreen({ filters }: ListingScreenProps) {
   const router = useRouter();
@@ -401,7 +400,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
 
       {/* Banner & Category Icon */}
       <ImageBackground
-        source={{ uri: BANNER_IMAGE_URI }}
+        source={BANNER_IMAGE}
         style={styles.bannerBackground}
         imageStyle={styles.bannerImage}
       >

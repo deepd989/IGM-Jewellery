@@ -1,19 +1,19 @@
 import { PriceBreakdown } from "@/components/checkout/PriceBreakdown";
 import { useGetCartQuery } from "@/store/apis/cart";
 import {
-  useGetCheckoutSessionQuery,
-  useUpdatePaymentMethodMutation,
+    useGetCheckoutSessionQuery,
+    useUpdatePaymentMethodMutation,
 } from "@/store/apis/checkout";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    Alert,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../../components/basic components/hapticButton";
@@ -339,6 +339,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
+    color: COLORS.text,
   },
   scrollContent: {
     paddingBottom: 100,
@@ -350,6 +351,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "700",
     marginBottom: SPACING.m,
+    color: COLORS.text,
   },
   payOnlinePrimary: {
     flexDirection: "row",
@@ -392,6 +394,7 @@ const styles = StyleSheet.create({
   methodTitle: {
     fontSize: 14,
     fontWeight: "600",
+    color: COLORS.text,
   },
   methodSubtitle: {
     fontSize: 12,
@@ -431,6 +434,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "700",
     marginBottom: 12,
+    color: COLORS.text,
   },
   footer: {
     padding: SPACING.m,
