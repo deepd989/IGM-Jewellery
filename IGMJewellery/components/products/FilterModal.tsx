@@ -1,14 +1,15 @@
 import { FILTER_CATEGORIES } from "@/dummyData/filters";
+import { BACKEND_BASE_URL } from "@/store/newApis/apiUrl.const";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  Dimensions,
-  FlatList,
-  Modal,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
+    Dimensions,
+    FlatList,
+    Modal,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
 import { HapticButton } from "../basic components/hapticButton";
@@ -31,6 +32,41 @@ export const FilterModal: React.FC<FilterModalProps> = ({
   const [activeCategoryId, setActiveCategoryId] = useState("productType");
   const [selections, setSelections] =
     useState<Record<string, string[]>>(initialFilters);
+  const [brandOptions, setBrandOptions] = useState<
+    { id: string; label: string }[]
+  >([]);
+
+  // Fetch brands from API
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const response = await fetch(`${BACKEND_BASE_URL}/getSellers`);
+        if (response.ok) {
+          const sellers = await response.json();
+          const options = sellers.map(
+            (s: { brandid: string; brandName: string }) => ({
+              id: s.brandName,
+              label: s.brandName,
+            })
+          );
+          setBrandOptions(options);
+        }
+      } catch (error) {
+        console.error("Error fetching brands:", error);
+      }
+    };
+    fetchBrands();
+  }, []);
+
+  // Merge dynamic brand options into filter categories
+  const filterCategories = useMemo(() => {
+    return FILTER_CATEGORIES.map((cat) => {
+      if (cat.id === "brand" && brandOptions.length > 0) {
+        return { ...cat, options: brandOptions };
+      }
+      return cat;
+    });
+  }, [brandOptions]);
 
   // Update selections when modal opens with new initial filters
   useEffect(() => {
@@ -40,8 +76,8 @@ export const FilterModal: React.FC<FilterModalProps> = ({
   }, [visible, initialFilters]);
 
   const activeCategory =
-    FILTER_CATEGORIES.find((c) => c.id === activeCategoryId) ||
-    FILTER_CATEGORIES[0];
+    filterCategories.find((c) => c.id === activeCategoryId) ||
+    filterCategories[0];
 
   const toggleSelection = (categoryId: string, optionId: string) => {
     setSelections((prev) => {
@@ -193,7 +229,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({
           {/* Sidebar */}
           <View style={styles.sidebar}>
             <FlatList
-              data={FILTER_CATEGORIES}
+              data={filterCategories}
               keyExtractor={(item) => item.id}
               renderItem={renderSidebarItem}
               showsVerticalScrollIndicator={false}

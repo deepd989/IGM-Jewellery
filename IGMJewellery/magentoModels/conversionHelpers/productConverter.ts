@@ -48,8 +48,12 @@ const OCCASION_MAP: Record<string, OccasiomEnum> = {
   wedding: OccasiomEnum.Wedding,
   graduation: OccasiomEnum.Graduation,
   diwali: OccasiomEnum.Diwali,
+  dhanteras: OccasiomEnum.Diwali,
   festive: OccasiomEnum.Diwali,
   festival: OccasiomEnum.Diwali,
+  "daily wear": OccasiomEnum.DailyWear,
+  "office wear": OccasiomEnum.DailyWear,
+  "party wear": OccasiomEnum.PartyWear,
 };
 
 // Map user_type values to Gender enum
@@ -116,9 +120,7 @@ function parseProductType(product: MagentoProduct): ProductType {
  * Parse brand from sellerId (passed from the API response wrapper)
  */
 function parseBrandFromSellerId(sellerId: string): Brand {
-  const brand = sellerId;
-  if (brand) return brand;
-  return Brand.Tanishq; // Default brand
+  return sellerId || "Unknown";
 }
 
 /**
@@ -305,10 +307,15 @@ function extractProductDetails(product: MagentoProduct): ProductDetails {
     details.diamondColor = d1Color;
   }
 
-  // Stone type (already resolved, e.g. "Natural Diamond")
+  // Stone type — try s_type first, fall back to stone_type
   const sType = getCustomAttribute(product, "s_type");
   if (sType && typeof sType === "string") {
     details.stoneType = sType;
+  } else {
+    const stoneType = getCustomAttribute(product, "stone_type");
+    if (stoneType && typeof stoneType === "string") {
+      details.stoneType = stoneType;
+    }
   }
 
   return details;
@@ -325,7 +332,8 @@ function isNewProduct(product: MagentoProduct): boolean {
 }
 
 /**
- * Compute discounted price from price, discount, and additional_discount
+ * Compute discounted price from price, discount, and additional_discount.
+ * Both discount and additional_discount are absolute amounts (e.g. 250 = ₹250 off).
  */
 function computeDiscountedPrice(product: MagentoProduct): number {
   const price = product.price;
@@ -344,7 +352,8 @@ function computeDiscountedPrice(product: MagentoProduct): number {
 }
 
 /**
- * Get product rating from p_ratings attribute
+ * Get product rating from p_ratings attribute.
+ * Uses a deterministic hash-based fallback so sorting works consistently.
  */
 function getRating(product: MagentoProduct): number {
   const pRatings = getCustomAttribute(product, "p_ratings");
@@ -352,8 +361,13 @@ function getRating(product: MagentoProduct): number {
     const parsed = parseFloat(String(pRatings));
     if (!isNaN(parsed) && parsed > 0) return parsed;
   }
-  // Fallback: random rating between 4.0-5.0
-  return 4.0 + Math.random() * 1.0;
+  // Deterministic fallback based on product ID (stable across renders)
+  const id = String(product.id);
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash * 31 + id.charCodeAt(i)) | 0;
+  }
+  return 4.0 + (Math.abs(hash) % 100) / 100; // 4.00 – 4.99
 }
 
 /**

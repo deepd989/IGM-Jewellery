@@ -14,7 +14,6 @@ interface SortModalProps {
 const SORT_OPTIONS = [
   "Latest",
   "Discount",
-  "Featured",
   "Price: Low to high",
   "Price: High to low",
   "Customer Rating",
