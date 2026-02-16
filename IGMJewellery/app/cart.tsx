@@ -245,6 +245,7 @@ export default function CartScreen() {
           </Text>
           {isBag && <View style={styles.activeDiamond} />}
         </HapticButton>
+        {/* Home Trial tab hidden for now
         <HapticButton
           style={[styles.tab]}
           onPress={() => setActiveTab("trial")}
@@ -254,6 +255,7 @@ export default function CartScreen() {
           </Text>
           {!isBag && <View style={styles.activeDiamond} />}
         </HapticButton>
+        */}
       </View>
 
       {isBag ? (
