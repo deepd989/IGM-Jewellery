@@ -9,6 +9,7 @@ import { HapticButton } from "../basic components/hapticButton";
 interface ProductInfoProps {
   product: Product;
   onCustomize?: () => void;
+  onTryOn?: () => void;
 }
 
 const SPEC_CHIPS = [
@@ -23,6 +24,7 @@ const SPEC_CHIPS = [
 export const ProductInfo: React.FC<ProductInfoProps> = ({
   product,
   onCustomize,
+  onTryOn,
 }) => {
   return (
     <View style={styles.container}>
@@ -77,7 +79,7 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
 
       {/* Action Buttons Row 1 - Visualization & Config */}
       <View style={styles.actionsRow}>
-        <HapticButton style={styles.actionBtn}>
+        <HapticButton style={styles.actionBtn} onPress={onTryOn}>
           <Text style={styles.actionBtnText}>Try On</Text>
           <Ionicons name="chevron-down" size={16} color={COLORS.text} />
         </HapticButton>
