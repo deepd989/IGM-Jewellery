@@ -1,6 +1,5 @@
 import BespokeSection from "@/components/bespokeSection";
 import BottomNavBar from "@/components/bottomNavBar";
-import BrandGridTileView from "@/components/brandGrid";
 import CommunityCarousel from "@/components/communityCarousel";
 import EventCard from "@/components/eventCard";
 import GiftFinder from "@/components/giftFinder";
@@ -227,10 +226,10 @@ export default function HomeScreen() {
         <HorizontalRuleIGM />
         <EventCard />
         <TrustBar />
-        <BrandGridTileView />
+        {/* <BrandGridTileView /> */}
         {/* <HorizontalRuleIGM /> */}
         {/* <HashtagComponent /> */}
-        <HorizontalRuleIGM />
+        {/* <HorizontalRuleIGM /> */}
         <View style={styles.contactSection}>
           <Text style={styles.contactTitle}>
             For any queries, feel free to contact us:

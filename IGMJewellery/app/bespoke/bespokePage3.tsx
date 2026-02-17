@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { HapticButton } from "../../components/basic components/hapticButton";
+import { COLORS } from "../../constants/theme";
 
 const BespokePage3 = ({ nextStepFn }: { nextStepFn: () => void }) => {
   const [description, setDescription] = useState("");
@@ -120,12 +121,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     textAlign: "center",
-    color: "#1A1A1A",
+    color: COLORS.primary,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 14,
-    color: "#666",
+    color: COLORS.primary,
     textAlign: "center",
     paddingHorizontal: 20,
     lineHeight: 20,
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#053844",
     borderRadius: 12,
-    backgroundColor: "#F9F9F9",
+    backgroundColor: COLORS.primaryLight,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 40,
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
   uploadText: {
     marginTop: 10,
     fontSize: 16,
-    color: "#666",
+    color: COLORS.primary,
   },
   form: {
     gap: 20,
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     marginBottom: 10,
-    color: "#1A1A1A",
+    color: COLORS.primary,
   },
   input: {
     borderWidth: 1,
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: Platform.OS === "ios" ? 12 : 8,
     fontSize: 14,
-    color: "#053844",
+    color: COLORS.primary,
   },
   textArea: {
     height: 50,

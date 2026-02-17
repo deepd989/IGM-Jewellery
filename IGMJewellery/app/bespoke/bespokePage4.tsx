@@ -9,7 +9,9 @@ import {
 } from "lucide-react-native";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../../components/basic components/hapticButton";
+import { COLORS } from "../../constants/theme";
 
 const BespokePage4 = () => {
   const router = useRouter();
@@ -17,31 +19,31 @@ const BespokePage4 = () => {
 
   const steps = [
     {
-      icon: <Home size={24} color="#333" />,
+      icon: <Home size={24} color={COLORS.primary} />,
       title: "We will assign a Designer",
       description: "Select you convenient date, time, and place",
     },
     {
-      icon: <UserCircle2 size={24} color="#333" />,
+      icon: <UserCircle2 size={24} color={COLORS.primary} />,
       title: "Get on a call to discuss",
       description: "Our consultant will get you your chosen designs",
     },
     {
-      icon: <ShoppingBag size={24} color="#333" />,
+      icon: <ShoppingBag size={24} color={COLORS.primary} />,
       title: "Complete the partial payment",
       description: "Our consultant will get you your chosen designs",
     },
   ];
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header Section */}
         <View style={styles.header}>
           <View style={styles.iconContainer}>
-            <Diamond size={60} color="black" strokeWidth={1.5} />
+            <Diamond size={60} color={COLORS.primary} strokeWidth={1.5} />
             <View style={styles.checkBadge}>
-              <CheckCircle2 size={24} color="black" fill="white" />
+              <CheckCircle2 size={24} color={COLORS.primary} fill="white" />
             </View>
           </View>
           <Text style={styles.title}>Received your Request</Text>
@@ -94,7 +96,7 @@ const BespokePage4 = () => {
           <Text style={styles.continueButtonText}>Continue Shopping</Text>
         </HapticButton>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -127,12 +129,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#333",
+    color: COLORS.primary,
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 14,
-    color: "#666",
+    color: COLORS.primary,
     textAlign: "center",
     lineHeight: 20,
   },
@@ -149,13 +151,13 @@ const styles = StyleSheet.create({
   },
   requestIdText: {
     fontSize: 16,
-    color: "#333",
+    color: COLORS.primary,
     fontWeight: "500",
   },
   expectTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#333",
+    color: COLORS.primary,
     marginBottom: 30,
   },
   timelineContainer: {
@@ -186,7 +188,7 @@ const styles = StyleSheet.create({
   line: {
     width: 1.5,
     height: "100%",
-    backgroundColor: "#333",
+    backgroundColor: COLORS.primary,
   },
   diamondConnector: {
     width: 8,
@@ -194,7 +196,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: "#333",
     transform: [{ rotate: "45deg" }],
-    backgroundColor: "white",
+    backgroundColor: COLORS.primary,
     position: "absolute",
     zIndex: 3,
   },
@@ -206,12 +208,12 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#444",
+    color: COLORS.primary,
     marginBottom: 4,
   },
   stepDescription: {
     fontSize: 13,
-    color: "#777",
+    color: COLORS.primary,
     lineHeight: 18,
   },
   footer: {
@@ -232,11 +234,11 @@ const styles = StyleSheet.create({
   statusButtonText: {
     fontSize: 15,
     fontWeight: "500",
-    color: "#333",
+    color: COLORS.primary,
   },
   continueButton: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: COLORS.primary,
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: "center",

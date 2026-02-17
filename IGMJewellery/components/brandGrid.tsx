@@ -1,6 +1,13 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Dimensions, Image, Pressable, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
 import caratlaneLogo from "../assets/images/bwBrandlogo/caratlanelogo.png";
 import kjlogo from "../assets/images/bwBrandlogo/kjlogo1.png";
 import malabarLogo from "../assets/images/bwBrandlogo/mbrandlogo.png";
@@ -8,6 +15,7 @@ import pcjLogo from "../assets/images/bwBrandlogo/pcjlogo.png";
 import tanishqLogo from "../assets/images/bwBrandlogo/Tanishq_Logo.png";
 import tbzLogo from "../assets/images/bwBrandlogo/tbzlogo.png";
 import { COLORS } from "../constants/theme";
+import { useGetBrandsQuery } from "../store/apis/brandsApi";
 import { SectionHeader } from "./section";
 
 const W = Dimensions.get("window").width;
@@ -15,6 +23,7 @@ const GAP = 12;
 
 export default function BrandGridTileView() {
   const [selected, setSelected] = useState("");
+  const { data: brandsData, isLoading } = useGetBrandsQuery({});
   const router = useRouter();
 
   const Tile = ({
@@ -52,6 +61,13 @@ export default function BrandGridTileView() {
     </Pressable>
   );
 
+  if (!brandsData)
+    return (
+      <>
+        <ActivityIndicator size="small"></ActivityIndicator>
+      </>
+    );
+
   return (
     <View>
       <SectionHeader value="One-Shop-Stop For All Brands" />
@@ -62,8 +78,8 @@ export default function BrandGridTileView() {
             id="large1"
             w={W * 0.58}
             h={W * 0.38}
-            src={tanishqLogo}
-            brandSlug="tanishq"
+            src={brandsData[0].}
+            brandSlug={brandsData[0].businessNameKey}
           />
 
           <View style={{ justifyContent: "space-between" }}>
