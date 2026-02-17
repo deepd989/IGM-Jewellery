@@ -1,14 +1,15 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
   Dimensions,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { COLORS } from "../constants/theme";
 import RibbonGiftCard from "./gifting/ribbonGiftCard";
-import { useRouter } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -37,6 +38,7 @@ export default function GiftingCard({showExploreButton=false,showHeader=false,am
           position: "absolute",
           right: 0,
           bottom: 126,
+          color: COLORS.text,
         }}> ₹ {amount.toLocaleString('en-IN')}</Text>
         }
 
@@ -47,7 +49,9 @@ export default function GiftingCard({showExploreButton=false,showHeader=false,am
           position: "absolute",
           right: -10,
           bottom: 176,
-          marginRight: 10}}>{description}</Text>
+          marginRight: 10,
+          color: COLORS.text,
+        }}>{description}</Text>
         }
 
         {/* CTA Button */}
@@ -83,14 +87,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "700",
     textAlign: "center",
-    color: "#111",
+    color: COLORS.text,
   },
 
   subtitle: {
     marginTop: 6,
     fontSize: 14,
     textAlign: "center",
-    color: "#777",
+    color: COLORS.textSecondary,
   },
 
   card: {
@@ -145,7 +149,7 @@ const styles = StyleSheet.create({
     bottom: 36,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#111",
+    backgroundColor: COLORS.primary,
     borderRadius: 999,
     paddingVertical: 10,
     paddingLeft: 18,

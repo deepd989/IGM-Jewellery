@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../../components/basic components/hapticButton";
+import { COLORS } from "../../constants/theme";
 
 const CATEGORIES = ["Payment", "Brands", "Orders", "Try At Home", "Ai Sonar"];
 
@@ -70,11 +71,11 @@ export default function PrivacyPoliciesScreen() {
           </Text>
           <View style={styles.contactRow}>
             <HapticButton style={styles.contactBtn}>
-              <Ionicons name="call-outline" size={20} />
+              <Ionicons name="call-outline" size={20} color="#053844" />
               <Text style={styles.contactBtnText}>Call Us</Text>
             </HapticButton>
             <HapticButton style={styles.contactBtn}>
-              <Ionicons name="chatbubble-outline" size={20} />
+              <Ionicons name="chatbubble-outline" size={20} color="#053844" />
               <Text style={styles.contactBtnText}>Chat With Us</Text>
             </HapticButton>
           </View>
@@ -101,21 +102,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  headerTitle: { fontSize: 18, fontWeight: "700" },
+  headerTitle: { fontSize: 18, fontWeight: "700", color: COLORS.text },
   helpBadge: { flexDirection: "row", alignItems: "center" },
-  helpText: { fontSize: 13, marginRight: 8 },
+  helpText: { fontSize: 13, marginRight: 8, color: COLORS.text },
   tabContainer: { borderBottomWidth: 1, borderBottomColor: "#F0F0F0" },
   tab: { paddingHorizontal: 16, paddingVertical: 12, marginRight: 8 },
   activeTab: { borderBottomWidth: 2, borderBottomColor: "#053844" },
   tabText: { color: "#888", fontWeight: "600" },
   activeTabText: { color: "#053844" },
   scroll: { padding: 16, paddingBottom: 100 },
-  introTitle: { fontSize: 15, fontWeight: "700", marginBottom: 20 },
+  introTitle: { fontSize: 15, fontWeight: "700", marginBottom: 20, color: COLORS.text },
   content: { gap: 16 },
-  bodyText: { fontSize: 13, color: "#888", lineHeight: 22 },
+  bodyText: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 22 },
   loading: { textAlign: "center", marginTop: 40 },
   contactSection: { marginTop: 60, alignItems: "center" },
-  contactTitle: { fontSize: 13, color: "#333", marginBottom: 20 },
+  contactTitle: { fontSize: 13, color: COLORS.textSecondary, marginBottom: 20 },
   contactRow: { flexDirection: "row", gap: 12 },
   contactBtn: {
     flex: 1,
@@ -128,5 +129,5 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     minWidth: 150,
   },
-  contactBtnText: { marginLeft: 8, fontWeight: "600" },
+  contactBtnText: { marginLeft: 8, fontWeight: "600", color: COLORS.text },
 });

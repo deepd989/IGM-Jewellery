@@ -7,6 +7,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { HapticButton } from "../../components/basic components/hapticButton";
+import { COLORS } from "../../constants/theme";
 
 export default function LanguageCurrencyScreen() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function LanguageCurrencyScreen() {
         <Text style={styles.headerTitle}>Language & Currency</Text>
         <HapticButton style={styles.helpBadge}>
           <Text style={styles.helpText}>Help?</Text>
-          <Ionicons name="call-outline" size={18} />
+          <Ionicons name="call-outline" size={18} color="#053844" />
         </HapticButton>
       </View>
 
@@ -47,11 +48,11 @@ export default function LanguageCurrencyScreen() {
           </Text>
           <View style={styles.contactRow}>
             <HapticButton style={styles.contactBtn}>
-              <Ionicons name="call-outline" size={20} />
+              <Ionicons name="call-outline" size={20} color="#053844" />
               <Text style={styles.contactBtnText}>Call Us</Text>
             </HapticButton>
             <HapticButton style={styles.contactBtn}>
-              <Ionicons name="chatbubble-outline" size={20} />
+              <Ionicons name="chatbubble-outline" size={20} color="#053844" />
               <Text style={styles.contactBtnText}>Chat With Us</Text>
             </HapticButton>
           </View>
@@ -78,12 +79,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  headerTitle: { fontSize: 18, fontWeight: "700" },
+  headerTitle: { fontSize: 18, fontWeight: "700", color: COLORS.text },
   helpBadge: { flexDirection: "row", alignItems: "center" },
-  helpText: { fontSize: 13, marginRight: 8 },
+  helpText: { fontSize: 13, marginRight: 8, color: COLORS.text },
   content: { padding: 24 },
   group: { marginBottom: 32 },
-  label: { fontSize: 14, fontWeight: "700", marginBottom: 12 },
+  label: { fontSize: 14, fontWeight: "700", marginBottom: 12, color: COLORS.text },
   picker: {
     flexDirection: "row",
     alignItems: "center",
@@ -95,9 +96,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#EEE",
   },
-  pickerVal: { fontSize: 14, fontWeight: "500" },
+  pickerVal: { fontSize: 14, fontWeight: "500", color: COLORS.text },
   contactSection: { marginTop: 100, alignItems: "center" },
-  contactTitle: { fontSize: 13, color: "#333", marginBottom: 20 },
+  contactTitle: { fontSize: 13, color: COLORS.textSecondary, marginBottom: 20 },
   contactRow: { flexDirection: "row", gap: 12 },
   contactBtn: {
     flex: 1,
@@ -110,5 +111,5 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     minWidth: 150,
   },
-  contactBtnText: { marginLeft: 8, fontWeight: "600" },
+  contactBtnText: { marginLeft: 8, fontWeight: "600", color: COLORS.text },
 });

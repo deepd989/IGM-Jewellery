@@ -3,15 +3,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  LayoutAnimation,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    LayoutAnimation,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../../components/basic components/hapticButton";
+import { COLORS } from "../../constants/theme";
 
 const CATEGORIES = ["Payment", "Brands", "Orders", "Try At Home", "Ai Sonar"];
 
@@ -105,11 +106,11 @@ export default function FAQScreen() {
           </Text>
           <View style={styles.contactRow}>
             <HapticButton style={styles.contactBtn}>
-              <Ionicons name="call-outline" size={20} />
+              <Ionicons name="call-outline" size={20} color="#053844" />
               <Text style={styles.contactBtnText}>Call Us</Text>
             </HapticButton>
             <HapticButton style={styles.contactBtn}>
-              <Ionicons name="chatbubble-outline" size={20} />
+              <Ionicons name="chatbubble-outline" size={20} color="#053844" />
               <Text style={styles.contactBtnText}>Chat With Us</Text>
             </HapticButton>
           </View>
@@ -136,9 +137,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  headerTitle: { fontSize: 18, fontWeight: "700" },
+  headerTitle: { fontSize: 18, fontWeight: "700", color: COLORS.text },
   helpBadge: { flexDirection: "row", alignItems: "center" },
-  helpText: { fontSize: 13, marginRight: 8 },
+  helpText: { fontSize: 13, marginRight: 8, color: COLORS.text },
   searchSection: { padding: 16 },
   searchBar: {
     flexDirection: "row",
@@ -162,12 +163,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 16,
   },
-  question: { flex: 1, fontSize: 14, fontWeight: "700", lineHeight: 20 },
+  question: { flex: 1, fontSize: 14, fontWeight: "700", lineHeight: 20, color: COLORS.text },
   answerContainer: { paddingHorizontal: 16, paddingBottom: 16 },
-  answer: { fontSize: 13, color: "#888", lineHeight: 20 },
+  answer: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20 },
   loading: { textAlign: "center", marginTop: 20 },
   contactSection: { marginTop: 40, alignItems: "center", padding: 16 },
-  contactTitle: { fontSize: 13, color: "#333", marginBottom: 20 },
+  contactTitle: { fontSize: 13, color: COLORS.textSecondary, marginBottom: 20 },
   contactRow: { flexDirection: "row", gap: 12 },
   contactBtn: {
     flex: 1,
@@ -180,5 +181,5 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     minWidth: 150,
   },
-  contactBtnText: { marginLeft: 8, fontWeight: "600" },
+  contactBtnText: { marginLeft: 8, fontWeight: "600", color: COLORS.text },
 });

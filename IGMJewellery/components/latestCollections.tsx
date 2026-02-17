@@ -1,3 +1,4 @@
+import { COLORS } from "@/constants/theme";
 import { useGetBrandsQuery } from "@/store/apis/brandsApi";
 import { useRouter } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
@@ -136,7 +137,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
     marginBottom: 20,
-    color: "#222",
+    color: COLORS.text,
   },
 
   /* Brands */
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
 
   brandLabel: {
     fontSize: 14,
-    color: "#888",
+    color: COLORS.textSecondary,
     textAlign: "center",
     width: 100,
     overflow: "hidden",

@@ -6,6 +6,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import { HapticButton } from "../../components/basic components/hapticButton";
+import { COLORS } from "../../constants/theme";
 
 export default function LoyaltyScreen() {
   const router = useRouter();
@@ -55,7 +56,7 @@ export default function LoyaltyScreen() {
             <View style={styles.milestone}>
               <Text style={styles.milePrice}>₹50,000</Text>
               <View style={styles.activeMile}>
-                <Ionicons name="diamond" size={10} />
+                <Ionicons name="diamond" size={10} color="#053844" />
                 <Text style={styles.activeMileText}>Elite Shopper</Text>
               </View>
             </View>
@@ -105,7 +106,7 @@ export default function LoyaltyScreen() {
           {[1, 2, 3, 4].map((i) => (
             <View key={i} style={styles.pointRow}>
               <View style={styles.infoIcon}>
-                <Ionicons name="alert-circle-outline" size={18} />
+                <Ionicons name="alert-circle-outline" size={18} color="#053844" />
               </View>
               <View style={styles.pointInfo}>
                 <Text style={styles.pointValue}>200</Text>
@@ -160,7 +161,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  headerTitle: { fontSize: 18, fontWeight: "700" },
+  headerTitle: { fontSize: 18, fontWeight: "700", color: COLORS.text },
   scroll: { paddingBottom: 60 },
   heroSection: { alignItems: "center", padding: 24 },
   pointsCircle: {
@@ -172,9 +173,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 16,
   },
-  bigPoints: { fontSize: 20, fontWeight: "700" },
-  thankYou: { fontSize: 15, fontWeight: "700", marginBottom: 4 },
-  since: { fontSize: 12, color: "#888", marginBottom: 12 },
+  bigPoints: { fontSize: 20, fontWeight: "700", color: COLORS.text },
+  thankYou: { fontSize: 15, fontWeight: "700", marginBottom: 4, color: COLORS.text },
+  since: { fontSize: 12, color: COLORS.textSecondary, marginBottom: 12 },
   tierBadge: {
     flexDirection: "row",
     alignItems: "center",
@@ -183,7 +184,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 12,
   },
-  tierText: { fontSize: 11, fontWeight: "600", marginLeft: 4 },
+  tierText: { fontSize: 11, fontWeight: "600", marginLeft: 4, color: COLORS.text },
   progressContainer: { padding: 24 },
   progressBar: {
     height: 2,
@@ -204,8 +205,8 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   milestone: { alignItems: "center" },
-  milePrice: { fontSize: 10, color: "#888", marginBottom: 4 },
-  mileLabel: { fontSize: 10, color: "#888" },
+  milePrice: { fontSize: 10, color: COLORS.textSecondary, marginBottom: 4 },
+  mileLabel: { fontSize: 10, color: COLORS.textSecondary },
   activeMile: {
     flexDirection: "row",
     alignItems: "center",
@@ -214,7 +215,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 4,
   },
-  activeMileText: { fontSize: 10, fontWeight: "700", marginLeft: 4 },
+  activeMileText: { fontSize: 10, fontWeight: "700", marginLeft: 4, color: COLORS.text },
   pointsSummaryBox: {
     flexDirection: "row",
     backgroundColor: "#F5F5F5",
@@ -232,10 +233,10 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     marginRight: 12,
   },
-  summaryPoints: { fontSize: 18, fontWeight: "700" },
-  summaryLabel: { fontSize: 12, color: "#666" },
+  summaryPoints: { fontSize: 18, fontWeight: "700", color: COLORS.text },
+  summaryLabel: { fontSize: 12, color: COLORS.textSecondary },
   summaryRight: { alignItems: "flex-end" },
-  valueText: { fontSize: 18, fontWeight: "600" },
+  valueText: { fontSize: 18, fontWeight: "600", color: COLORS.text },
   redeemBtn: {
     fontSize: 12,
     color: "#053844",
@@ -244,7 +245,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   section: { padding: 16 },
-  sectionTitle: { fontSize: 15, fontWeight: "700", marginBottom: 16 },
+  sectionTitle: { fontSize: 15, fontWeight: "700", marginBottom: 16, color: COLORS.text },
   pointRow: { flexDirection: "row", alignItems: "center", marginBottom: 16 },
   checkIcon: {
     width: 28,
@@ -263,14 +264,14 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   pointInfo: { flex: 1 },
-  pointValue: { fontSize: 14, fontWeight: "700" },
-  pointDesc: { fontSize: 12, color: "#888" },
-  pointEquivalent: { fontSize: 11, color: "#666" },
+  pointValue: { fontSize: 14, fontWeight: "700", color: COLORS.text },
+  pointDesc: { fontSize: 12, color: COLORS.textSecondary },
+  pointEquivalent: { fontSize: 11, color: COLORS.textSecondary },
   collectAction: { alignItems: "flex-end" },
-  collectText: { fontSize: 12, fontWeight: "700", marginBottom: 4 },
+  collectText: { fontSize: 12, fontWeight: "700", marginBottom: 4, color: COLORS.text },
   moreActivity: { padding: 16, marginTop: 24 },
-  moreTitle: { fontSize: 15, fontWeight: "700" },
-  moreSub: { fontSize: 12, color: "#888", marginTop: 4, marginBottom: 16 },
+  moreTitle: { fontSize: 15, fontWeight: "700", color: COLORS.text },
+  moreSub: { fontSize: 12, color: COLORS.textSecondary, marginTop: 4, marginBottom: 16 },
   tableRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -278,6 +279,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#F0F0F0",
   },
-  tableLabel: { fontSize: 13, color: "#444" },
-  tableVal: { fontSize: 14, fontWeight: "700" },
+  tableLabel: { fontSize: 13, color: COLORS.textSecondary },
+  tableVal: { fontSize: 14, fontWeight: "700", color: COLORS.text },
 });

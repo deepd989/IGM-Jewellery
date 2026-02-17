@@ -7,6 +7,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { HapticButton } from "../../components/basic components/hapticButton";
+import { COLORS } from "../../constants/theme";
 
 export default function BankDetailsScreen() {
   const router = useRouter();
@@ -81,12 +82,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  headerTitle: { fontSize: 18, fontWeight: "700" },
+  headerTitle: { fontSize: 18, fontWeight: "700", color: COLORS.text },
   content: { padding: 24 },
-  title: { fontSize: 16, fontWeight: "700", textAlign: "center" },
+  title: { fontSize: 16, fontWeight: "700", textAlign: "center", color: COLORS.text },
   subtitle: {
     fontSize: 13,
-    color: "#888",
+    color: COLORS.textSecondary,
     textAlign: "center",
     marginTop: 6,
     marginBottom: 32,
@@ -100,8 +101,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   cardContent: { flex: 1, marginLeft: 16 },
-  cardTitle: { fontSize: 14, fontWeight: "700" },
-  cardId: { fontSize: 12, color: "#888", marginTop: 2 },
+  cardTitle: { fontSize: 14, fontWeight: "700", color: COLORS.text },
+  cardId: { fontSize: 12, color: COLORS.textSecondary, marginTop: 2 },
   actions: { flexDirection: "row" },
   actionBtn: { padding: 4 },
   addBtn: {
@@ -114,5 +115,5 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 40,
   },
-  addText: { fontSize: 14, fontWeight: "600", marginLeft: 12 },
+  addText: { fontSize: 14, fontWeight: "600", marginLeft: 12, color: COLORS.text },
 });
