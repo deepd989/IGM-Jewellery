@@ -8,6 +8,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import BottomNavBar from "../../components/bottomNavBar";
+import { useGetWishlistQuery } from "../../store/apis/wishlist";
 
 export default function BrandDetailPage() {
   const router = useRouter();
@@ -15,6 +16,8 @@ export default function BrandDetailPage() {
   console.log("BrandDetailPage rendered", brandName);
   const { data: brand, isLoading, error } = useGetBrandByNameQuery(brandName);
   console.log("Brand data:", brand, brandName);
+  const { data: wishlistData } = useGetWishlistQuery();
+  const wishlistCount = wishlistData?.items.length || 0;
   if (error || !brand) return <></>;
 
   return (
@@ -25,9 +28,21 @@ export default function BrandDetailPage() {
         </HapticButton>
         <Text style={styles.headerTitle}>Brands</Text>
         <View style={styles.headerIcons}>
-          {/* <HapticButton style={styles.iconBtn}>
-                  <Ionicons name="heart-outline" size={24} color={COLORS.primary} />
-                </HapticButton> */}
+          <HapticButton
+            style={styles.iconBtn}
+            onPress={() => router.push("/wishlist")}
+          >
+            <Ionicons
+              name={wishlistCount > 0 ? "heart" : "heart-outline"}
+              size={24}
+              color={wishlistCount > 0 ? COLORS.primary : COLORS.text}
+            />
+            {wishlistCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{wishlistCount}</Text>
+              </View>
+            )}
+          </HapticButton>
           <View style={styles.iconBtn}>
             <CartBadge iconSize={24} iconColor={COLORS.primary} />
           </View>
@@ -46,7 +61,7 @@ export default function BrandDetailPage() {
         }}
         tabs={["About", "Products"]}
         initialActiveTab="About"
-        heroImageUri="https://example.com/hero.jpg"
+        aboutSections={brand.aboutSections}
       />
       <BottomNavBar activeTab="Categories"></BottomNavBar>
     </SafeAreaView>
@@ -87,5 +102,22 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: "600",
     color: "black",
+  },
+  badge: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: "#FFFFFF",
+    fontSize: 10,
+    fontWeight: "700",
   },
 });

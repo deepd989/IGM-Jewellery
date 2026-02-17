@@ -7,10 +7,12 @@ import {
   Text,
   View,
 } from "react-native";
+import { HapticButton } from "./basic components/hapticButton";
 
 export interface ScrollGradientItem {
   name: string;
   img: ImageSourcePropType;
+  onpress: () => void;
   gradient?: {
     gradientStartColor: string;
     gradientEndColor: string;
@@ -31,36 +33,41 @@ export default function GradientHorizontalScroll({
       contentContainerStyle={styles.carouselContainer}
     >
       {data.map((item, index) => (
-        <View key={index} style={styles.cardWrapper}>
-          <View
-            style={[styles.imageCard, !item.gradient && styles.whiteBackground]}
-          >
-            {item.gradient ? (
-              <LinearGradient
-                colors={[
-                  item.gradient.gradientStartColor,
-                  item.gradient.gradientEndColor,
-                ]}
-                start={{ x: 0.5, y: 0 }}
-                end={{ x: 0.5, y: 1 }}
-                style={styles.gradient}
-              >
+        <HapticButton onPress={item.onpress}>
+          <View key={index} style={styles.cardWrapper}>
+            <View
+              style={[
+                styles.imageCard,
+                !item.gradient && styles.whiteBackground,
+              ]}
+            >
+              {item.gradient ? (
+                <LinearGradient
+                  colors={[
+                    item.gradient.gradientStartColor,
+                    item.gradient.gradientEndColor,
+                  ]}
+                  start={{ x: 0.5, y: 0 }}
+                  end={{ x: 0.5, y: 1 }}
+                  style={styles.gradient}
+                >
+                  <Image
+                    source={item.img}
+                    style={styles.productImage}
+                    resizeMode="contain"
+                  />
+                </LinearGradient>
+              ) : (
                 <Image
                   source={item.img}
                   style={styles.productImage}
                   resizeMode="contain"
                 />
-              </LinearGradient>
-            ) : (
-              <Image
-                source={item.img}
-                style={styles.productImage}
-                resizeMode="contain"
-              />
-            )}
+              )}
+            </View>
+            <Text style={styles.cardLabel}>{item.name}</Text>
           </View>
-          <Text style={styles.cardLabel}>{item.name}</Text>
-        </View>
+        </HapticButton>
       ))}
     </ScrollView>
   );

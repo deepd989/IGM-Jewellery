@@ -7,7 +7,7 @@ import {
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -19,7 +19,6 @@ import {
 } from "react-native";
 import { useAuth } from "../../auth/authContext";
 import { COLORS, SPACING } from "../../constants/theme";
-import { generateJewelleryImage } from "../../helpers/generateJewelleryImage";
 import { firstImageHelper } from "../../helpers/imageUsageHelper";
 import { HapticButton } from "../basic components/hapticButton";
 
@@ -57,17 +56,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     useAddToWishlistMutation();
   const [removeFromWishlist, { isLoading: isRemovingFromWishlist }] =
     useRemoveFromWishlistMutation();
-
-  useEffect(() => {
-    generateJewelleryImage(
-      apiUrl,
-      userId as string,
-      product,
-      "casual wear",
-      "black",
-      setFirstImageBase64State
-    );
-  }, []);
 
   // Determine if in wishlist from props or query
   const isInWishlist =

@@ -5,7 +5,6 @@ import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, Image, StyleSheet, Text, View } from "react-native";
 import { useAuth } from "../auth/authContext";
-import { generateJewelleryImage } from "../helpers/generateJewelleryImage";
 import { firstImageHelper } from "../helpers/imageUsageHelper";
 import { HapticButton } from "./basic components/hapticButton";
 
@@ -41,17 +40,6 @@ const ProductCard2: React.FC<ProductCardProps> = ({
       Alert.alert("Error", "Failed to add item to cart");
     }
   };
-
-  useEffect(() => {
-    generateJewelleryImage(
-      apiUrl,
-      userId as string,
-      product,
-      "casual wear",
-      "black",
-      setFirstImageBase64State
-    );
-  }, []);
 
   useEffect(() => {}, [isTryOnModalVisible]);
 

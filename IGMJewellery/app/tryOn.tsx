@@ -18,7 +18,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../auth/authContext";
 import { HapticButton } from "../components/basic components/hapticButton";
 import { COLORS } from "../constants/theme";
-import { generateJewelleryImage } from "../helpers/generateJewelleryImage";
 import { Product } from "../interfaces/product.interface";
 import { useGetProductsQuery } from "../store/apis/product";
 
@@ -159,14 +158,6 @@ const TryOnScreen = () => {
       return;
     }
     setOutputLoading(true);
-    await generateJewelleryImage(
-      apiUrl,
-      userId,
-      selectedProduct,
-      outfit,
-      color,
-      setOutputImageState
-    );
     setOutputLoading(false);
   };
 
