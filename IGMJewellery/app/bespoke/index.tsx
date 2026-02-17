@@ -25,7 +25,7 @@ export default function BespokeStepperPage() {
   // here 2 is the last step index
   const next = () => setStep((s) => Math.min(3, s + 1));
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <HapticButton onPress={back} style={styles.backBtn}>
         <Ionicons name="chevron-back" size={22} />
       </HapticButton>

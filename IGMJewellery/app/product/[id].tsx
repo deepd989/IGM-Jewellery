@@ -13,7 +13,7 @@ import { useGetWishlistQuery } from "@/store/apis/wishlist";
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -27,19 +27,22 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../auth/authContext";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS, SPACING } from "../../constants/theme";
+import { useGetImage } from "../customHooks/tryOnImageLoader";
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
+
   const router = useRouter();
   const [isCustomizeVisible, setIsCustomizeVisible] = useState(false);
   const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
-  const { userId, apiUrl, imageGlobal } = useAuth();
-  const [firstImageBase64State, setFirstImageBase64State] = useState("");
+  const { userId } = useAuth();
 
   // Cart & Trial Logic
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
   const [showSuccess, setShowSuccess] = useState(false);
+  const { base64String: tryOnImage, isLoading: isTryOnImageLoading } =
+    useGetImage(`${id}_${userId}`);
 
   // Fetch product from Redux API
   const {
@@ -48,10 +51,6 @@ export default function ProductDetailScreen() {
     isError,
     error,
   } = useGetProductByIdQuery(id as string);
-
-  useEffect(() => {
-    console.log("First image base64 updated.", firstImageBase64State);
-  }, [firstImageBase64State]);
 
   // Get wishlist data for header heart icon
   const { data: wishlistData } = useGetWishlistQuery();
@@ -181,7 +180,7 @@ export default function ProductDetailScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         <ProductImageGallery
-          images={[...product.thumbnailUrls, firstImageBase64State]}
+          images={[...product.thumbnailUrls, tryOnImage]}
           product={product}
         />
 
@@ -200,7 +199,7 @@ export default function ProductDetailScreen() {
 
       {/* Sticky Footer */}
       <View style={styles.stickyFooter}>
-        <HapticButton
+        {/* <HapticButton
           style={styles.stickyTryBtn}
           onPress={handleTryAtHome}
           disabled={isAddingToTrial}
@@ -213,7 +212,7 @@ export default function ProductDetailScreen() {
               <Text style={styles.stickyTryText}>Try at Home</Text>
             </>
           )}
-        </HapticButton>
+        </HapticButton> */}
 
         <HapticButton
           style={[
@@ -250,7 +249,7 @@ export default function ProductDetailScreen() {
         onClose={() => setIsTryOnSelectorVisible(false)}
         onSelectVR={() => {
           router.push({
-            pathname: "/virtualTryOn",
+            pathname: "/virtualTryOn2",
             params: {
               productId: product.id,
               productTitle: product.title,
@@ -261,10 +260,6 @@ export default function ProductDetailScreen() {
         onSelectAI={() => {
           router.push({
             pathname: "/tryOn",
-            params: {
-              productId: product.id,
-              productTitle: product.title,
-            },
           });
         }}
       />

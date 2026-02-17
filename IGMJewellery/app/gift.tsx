@@ -1,7 +1,6 @@
 import BottomNavBar from "@/components/bottomNavBar";
 import GiftExplore from "@/components/giftExplore";
 import GiftingCard from "@/components/giftingCard";
-import HashtagComponent from "@/components/hashtagComponent";
 import HorizontalRuleIGM from "@/components/horizontalRuleIGM";
 import { TopPicks } from "@/components/topPicks";
 import { COLORS, SPACING } from "@/constants/theme";
@@ -12,6 +11,8 @@ import React from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../components/basic components/hapticButton";
+import HashtagComponent from "../components/hashtagComponent";
+import BrandCollectionCards from "../components/shopByCollectionsNew";
 
 export default function Gift() {
   const giftOptions = [
@@ -33,6 +34,7 @@ export default function Gift() {
         <GiftingCard sendAGiftButton={true} />
         <HorizontalRuleIGM />
         {/* <LatestCollections /> */}
+        <BrandCollectionCards />
         <HorizontalRuleIGM />
         <HashtagComponent />
       </ScrollView>

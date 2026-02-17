@@ -1,126 +1,37 @@
 import { Ionicons } from "@expo/vector-icons";
+import { CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  FlatList,
+  Dimensions,
   Image,
-  ScrollView,
+  Modal,
   StyleSheet,
-  Switch,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
-import { Dropdown } from "react-native-element-dropdown"; // New Import
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../auth/authContext";
-import { HapticButton } from "../components/basic components/hapticButton";
-import { COLORS } from "../constants/theme";
-import { Product } from "../interfaces/product.interface";
-import { useGetProductsQuery } from "../store/apis/product";
+import { WRAPPER_API } from "../store/newApis/apiUrl.const";
 
-const TryOnScreen = () => {
-  const { apiUrl, imageGlobal, setImageGlobalUsage } = useAuth();
-  const router = useRouter();
-  const params = useLocalSearchParams();
-  const userId = params.userId as string | undefined;
+const { width } = Dimensions.get("window");
 
-  const {
-    data: products = [],
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useGetProductsQuery({});
-
-  const [useImageGloballyFlag, setUseImageGloballyFlag] = useState(imageGlobal);
-  const toggleSwitch = () =>
-    setUseImageGloballyFlag((previousState) => {
-      setImageGlobalUsage(!previousState);
-      return !previousState;
-    });
-
-  const [userImage, setUserImage] = useState("");
-  const [outputImageState, setOutputImageState] = useState("");
-  const [showOutputImage, setShowOutputImage] = useState(false);
-  const [uploading, setUploading] = useState(false);
+export default function JewelleryTryOn() {
+  const { userId } = useAuth();
+  const [permission, requestPermission] = useCameraPermissions();
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isImageUploaded, setIsImageUploaded] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [outputLoading, setOutputLoading] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const handleProductSelect = (product: Product) => {
-    setSelectedProduct(product);
-  };
-
-  // Updated state for selections to work with dropdown
-  const [outfit, setOutfit] = useState("Casual wear");
-  const [color, setColor] = useState("#053844");
-
-  // Dropdown formatted data
-  const outfitTypes = [
-    { label: "Casual wear", value: "Casual wear" },
-    { label: "Formal", value: "Formal" },
-    { label: "Party Wear", value: "Party Wear" },
-    { label: "Ethnic", value: "Ethnic" },
-    { label: "Rajasthani Wear", value: "Rajasthani Wear" },
-    { label: "Punjabi Suit", value: "Punjabi Suit" },
-    { label: "Saree", value: "Saree" },
-  ];
-
-  const colorOptions = [
-    { label: "Black", value: "#053844" },
-    { label: "White", value: "#FFFFFF" },
-    { label: "Grey", value: "#808080" },
-    { label: "Blue", value: "#0000FF" },
-    { label: "Navy Blue", value: "#000080" },
-    { label: "Brown", value: "#8B4513" },
-    { label: "Beige", value: "#F5F5DC" },
-    { label: "Green", value: "#008000" },
-    { label: "Red", value: "#FF0000" },
-  ];
-
-  useEffect(() => {
-    const fetchUserImage = async () => {
-      if (!userId) return;
-      setLoading(true);
-      try {
-        const url = `${apiUrl}/getImage/dp_${userId}`;
-        const response = await fetch(url);
-        if (response.ok) {
-          const blob = await response.blob();
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64data = reader.result as string;
-            setUserImage(base64data);
-            setIsImageUploaded(true);
-          };
-          reader.readAsDataURL(blob);
-        }
-      } catch (error) {
-        console.log("Could not fetch user image:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUserImage();
-  }, [userId]);
-
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-    if (!result.canceled) {
-      handleUpload(result.assets[0].uri);
-    }
-  };
+  const [isUploading, setIsUploading] = useState(false); // New loading state
+  const cameraRef = useRef(null);
+  const router = useRouter();
 
   const handleUpload = async (uri: string) => {
-    setUploading(true);
+    setIsUploading(true);
     const formData = new FormData();
     // @ts-ignore
     formData.append("userFace", {
@@ -131,311 +42,378 @@ const TryOnScreen = () => {
     formData.append("userId", userId || "GUEST");
 
     try {
-      const response = await fetch(`${apiUrl}/uploadDp`, {
+      const response = await fetch(`${WRAPPER_API}/uploadDp`, {
         method: "POST",
         body: formData,
         headers: { "Content-Type": "multipart/form-data" },
       });
+
       if (response.ok) {
-        setUserImage(uri);
+        // SUCCESS: Move to Step 2
         setIsImageUploaded(true);
-        Alert.alert("Success", "Face uploaded successfully!");
+      } else {
+        Alert.alert("Upload Failed", "Server encountered an error.");
       }
     } catch (error) {
       Alert.alert("Error", "Could not connect to server.");
+      console.error(error);
     } finally {
-      setUploading(false);
+      // We stop the loading spinner, but we DON'T reset isImageUploaded here.
+      setIsUploading(false);
     }
   };
 
-  const handleViewTryOn = async () => {
-    setShowOutputImage(true);
-    if (!selectedProduct || !userId) {
-      Alert.alert(
-        "Selection Required",
-        "Please select a product and upload a user photo."
-      );
-      return;
+  useEffect(() => {
+    if (photo) {
+      handleUpload(photo);
     }
-    setOutputLoading(true);
-    setOutputLoading(false);
-  };
+  }, [photo]);
 
-  const renderProductItem = ({ item }: { item: Product }) => {
-    const isSelected = selectedProduct?.id === item.id;
+  if (!permission) return <View />;
+  if (!permission.granted) {
     return (
-      <HapticButton
-        style={[styles.productCard, isSelected && styles.productCardSelected]}
-        onPress={() => handleProductSelect(item)}
-      >
-        <Image
-          source={{ uri: item.thumbnailUrls[0] }}
-          style={styles.productImage}
-        />
-        <Text numberOfLines={1} style={styles.productName}>
-          {item.name}
-        </Text>
-        {isSelected && (
-          <View style={styles.checkBadge}>
-            <Ionicons
-              name="checkmark-circle"
-              size={20}
-              color={COLORS.primary || "#053844"}
-            />
-          </View>
-        )}
-      </HapticButton>
+      <View style={styles.centered}>
+        <TouchableOpacity onPress={requestPermission} style={styles.confirmBtn}>
+          <Text style={styles.confirmBtnText}>Grant Camera Permission</Text>
+        </TouchableOpacity>
+      </View>
     );
+  }
+
+  const takePicture = async () => {
+    if (cameraRef.current) {
+      // @ts-ignore
+      const data = await cameraRef.current.takePictureAsync({ quality: 0.8 });
+      setPhoto(data.uri);
+    }
   };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+    if (!result.canceled) setPhoto(result.assets[0].uri);
+  };
+
+  const Header = ({ dark }: { dark: boolean }) => (
+    <View
+      style={[
+        styles.headerContainer,
+        { backgroundColor: dark ? "#111" : "#FFF" },
+      ]}
+    >
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => {
+          if (!photo) {
+            router.back();
+          } else {
+            setPhoto(null);
+            setIsImageUploaded(false);
+          }
+        }}
+      >
+        <Ionicons
+          name="chevron-back"
+          size={24}
+          color={dark ? "#FFF" : "#000"}
+        />
+      </TouchableOpacity>
+      <Text style={[styles.headerTitle, { color: dark ? "#FFF" : "#000" }]}>
+        Replace Model
+      </Text>
+    </View>
+  );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <HapticButton onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-        </HapticButton>
-        <Text style={styles.headerTitle}>Virtual Try-On</Text>
-        <View style={{ width: 40 }} />
-      </View>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: isImageUploaded ? "#FFF" : "#111" }}
+    >
+      <Header dark={!isImageUploaded} />
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <Text style={styles.title}>Try On Your Masterpiece</Text>
-        <Text style={styles.subtitle}>
-          Upload a clear photo to see the results.
-        </Text>
+      {/* Loading Overlay */}
+      {isUploading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#FFF" />
+          <Text style={{ color: "#FFF", marginTop: 10 }}>
+            Processing Face...
+          </Text>
+        </View>
+      )}
 
-        <HapticButton
-          style={styles.uploadBox}
-          onPress={pickImage}
-          disabled={uploading || loading}
-        >
-          {!showOutputImage &&
-            (loading ? (
-              <ActivityIndicator color="#053844" size="large" />
-            ) : userImage ? (
-              <Image source={{ uri: userImage }} style={styles.previewImg} />
-            ) : (
-              <View style={styles.uploadPlaceholder}>
-                <Text style={styles.plusIcon}>+</Text>
-                <Text style={styles.uploadText}>Upload your face</Text>
-              </View>
-            ))}
-
-          {showOutputImage &&
-            (outputLoading ? (
-              <View>
-                <ActivityIndicator color="#053844" size="large" />
-                <Text>Generating your look...</Text>
-              </View>
-            ) : (
-              <Image
-                source={{ uri: outputImageState }}
-                style={[styles.previewImg]}
-              />
-            ))}
-        </HapticButton>
-
-        <Text style={styles.label}>Select Jewelry</Text>
-        <FlatList
-          horizontal
-          data={products}
-          renderItem={renderProductItem}
-          keyExtractor={(item) => item.id}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.carouselContainer}
-        />
-
-        {/* Outfit Dropdown */}
-        <Text style={styles.label}>Outfit Type</Text>
-        <Dropdown
-          style={styles.dropdown}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          data={outfitTypes}
-          maxHeight={300}
-          labelField="label"
-          valueField="value"
-          placeholder="Select Outfit"
-          value={outfit}
-          onChange={(item) => setOutfit(item.value)}
-        />
-
-        {/* Color Dropdown */}
-        <Text style={styles.label}>Metal Color</Text>
-        <Dropdown
-          style={styles.dropdown}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          data={colorOptions}
-          maxHeight={300}
-          labelField="label"
-          valueField="value"
-          placeholder="Select Color"
-          value={color}
-          onChange={(item) => setColor(item.value)}
-          renderLeftIcon={() => (
-            <View
-              style={[
-                styles.colorCircle,
-                { backgroundColor: color, marginRight: 10 },
-              ]}
-            />
-          )}
-        />
-        <View style={styles.toggleContainer}>
-          <View style={styles.toggleTextContent}>
-            <Text style={styles.toggleLabel}>
-              Use images for product preview
+      {!isImageUploaded ? (
+        // --- STEP 1: CAPTURE/SELECTION ---
+        <View style={styles.content}>
+          <View style={styles.textGroup}>
+            <Text style={styles.titleLight}>Take Your Photo</Text>
+            <Text style={styles.subtitleLight}>
+              Or Upload your photo to continue
             </Text>
           </View>
-          <Switch
-            trackColor={{ false: "#D1D1D1", true: COLORS.primary || "#053844" }}
-            thumbColor={useImageGloballyFlag ? "#fff" : "#f4f3f4"}
-            ios_backgroundColor="#D1D1D1"
-            onValueChange={toggleSwitch}
-            value={useImageGloballyFlag}
-          />
+
+          <View style={styles.cameraWrapper}>
+            <CameraView style={styles.camera} ref={cameraRef} facing="front">
+              <View style={styles.overlayFrame}>
+                <TouchableOpacity style={styles.pillBtn} onPress={pickImage}>
+                  <Ionicons name="image-outline" size={18} color="#333" />
+                  <Text style={styles.pillText}>Upload from Gallery</Text>
+                </TouchableOpacity>
+              </View>
+            </CameraView>
+          </View>
+
+          <View style={styles.footer}>
+            <Text style={styles.titleLight}>Place Your Face In The Frame</Text>
+            <Text style={styles.subtitleLight}>
+              Make sure your face is fully visible.
+            </Text>
+            <TouchableOpacity style={styles.captureBtn} onPress={takePicture}>
+              <Ionicons name="camera-outline" size={20} color="#333" />
+              <Text style={styles.captureBtnText}>Capture</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <HapticButton
-          style={[styles.primaryBtn, !isImageUploaded && styles.btnDisabled]}
-          onPress={handleViewTryOn}
-          disabled={!isImageUploaded}
+      ) : (
+        // --- STEP 2: PREVIEW ---
+        <View style={styles.content}>
+          <View style={styles.textGroup}>
+            <Text style={styles.titleDark}>Your Photo Preview</Text>
+            <Text style={styles.subtitleDark}>
+              Confirm your photo and proceed
+            </Text>
+          </View>
+
+          <View style={styles.cameraWrapper}>
+            <View style={[styles.camera, { borderWidth: 0 }]}>
+              {photo && (
+                <Image source={{ uri: photo }} style={styles.fullImage} />
+              )}
+              <TouchableOpacity
+                style={styles.pillBtnAbsolute}
+                onPress={() => {
+                  setPhoto(null);
+                  setIsImageUploaded(false);
+                }}
+              >
+                <Ionicons name="refresh-outline" size={18} color="#333" />
+                <Text style={styles.pillText}>Retake</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={styles.footer}>
+            <Text style={styles.ctaTitle}>
+              Become The Model To See How Your Favourite Jewellery Looks On You
+            </Text>
+            <Text style={styles.ctaSubtitle}>
+              The product images in your 'Wishlist' will be revamped with your
+              image
+            </Text>
+            <TouchableOpacity
+              style={styles.confirmBtn}
+              onPress={() => setShowSuccessModal(true)}
+            >
+              <Text style={styles.confirmBtnText}>Confirm & Proceed</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      {/* --- STEP 3: SUCCESS MODAL --- */}
+      <Modal
+        visible={showSuccessModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSuccessModal(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowSuccessModal(false)}
         >
-          <Text style={styles.primaryBtnText}>View Try-On</Text>
-        </HapticButton>
-      </ScrollView>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={(e) => e.stopPropagation()}
+            style={styles.modalContent}
+          >
+            <View style={styles.modalImageContainer}>
+              {photo && (
+                <Image source={{ uri: photo }} style={styles.modalThumb} />
+              )}
+              <View style={styles.sparkleBadge}>
+                <Ionicons name="sparkles" size={20} color="#003D45" />
+              </View>
+            </View>
+
+            <Text style={styles.modalTitle}>Zeywar Ai is at Work!</Text>
+            <Text style={styles.modalSubtitle}>
+              We will replace the model's images in your wishlisted items with
+              your image. You can check the progress in your wishlist
+            </Text>
+
+            <TouchableOpacity
+              style={styles.confirmBtn}
+              onPress={() => {
+                setShowSuccessModal(false);
+                router.replace("/wishlist");
+              }}
+            >
+              <Text style={styles.confirmBtnText}>Go to Wishlist</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.textBtn}
+              onPress={() => {
+                setShowSuccessModal(false);
+                router.replace("/product-list");
+              }}
+            >
+              <Text style={styles.textBtnText}>Explore Products</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#fff" },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  headerTitle: { fontSize: 18, fontWeight: "700" },
-  backBtn: { padding: 5 },
-  scrollContent: { padding: 20, paddingBottom: 40 },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 8 },
-  subtitle: { fontSize: 14, color: "#666", marginBottom: 25 },
-  uploadBox: {
-    height: 350,
-    borderStyle: "dashed",
-    borderWidth: 2,
-    borderColor: "#ddd",
-    borderRadius: 16,
+  centered: { flex: 1, justifyContent: "center", alignItems: "center" },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.7)",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fafafa",
-    marginBottom: 25,
-    overflow: "hidden",
+    zIndex: 1000,
   },
-  uploadPlaceholder: { alignItems: "center" },
-  plusIcon: { fontSize: 40, color: "#aaa" },
-  uploadText: { color: "#888", marginTop: 10 },
-  previewImg: { width: "100%", height: "100%", resizeMode: "cover" },
-  label: { fontSize: 16, fontWeight: "600", marginTop: 20, marginBottom: 12 },
-
-  // Dropdown Styles
-  dropdown: {
-    height: 55,
-    borderColor: "#eee",
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    backgroundColor: "#fafafa",
-  },
-  placeholderStyle: { fontSize: 16, color: "#888" },
-  selectedTextStyle: { fontSize: 16, color: "#053844" },
-
-  colorCircle: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.1)",
-  },
-  primaryBtn: {
-    backgroundColor: "#053844",
-    padding: 18,
-    borderRadius: 12,
-    marginTop: 40,
-    alignItems: "center",
-  },
-  carouselContainer: {
-    paddingVertical: 10,
-    gap: 15, // Note: gap works in recent RN versions, otherwise use marginRight on cards
-  },
-  productCard: {
-    width: 120,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 8,
-    borderWidth: 1,
-    borderColor: "#eee",
-    alignItems: "center",
-    position: "relative",
-    marginRight: 12,
-  },
-  productCardSelected: {
-    borderColor: "#053844",
-    borderWidth: 2,
-    backgroundColor: "#f0f0f0",
-  },
-  productImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-    marginBottom: 8,
-    resizeMode: "contain",
-  },
-  productName: {
-    fontSize: 12,
-    fontWeight: "500",
-    textAlign: "center",
-  },
-  checkBadge: {
-    position: "absolute",
-    top: -5,
-    right: -5,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-  },
-  btnDisabled: { backgroundColor: "#ccc" },
-  primaryBtnText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  toggleContainer: {
+  headerContainer: {
+    height: 60,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#fafafa",
-    padding: 16,
-    borderRadius: 12,
+    paddingHorizontal: 15,
+  },
+  headerTitle: { fontSize: 16, fontWeight: "600", marginLeft: 10 },
+  backButton: {
+    padding: 5,
     borderWidth: 1,
-    borderColor: "#eee",
-    marginTop: 25,
+    borderColor: "#DDD",
+    borderRadius: 8,
   },
-  toggleTextContent: {
+  content: { flex: 1, alignItems: "center" },
+  textGroup: { alignItems: "center", marginVertical: 20 },
+  titleLight: { color: "#FFF", fontSize: 18, fontWeight: "600" },
+  subtitleLight: { color: "#AAA", fontSize: 13, marginTop: 4 },
+  titleDark: { color: "#003D45", fontSize: 18, fontWeight: "600" },
+  subtitleDark: { color: "#666", fontSize: 13, marginTop: 4 },
+  cameraWrapper: { flex: 1, justifyContent: "center" },
+  camera: {
+    width: width * 0.75,
+    height: width * 0.9,
+    borderRadius: 120,
+    overflow: "hidden",
+    borderWidth: 4,
+    borderColor: "#FFF",
+  },
+  fullImage: { width: "100%", height: "100%" },
+  overlayFrame: {
     flex: 1,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    paddingBottom: 20,
   },
-  toggleLabel: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#053844",
+  pillBtn: {
+    flexDirection: "row",
+    backgroundColor: "#FFF",
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 25,
+    alignItems: "center",
   },
-  toggleSubLabel: {
-    fontSize: 12,
-    color: "#888",
-    marginTop: 2,
+  pillBtnAbsolute: {
+    position: "absolute",
+    bottom: 20,
+    alignSelf: "center",
+    flexDirection: "row",
+    backgroundColor: "#FFF",
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 25,
+    alignItems: "center",
   },
+  pillText: { marginLeft: 8, fontWeight: "600", fontSize: 12 },
+  footer: { width: "100%", padding: 25, alignItems: "center" },
+  ctaTitle: {
+    textAlign: "center",
+    fontSize: 17,
+    fontWeight: "700",
+    color: "#111",
+  },
+  ctaSubtitle: {
+    textAlign: "center",
+    fontSize: 13,
+    color: "#777",
+    marginVertical: 12,
+  },
+  captureBtn: {
+    backgroundColor: "#FFF",
+    flexDirection: "row",
+    width: "100%",
+    height: 50,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 15,
+  },
+  captureBtnText: { marginLeft: 10, fontSize: 15, fontWeight: "600" },
+  confirmBtn: {
+    backgroundColor: "#003D45",
+    width: "100%",
+    height: 50,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  confirmBtnText: { color: "#FFF", fontSize: 15, fontWeight: "600" },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    width: "85%",
+    backgroundColor: "#FFF",
+    borderRadius: 20,
+    padding: 25,
+    alignItems: "center",
+  },
+  modalImageContainer: { marginBottom: 20 },
+  modalThumb: { width: 120, height: 140, borderRadius: 20 },
+  sparkleBadge: {
+    position: "absolute",
+    top: -10,
+    right: -10,
+    backgroundColor: "#E6F0F1",
+    padding: 8,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: "#FFF",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "800",
+    color: "#003D45",
+    marginBottom: 10,
+  },
+  modalSubtitle: {
+    textAlign: "center",
+    color: "#555",
+    lineHeight: 20,
+    marginBottom: 25,
+  },
+  textBtn: { marginTop: 15 },
+  textBtnText: { color: "#003D45", fontWeight: "600" },
 });
-
-export default TryOnScreen;

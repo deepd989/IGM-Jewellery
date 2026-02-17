@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { Sparkles } from "lucide-react-native";
 import React, { useRef } from "react";
 import {
@@ -7,9 +8,9 @@ import {
   Image,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import { HapticButton } from "./basic components/hapticButton";
 
 const { width } = Dimensions.get("window");
 
@@ -20,6 +21,7 @@ const SIDE_SPACING = (width - CARD_WIDTH) / 2;
 const SNAP_INTERVAL = CARD_WIDTH + SPACING * 2;
 
 const SwipeAndShopComponent = () => {
+  const router = useRouter();
   const scrollX = useRef(new Animated.Value(0)).current;
 
   const cards = [
@@ -68,7 +70,7 @@ const SwipeAndShopComponent = () => {
                 key={item.id}
                 style={[styles.card, { transform: [{ scale }], opacity }]}
               >
-                <TouchableOpacity activeOpacity={0.9} style={styles.cardInner}>
+                <HapticButton activeOpacity={0.9} style={styles.cardInner}>
                   <View style={styles.iconContainerGold}>
                     <Feather
                       name="mouse-pointer"
@@ -90,7 +92,7 @@ const SwipeAndShopComponent = () => {
                     </Text>
                   </View>
                   <Feather name="chevron-right" size={24} color="#003031" />
-                </TouchableOpacity>
+                </HapticButton>
               </Animated.View>
             );
           }
@@ -100,7 +102,11 @@ const SwipeAndShopComponent = () => {
               key={item.id}
               style={[styles.card, { transform: [{ scale }], opacity }]}
             >
-              <TouchableOpacity activeOpacity={0.9} style={styles.cardInner}>
+              <HapticButton
+                activeOpacity={0.9}
+                style={styles.cardInner}
+                onPress={() => router.push("/tryOn")}
+              >
                 <View style={styles.imageWrapper}>
                   <Image
                     source={require("../assets/images/yellowSareeModel.png")}
@@ -117,7 +123,7 @@ const SwipeAndShopComponent = () => {
                     Your photo across products
                   </Text>
                 </View>
-              </TouchableOpacity>
+              </HapticButton>
             </Animated.View>
           );
         })}

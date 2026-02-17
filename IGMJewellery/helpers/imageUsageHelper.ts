@@ -3,7 +3,7 @@ export function firstImageHelper(
   productImage: string,
   useUserImage: boolean
 ): string {
-  if (useUserImage) {
+  if (useUserImage && userImage) {
     return userImage || "";
   } else {
     return productImage || "";

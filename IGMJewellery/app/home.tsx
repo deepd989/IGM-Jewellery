@@ -1,6 +1,5 @@
 import BespokeSection from "@/components/bespokeSection";
 import BottomNavBar from "@/components/bottomNavBar";
-import BrandGridTileView from "@/components/brandGrid";
 import CommunityCarousel from "@/components/communityCarousel";
 import EventCard from "@/components/eventCard";
 import GiftFinder from "@/components/giftFinder";
@@ -24,7 +23,6 @@ import React, {
 } from "react";
 import {
   BackHandler,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -32,6 +30,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../auth/authContext";
 import AnnouncementSection from "../components/announcementSectionHome";
 import { HapticButton } from "../components/basic components/hapticButton";
 import BrandsHorizontalScroll from "../components/brandsHorizontalScroll";
@@ -42,9 +41,11 @@ import BrandCollectionCards from "../components/shopByCollectionsNew";
 import { TrendingProducts } from "../components/TrendingProducts";
 import TrustBar from "../components/trustBarBanner";
 import { COLORS } from "../constants/theme";
+import { useWalletBalance } from "./customHooks/walletBalanceLoader";
 
 export default function HomeScreen() {
   const [expanded, setExpanded] = useState(false);
+
   const navigation = useNavigation();
   const [firstRowHeight, setFirstRowHeight] = useState<number | null>(68);
   const {
@@ -57,6 +58,8 @@ export default function HomeScreen() {
   const router = useRouter();
   const [textInput, setTextInput] = useState<string>("");
   const [pincode, setPincode] = useState(null);
+  const { userId } = useAuth();
+  const { balance: walletBalance } = useWalletBalance(userId as string);
 
   useEffect(() => {
     (async () => {
@@ -97,6 +100,10 @@ export default function HomeScreen() {
           <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
             {pincode || "Fetching..."}
           </Text>
+        </Text>
+        <Text style={styles.balance}>
+          {"\u20B9"}
+          {walletBalance}
         </Text>
       </View>
       <SearchBar />
@@ -145,45 +152,7 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.carouselContainer}
-            >
-              {[
-                {
-                  name: "Necklace",
-                  img: require("../assets/images/dummyImages/dummyNecklace.png"),
-                },
-                {
-                  name: "Bracelets",
-                  img: require("../assets/images/dummyImages/dummyBracelete.png"),
-                },
-                {
-                  name: "Earrings",
-                  img: require("../assets/images/dummyImages/dummyEarring.png"),
-                },
-                {
-                  name: "Rings",
-                  img: require("../assets/images/dummyImages/dummyRing.png"),
-                },
-                {
-                  name: "Diamonds",
-                  img: require("../assets/images/dummyImages/dummyDiamond.png"),
-                },
-              ].map((item, index) => (
-                <View key={index} style={styles.cardWrapper}>
-                  <View style={styles.imageCard}>
-                    <Image
-                      source={item.img}
-                      style={styles.productImage}
-                      resizeMode="contain"
-                    />
-                  </View>
-                  <Text style={styles.cardLabel}>{item.name}</Text>
-                </View>
-              ))}
-            </ScrollView>
+            <CategoriesHorizontalScroll />
           </View>
         </LinearGradient>
         <AnnouncementSection />
@@ -208,7 +177,7 @@ export default function HomeScreen() {
         <TrendingProducts products={products} />
         <HorizontalRuleIGM />
         {/* <LatestCollections /> */}
-        <HorizontalRuleIGM />
+        {/* <HorizontalRuleIGM /> */}
 
         {/* <HorizontalRuleIGM /> */}
         {/* <TryAtHomeCard /> */}
@@ -227,10 +196,6 @@ export default function HomeScreen() {
         <HorizontalRuleIGM />
         <EventCard />
         <TrustBar />
-        <BrandGridTileView />
-        {/* <HorizontalRuleIGM /> */}
-        {/* <HashtagComponent /> */}
-        <HorizontalRuleIGM />
         <View style={styles.contactSection}>
           <Text style={styles.contactTitle}>
             For any queries, feel free to contact us:
@@ -264,14 +229,24 @@ const styles = StyleSheet.create({
 
   header: {
     flexDirection: "row",
-    alignItems: "center",
+    justifyContent: "space-between",
     gap: 6,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     marginBottom: 5,
   },
   viewZeywarIsListening: {
     padding: 16,
     borderRadius: 12,
+  },
+  balance: {
+    textAlign: "center",
+    // paddingHorizontal: 20,
+    paddingVertical: 4,
+    backgroundColor: COLORS.primary,
+    color: "white",
+    borderRadius: 20,
+    fontWeight: "600",
+    minWidth: 60,
   },
   deliveryText: { fontSize: 14, color: COLORS.primary },
   bold: { fontWeight: "600" },

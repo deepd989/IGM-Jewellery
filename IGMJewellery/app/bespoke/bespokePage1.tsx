@@ -8,6 +8,7 @@ import {
 import React from "react";
 import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
 import { HapticButton } from "../../components/basic components/hapticButton";
+import { COLORS } from "../../constants/theme";
 
 const { width } = Dimensions.get("window");
 
@@ -16,22 +17,22 @@ const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
     {
       title: "Send us your idea",
       description: "Make Sketches or attach images",
-      icon: <Diamond size={24} color="black" />,
+      icon: <Diamond size={24} color={COLORS.primary} />,
     },
     {
       title: "We will assign a Designer",
       description: "Select you convenient date, time, and place",
-      icon: <Home size={24} color="black" />,
+      icon: <Home size={24} color={COLORS.primary} />,
     },
     {
       title: "Get on a call to discuss",
       description: "Our consultant will get you your chosen designs",
-      icon: <User size={24} color="black" />,
+      icon: <User size={24} color={COLORS.primary} />,
     },
     {
       title: "Complete the partial payment",
       description: "Our consultant will get you your chosen designs",
-      icon: <ShoppingBag size={24} color="black" />,
+      icon: <ShoppingBag size={24} color={COLORS.primary} />,
     },
   ];
 
@@ -164,11 +165,11 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "700",
     textAlign: "center",
-    color: "#333",
+    color: COLORS.primary,
   },
   subtitle: {
     fontSize: 14,
-    color: "#888",
+    color: COLORS.primary,
     textAlign: "center",
     marginTop: 8,
     paddingHorizontal: 30,
@@ -209,7 +210,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#EEE",
     borderRadius: 10,
-    backgroundColor: "#CCC",
+    opacity: 0.2,
+    backgroundColor: COLORS.primary,
   },
   ringImage: { width: width * 0.8, height: 200 },
 
@@ -243,10 +245,10 @@ const styles = StyleSheet.create({
     elevation: 3,
     shadowOpacity: 0.1,
   },
-  badgeText: { fontSize: 12, fontWeight: "500" },
+  badgeText: { fontSize: 12, fontWeight: "500", color: COLORS.primary },
 
   ctaButton: {
-    backgroundColor: "black",
+    backgroundColor: COLORS.primary,
     flexDirection: "row",
     alignSelf: "center",
     paddingVertical: 14,
@@ -263,7 +265,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginVertical: 30,
   },
-  line: { height: 1, width: 60, backgroundColor: "#333" },
+  line: { height: 1, width: 60, backgroundColor: COLORS.primary },
   diamond: {
     width: 10,
     height: 10,
@@ -271,13 +273,19 @@ const styles = StyleSheet.create({
     borderColor: "#333",
     transform: [{ rotate: "45deg" }],
     marginHorizontal: 5,
+    backgroundColor: COLORS.primary,
   },
 
   processSection: { paddingHorizontal: 25 },
-  processTitle: { fontSize: 18, fontWeight: "700", textAlign: "center" },
+  processTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    textAlign: "center",
+    color: COLORS.primary,
+  },
   processSubtitle: {
     fontSize: 13,
-    color: "#777",
+    color: COLORS.primary,
     textAlign: "center",
     marginVertical: 10,
     lineHeight: 18,
@@ -293,8 +301,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     zIndex: 2,
+    color: COLORS.primary,
   },
-  verticalLine: { width: 1.5, height: 30, backgroundColor: "#333" },
+  verticalLine: { width: 1.5, height: 30, backgroundColor: COLORS.primary },
   smallDiamond: {
     width: 8,
     height: 8,
@@ -302,11 +311,12 @@ const styles = StyleSheet.create({
     borderColor: "#333",
     transform: [{ rotate: "45deg" }],
     marginVertical: 2,
+    backgroundColor: COLORS.primary,
   },
 
   stepContent: { flex: 1, marginLeft: 15, paddingTop: 5, paddingBottom: 35 },
-  stepTitle: { fontSize: 16, fontWeight: "700", color: "#333" },
-  stepDescription: { fontSize: 14, color: "#666", marginTop: 4 },
+  stepTitle: { fontSize: 16, fontWeight: "700", color: COLORS.primary },
+  stepDescription: { fontSize: 14, color: COLORS.primary, marginTop: 4 },
 });
 
 export default BespokePage1;

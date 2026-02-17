@@ -1,4 +1,5 @@
 import { Product } from "../interfaces/product.interface";
+import { WRAPPER_API } from "../store/newApis/apiUrl.const";
 
 /**
  *
@@ -9,26 +10,25 @@ import { Product } from "../interfaces/product.interface";
  * @param setData
  */
 export async function generateJewelleryImage(
-  AiApiUrl: string,
   userId: string,
   product: Product,
-  outfitType: string,
-  outfitColor: string,
-  setData: (data: string) => void
+  setData: (data: string) => void,
+  outfitType?: string,
+  outfitColor?: string
 ) {
   if (!product || !userId) return;
   const formData = new FormData();
   formData.append("userId", userId);
   formData.append("productId", product.id);
-  formData.append("outfitType", outfitType || "suit");
-  formData.append("outfitColor", outfitColor || "black");
+  formData.append("outfitType", outfitType || "");
+  formData.append("outfitColor", outfitColor || "");
 
   const type = product.productType.toLowerCase();
   const jewelleryUrls = { [type]: product.thumbnailUrls[0] };
   formData.append("jewelleryUrls", JSON.stringify(jewelleryUrls));
 
   try {
-    const response = await fetch(`${AiApiUrl}/generateImageByUrl`, {
+    const response = await fetch(`${WRAPPER_API}/generateImageByUrl`, {
       method: "POST",
       body: formData,
     });

@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   card: {
-    backgroundColor: "#EBEBEB",
+    backgroundColor: COLORS.primaryLight,
     borderRadius: 12,
     padding: 12,
     marginBottom: 10,
