@@ -23,7 +23,6 @@ import React, {
 } from "react";
 import {
   BackHandler,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -144,45 +143,7 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.carouselContainer}
-            >
-              {[
-                {
-                  name: "Necklace",
-                  img: require("../assets/images/dummyImages/dummyNecklace.png"),
-                },
-                {
-                  name: "Bracelets",
-                  img: require("../assets/images/dummyImages/dummyBracelete.png"),
-                },
-                {
-                  name: "Earrings",
-                  img: require("../assets/images/dummyImages/dummyEarring.png"),
-                },
-                {
-                  name: "Rings",
-                  img: require("../assets/images/dummyImages/dummyRing.png"),
-                },
-                {
-                  name: "Diamonds",
-                  img: require("../assets/images/dummyImages/dummyDiamond.png"),
-                },
-              ].map((item, index) => (
-                <View key={index} style={styles.cardWrapper}>
-                  <View style={styles.imageCard}>
-                    <Image
-                      source={item.img}
-                      style={styles.productImage}
-                      resizeMode="contain"
-                    />
-                  </View>
-                  <Text style={styles.cardLabel}>{item.name}</Text>
-                </View>
-              ))}
-            </ScrollView>
+            <CategoriesHorizontalScroll />
           </View>
         </LinearGradient>
         <AnnouncementSection />
@@ -226,10 +187,6 @@ export default function HomeScreen() {
         <HorizontalRuleIGM />
         <EventCard />
         <TrustBar />
-        {/* <BrandGridTileView /> */}
-        {/* <HorizontalRuleIGM /> */}
-        {/* <HashtagComponent /> */}
-        {/* <HorizontalRuleIGM /> */}
         <View style={styles.contactSection}>
           <Text style={styles.contactTitle}>
             For any queries, feel free to contact us:
