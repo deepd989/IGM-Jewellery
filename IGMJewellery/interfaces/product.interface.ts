@@ -4,7 +4,6 @@ import { Brand } from "@/enums/brand.enum";
 import { ProductType } from "@/enums/productType.enum";
 import { Review } from "./review.interface";
 
-
 export interface ProductSpecification {
   label: string;
   value: string;
@@ -16,32 +15,32 @@ export interface ProductSpecification {
  */
 export interface ProductDetails {
   // Material info
-  metalType?: string;      // "Yellow Gold", "White Gold", etc.
-  metalPurity?: string;    // "14k", "18k", "22k", etc.
-  metalFinish?: string;    // "High Polish", "Matte", etc.
-  metalColor?: string;     // "Yellow", "White", "Rose"
-  netWeight?: string;      // "0.880 g"
-  grossWeight?: string;    // "0.610 g"
-  
+  metalType?: string; // "Yellow Gold", "White Gold", etc.
+  metalPurity?: string; // "14k", "18k", "22k", etc.
+  metalFinish?: string; // "High Polish", "Matte", etc.
+  metalColor?: string; // "Yellow", "White", "Rose"
+  netWeight?: string; // "0.880 g"
+  grossWeight?: string; // "0.610 g"
+
   // Dimensions
-  height?: string;         // "3 mm"
-  width?: string;          // "3 mm"
-  depth?: string;          // "1 mm"
-  
+  height?: string; // "3 mm"
+  width?: string; // "3 mm"
+  depth?: string; // "1 mm"
+
   // Diamond info
-  diamondWeight?: string;  // "0.024 C"
+  diamondWeight?: string; // "0.024 C"
   diamondClarity?: string; // "SI", "VVS", etc.
-  diamondColor?: string;   // "FG", "D", etc.
-  diamondCount?: string;   // "64"
-  diamondShape?: string;   // "Round"
-  diamondType?: string;    // "Accent Stones"
+  diamondColor?: string; // "FG", "D", etc.
+  diamondCount?: string; // "64"
+  diamondShape?: string; // "Round"
+  diamondType?: string; // "Accent Stones"
   diamondSettingType?: string; // "Prong"
-  
+
   // Stone/Gemstone info
-  stoneType?: string;      // "Natural Diamond", "Gemstone", etc.
-  
+  stoneType?: string; // "Natural Diamond", "Gemstone", etc.
+
   // Certification
-  certOrg?: string;        // "GIA", "IGI", etc.
+  certOrg?: string; // "GIA", "IGI", etc.
 }
 
 export interface Product {
@@ -60,7 +59,9 @@ export interface Product {
   rating?: number; // p_ratings
   specifications?: ProductSpecification[];
   reviews?: Review[];
-  occaision:OccasiomEnum[];
+  occaision: OccasiomEnum[];
   gender: Gender;
   productDetails?: ProductDetails;
+  isImmersiveProduct: boolean;
+  immersiveThumbnailUrl?: string; // URL for immersive product thumbnail
 }

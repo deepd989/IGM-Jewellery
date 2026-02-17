@@ -189,6 +189,25 @@ function getThumbnailUrls(product: MagentoProduct): string[] {
   return [DEFAULT_PRODUCT_IMAGE];
 }
 
+function isImmersiveProduct(product: MagentoProduct): boolean {
+  if (
+    product.media_gallery_entries &&
+    product.media_gallery_entries.length > 0
+  ) {
+    return product.media_gallery_entries.some(
+      (entry: any) => entry?.label === "immersive_image"
+    );
+  }
+  return false;
+}
+
+function getImmersiveThumbnailUrl(product: MagentoProduct): string | undefined {
+  const entry: any = product?.media_gallery_entries.filter(
+    (entry: any) => entry?.label === "immersive_image"
+  );
+  return entry && entry.length > 0 ? entry[0].file : undefined;
+}
+
 /**
  * Generate tags from product attributes (pre-resolved labels)
  */
@@ -442,6 +461,8 @@ export function convertResolvedProduct(
     occaision: parseOccasions(magentoProduct),
     gender: parseGender(magentoProduct),
     productDetails: extractProductDetails(magentoProduct),
+    isImmersiveProduct: isImmersiveProduct(magentoProduct),
+    immersiveThumbnailUrl: getImmersiveThumbnailUrl(magentoProduct),
   };
 }
 
