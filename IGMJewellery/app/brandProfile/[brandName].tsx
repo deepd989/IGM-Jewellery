@@ -14,7 +14,7 @@ export default function BrandDetailPage() {
   const { brandName } = useLocalSearchParams<{ brandName: string }>();
   console.log("BrandDetailPage rendered", brandName);
   const { data: brand, isLoading, error } = useGetBrandByNameQuery(brandName);
-
+  console.log("Brand data:", brand, brandName);
   if (error || !brand) return <></>;
 
   return (
@@ -44,11 +44,9 @@ export default function BrandDetailPage() {
           storeButtonLabel: brand.storeButtonLabel,
           onEnterStore: () => console.log("Enter Store"),
         }}
-        tabs={["About", "Products", "Community"]}
+        tabs={["About", "Products"]}
         initialActiveTab="About"
         heroImageUri="https://example.com/hero.jpg"
-        aboutSections={brand.aboutSections}
-        stats={brand.stats}
       />
       <BottomNavBar activeTab="Categories"></BottomNavBar>
     </SafeAreaView>

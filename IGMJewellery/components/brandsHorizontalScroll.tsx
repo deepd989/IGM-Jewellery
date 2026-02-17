@@ -35,7 +35,6 @@ export default function BrandsHorizontalScroll() {
       };
     }
   );
-  console.log("Brands Data for Scroll:", brandsDataScroll);
   return (
     <>
       <SectionHeader value="Shop by Brands" />
