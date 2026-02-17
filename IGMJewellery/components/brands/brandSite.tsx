@@ -1,5 +1,5 @@
 import { COLORS, SPACING } from "@/constants/theme";
-import { BrandAboutSection, BrandStat } from "@/store/apis/brandsApi";
+import { BrandAboutSection } from "@/store/apis/brandsApi";
 import { useGetProductsByBrandQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -85,15 +85,6 @@ const TabNavigation = ({
   );
 };
 
-// Stats Card Component
-const StatsCard = ({ label, value }: BrandStat) => (
-  <View style={styles.statsCard}>
-    <View style={styles.statsIcon} />
-    <Text style={styles.statsLabel}>{label}</Text>
-    <Text style={styles.statsValue}>{value}</Text>
-  </View>
-);
-
 // Heritage Section Component
 const HeritageSection = ({ title, paragraphs }: BrandAboutSection) => (
   <View style={styles.heritageSection}>
@@ -106,31 +97,11 @@ const HeritageSection = ({ title, paragraphs }: BrandAboutSection) => (
   </View>
 );
 
-type StatsRowProps = {
-  stats: BrandStat[];
-};
-
-// Stats Row Component
-const StatsRow = ({ stats }: StatsRowProps) => (
-  <View style={styles.statsRow}>
-    {stats.map((s, idx) => (
-      <StatsCard
-        key={`${s.label}-${idx}`}
-        label={s.label}
-        value={s.value}
-        imageUri={s.imageUri}
-      />
-    ))}
-  </View>
-);
-
 type BrandProfileProps = {
   header: ProfileHeaderProps;
   tabs: string[];
   initialActiveTab: string;
-  heroImageUri: string;
   aboutSections: BrandAboutSection[];
-  stats: BrandStat[];
 };
 
 // Main Component
@@ -138,9 +109,7 @@ export default function BrandProfile({
   header,
   tabs,
   initialActiveTab,
-  heroImageUri,
   aboutSections,
-  stats,
 }: BrandProfileProps) {
   const [activeTab, setActiveTab] = useState(initialActiveTab);
   const router = useRouter();
@@ -161,11 +130,7 @@ export default function BrandProfile({
     isError,
     error,
     refetch,
-  } = useGetProductsByBrandQuery({
-    brand: header.brandNameKey as string,
-    sortBy: selectedSort,
-    filters: activeFilters,
-  });
+  } = useGetProductsByBrandQuery(header.businessName as string);
 
   useEffect(() => {
     console.log("Fetched products for brand:", header.brandNameKey, products);
@@ -208,10 +173,6 @@ export default function BrandProfile({
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.contentContainer}>
-            <Image
-              source={{ uri: heroImageUri }}
-              style={styles.imagePlaceholder}
-            />
             {aboutSections.map((section, idx) => (
               <HeritageSection
                 key={`${section.title}-${idx}`}
@@ -219,7 +180,6 @@ export default function BrandProfile({
                 paragraphs={section.paragraphs}
               />
             ))}
-            <StatsRow stats={stats} />
           </View>
         </ScrollView>
       )}
@@ -289,16 +249,16 @@ export default function BrandProfile({
             )}
 
             {/* Left: View Toggle */}
-            <HapticButton style={styles.leftFab} onPress={toggleViewMode}>
+            {/* <HapticButton style={styles.leftFab} onPress={toggleViewMode}>
               <Ionicons
                 name={viewMode === "grid" ? "list" : "grid"}
                 size={22}
                 color="#053844"
               />
-            </HapticButton>
+            </HapticButton> */}
 
-            {/* Bottom Bar */}
-            <View style={styles.bottomBar}>
+            {/* Filter and sort bar Bar */}
+            {/* <View style={styles.bottomBar}>
               <HapticButton
                 style={styles.bottomBarItem}
                 onPress={() => setIsSortVisible(true)}
@@ -336,7 +296,7 @@ export default function BrandProfile({
                   </View>
                 )}
               </HapticButton>
-            </View>
+            </View> */}
 
             <SortModal
               visible={isSortVisible}

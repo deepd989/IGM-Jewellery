@@ -15,20 +15,18 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Alert,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../auth/authContext";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS, SPACING } from "../../constants/theme";
-import { generateJewelleryImage } from "../../helpers/generateJewelleryImage";
-import { Product } from "../../interfaces/product.interface";
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -50,17 +48,6 @@ export default function ProductDetailScreen() {
     isError,
     error,
   } = useGetProductByIdQuery(id as string);
-
-  useEffect(() => {
-    generateJewelleryImage(
-      apiUrl,
-      userId as string,
-      product as Product,
-      "casual wear",
-      "black",
-      setFirstImageBase64State
-    );
-  }, [product]);
 
   useEffect(() => {
     console.log("First image base64 updated.", firstImageBase64State);

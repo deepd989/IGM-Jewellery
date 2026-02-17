@@ -3,7 +3,6 @@ import GiftExplore from "@/components/giftExplore";
 import GiftingCard from "@/components/giftingCard";
 import HashtagComponent from "@/components/hashtagComponent";
 import HorizontalRuleIGM from "@/components/horizontalRuleIGM";
-import LatestCollections from "@/components/latestCollections";
 import { TopPicks } from "@/components/topPicks";
 import { COLORS, SPACING } from "@/constants/theme";
 import { useGetProductsQuery } from "@/store/apis/product";
@@ -33,7 +32,7 @@ export default function Gift() {
         <HorizontalRuleIGM />
         <GiftingCard sendAGiftButton={true} />
         <HorizontalRuleIGM />
-        <LatestCollections />
+        {/* <LatestCollections /> */}
         <HorizontalRuleIGM />
         <HashtagComponent />
       </ScrollView>

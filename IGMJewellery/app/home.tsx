@@ -37,7 +37,6 @@ import { HapticButton } from "../components/basic components/hapticButton";
 import BrandsHorizontalScroll from "../components/brandsHorizontalScroll";
 import CategoriesHorizontalScroll from "../components/categoriesHorizontallScroll";
 import HowItLooksWrapper from "../components/homePageCard";
-import LatestCollections from "../components/latestCollections";
 import { SectionHeader } from "../components/section";
 import BrandCollectionCards from "../components/shopByCollectionsNew";
 import { TrendingProducts } from "../components/TrendingProducts";
@@ -208,7 +207,7 @@ export default function HomeScreen() {
         <HorizontalRuleIGM />
         <TrendingProducts products={products} />
         <HorizontalRuleIGM />
-        <LatestCollections />
+        {/* <LatestCollections /> */}
         <HorizontalRuleIGM />
 
         {/* <HorizontalRuleIGM /> */}

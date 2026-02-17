@@ -132,8 +132,7 @@ const applyFilters = (
       case "metal":
         filteredProducts = filteredProducts.filter((p) =>
           selectedOptions.some((metal) => {
-            const metalType =
-              p.productDetails?.metalType?.toLowerCase() || "";
+            const metalType = p.productDetails?.metalType?.toLowerCase() || "";
             return metalType.includes(metal.toLowerCase());
           })
         );

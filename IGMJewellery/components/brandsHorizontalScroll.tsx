@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import React from "react";
 import { ImageSourcePropType, StyleSheet } from "react-native";
 import { Brand, useGetBrandsQuery } from "../store/apis/brandsApi";
@@ -5,6 +6,7 @@ import GradientHorizontalScroll, { ScrollGradientItem } from "./gradientScroll";
 import { SectionHeader } from "./section";
 
 export default function BrandsHorizontalScroll() {
+  const router = useRouter();
   const { data: brandsData = [], isLoading } = useGetBrandsQuery({});
   const brandsDataScroll: ScrollGradientItem[] = brandsData.map(
     (brand: Brand, index) => {
@@ -32,10 +34,12 @@ export default function BrandsHorizontalScroll() {
         name: brand.businessName,
         img: { uri: brand.profileImageUri } as ImageSourcePropType,
         gradient: gradient,
+        onpress: () => {
+          router.push(`/brandProfile/${brand.businessNameKey}`);
+        },
       };
     }
   );
-  console.log("Brands Data for Scroll:", brandsDataScroll);
   return (
     <>
       <SectionHeader value="Shop by Brands" />
