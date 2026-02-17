@@ -249,7 +249,7 @@ export default function ProductDetailScreen() {
         onClose={() => setIsTryOnSelectorVisible(false)}
         onSelectVR={() => {
           router.push({
-            pathname: "/virtualTryOn",
+            pathname: "/virtualTryOn2",
             params: {
               productId: product.id,
               productTitle: product.title,

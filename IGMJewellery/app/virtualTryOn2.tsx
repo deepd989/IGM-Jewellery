@@ -1,12 +1,14 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
+import BottomNavBar from "../components/bottomNavBar";
 
 export default function VirtualTryOn() {
   const tryOnUrl = "https://jeweltry.plushvie.in/igmindia/118305";
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <WebView
         source={{ uri: tryOnUrl }}
         style={{ flex: 1 }}
@@ -20,7 +22,8 @@ export default function VirtualTryOn() {
           event.request.grant(event.request.resources);
         }}
       />
-    </View>
+      <BottomNavBar activeTab="AiDiscover"></BottomNavBar>
+    </SafeAreaView>
   );
 }
 

@@ -44,44 +44,61 @@ const MENU_ITEMS = [
     id: "details",
     title: "Profile Details",
     desc: "Name, Phone Number, Email, Address",
+    icon: "person-outline",
     path: "/profile/details",
   },
   {
     id: "bank",
     title: "Add Bank/UPI details",
     desc: "Bank Account details, PAN",
+    icon: "card-outline",
     path: "/profile/bank-details",
   },
   {
     id: "issue-gift",
     title: "Issue IGM E-Gift Card",
     desc: "Issue gift cards",
+    icon: "gift-outline",
     path: "/giftStepperPage",
   },
   {
     id: "redeem-gift",
     title: "Redeem E-Gift Card",
-    desc: "redeem gift cards",
+    desc: "Redeem gift cards",
+    icon: "qr-code-outline",
     path: "/redeemGiftStep1",
   },
-  { id: "wishlist", title: "Wishlist", desc: "Your most loved jewellery" },
+  {
+    id: "wishlist",
+    title: "Wishlist",
+    desc: "Your most loved jewellery",
+    icon: "heart-outline",
+  },
   {
     id: "loyalty",
     title: "Loyalty Points",
     desc: "Your most loved jewellery",
+    icon: "ribbon-outline",
     path: "/profile/loyalty",
   },
   {
     id: "language",
     title: "Language & Currency",
     desc: "Your most loved jewellery",
+    icon: "globe-outline",
     path: "/profile/language-currency",
   },
-  { id: "support", title: "Customer Support", desc: "Need Help? Contact us" },
+  {
+    id: "support",
+    title: "Customer Support",
+    desc: "Need Help? Contact us",
+    icon: "headset-outline",
+  },
   {
     id: "faqs",
     title: "FAQs",
     desc: "Frequently Asked Questions",
+    icon: "help-circle-outline",
     path: "/profile/faqs",
   },
 ];
@@ -110,7 +127,6 @@ export default function ProfileScreen() {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.userSection}>
-          <View />
           <Image
             source={{
               uri: "https://drive.google.com/uc?export=download&id=19-d6USaW7yMEDIqEEPWx-lfilvBiNBCF",
@@ -136,10 +152,16 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.statsGrid}>
-          {PROFILE_STATS.map((stat) => (
+          {PROFILE_STATS.map((stat, index) => (
             <HapticButton
               key={stat.id}
-              style={styles.statCard}
+              style={[
+                styles.statCard,
+                (index === 1 || index === 2) && {
+                  backgroundColor: COLORS.secondary,
+                  opacity: 0.9,
+                },
+              ]}
               onPress={() => stat.path && router.push(stat.path as any)}
             >
               <Ionicons name={stat.icon as any} size={24} color="#053844" />
@@ -156,11 +178,18 @@ export default function ProfileScreen() {
               style={styles.menuItem}
               onPress={() => item.path && router.push(item.path as any)}
             >
-              <View style={styles.menuIconPlaceholder} />
+              <View style={styles.menuIconContainer}>
+                <Ionicons
+                  name={item.icon as any}
+                  size={20}
+                  color={COLORS.primary}
+                />
+              </View>
               <View style={styles.menuContent}>
                 <Text style={styles.menuTitle}>{item.title}</Text>
                 <Text style={styles.menuDesc}>{item.desc}</Text>
               </View>
+              <Ionicons name="chevron-forward" size={18} color="#CCC" />
             </HapticButton>
           ))}
         </View>
@@ -209,10 +238,8 @@ export default function ProfileScreen() {
 
         <View style={styles.footerLinks}>
           {[
-            { title: "Change Password" },
             { title: "Privacy Policies", path: "/profile/privacy-policies" },
             { title: "Terms of Use" },
-            { title: "Delete Account" },
           ].map((link) => (
             <HapticButton
               key={link.title}
@@ -223,13 +250,14 @@ export default function ProfileScreen() {
             </HapticButton>
           ))}
         </View>
-
-        <HapticButton style={styles.logoutBtn} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Logout</Text>
-        </HapticButton>
+        {userId && (
+          <HapticButton style={styles.logoutBtn} onPress={handleLogout}>
+            <Text style={styles.logoutText}>Logout</Text>
+          </HapticButton>
+        )}
         <Text style={styles.version}>APP VERSION 1.1.0</Text>
       </ScrollView>
-      <BottomNavBar activeTab="Profile"></BottomNavBar>
+      <BottomNavBar activeTab="Profile" />
     </SafeAreaView>
   );
 }
@@ -243,7 +271,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#FFF",
   },
-  headerTitle: { fontSize: 18, fontWeight: "700", color: COLORS.text },
+  headerTitle: { fontSize: 18, fontWeight: "700", color: COLORS.primary },
   pointsBadge: {
     flexDirection: "row",
     alignItems: "center",
@@ -252,48 +280,61 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 20,
   },
-  pointsText: { fontSize: 12, fontWeight: "700", marginLeft: 4, color: COLORS.text },
+  pointsText: {
+    fontSize: 12,
+    fontWeight: "700",
+    marginLeft: 4,
+    color: COLORS.text,
+  },
   userSection: {
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
     backgroundColor: "#FFF",
   },
-  avatarPlaceholder: { width: 50, height: 50 },
+  avatarPlaceholder: { width: 50, height: 50, borderRadius: 25 },
   userInfo: { flex: 1, marginLeft: 16 },
-  userName: { fontSize: 16, fontWeight: "700", color: COLORS.text },
-  userPhone: { fontSize: 12, color: COLORS.textSecondary, marginTop: 2 },
+  userName: { fontSize: 16, fontWeight: "700", color: COLORS.primary },
+  userPhone: { fontSize: 12, color: "#666", marginTop: 2 },
   langSelector: { flexDirection: "row", alignItems: "center" },
   flag: { width: 24, height: 16, marginRight: 8 },
-  langText: { fontSize: 14, fontWeight: "600", color: COLORS.text },
+  langText: { fontSize: 14, fontWeight: "600", color: "#333" },
   statsGrid: { flexDirection: "row", flexWrap: "wrap", padding: 8 },
   statCard: {
     width: "46%",
-    backgroundColor: "#FFF",
+    backgroundColor: COLORS.primaryLight || "#E6F0F2",
     margin: "2%",
     padding: 16,
     borderRadius: 8,
   },
-  statTitle: { fontSize: 14, fontWeight: "700", marginTop: 8, color: COLORS.text },
-  statDesc: { fontSize: 11, color: COLORS.textSecondary, marginTop: 4 },
+  statTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    marginTop: 8,
+    color: COLORS.primary,
+  },
+  statDesc: { fontSize: 11, color: "#666", marginTop: 4 },
   menuList: { backgroundColor: "#FFF", marginTop: 12 },
   menuItem: {
     flexDirection: "row",
+    alignItems: "center",
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#F0F0F0",
   },
-  menuIconPlaceholder: {
-    width: 36,
-    height: 36,
-    backgroundColor: "#F0F0F0",
-    borderRadius: 4,
+  menuIconContainer: {
+    width: 40,
+    height: 40,
+    backgroundColor: "#F8F8F8",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
   },
   menuContent: { flex: 1, marginLeft: 16 },
-  menuTitle: { fontSize: 14, fontWeight: "600", color: COLORS.text },
-  menuDesc: { fontSize: 11, color: COLORS.textSecondary, marginTop: 2 },
+  menuTitle: { fontSize: 14, fontWeight: "600", color: COLORS.primary },
+  menuDesc: { fontSize: 11, color: "#666", marginTop: 2 },
   sectionHeader: { padding: 16, marginTop: 12 },
-  sectionTitle: { fontSize: 16, fontWeight: "700", color: COLORS.text },
+  sectionTitle: { fontSize: 16, fontWeight: "700", color: COLORS.primary },
   orderCard: {
     backgroundColor: "#FFF",
     margin: 16,
@@ -308,11 +349,11 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   orderInfo: { flex: 1, marginLeft: 12 },
-  orderId: { fontSize: 14, fontWeight: "700", color: COLORS.text },
-  orderDate: { fontSize: 11, color: COLORS.textSecondary },
+  orderId: { fontSize: 14, fontWeight: "700", color: COLORS.primary },
+  orderDate: { fontSize: 11, color: COLORS.primary },
   orderMeta: { alignItems: "flex-end" },
-  orderPrice: { fontSize: 14, fontWeight: "700", color: COLORS.text },
-  orderItems: { fontSize: 11, color: COLORS.textSecondary },
+  orderPrice: { fontSize: 14, fontWeight: "700", color: COLORS.primary },
+  orderItems: { fontSize: 11, color: COLORS.primary },
   orderStatusRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -321,7 +362,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginVertical: 12,
   },
-  statusText: { fontSize: 11, fontWeight: "600", color: COLORS.text },
+  statusText: { fontSize: 11, fontWeight: "600", color: COLORS.primary },
   subOrderItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -336,16 +377,16 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   subOrderInfo: { flex: 1, marginLeft: 12 },
-  subOrderStatus: { fontSize: 10, color: COLORS.textSecondary },
-  subOrderTitle: { fontSize: 13, fontWeight: "600", color: COLORS.text },
-  subOrderPrice: { fontSize: 12, fontWeight: "700", color: COLORS.text },
+  subOrderStatus: { fontSize: 10, color: COLORS.primary },
+  subOrderTitle: { fontSize: 13, fontWeight: "600", color: COLORS.primary },
+  subOrderPrice: { fontSize: 12, fontWeight: "700", color: COLORS.primary },
   footerLinks: { backgroundColor: "#FFF", marginTop: 20 },
   footerLinkItem: {
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#F5F5F5",
   },
-  footerLinkText: { fontSize: 14, fontWeight: "500", color: COLORS.text },
+  footerLinkText: { fontSize: 14, fontWeight: "500", color: COLORS.primary },
   logoutBtn: {
     margin: 24,
     padding: 16,
@@ -354,7 +395,7 @@ const styles = StyleSheet.create({
     borderColor: "#DDD",
     alignItems: "center",
   },
-  logoutText: { fontSize: 14, fontWeight: "600", color: COLORS.text },
+  logoutText: { fontSize: 14, fontWeight: "600", color: "#333" },
   version: {
     textAlign: "center",
     color: "#999",

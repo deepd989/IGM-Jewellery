@@ -37,7 +37,7 @@ export function TopPicks({ products }: TopPicksProps) {
       />
       <ViewAllButton
         onPress={() => {
-          router.push("/product-lists");
+          router.push("/product-list");
         }}
       ></ViewAllButton>
     </>

@@ -177,7 +177,7 @@ export default function HomeScreen() {
         <TrendingProducts products={products} />
         <HorizontalRuleIGM />
         {/* <LatestCollections /> */}
-        <HorizontalRuleIGM />
+        {/* <HorizontalRuleIGM /> */}
 
         {/* <HorizontalRuleIGM /> */}
         {/* <TryAtHomeCard /> */}
