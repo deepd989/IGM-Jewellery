@@ -98,9 +98,9 @@ export default function WishlistScreen() {
   const renderHeader = () => (
     <View>
       <View style={styles.compareSection}>
-        <Text style={styles.compareText}>
+        {/* <Text style={styles.compareText}>
           You can choose 2 products to compare
-        </Text>
+        </Text> */}
         {compareList.length > 0 && (
           <HapticButton onPress={handleClearCompare}>
             <Text style={styles.clearText}>Clear ({compareList.length})</Text>
@@ -120,6 +120,7 @@ export default function WishlistScreen() {
         onRemoveFromWishlist={() => handleRemoveFromWishlist(item.id)}
         isInCompare={isProductInCompare(item.id)}
         onToggleCompare={() => handleToggleCompare(item)}
+        loadAiPreview={true} // Disable AI preview in wishlist for faster loading
       />
     </View>
   );

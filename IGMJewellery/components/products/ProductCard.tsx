@@ -7,7 +7,7 @@ import {
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -19,6 +19,7 @@ import {
 } from "react-native";
 import { useAuth } from "../../auth/authContext";
 import { COLORS, SPACING } from "../../constants/theme";
+import { generateJewelleryImage } from "../../helpers/generateJewelleryImage";
 import { firstImageHelper } from "../../helpers/imageUsageHelper";
 import { HapticButton } from "../basic components/hapticButton";
 
@@ -30,6 +31,7 @@ interface ProductCardProps {
   onRemoveFromWishlist?: () => void;
   isInCompare?: boolean;
   onToggleCompare?: () => void;
+  loadAiPreview?: boolean;
 }
 
 const { width } = Dimensions.get("window");
@@ -42,6 +44,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onRemoveFromWishlist,
   isInCompare,
   onToggleCompare,
+  loadAiPreview = false,
 }) => {
   const { userId, apiUrl, imageGlobal } = useAuth();
   const router = useRouter();
@@ -49,6 +52,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
   const [showSuccess, setShowSuccess] = useState(false);
   const [firstImageBase64State, setFirstImageBase64State] = useState("");
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
 
   // Wishlist functionality
   const { data: wishlistData } = useGetWishlistQuery();
@@ -56,6 +60,29 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     useAddToWishlistMutation();
   const [removeFromWishlist, { isLoading: isRemovingFromWishlist }] =
     useRemoveFromWishlistMutation();
+
+  useEffect(() => {
+    setIsPreviewLoading(true);
+    const handleAiPreview = async () => {
+      if (loadAiPreview && firstImageBase64State === "") {
+        try {
+          await generateJewelleryImage(
+            userId as string,
+            product,
+            setFirstImageBase64State,
+            "any outfit that goes with the jewellery and a person's face",
+            "any color"
+          );
+          setIsPreviewLoading(false);
+        } catch (error) {
+          setIsPreviewLoading(false);
+          console.error("Failed to generate preview:", error);
+        }
+      }
+    };
+
+    handleAiPreview();
+  }, []);
 
   // Determine if in wishlist from props or query
   const isInWishlist =
@@ -189,17 +216,36 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     >
       {/* Image Section */}
       <View style={[styles.imageWrapper, !isGrid && styles.listImageWrapper]}>
-        <Image
-          source={{
-            uri: firstImageHelper(
-              firstImageBase64State,
-              product.thumbnailUrls[0],
-              imageGlobal
-            ),
-          }}
-          style={styles.image}
-          resizeMode="cover"
-        />
+        {isPreviewLoading && loadAiPreview ? (
+          <View
+            style={[
+              StyleSheet.absoluteFillObject,
+              {
+                backgroundColor: "rgba(255,255,255,0.8)",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 1,
+              },
+            ]}
+          >
+            <ActivityIndicator size="large" color={COLORS.primary} />
+            <Text style={{ marginTop: 8, color: COLORS.textSecondary }}>
+              Generating preview...
+            </Text>
+          </View>
+        ) : (
+          <Image
+            source={{
+              uri: firstImageHelper(
+                firstImageBase64State,
+                product.thumbnailUrls[0],
+                loadAiPreview
+              ),
+            }}
+            style={styles.image}
+            resizeMode="cover"
+          />
+        )}
 
         {/* New Badge */}
         {product.isNew && (
