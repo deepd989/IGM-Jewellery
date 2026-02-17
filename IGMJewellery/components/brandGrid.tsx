@@ -7,6 +7,7 @@ import malabarLogo from "../assets/images/bwBrandlogo/mbrandlogo.png";
 import pcjLogo from "../assets/images/bwBrandlogo/pcjlogo.png";
 import tanishqLogo from "../assets/images/bwBrandlogo/Tanishq_Logo.png";
 import tbzLogo from "../assets/images/bwBrandlogo/tbzlogo.png";
+import { COLORS } from "../constants/theme";
 import { SectionHeader } from "./section";
 
 const W = Dimensions.get("window").width;
@@ -53,7 +54,7 @@ export default function BrandGridTileView() {
 
   return (
     <View>
-      <SectionHeader value="Explore Brand" />
+      <SectionHeader value="One-Shop-Stop For All Brands" />
       <View style={styles.container}>
         {/* ROW 1 */}
         <View style={styles.row}>
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   tile: {
-    backgroundColor: "#F3F3F3",
+    backgroundColor: COLORS.primaryLight,
     borderRadius: 22,
     borderWidth: 3,
     justifyContent: "center",

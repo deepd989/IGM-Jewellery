@@ -10,7 +10,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  View
+  View,
 } from "react-native";
 
 import { CartBadge } from "@/components/cart/CardBadge";
@@ -30,7 +30,7 @@ type ListingScreenProps = {
 };
 
 // const FILTER_CHIPS = ["All", "Latest", "Best Sellers", "Store Pick-up"];
-const FILTER_CHIPS = ["All", "Latest", "Best Sellers",];
+const FILTER_CHIPS = ["All", "Latest", "Best Sellers"];
 const MENU_ITEMS = [
   { key: "Bespoke Jewellery", path: "/bespoke" },
   { key: "Our Brands", path: "/brands" },
@@ -365,7 +365,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
           <HapticButton onPress={() => router.back()} style={styles.iconBtn}>
             <Ionicons name="chevron-back" size={24} color={COLORS.text} />
           </HapticButton>
-          <Text style={styles.headerTitle}>Explore</Text>
+          {/* <Text style={styles.headerTitle}>Explore</Text> */}
         </View>
 
         <View style={styles.headerActions}>

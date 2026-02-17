@@ -6,4 +6,5 @@ export enum ProductType {
   Gift = "Gift",
   DiamondStone = "Diamond Stone",
   Bracelet = "Bracelet",
+  Bangles = "Bangles",
 }

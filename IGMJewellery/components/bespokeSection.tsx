@@ -2,7 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { COLORS } from "../constants/theme";
 import { HapticButton } from "./basic components/hapticButton";
+import BespokeVideoComponent from "./bespokeVideo";
 
 export default function BespokeSection() {
   const router = useRouter();
@@ -10,28 +12,11 @@ export default function BespokeSection() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <Text style={styles.title}>Bespoke jewellery</Text>
-      <Text style={styles.subtitle}>Pick, curate, customise & deliver</Text>
+      <Text style={styles.title}>Bespoke Jewellery</Text>
+      <Text style={styles.subtitle}>Design it, Craft it, Own it</Text>
 
       {/* Steps */}
-      <View
-        style={[
-          styles.step,
-          styles.clipBottomLeft,
-          styles.clipTopRight,
-          styles.clipBottomRight,
-        ]}
-      >
-        <Text style={styles.stepText}>Submit your designs</Text>
-      </View>
-
-      <View style={[styles.step, styles.clipBottomLeft, styles.clipTopRight]}>
-        <Text style={styles.stepText}>Get assigned a design consultant</Text>
-      </View>
-
-      <View style={[styles.step, styles.clipTopLeft, styles.clipBottomRight]}>
-        <Text style={styles.stepText}>Ideate, curate and customise</Text>
-      </View>
+      <BespokeVideoComponent></BespokeVideoComponent>
 
       {/* CTA */}
       <HapticButton style={styles.cta} onPress={() => router.push("/bespoke")}>
@@ -51,9 +36,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "600",
     textAlign: "center",
+    color: COLORS.primary,
   },
   subtitle: {
     fontSize: 14,

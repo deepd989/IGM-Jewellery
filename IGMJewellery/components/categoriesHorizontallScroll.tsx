@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 import GradientHorizontalScroll from "./gradientScroll";
+import { SectionHeader } from "./section";
 
 const CategoriesData = [
   {
@@ -46,7 +47,12 @@ const CategoriesData = [
 ];
 
 export default function CategoriesHorizontalScroll() {
-  return <GradientHorizontalScroll data={CategoriesData} />;
+  return (
+    <>
+      <SectionHeader value="Shop by Categories" />
+      <GradientHorizontalScroll data={CategoriesData} />
+    </>
+  );
 }
 
 const styles = StyleSheet.create({

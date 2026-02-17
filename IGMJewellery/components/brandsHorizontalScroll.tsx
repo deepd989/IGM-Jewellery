@@ -2,6 +2,7 @@ import React from "react";
 import { ImageSourcePropType, StyleSheet } from "react-native";
 import { Brand, useGetBrandsQuery } from "../store/apis/brandsApi";
 import GradientHorizontalScroll, { ScrollGradientItem } from "./gradientScroll";
+import { SectionHeader } from "./section";
 
 export default function BrandsHorizontalScroll() {
   const { data: brandsData = [], isLoading } = useGetBrandsQuery({});
@@ -35,7 +36,12 @@ export default function BrandsHorizontalScroll() {
     }
   );
   console.log("Brands Data for Scroll:", brandsDataScroll);
-  return <GradientHorizontalScroll data={brandsDataScroll} />;
+  return (
+    <>
+      <SectionHeader value="Shop by Brands" />
+      <GradientHorizontalScroll data={brandsDataScroll} />
+    </>
+  );
 }
 
 const styles = StyleSheet.create({

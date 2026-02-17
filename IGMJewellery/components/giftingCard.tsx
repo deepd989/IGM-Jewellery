@@ -1,79 +1,96 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import {
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../constants/theme";
 import RibbonGiftCard from "./gifting/ribbonGiftCard";
 
 const { width } = Dimensions.get("window");
 
-export default function GiftingCard({showExploreButton=false,showHeader=false,amount,description,sendAGiftButton}: {showExploreButton?: boolean,showHeader?: boolean,amount?: number,description?: string,sendAGiftButton?: boolean}) {
-    const router = useRouter();
+export default function GiftingCard({
+  showExploreButton = false,
+  showHeader = false,
+  amount,
+  description,
+  sendAGiftButton,
+}: {
+  showExploreButton?: boolean;
+  showHeader?: boolean;
+  amount?: number;
+  description?: string;
+  sendAGiftButton?: boolean;
+}) {
+  const router = useRouter();
   return (
     <View style={styles.container}>
       {/* Heading */}
-      {showHeader &&
-      <View>
-        <Text style={styles.title}>Gifting made easy</Text>
-        <Text style={styles.subtitle}>
-          Pick, curate, customise & deliver
-        </Text>
-      </View>
-      }
+      {showHeader && (
+        <View>
+          <Text style={styles.title}>Gifting made easy</Text>
+          <Text style={styles.subtitle}>Pick, curate, customise & deliver</Text>
+        </View>
+      )}
 
       {/* Card */}
-        <RibbonGiftCard/>
+      <RibbonGiftCard />
 
-        {amount && amount>0 &&
-        <Text style={{ 
-          fontSize: 24,
-          fontWeight: "600",
-          marginRight: 10,
-          position: "absolute",
-          right: 0,
-          bottom: 126,
-          color: COLORS.text,
-        }}> ₹ {amount.toLocaleString('en-IN')}</Text>
-        }
+      {amount && amount > 0 && (
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "600",
+            marginRight: 10,
+            position: "absolute",
+            right: 0,
+            bottom: 126,
+            color: COLORS.text,
+          }}
+        >
+          {" "}
+          ₹ {amount.toLocaleString("en-IN")}
+        </Text>
+      )}
 
-        {description &&
-        <Text style={{ 
-          fontSize: 24,
-          fontWeight: "600",
-          position: "absolute",
-          right: -10,
-          bottom: 176,
-          marginRight: 10,
-          color: COLORS.text,
-        }}>{description}</Text>
-        }
+      {description && (
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "600",
+            position: "absolute",
+            right: -10,
+            bottom: 176,
+            marginRight: 10,
+            color: COLORS.text,
+          }}
+        >
+          {description}
+        </Text>
+      )}
 
-        {/* CTA Button */}
-        {showExploreButton &&
-        <Pressable style={styles.button} onPress={() => router.push('/gift')}>
+      {/* CTA Button */}
+      {showExploreButton && (
+        <Pressable style={styles.button} onPress={() => router.push("/gift")}>
           <Text style={styles.buttonText}>Explore gifting</Text>
           <View style={styles.iconCircle}>
             <Ionicons name="arrow-forward" size={18} color="#053844" />
           </View>
-        </Pressable>}
+        </Pressable>
+      )}
 
-        {sendAGiftButton &&
-        <Pressable style={styles.button} onPress={() => router.push('/giftStepperPage')}>
+      {sendAGiftButton && (
+        <Pressable
+          style={styles.button}
+          onPress={() => router.push("/giftStepperPage")}
+        >
           <Text style={styles.buttonText}>Send A Gift</Text>
           <View style={styles.iconCircle}>
             <Ionicons name="arrow-forward" size={18} color="#053844" />
           </View>
-        </Pressable>}
+        </Pressable>
+      )}
     </View>
   );
 }
-
 
 const CARD_RADIUS = 20;
 
@@ -101,7 +118,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     height: 320,
     borderRadius: CARD_RADIUS,
-    backgroundColor: "#F7F7F7",
+    backgroundColor: COLORS.primaryLight,
     overflow: "hidden",
     position: "relative",
   },
@@ -112,7 +129,7 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 24,
-    backgroundColor: "#D9D9D9",
+    backgroundColor: COLORS.primary,
   },
 
   horizontalRibbon: {
@@ -121,7 +138,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 56,
     height: 24,
-    backgroundColor: "#D9D9D9",
+    backgroundColor: COLORS.primary,
   },
 
   knot: {

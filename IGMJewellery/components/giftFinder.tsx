@@ -1,21 +1,31 @@
 import { Ionicons } from "@expo/vector-icons";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+
+import {
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import Modal from "react-native-modal";
 
 import { OCCASIONS } from "@/constants/occasions";
 import { ProductTypes } from "@/constants/productTypes";
 import { RELATIONSHIPS } from "@/constants/relationships";
 import { RouteParam } from "@/constants/routeNavigationConstants";
-import { useRouter } from "expo-router";
 import { HapticButton } from "./basic components/hapticButton";
 
+const SCREEN_WIDTH = Dimensions.get("window").width;
+
 export default function GiftFinder() {
-  const SCREEN_WIDTH = Dimensions.get("window").width;
   const navigation = useNavigation<NavigationProp<RouteParam>>();
   const router = useRouter();
+
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedRelationship, setSelectedRelationship] = useState("");
   const [selectedOccasion, setSelectedOccasion] = useState("");
@@ -29,7 +39,6 @@ export default function GiftFinder() {
   const relationships = RELATIONSHIPS;
   const occasions = OCCASIONS;
 
-  // Helper function to determine gender based on relationship
   const getGenderFromRelationship = (relationship: string): string => {
     const maleRelationships = [
       "Father",
@@ -40,7 +49,6 @@ export default function GiftFinder() {
       "Grandfather",
       "Uncle",
     ];
-
     const femaleRelationships = [
       "Mother",
       "Sister",
@@ -55,29 +63,27 @@ export default function GiftFinder() {
       maleRelationships.some((rel) =>
         relationship.toLowerCase().includes(rel.toLowerCase())
       )
-    ) {
+    )
       return "Male";
-    } else if (
+    if (
       femaleRelationships.some((rel) =>
         relationship.toLowerCase().includes(rel.toLowerCase())
       )
-    ) {
+    )
       return "Female";
-    }
     return "Unisex";
   };
 
   const handleStartLooking = () => {
     const gender = getGenderFromRelationship(selectedRelationship);
-    const navigationData = {
-      categoryId: selectedCategory,
-      gender: gender,
-      occasion: selectedOccasion,
-      productType: selectedCategory,
-    };
     router.push({
       pathname: "/product-list",
-      params: navigationData,
+      params: {
+        categoryId: selectedCategory,
+        gender: gender,
+        occasion: selectedOccasion,
+        productType: selectedCategory,
+      },
     });
   };
 
@@ -86,12 +92,18 @@ export default function GiftFinder() {
     value: string,
     type: "category" | "relationship" | "occasion" | "price"
   ) => (
-    <HapticButton style={styles.dropdown} onPress={() => setOpenDropdown(type)}>
-      <Text style={styles.dropdownText}>
-        {value !== "" ? value : `Choose ${label}`}
-      </Text>
-      <Ionicons name="chevron-down" size={20} color="#333" />
-    </HapticButton>
+    <View style={styles.dropdownContainer}>
+      <Text style={styles.label}>{label}</Text>
+      <HapticButton
+        style={styles.dropdown}
+        onPress={() => setOpenDropdown(type)}
+      >
+        <Text style={styles.dropdownText}>
+          {value !== "" ? value : `Choose ${label}`}
+        </Text>
+        <Ionicons name="chevron-down" size={20} color="#1D3D47" />
+      </HapticButton>
+    </View>
   );
 
   const renderListModal = (
@@ -102,9 +114,10 @@ export default function GiftFinder() {
     <Modal
       isVisible={openDropdown === type}
       onBackdropPress={() => setOpenDropdown(null)}
+      backdropOpacity={0.4}
     >
       <View style={styles.modalBox}>
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           {data.map((item) => (
             <HapticButton
               key={item}
@@ -124,41 +137,45 @@ export default function GiftFinder() {
 
   return (
     <View style={styles.wrapper}>
+      {/* Top Logo Section */}
+      <View style={styles.logoContainer}>
+        <View style={styles.logoCircle}>
+          <Image
+            source={require("../assets/images/icon.png")}
+            style={{ width: 80, height: 80, borderRadius: 50 }}
+          />
+        </View>
+      </View>
+
       <Text style={styles.title}>Not sure what to gift?</Text>
       <Text style={styles.subtitle}>
-        Let <Text style={{ fontWeight: "700" }}>Sonar</Text> help you
+        Let{" "}
+        <Text
+          style={{ fontWeight: "bold", fontStyle: "italic", color: "#1D3D47" }}
+        >
+          Zeywar Ai
+        </Text>{" "}
+        help you
       </Text>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>I am looking for...</Text>
-        {renderDropdown("Category", selectedCategory, "category")}
-
-        <Text style={styles.label}>within</Text>
+      <View style={styles.mainCard}>
+        {renderDropdown("I am looking for...", selectedCategory, "category")}
         {renderDropdown(
-          "Price Range",
+          "within",
           `₹${priceRange[0]} - ₹${priceRange[1]}`,
           "price"
         )}
+        {renderDropdown("for my", selectedRelationship, "relationship")}
+        {renderDropdown("on the occasion of", selectedOccasion, "occasion")}
 
-        <Text style={styles.label}>for my</Text>
-        {renderDropdown("Relationship", selectedRelationship, "relationship")}
-
-        <Text style={styles.label}>on the occasion of</Text>
-        {renderDropdown("Occasion", selectedOccasion, "occasion")}
-
-        <HapticButton style={styles.button} onPress={handleStartLooking}>
+        <HapticButton style={styles.submitButton} onPress={handleStartLooking}>
           <Text style={styles.buttonText}>Start looking</Text>
-          <Ionicons name="search-outline" size={18} color="white" />
+          <Ionicons name="sparkles-outline" size={20} color="white" />
         </HapticButton>
       </View>
 
-      {/* CATEGORY DROPDOWN */}
       {renderListModal("category", categories, setSelectedCategory)}
-
-      {/* RELATIONSHIP DROPDOWN */}
       {renderListModal("relationship", relationships, setSelectedRelationship)}
-
-      {/* OCCASION DROPDOWN */}
       {renderListModal("occasion", occasions, setSelectedOccasion)}
 
       {/* PRICE RANGE MODAL */}
@@ -168,12 +185,9 @@ export default function GiftFinder() {
       >
         <View style={styles.modalBox}>
           <Text style={styles.modalTitle}>Select Price Range</Text>
-
-          <View
-            style={{ width: "100%", paddingHorizontal: 0, paddingVertical: 20 }}
-          >
+          <View style={{ alignItems: "center", paddingVertical: 20 }}>
             <MultiSlider
-              sliderLength={SCREEN_WIDTH - 100}
+              sliderLength={SCREEN_WIDTH - 120}
               values={[priceRange[0], priceRange[1]]}
               min={500}
               max={200000}
@@ -181,16 +195,14 @@ export default function GiftFinder() {
               onValuesChange={(values) =>
                 setPriceRange(values as [number, number])
               }
-              selectedStyle={{ backgroundColor: "black" }}
+              selectedStyle={{ backgroundColor: "#1D3D47" }}
               markerStyle={{
-                backgroundColor: "black",
-                height: 20,
-                width: 20,
-                borderRadius: 10,
+                backgroundColor: "#1D3D47",
+                height: 24,
+                width: 24,
               }}
             />
           </View>
-
           <Text style={styles.priceText}>
             ₹{priceRange[0]} — ₹{priceRange[1]}
           </Text>
@@ -203,84 +215,114 @@ export default function GiftFinder() {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: "#F0F7F8", // Light teal background like the image
+  },
+  logoContainer: {
+    backgroundColor: "#E6F2F4",
+    height: 160,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15,
+  },
+  logoCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "#1D4E5F", // Dark teal icon background
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "700",
+    color: "#1D3D47",
     textAlign: "center",
-    marginTop: 10,
+    marginTop: 25,
   },
   subtitle: {
-    fontSize: 16,
-    color: "#999",
+    fontSize: 18,
+    color: "#4A6269",
     textAlign: "center",
     marginBottom: 20,
   },
-  card: {
-    backgroundColor: "#f5f5f5",
-    padding: 20,
-    borderRadius: 24,
+  mainCard: {
+    backgroundColor: "#F8FCFD", // The inner white-ish bubble
+    flex: 1,
+    marginHorizontal: 10,
+    marginBottom: -20, // Extends to bottom
+    borderTopLeftRadius: 60,
+    borderTopRightRadius: 60,
+    paddingHorizontal: 35,
+    paddingTop: 40,
+  },
+  dropdownContainer: {
+    marginBottom: 20,
+    alignItems: "center",
   },
   label: {
-    textAlign: "center",
-    marginVertical: 10,
-    fontSize: 15,
-    color: "#444",
+    fontSize: 16,
+    color: "#1D3D47",
+    marginBottom: 8,
   },
   dropdown: {
     backgroundColor: "white",
-    borderRadius: 50,
-    paddingVertical: 14,
-    paddingHorizontal: 18,
+    borderRadius: 30,
+    height: 55,
+    width: "100%",
+    paddingHorizontal: 20,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#A9D0D5", // Light teal borders
   },
   dropdownText: {
     fontSize: 16,
+    color: "#1D3D47",
   },
-  button: {
-    backgroundColor: "black",
-    paddingVertical: 14,
-    borderRadius: 50,
-    marginTop: 20,
+  submitButton: {
+    backgroundColor: "#163038", // Dark slate button
+    height: 60,
+    borderRadius: 15,
+    marginTop: 15,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    gap: 6,
+    gap: 10,
   },
   buttonText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "600",
   },
   modalBox: {
     backgroundColor: "white",
-    padding: 20,
-    borderRadius: 20,
-    maxHeight: "70%",
+    padding: 25,
+    borderRadius: 25,
+    maxHeight: "60%",
   },
   modalTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "700",
-    marginBottom: 10,
+    color: "#1D3D47",
+    marginBottom: 15,
+    textAlign: "center",
   },
   modalItem: {
-    paddingVertical: 14,
+    paddingVertical: 15,
     borderBottomWidth: 1,
-    borderColor: "#eee",
+    borderColor: "#F0F0F0",
   },
   modalItemText: {
     fontSize: 16,
+    color: "#333",
   },
   priceText: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1D3D47",
     textAlign: "center",
   },
 });
