@@ -7,6 +7,7 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as z from "zod";
 import { HapticButton } from "../../components/basic components/hapticButton";
+import { COLORS } from "../../constants/theme";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -173,19 +174,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  headerTitle: { fontSize: 18, fontWeight: "700" },
+  headerTitle: { fontSize: 18, fontWeight: "700", color: COLORS.text },
   content: { padding: 24 },
-  subHeader: { fontSize: 15, fontWeight: "700", textAlign: "center" },
+  subHeader: { fontSize: 15, fontWeight: "700", textAlign: "center", color: COLORS.text },
   subLabel: {
     fontSize: 12,
-    color: "#888",
+    color: COLORS.textSecondary,
     textAlign: "center",
     marginTop: 4,
     marginBottom: 32,
   },
   form: { gap: 20 },
   inputGroup: {},
-  label: { fontSize: 13, fontWeight: "700", marginBottom: 8 },
+  label: { fontSize: 13, fontWeight: "700", marginBottom: 8, color: COLORS.text },
   input: {
     height: 54,
     borderWidth: 1,
@@ -221,16 +222,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 12,
   },
-  addressTag: { fontSize: 14, fontWeight: "700" },
+  addressTag: { fontSize: 14, fontWeight: "700", color: COLORS.text },
   addressActions: { flexDirection: "row" },
-  addressText: { fontSize: 13, color: "#555", lineHeight: 20 },
+  addressText: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 20 },
   addAddressBtn: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     marginTop: 16,
   },
-  addAddressText: { fontSize: 14, fontWeight: "600", marginLeft: 8 },
+  addAddressText: { fontSize: 14, fontWeight: "600", marginLeft: 8, color: COLORS.text },
   saveBtn: {
     backgroundColor: "#053844",
     margin: 16,

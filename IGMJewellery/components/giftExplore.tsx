@@ -2,6 +2,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { COLORS } from "../constants/theme";
 import { HapticButton } from "./basic components/hapticButton";
 import { ScrollingColumn } from "./scrollingColumn";
 
@@ -206,10 +207,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
     marginBottom: 12,
+    color: COLORS.text,
   },
   subtitle: {
     fontSize: 16,
-    color: "#666",
+    color: COLORS.textSecondary,
     textAlign: "center",
   },
   gridContainer: {
@@ -236,6 +238,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     textAlign: "center",
+    color: COLORS.text,
   },
   topGradient: {
     position: "absolute",

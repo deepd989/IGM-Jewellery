@@ -8,6 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import { useAuth } from "../../auth/authContext";
 import { HapticButton } from "../../components/basic components/hapticButton";
+import { COLORS } from "../../constants/theme";
 
 const PROFILE_STATS = [
   {
@@ -242,7 +243,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#FFF",
   },
-  headerTitle: { fontSize: 18, fontWeight: "700" },
+  headerTitle: { fontSize: 18, fontWeight: "700", color: COLORS.text },
   pointsBadge: {
     flexDirection: "row",
     alignItems: "center",
@@ -251,7 +252,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 20,
   },
-  pointsText: { fontSize: 12, fontWeight: "700", marginLeft: 4 },
+  pointsText: { fontSize: 12, fontWeight: "700", marginLeft: 4, color: COLORS.text },
   userSection: {
     flexDirection: "row",
     alignItems: "center",
@@ -260,11 +261,11 @@ const styles = StyleSheet.create({
   },
   avatarPlaceholder: { width: 50, height: 50 },
   userInfo: { flex: 1, marginLeft: 16 },
-  userName: { fontSize: 16, fontWeight: "700" },
-  userPhone: { fontSize: 12, color: "#888", marginTop: 2 },
+  userName: { fontSize: 16, fontWeight: "700", color: COLORS.text },
+  userPhone: { fontSize: 12, color: COLORS.textSecondary, marginTop: 2 },
   langSelector: { flexDirection: "row", alignItems: "center" },
   flag: { width: 24, height: 16, marginRight: 8 },
-  langText: { fontSize: 14, fontWeight: "600" },
+  langText: { fontSize: 14, fontWeight: "600", color: COLORS.text },
   statsGrid: { flexDirection: "row", flexWrap: "wrap", padding: 8 },
   statCard: {
     width: "46%",
@@ -273,8 +274,8 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
   },
-  statTitle: { fontSize: 14, fontWeight: "700", marginTop: 8 },
-  statDesc: { fontSize: 11, color: "#888", marginTop: 4 },
+  statTitle: { fontSize: 14, fontWeight: "700", marginTop: 8, color: COLORS.text },
+  statDesc: { fontSize: 11, color: COLORS.textSecondary, marginTop: 4 },
   menuList: { backgroundColor: "#FFF", marginTop: 12 },
   menuItem: {
     flexDirection: "row",
@@ -289,10 +290,10 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   menuContent: { flex: 1, marginLeft: 16 },
-  menuTitle: { fontSize: 14, fontWeight: "600" },
-  menuDesc: { fontSize: 11, color: "#888", marginTop: 2 },
+  menuTitle: { fontSize: 14, fontWeight: "600", color: COLORS.text },
+  menuDesc: { fontSize: 11, color: COLORS.textSecondary, marginTop: 2 },
   sectionHeader: { padding: 16, marginTop: 12 },
-  sectionTitle: { fontSize: 16, fontWeight: "700" },
+  sectionTitle: { fontSize: 16, fontWeight: "700", color: COLORS.text },
   orderCard: {
     backgroundColor: "#FFF",
     margin: 16,
@@ -307,11 +308,11 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   orderInfo: { flex: 1, marginLeft: 12 },
-  orderId: { fontSize: 14, fontWeight: "700" },
-  orderDate: { fontSize: 11, color: "#888" },
+  orderId: { fontSize: 14, fontWeight: "700", color: COLORS.text },
+  orderDate: { fontSize: 11, color: COLORS.textSecondary },
   orderMeta: { alignItems: "flex-end" },
-  orderPrice: { fontSize: 14, fontWeight: "700" },
-  orderItems: { fontSize: 11, color: "#888" },
+  orderPrice: { fontSize: 14, fontWeight: "700", color: COLORS.text },
+  orderItems: { fontSize: 11, color: COLORS.textSecondary },
   orderStatusRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -320,7 +321,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginVertical: 12,
   },
-  statusText: { fontSize: 11, fontWeight: "600" },
+  statusText: { fontSize: 11, fontWeight: "600", color: COLORS.text },
   subOrderItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -335,16 +336,16 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   subOrderInfo: { flex: 1, marginLeft: 12 },
-  subOrderStatus: { fontSize: 10, color: "#888" },
-  subOrderTitle: { fontSize: 13, fontWeight: "600" },
-  subOrderPrice: { fontSize: 12, fontWeight: "700" },
+  subOrderStatus: { fontSize: 10, color: COLORS.textSecondary },
+  subOrderTitle: { fontSize: 13, fontWeight: "600", color: COLORS.text },
+  subOrderPrice: { fontSize: 12, fontWeight: "700", color: COLORS.text },
   footerLinks: { backgroundColor: "#FFF", marginTop: 20 },
   footerLinkItem: {
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#F5F5F5",
   },
-  footerLinkText: { fontSize: 14, fontWeight: "500" },
+  footerLinkText: { fontSize: 14, fontWeight: "500", color: COLORS.text },
   logoutBtn: {
     margin: 24,
     padding: 16,
@@ -353,7 +354,7 @@ const styles = StyleSheet.create({
     borderColor: "#DDD",
     alignItems: "center",
   },
-  logoutText: { fontSize: 14, fontWeight: "600" },
+  logoutText: { fontSize: 14, fontWeight: "600", color: COLORS.text },
   version: {
     textAlign: "center",
     color: "#999",

@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#1A1A1A",
+    color: "#053844",
     textAlign: "center",
   },
   caption: {
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     marginTop: 18,
     fontSize: 24,
     fontWeight: "800",
-    color: "black",
+    color: "#053844",
     textAlign: "center",
   },
 });

@@ -43,6 +43,7 @@ export default function GiftingCard({
             position: "absolute",
             right: 0,
             bottom: 126,
+            color: COLORS.text,
           }}
         >
           {" "}
@@ -59,6 +60,7 @@ export default function GiftingCard({
             right: -10,
             bottom: 176,
             marginRight: 10,
+            color: COLORS.text,
           }}
         >
           {description}
@@ -102,14 +104,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "700",
     textAlign: "center",
-    color: "#111",
+    color: COLORS.text,
   },
 
   subtitle: {
     marginTop: 6,
     fontSize: 14,
     textAlign: "center",
-    color: "#777",
+    color: COLORS.textSecondary,
   },
 
   card: {

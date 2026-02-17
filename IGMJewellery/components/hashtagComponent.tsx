@@ -1,3 +1,4 @@
+import { COLORS } from "@/constants/theme";
 import { useGetProductsQuery } from "@/store/apis/product";
 import React, { useRef } from "react";
 import {
@@ -84,6 +85,7 @@ const styles = StyleSheet.create({
       fontWeight: "600",
       textAlign: "center",
       marginBottom: 16,
+      color: COLORS.text,
     },
     card: {
       width: CARD_WIDTH,
@@ -112,10 +114,11 @@ const styles = StyleSheet.create({
     title: {
       fontSize: 14,
       fontWeight: "600",
+      color: COLORS.text,
     },
     brand: {
       fontSize: 12,
-      color: "#777",
+      color: COLORS.textSecondary,
     },
   });
   
