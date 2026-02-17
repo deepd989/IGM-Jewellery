@@ -34,6 +34,7 @@ export default function AiChatComponent({
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [inputText, setInputText] = useState("");
   const [isRecording, setIsRecording] = useState(false);
+  const [redirection, setRedirection] = useState(false);
   const [showVoiceVideoInterface, setShowVoiceVideoInterface] = useState(
     !!mode
   );
@@ -42,96 +43,102 @@ export default function AiChatComponent({
   );
   const flatListRef = useRef<FlatList>(null);
 
-  // RTK Query Hook
   const [searchJewelry, { isLoading: replyLoading }] =
     useSearchJewelryMutation();
 
   /**
-   * Core Logic: Sends message to Gemini and handles the JSON response
+   * API Logic: We reverse the messages back to chronological order
+   * so Gemini understands the flow of conversation.
    */
-  const handleAiLogic = async (
-    userText: string,
-    currentHistory: IMessage[]
-  ) => {
+  const handleAiLogic = async (currentHistory: IMessage[]) => {
     try {
-      // Get previous AI messages to provide context to Gemini
-      const previousBotMessages = currentHistory
-        .filter((m) => m.sender === "ai")
-        .map((m) => m.text);
+      if (redirection) return;
+
+      // Gemini needs [Oldest -> Newest].
+      // Our state is [Newest -> Oldest], so we .reverse() a copy.
+      const chronologicalHistory = [...currentHistory].reverse();
+      const lastUserMsg =
+        chronologicalHistory[chronologicalHistory.length - 1].text;
 
       const response = await searchJewelry({
-        userMessage: userText,
-        previousBotMessages,
+        userMessage: lastUserMsg,
+        previousBotMessages: chronologicalHistory.slice(0, -1), // everything except the last message
       }).unwrap();
 
       if (response.isReply) {
-        // Option A: AI is replying or asking a follow-up question
         const aiResponse: IMessage = {
           id: Math.random().toString(36).substring(2, 11),
           text: response.message,
           sender: "ai",
           timestamp: new Date(),
         };
-        setMessages((prev) => [...prev, aiResponse]);
+        setMessages((prev) => [aiResponse, ...prev]);
       } else {
-        // TODO: redirect to product listing page with filters applied based on response.searchQuery
-        console.log("Filters found:", response.searchQuery);
-        // router.push({
-        //   pathname: "/product-list",
-        //   query: { filters: JSON.stringify(response.searchQuery) },
-        // });
+        setRedirection(true);
+        const redirectMsg: IMessage = {
+          id: "redirect",
+          text: "Found your style! Redirecting...",
+          sender: "ai",
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [redirectMsg, ...prev]);
+
+        setTimeout(() => {
+          router.push({
+            pathname: "/product-list",
+            params: {
+              occasion: response.occasion,
+              gender: response.whoFor,
+              productType: response.productType,
+            },
+          });
+        }, 1500);
       }
     } catch (error) {
       console.error("Gemini API Error:", error);
-      // Fallback message
       const errorMsg: IMessage = {
-        id: Math.random().toString(36).substring(2, 11),
-        text: "Sorry, I'm having trouble connecting. Please try again.",
+        id: "error",
+        text: "Sorry, I'm having trouble connecting.",
         sender: "ai",
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, errorMsg]);
+      setMessages((prev) => [errorMsg, ...prev]);
     }
   };
 
-  // Handle Initial Message mount
+  // Watch for new user messages to trigger AI
+  useEffect(() => {
+    const lastMessage = messages[0]; // Newest is at index 0
+    if (lastMessage?.sender === "user" && !replyLoading && !redirection) {
+      handleAiLogic(messages);
+    }
+  }, [messages]);
+
+  // Initial Message mount
   useEffect(() => {
     if (initialMessage.trim()) {
       const startMsg: IMessage = {
-        id: Math.random().toString(36).substring(2, 11),
+        id: Date.now().toString(),
         text: initialMessage.trim(),
         sender: "user",
         timestamp: new Date(),
       };
       setMessages([startMsg]);
-      handleAiLogic(initialMessage.trim(), []);
     }
   }, [initialMessage]);
 
   const onSendPress = () => {
-    if (inputText.trim() && !replyLoading) {
-      const userText = inputText.trim();
-      const userMsg: IMessage = {
-        id: Math.random().toString(36).substring(2, 11),
-        text: userText,
-        sender: "user",
-        timestamp: new Date(),
-      };
+    if (!inputText.trim() || replyLoading) return;
 
-      const newHistory = [...messages, userMsg];
-      setMessages(newHistory);
-      setInputText("");
-    }
-  };
+    const userMsg: IMessage = {
+      id: Math.random().toString(36).substring(2, 11),
+      text: inputText.trim(),
+      sender: "user",
+      timestamp: new Date(),
+    };
 
-  const handleVoiceRecord = async () => {
-    setInterfaceMode("voice");
-    setShowVoiceVideoInterface(true);
-  };
-
-  const handleVideoCapture = async () => {
-    setInterfaceMode("video");
-    setShowVoiceVideoInterface(true);
+    setMessages((prev) => [userMsg, ...prev]);
+    setInputText("");
   };
 
   const handleTranscript = (text: string) => {
@@ -143,9 +150,7 @@ export default function AiChatComponent({
         sender: "user",
         timestamp: new Date(),
       };
-      const newHistory = [...messages, userMsg];
-      setMessages(newHistory);
-      handleAiLogic(text.trim(), newHistory);
+      setMessages((prev) => [userMsg, ...prev]);
     }
   };
 
@@ -179,15 +184,15 @@ export default function AiChatComponent({
   };
 
   const renderTypingIndicator = () => (
-    <View style={styles.messageContainer}>
+    <View style={[styles.messageContainer, { marginBottom: 20 }]}>
       <View style={styles.aiAvatar}>
         <Ionicons name="sparkles" size={14} color="#fff" />
       </View>
       <View style={[styles.messageBubble, styles.aiBubble]}>
         <View style={styles.typingIndicator}>
-          <View style={[styles.typingDot, { animationDelay: "0ms" }]} />
-          <View style={[styles.typingDot, { animationDelay: "150ms" }]} />
-          <View style={[styles.typingDot, { animationDelay: "300ms" }]} />
+          <View style={styles.typingDot} />
+          <View style={styles.typingDot} />
+          <View style={styles.typingDot} />
         </View>
       </View>
     </View>
@@ -206,25 +211,20 @@ export default function AiChatComponent({
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={10}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
         <FlatList
           ref={flatListRef}
           data={messages}
           renderItem={renderMessage}
           keyExtractor={(item) => item.id}
+          inverted={true} // The magic prop
           contentContainerStyle={styles.messagesList}
-          // Automatically moves content when keyboard appears
           automaticallyAdjustKeyboardInsets={true}
-          // Allows dismissing keyboard by dragging down
           keyboardDismissMode="on-drag"
-          onContentSizeChange={() => {
-            if (messages.length > 0) {
-              flatListRef.current?.scrollToEnd({ animated: true });
-            }
-          }}
           showsVerticalScrollIndicator={false}
-          ListFooterComponent={() =>
+          // In an inverted list, Header is at the bottom (above input)
+          ListHeaderComponent={() =>
             replyLoading ? renderTypingIndicator() : null
           }
         />
@@ -241,21 +241,16 @@ export default function AiChatComponent({
           />
           <HapticButton
             style={[styles.iconButton, isRecording && styles.recordingButton]}
-            onPress={handleVoiceRecord}
-            activeOpacity={0.7}
+            onPress={() => {
+              setInterfaceMode("voice");
+              setShowVoiceVideoInterface(true);
+            }}
           >
             <Ionicons
-              name={isRecording ? "stop-circle" : "mic"}
+              name="mic"
               size={24}
               color={isRecording ? "#FF0000" : "#666"}
             />
-          </HapticButton>
-          <HapticButton
-            style={styles.iconButton}
-            onPress={handleVideoCapture}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="videocam" size={24} color="#666" />
           </HapticButton>
 
           {inputText.trim().length > 0 && (
@@ -270,25 +265,15 @@ export default function AiChatComponent({
         </View>
       </KeyboardAvoidingView>
 
-      <Modal
-        visible={showVoiceVideoInterface}
-        animationType="slide"
-        presentationStyle="fullScreen"
-        onRequestClose={() => setShowVoiceVideoInterface(false)}
-      >
+      <Modal visible={showVoiceVideoInterface} animationType="slide">
         <SafeAreaView style={styles.modalContainer}>
           <HapticButton
             style={styles.closeButton}
             onPress={() => setShowVoiceVideoInterface(false)}
-            activeOpacity={0.7}
           >
             <Ionicons name="close" size={28} color="#053844" />
           </HapticButton>
-          {/* <VoiceVideoInterface
-            mode={interfaceMode}
-            onTranscript={handleTranscript}
-            onClose={() => setShowVoiceVideoInterface(false)}
-          /> */}
+          {/* Voice interface logic here */}
         </SafeAreaView>
       </Modal>
     </SafeAreaView>
@@ -298,7 +283,7 @@ export default function AiChatComponent({
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#fff" },
   container: { flex: 1 },
-  messagesList: { padding: 16, paddingBottom: 20 },
+  messagesList: { padding: 16 },
   messageContainer: {
     flexDirection: "row",
     marginBottom: 16,
@@ -319,16 +304,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
     borderBottomLeftRadius: 4,
   },
-  messageText: {
-    fontSize: 15,
-    lineHeight: 20,
-  },
-  userText: {
-    color: "#fff",
-  },
-  aiText: {
-    color: "#053844",
-  },
+  messageText: { fontSize: 15, lineHeight: 20 },
+  userText: { color: "#fff" },
+  aiText: { color: "#053844" },
   aiAvatar: {
     width: 32,
     height: 32,
@@ -351,6 +329,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderTopWidth: 1,
     borderTopColor: "#EEE",
+    backgroundColor: "#fff",
   },
   input: {
     flex: 1,
@@ -368,10 +347,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: 4,
   },
-  recordingButton: {
-    backgroundColor: "#FFE0E0",
-    borderRadius: 20,
-  },
   sendButton: {
     width: 40,
     height: 40,
@@ -381,33 +356,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: 4,
   },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  closeButton: {
-    position: "absolute",
-    top: Platform.OS === "ios" ? 50 : 20,
-    right: 20,
-    zIndex: 10,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#fff",
-    justifyContent: "center",
-  },
-  typingIndicator: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingVertical: 4,
-  },
+  backButton: { padding: 10 },
+  typingIndicator: { flexDirection: "row", gap: 4, paddingVertical: 4 },
   typingDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
     backgroundColor: "#666",
     opacity: 0.4,
   },
-  backButton: { padding: 10 },
+  modalContainer: { flex: 1, backgroundColor: "#f5f5f5" },
+  closeButton: { position: "absolute", top: 50, right: 20, zIndex: 10 },
+  recordingButton: { backgroundColor: "#FFE0E0", borderRadius: 20 },
 });
