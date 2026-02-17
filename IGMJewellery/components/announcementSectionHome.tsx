@@ -70,7 +70,11 @@ const SwipeAndShopComponent = () => {
                 key={item.id}
                 style={[styles.card, { transform: [{ scale }], opacity }]}
               >
-                <HapticButton activeOpacity={0.9} style={styles.cardInner}>
+                <HapticButton
+                  activeOpacity={0.9}
+                  style={styles.cardInner}
+                  onPress={() => router.push("/immersiveProductList")}
+                >
                   <View style={styles.iconContainerGold}>
                     <Feather
                       name="mouse-pointer"
