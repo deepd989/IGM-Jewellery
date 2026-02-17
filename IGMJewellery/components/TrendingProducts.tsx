@@ -1,17 +1,17 @@
 import { Product } from "@/interfaces/product.interface";
 import { useRouter } from "expo-router";
-import { FlatList } from "react-native";
+import { FlatList, View } from "react-native";
 import ViewAllButton from "./basic components/viewAllButton";
 import { ProductCard } from "./products/ProductCard";
 import { SectionHeader } from "./section";
 
-type TopPicksProps = {
+type TrendingProductsProps = {
   products: Product[];
 };
 
-export function TopPicks({ products }: TopPicksProps) {
+export function TrendingProducts({ products }: TrendingProductsProps) {
   const router = useRouter();
-  const topPicksProducts = products.slice(5, 9); // Get the first 8 products for top picks
+  const trendingProducts = products.slice(8, 10); // Get the first 8 products for top picks
   const handleProductPress = (product: Product) => {
     router.push({
       pathname: "/product/[id]",
@@ -20,9 +20,10 @@ export function TopPicks({ products }: TopPicksProps) {
   };
   return (
     <>
-      <SectionHeader value="Top Picks" />
+      <SectionHeader value="Trending Now" />
       <FlatList
-        data={topPicksProducts}
+        horizontal
+        data={trendingProducts}
         renderItem={({ item }) => (
           <ProductCard
             product={item}
@@ -30,10 +31,9 @@ export function TopPicks({ products }: TopPicksProps) {
             onPress={handleProductPress}
           />
         )}
-        numColumns={2}
-        columnWrapperStyle={{ justifyContent: "space-between", padding: 10 }}
         keyExtractor={(item) => item.id}
         showsHorizontalScrollIndicator={false}
+        ItemSeparatorComponent={() => <View style={{ width: 16 }} />}
       />
       <ViewAllButton
         onPress={() => {

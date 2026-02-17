@@ -1,14 +1,12 @@
 import BespokeSection from "@/components/bespokeSection";
-import BestSellersSection from "@/components/bestSellers";
 import BottomNavBar from "@/components/bottomNavBar";
 import BrandGridTileView from "@/components/brandGrid";
 import CommunityCarousel from "@/components/communityCarousel";
 import EventCard from "@/components/eventCard";
 import GiftFinder from "@/components/giftFinder";
 import GiftingCard from "@/components/giftingCard";
-import HashtagComponent from "@/components/hashtagComponent";
 import HorizontalRuleIGM from "@/components/horizontalRuleIGM";
-import OccasionCardList from "@/components/occaisionsHome";
+import OccasionCardList from "@/components/occasionsHome";
 import PaymentMethods from "@/components/paymentMethods";
 import SearchBar from "@/components/searchBar";
 import { TopPicks } from "@/components/topPicks";
@@ -38,8 +36,11 @@ import AnnouncementSection from "../components/announcementSectionHome";
 import { HapticButton } from "../components/basic components/hapticButton";
 import BrandsHorizontalScroll from "../components/brandsHorizontalScroll";
 import CategoriesHorizontalScroll from "../components/categoriesHorizontallScroll";
-import HomePageCard from "../components/homePageCard";
+import HowItLooksWrapper from "../components/homePageCard";
+import LatestCollections from "../components/latestCollections";
+import { SectionHeader } from "../components/section";
 import BrandCollectionCards from "../components/shopByCollectionsNew";
+import { TrendingProducts } from "../components/TrendingProducts";
 import TrustBar from "../components/trustBarBanner";
 import { COLORS } from "../constants/theme";
 
@@ -196,27 +197,40 @@ export default function HomeScreen() {
         <HorizontalRuleIGM />
         <TopPicks products={products} />
         <HorizontalRuleIGM />
-        <HomePageCard />
-        <HorizontalRuleIGM />
-        <BrandGridTileView />
+        <>
+          <SectionHeader value="Explore Virual Try On"></SectionHeader>
+          <HowItLooksWrapper seeHowItLooks={true}></HowItLooksWrapper>
+        </>
         <HorizontalRuleIGM />
         <GiftFinder />
         <HorizontalRuleIGM />
         <OccasionCardList />
+        <HorizontalRuleIGM />
+        <TrendingProducts products={products} />
+        <HorizontalRuleIGM />
+        <LatestCollections />
+        <HorizontalRuleIGM />
+
         {/* <HorizontalRuleIGM /> */}
         {/* <TryAtHomeCard /> */}
-        <HorizontalRuleIGM />
         <GiftingCard showExploreButton={true} />
         <HorizontalRuleIGM />
-        <BestSellersSection />
+        <>
+          <SectionHeader value="Our Best Sellers"></SectionHeader>
+          <HowItLooksWrapper seeHowItLooks={false}></HowItLooksWrapper>
+        </>
         <HorizontalRuleIGM />
         <CommunityCarousel />
+
+        {/* <BestSellersSection /> */}
         <HorizontalRuleIGM />
         <BespokeSection />
         <HorizontalRuleIGM />
         <EventCard />
-        <HorizontalRuleIGM />
-        <HashtagComponent />
+        <TrustBar />
+        <BrandGridTileView />
+        {/* <HorizontalRuleIGM /> */}
+        {/* <HashtagComponent /> */}
         <HorizontalRuleIGM />
         <View style={styles.contactSection}>
           <Text style={styles.contactTitle}>
@@ -224,11 +238,15 @@ export default function HomeScreen() {
           </Text>
           <View style={styles.contactRow}>
             <HapticButton style={styles.contactBtn}>
-              <Ionicons name="call-outline" size={20} />
+              <Ionicons name="call-outline" size={20} color={COLORS.primary} />
               <Text style={styles.contactBtnText}>Call Us</Text>
             </HapticButton>
             <HapticButton style={styles.contactBtn}>
-              <Ionicons name="chatbubble-outline" size={20} />
+              <Ionicons
+                name="chatbubble-outline"
+                size={20}
+                color={COLORS.primary}
+              />
               <Text style={styles.contactBtnText}>Chat With Us</Text>
             </HapticButton>
           </View>
@@ -350,7 +368,7 @@ const styles = StyleSheet.create({
   },
   tryButtonText: { color: "#fff", fontWeight: "600" },
   contactSection: { alignItems: "center", padding: 16 },
-  contactTitle: { fontSize: 13, color: "#333", marginBottom: 20 },
+  contactTitle: { fontSize: 13, color: COLORS.primary, marginBottom: 20 },
   contactRow: { flexDirection: "row", gap: 12 },
   contactBtn: {
     flex: 1,
@@ -358,13 +376,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: 50,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: "#DDD",
     borderRadius: 8,
     minWidth: 150,
     backgroundColor: "#FFF",
   },
-  contactBtnText: { marginLeft: 8, fontWeight: "600" },
+  contactBtnText: { marginLeft: 8, fontWeight: "600", color: COLORS.primary },
   badgeContainer: {
     alignItems: "center",
     marginBottom: 20,

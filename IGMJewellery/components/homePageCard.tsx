@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
+  FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -21,11 +22,17 @@ import {
   useRemoveFromWishlistMutation,
 } from "../store/apis/wishlist";
 import { HapticButton } from "./basic components/hapticButton";
+import { ProductCard } from "./products/ProductCard";
 import EarringIcon from "./ui/earingsComponentSvg";
 
 const { width } = Dimensions.get("window");
 
-export default function HomePageCard() {
+export default function HowItLooksWrapper({
+  seeHowItLooks,
+}: {
+  seeHowItLooks?: boolean;
+  children?: React.ReactNode;
+}) {
   const { userId } = useAuth();
   const { data: products = [] } = useGetProductsQuery({});
   const [cardTitle, setCardTitle] = React.useState<string>(
@@ -43,6 +50,15 @@ export default function HomePageCard() {
   useEffect(() => {
     console.log("cardTitle changed:", cardTitle);
   }, [cardTitle]);
+
+  if (!filteredProduct)
+    return (
+      <ActivityIndicator
+        size="large"
+        color={COLORS.primary}
+        style={{ marginTop: 50 }}
+      />
+    );
 
   return (
     <View style={styles.outerContainer}>
@@ -176,8 +192,18 @@ export default function HomePageCard() {
           </View>
         </TouchableOpacity>
       </View>
-
-      <SeeHowItLooksOnYouCard product={filteredProduct} />
+      {seeHowItLooks && <SeeHowItLooksOnYouCard product={filteredProduct} />}
+      {!seeHowItLooks && (
+        <FlatList
+          data={[filteredProduct]}
+          renderItem={({ item }) => (
+            <ProductCard product={item} viewMode="list" onPress={() => {}} />
+          )}
+          numColumns={1}
+          keyExtractor={(item) => item?.id}
+          showsHorizontalScrollIndicator={false}
+        />
+      )}
     </View>
   );
 }
@@ -191,7 +217,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
     useRemoveFromWishlistMutation();
 
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.product.id === product.id
+    (item) => item.product?.id === product?.id
   );
   const handleToggleWishlist = async (e: any) => {
     e.stopPropagation();
@@ -326,7 +352,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white", // Light blue background from image
     padding: 16,
     borderRadius: 12,
-    marginTop: 60,
+    marginTop: 0,
+    marginBottom: 0,
   },
   iconRow: {
     flexDirection: "row",

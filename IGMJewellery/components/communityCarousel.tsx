@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { Animated, Dimensions, StyleSheet, Text, View } from "react-native";
+import { SectionHeader } from "./section";
 
 const { width } = Dimensions.get("window");
 
@@ -33,17 +34,16 @@ const DATA = [
 
 export default function CommunityCarousel() {
   const scrollX = useRef(new Animated.Value(0)).current;
-  
+
   // Calculate padding to center the card, accounting for parent padding
   const SIDE_PADDING = (FULL_WIDTH - CARD_WIDTH) / 2 - CARD_SPACING;
-  
+
   // Total item width including margins on both sides
   const SNAP_INTERVAL = CARD_WIDTH + CARD_SPACING * 2;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Meet our community</Text>
-
+      <SectionHeader value="From the Community" />
       <Animated.FlatList
         data={DATA}
         keyExtractor={(item) => item.id}
@@ -56,7 +56,7 @@ export default function CommunityCarousel() {
         }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: true },
+          { useNativeDriver: true }
         )}
         renderItem={({ item, index }) => {
           const inputRange = [

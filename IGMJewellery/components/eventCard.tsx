@@ -1,6 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
+import { COLORS } from "../constants/theme";
 import { HapticButton } from "./basic components/hapticButton";
 
 export default function EventCard() {
@@ -27,7 +29,16 @@ export default function EventCard() {
             router.push({ pathname: "/product-list" });
           }}
         >
-          <Text style={styles.buttonText}>Shop products</Text>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={styles.buttonText}>Get this look </Text>
+            <Ionicons
+              name="arrow-forward"
+              size={16}
+              color={COLORS.primary}
+            ></Ionicons>
+          </View>
         </HapticButton>
       </ImageBackground>
     </View>
@@ -41,10 +52,10 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "600",
     textAlign: "center",
-    color: "#111",
+    color: COLORS.primary,
   },
 
   caption: {
@@ -82,6 +93,6 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#111",
+    color: COLORS.primary,
   },
 });
