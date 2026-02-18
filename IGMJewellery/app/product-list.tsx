@@ -2,15 +2,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
-  ImageBackground,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    FlatList,
+    ImageBackground,
+    Platform,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 
 import { CartBadge } from "@/components/cart/CardBadge";
@@ -82,6 +82,8 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   const productType = params.productType as string | undefined;
   const brand = params.brand as string | undefined;
   const collection = params.collection as string | undefined;
+  const minPrice = params.minPrice as string | undefined;
+  const maxPrice = params.maxPrice as string | undefined;
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedFilter, setSelectedFilter] = useState("All");
@@ -179,6 +181,14 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       newFilters.priceRange = priceRangeValues;
     }
 
+    // Handle minPrice / maxPrice (from AI chat)
+    if (minPrice) {
+      newFilters.minPrice = [minPrice];
+    }
+    if (maxPrice) {
+      newFilters.maxPrice = [maxPrice];
+    }
+
     // Merge with filters passed as props
     if (filters && Object.keys(filters).length > 0) {
       Object.keys(filters).forEach((key) => {
@@ -199,6 +209,8 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     brand,
     collection,
     gender,
+    minPrice,
+    maxPrice,
     params.priceRange,
     filters,
   ]);

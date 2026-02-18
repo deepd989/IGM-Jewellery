@@ -1,21 +1,22 @@
+import { TryOnSelectorModal } from "@/components/products/TryOnSelectorModal";
 import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import {
-  useAddToWishlistMutation,
-  useGetWishlistQuery,
-  useRemoveFromWishlistMutation,
+    useAddToWishlistMutation,
+    useGetWishlistQuery,
+    useRemoveFromWishlistMutation,
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Dimensions,
-  Image,
-  StyleSheet,
-  Text,
-  View,
+    ActivityIndicator,
+    Alert,
+    Dimensions,
+    Image,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { useAuth } from "../../auth/authContext";
 import { COLORS, SPACING } from "../../constants/theme";
@@ -53,6 +54,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [showSuccess, setShowSuccess] = useState(false);
   const [firstImageBase64State, setFirstImageBase64State] = useState("");
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
 
   // Wishlist functionality
   const { data: wishlistData } = useGetWishlistQuery();
@@ -324,14 +326,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <HapticButton
             style={styles.tryNowBtn}
             onPress={(e) => {
-              router.push({
-                pathname: "/virtualTryOn2",
-                params: {
-                  tryOnUrl: `https://jeweltry.plushvie.in/igmindia/118305`,
-                  productTitle: product.title,
-                },
-              });
               e.stopPropagation();
+              setIsTryOnSelectorVisible(true);
             }}
           >
             <Ionicons
@@ -361,6 +357,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </HapticButton>
         </View>
       </View>
+
+      <TryOnSelectorModal
+        visible={isTryOnSelectorVisible}
+        onClose={() => setIsTryOnSelectorVisible(false)}
+        onSelectVR={() => {
+          router.push({
+            pathname: "/virtualTryOn2",
+            params: {
+              productId: product.id,
+              productTitle: product.title,
+            },
+          });
+        }}
+        onSelectAI={() => {
+          router.push({
+            pathname: "/tryOn",
+          });
+        }}
+      />
     </HapticButton>
   );
 };

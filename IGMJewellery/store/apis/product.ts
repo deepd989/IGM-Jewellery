@@ -155,6 +155,24 @@ const applyFilters = (
           )
         );
         break;
+
+      case "minPrice":
+        const minVal = Number(selectedOptions[0]);
+        if (!isNaN(minVal)) {
+          filteredProducts = filteredProducts.filter(
+            (p) => p.discountedPrice >= minVal
+          );
+        }
+        break;
+
+      case "maxPrice":
+        const maxVal = Number(selectedOptions[0]);
+        if (!isNaN(maxVal)) {
+          filteredProducts = filteredProducts.filter(
+            (p) => p.discountedPrice <= maxVal
+          );
+        }
+        break;
     }
   });
 

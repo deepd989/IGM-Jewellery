@@ -65,6 +65,8 @@ export default function AiChatComponent({
         previousBotMessages: chronologicalHistory.slice(0, -1), // everything except the last message
       }).unwrap();
 
+      console.log("response", response);
+
       if (response.isReply) {
         const aiResponse: IMessage = {
           id: Math.random().toString(36).substring(2, 11),
@@ -83,15 +85,34 @@ export default function AiChatComponent({
         };
         setMessages((prev) => [redirectMsg, ...prev]);
 
+        const query = response.searchQuery || {};
+
+        // Map relationship-based whoFor to gender filter values
+        const whoForToGender: Record<string, string> = {
+          mother: "Female",
+          sister: "Female",
+          father: "Male",
+          brother: "Male",
+          partner: "",     // could be either, skip gender filter
+          sibling: "",     // could be either, skip gender filter
+          male: "Male",
+          female: "Female",
+        };
+        const mappedGender = query.whoFor
+          ? whoForToGender[query.whoFor.toLowerCase()] ?? query.whoFor
+          : undefined;
+
         setTimeout(() => {
           router.push({
             pathname: "/product-list",
             params: {
-              occasion: response.occasion,
-              gender: response.whoFor,
-              productType: response.productType,
-              categoryName: response.categoryName,
-              subCategoryName: response.subCategoryName,
+              occasion: query.occasion,
+              gender: mappedGender || undefined,
+              productType: query.productType,
+              categoryName: query.categoryName,
+              subCategoryName: query.subCategoryName,
+              minPrice: query.priceRange?.min,
+              maxPrice: query.priceRange?.max,
             },
           });
         }, 1500);

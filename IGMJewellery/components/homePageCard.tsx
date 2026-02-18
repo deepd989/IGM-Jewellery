@@ -3,26 +3,27 @@ import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Dimensions,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Dimensions,
+    FlatList,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useAuth } from "../auth/authContext";
 import { COLORS } from "../constants/theme";
 import {
-  useAddToWishlistMutation,
-  useGetWishlistQuery,
-  useRemoveFromWishlistMutation,
+    useAddToWishlistMutation,
+    useGetWishlistQuery,
+    useRemoveFromWishlistMutation,
 } from "../store/apis/wishlist";
 import { HapticButton } from "./basic components/hapticButton";
 import { ProductCard } from "./products/ProductCard";
+import { TryOnSelectorModal } from "./products/TryOnSelectorModal";
 import EarringIcon from "./ui/earingsComponentSvg";
 
 const { width } = Dimensions.get("window");
@@ -255,6 +256,8 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
 
   if (!product) return null;
 
+  const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
+
   return (
     <View style={necklaceCardStyle.wrapper}>
       <HapticButton
@@ -331,10 +334,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
           style={necklaceCardStyle.tryOnButton}
           onPress={(e) => {
             e.stopPropagation();
-            router.push({
-              pathname: "/virtualTryOn2",
-              params: { productTitle: product.title },
-            });
+            setIsTryOnSelectorVisible(true);
           }}
         >
           <Ionicons name="sparkles" size={18} color="#fff" />
@@ -343,6 +343,25 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
           </Text>
         </HapticButton>
       </HapticButton>
+
+      <TryOnSelectorModal
+        visible={isTryOnSelectorVisible}
+        onClose={() => setIsTryOnSelectorVisible(false)}
+        onSelectVR={() => {
+          router.push({
+            pathname: "/virtualTryOn2",
+            params: {
+              productId: product.id,
+              productTitle: product.title,
+            },
+          });
+        }}
+        onSelectAI={() => {
+          router.push({
+            pathname: "/tryOn",
+          });
+        }}
+      />
     </View>
   );
 };
