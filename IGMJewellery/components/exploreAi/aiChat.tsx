@@ -86,17 +86,33 @@ export default function AiChatComponent({
         setMessages((prev) => [redirectMsg, ...prev]);
 
         const query = response.searchQuery || {};
+
+        // Map relationship-based whoFor to gender filter values
+        const whoForToGender: Record<string, string> = {
+          mother: "Female",
+          sister: "Female",
+          father: "Male",
+          brother: "Male",
+          partner: "",     // could be either, skip gender filter
+          sibling: "",     // could be either, skip gender filter
+          male: "Male",
+          female: "Female",
+        };
+        const mappedGender = query.whoFor
+          ? whoForToGender[query.whoFor.toLowerCase()] ?? query.whoFor
+          : undefined;
+
         setTimeout(() => {
           router.push({
             pathname: "/product-list",
             params: {
               occasion: query.occasion,
-              gender: query.whoFor,
+              gender: mappedGender || undefined,
               productType: query.productType,
               categoryName: query.categoryName,
               subCategoryName: query.subCategoryName,
-              minPrice: query.minPrice,
-              maxPrice: query.maxPrice,
+              minPrice: query.priceRange?.min,
+              maxPrice: query.priceRange?.max,
             },
           });
         }, 1500);
