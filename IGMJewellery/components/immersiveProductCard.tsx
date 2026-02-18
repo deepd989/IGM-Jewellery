@@ -22,12 +22,14 @@ import {
   useRemoveFromWishlistMutation,
 } from "../store/apis/wishlist";
 import { HapticButton } from "./basic components/hapticButton";
+import { TryOnSelectorModal } from "./products/TryOnSelectorModal";
 
 const { width, height } = Dimensions.get("window");
 
 export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
   const router = useRouter();
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
   const fadeAnim = useRef(new Animated.Value(1)).current; // For smooth transition
 
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
@@ -179,7 +181,7 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
           <View style={styles.buttonRow}>
             <HapticButton
               style={styles.tryNowBtn}
-              onPress={() => router.push("/virtualTryOn2")}
+              onPress={() => setIsTryOnSelectorVisible(true)}
             >
               <Sparkles size={18} color="#C5A059" fill="#C5A059" />
               <Text style={styles.tryNowText}>Try Now</Text>
@@ -221,6 +223,25 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
           </View>
         </View>
       </ImageBackground>
+
+      <TryOnSelectorModal
+        visible={isTryOnSelectorVisible}
+        onClose={() => setIsTryOnSelectorVisible(false)}
+        onSelectVR={() => {
+          router.push({
+            pathname: "/virtualTryOn2",
+            params: {
+              productId: product.id,
+              productTitle: product.title,
+            },
+          });
+        }}
+        onSelectAI={() => {
+          router.push({
+            pathname: "/tryOn",
+          });
+        }}
+      />
     </View>
   );
 };
