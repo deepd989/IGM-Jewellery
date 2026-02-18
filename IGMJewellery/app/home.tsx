@@ -181,7 +181,10 @@ export default function HomeScreen() {
 
         {/* <HorizontalRuleIGM /> */}
         {/* <TryAtHomeCard /> */}
-        <GiftingCard showExploreButton={true} />
+        <GiftingCard
+          showExploreButton={true}
+          imgUrl="https://drive.google.com/thumbnail?id=1NS9dwRMawoz92JKdTbTKq-ZwwPccMPvM&sz=w1000"
+        />
         <HorizontalRuleIGM />
         <>
           <SectionHeader value="Our Best Sellers"></SectionHeader>

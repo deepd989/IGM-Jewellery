@@ -180,7 +180,11 @@ export default function ProductDetailScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         <ProductImageGallery
-          images={[...product.thumbnailUrls, tryOnImage]}
+          images={[
+            product.thumbnailUrls[0],
+            tryOnImage,
+            ...product.thumbnailUrls.slice(1),
+          ]}
           product={product}
         />
 

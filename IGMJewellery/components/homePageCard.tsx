@@ -5,21 +5,20 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Dimensions,
-    FlatList,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { useAuth } from "../auth/authContext";
 import { COLORS } from "../constants/theme";
 import {
-    useAddToWishlistMutation,
-    useGetWishlistQuery,
-    useRemoveFromWishlistMutation,
+  useAddToWishlistMutation,
+  useGetWishlistQuery,
+  useRemoveFromWishlistMutation,
 } from "../store/apis/wishlist";
 import { HapticButton } from "./basic components/hapticButton";
 import { ProductCard } from "./products/ProductCard";
@@ -64,112 +63,105 @@ export default function HowItLooksWrapper({
   return (
     <View style={styles.outerContainer}>
       {/* Category Icons Row */}
+
       <View style={styles.iconRow}>
-        <View
-          style={{
-            alignItems: "center",
-            paddingBottom: 4,
-            borderBottomWidth: 2,
-            borderBottomColor:
-              cardTitle === ProductType.Necklace ? "#053844" : "transparent",
-          }}
-        >
-          <MaterialCommunityIcons
-            name="necklace"
-            size={28}
-            color="#053844"
-            onPress={() => setCardTitle(ProductType.Necklace)}
-          />
-          <Text
+        <HapticButton onPress={() => setCardTitle(ProductType.Necklace)}>
+          <View
             style={{
-              marginTop: 5,
-              fontSize: 10,
-              color: "#053844",
-              textAlign: "center",
+              alignItems: "center",
+              paddingBottom: 4,
+              borderBottomWidth: 2,
+              borderBottomColor:
+                cardTitle === ProductType.Necklace ? "#053844" : "transparent",
             }}
           >
-            Necklace
-          </Text>
-        </View>
-        <View
-          style={{
-            alignItems: "center",
-            paddingBottom: 4,
-            borderBottomWidth: 2,
-            borderBottomColor:
-              cardTitle === ProductType.Ring ? "#053844" : "transparent",
-          }}
-        >
-          <MaterialCommunityIcons
-            name="ring"
-            size={28}
-            color="#053844"
-            onPress={() => setCardTitle(ProductType.Ring)}
-          />
-          <Text
+            <MaterialCommunityIcons name="necklace" size={28} color="#053844" />
+            <Text
+              style={{
+                marginTop: 5,
+                fontSize: 10,
+                color: "#053844",
+                textAlign: "center",
+              }}
+            >
+              Necklace
+            </Text>
+          </View>
+        </HapticButton>
+        <HapticButton onPress={() => setCardTitle(ProductType.Ring)}>
+          <View
             style={{
-              marginTop: 5,
-              fontSize: 10,
-              color: "#053844",
-              textAlign: "center",
+              alignItems: "center",
+              paddingBottom: 4,
+              borderBottomWidth: 2,
+              borderBottomColor:
+                cardTitle === ProductType.Ring ? "#053844" : "transparent",
             }}
           >
-            Ring
-          </Text>
-        </View>
-        <View
-          style={{
-            alignItems: "center",
-            paddingBottom: 4,
-            borderBottomWidth: 2,
-            borderBottomColor:
-              cardTitle === "Bracelet" ? "#053844" : "transparent",
-          }}
-        >
-          <MaterialCommunityIcons
-            name="diamond-stone"
-            size={28}
-            color="#053844"
-            onPress={() => setCardTitle("Bracelet")}
-          />
-          <Text
+            <MaterialCommunityIcons name="ring" size={28} color="#053844" />
+            <Text
+              style={{
+                marginTop: 5,
+                fontSize: 10,
+                color: "#053844",
+                textAlign: "center",
+              }}
+            >
+              Ring
+            </Text>
+          </View>
+        </HapticButton>
+        <HapticButton onPress={() => setCardTitle("Bracelet")}>
+          <View
             style={{
-              marginTop: 5,
-              fontSize: 10,
-              color: "#053844",
-              textAlign: "center",
+              alignItems: "center",
+              paddingBottom: 4,
+              borderBottomWidth: 2,
+              borderBottomColor:
+                cardTitle === "Bracelet" ? "#053844" : "transparent",
             }}
           >
-            Bracelet
-          </Text>
-        </View>
-        <View
-          style={{
-            alignItems: "center",
-            paddingBottom: 4,
-            borderBottomWidth: 2,
-            borderBottomColor:
-              cardTitle === "Bangles" ? "#053844" : "transparent",
-          }}
-        >
-          <MaterialCommunityIcons
-            name="gold"
-            size={28}
-            color="#053844"
-            onPress={() => setCardTitle("Bangles")}
-          />
-          <Text
+            <MaterialCommunityIcons
+              name="diamond-stone"
+              size={28}
+              color="#053844"
+            />
+            <Text
+              style={{
+                marginTop: 5,
+                fontSize: 10,
+                color: "#053844",
+                textAlign: "center",
+              }}
+            >
+              Bracelet
+            </Text>
+          </View>
+        </HapticButton>
+        <HapticButton onPress={() => setCardTitle("Bangles")}>
+          <View
             style={{
-              marginTop: 5,
-              fontSize: 10,
-              color: "#053844",
-              textAlign: "center",
+              alignItems: "center",
+              paddingBottom: 4,
+              borderBottomWidth: 2,
+              borderBottomColor:
+                cardTitle === "Bangles" ? "#053844" : "transparent",
             }}
           >
-            Bangles
-          </Text>
-        </View>
-        <TouchableOpacity onPress={() => setCardTitle(ProductType.Earring)}>
+            <MaterialCommunityIcons name="gold" size={28} color="#053844" />
+            <Text
+              style={{
+                marginTop: 5,
+                fontSize: 10,
+                color: "#053844",
+                textAlign: "center",
+              }}
+            >
+              Bangles
+            </Text>
+          </View>
+        </HapticButton>
+        <HapticButton onPress={() => setCardTitle(ProductType.Earring)}>
           <View
             style={{
               alignItems: "center",
@@ -191,7 +183,7 @@ export default function HowItLooksWrapper({
               Earring
             </Text>
           </View>
-        </TouchableOpacity>
+        </HapticButton>
       </View>
       {seeHowItLooks && <SeeHowItLooksOnYouCard product={filteredProduct} />}
       {!seeHowItLooks && (
