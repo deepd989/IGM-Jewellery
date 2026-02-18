@@ -90,6 +90,8 @@ export default function AiChatComponent({
               occasion: response.occasion,
               gender: response.whoFor,
               productType: response.productType,
+              categoryName: response.categoryName,
+              subCategoryName: response.subCategoryName,
             },
           });
         }, 1500);

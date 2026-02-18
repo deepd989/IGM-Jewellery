@@ -1,5 +1,5 @@
 import { useVideoPlayer, VideoView } from "expo-video";
-import React from "react";
+import React, { useEffect } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 
 const { width } = Dimensions.get("window");
@@ -9,11 +9,18 @@ const BespokeVideoComponent = () => {
   const videoSource =
     "https://drive.google.com/uc?export=download&id=1LYb3FLuAQmoP4rktQBbFGxRPkM6fRy5c";
 
-  const player = useVideoPlayer(videoSource, (player) => {
-    player.loop = true;
-    player.muted = true;
-    player.play(); // Initial trigger for autoplay
+  const player = useVideoPlayer(videoSource, (playerInstance) => {
+    playerInstance.loop = true;
+    playerInstance.muted = true; // Required for most OS to allow autoplay
+    playerInstance.play();
   });
+
+  // Extra insurance: trigger play if the instance changes
+  useEffect(() => {
+    if (player) {
+      player.play();
+    }
+  }, [player]);
 
   return (
     <View style={styles.container}>
@@ -21,6 +28,7 @@ const BespokeVideoComponent = () => {
         <VideoView
           style={styles.video}
           player={player}
+          nativeControls={false} // Hides play/pause/timeline icons
           allowsFullscreen={false}
           allowsPictureInPicture={false}
           contentFit="cover"
@@ -46,7 +54,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 120, // High curve bottom-left
     borderTopLeftRadius: 20, // Subtle curve
     borderBottomRightRadius: 20, // Subtle curve
-    overflow: "hidden", // Crucial: clips the video to these bounds
+    overflow: "hidden", // Clips the video to these bounds
     elevation: 10, // Shadow for Android
     shadowColor: "#000", // Shadow for iOS
     shadowOffset: { width: 0, height: 10 },

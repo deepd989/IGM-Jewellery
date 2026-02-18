@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     alignItems: "center",
     width: "50%",
-    marginVertical: 80,
+    marginVertical: 30,
   },
   line: {
     flex: 1,

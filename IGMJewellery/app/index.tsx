@@ -6,6 +6,7 @@ import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../components/basic components/hapticButton";
 import HealthCheckModal from "../components/connectionModal";
+import { useGetProductsQuery } from "../store/apis/product";
 
 const { width, height } = Dimensions.get("window");
 const COLUMN_WIDTH = (width - 40) / 4;
@@ -14,6 +15,13 @@ const TILE_HEIGHT = height * 0.12;
 export default function JewelryLanding() {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
+  const {
+    data: products = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useGetProductsQuery({});
 
   const Tile = ({ children, style, isLogo }) => (
     <View style={[styles.tile, style]}>

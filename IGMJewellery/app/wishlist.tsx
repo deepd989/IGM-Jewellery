@@ -15,11 +15,11 @@ import {
   Alert,
   FlatList,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../components/basic components/hapticButton";
 import { COLORS, SPACING } from "../constants/theme";
 
@@ -200,15 +200,6 @@ export default function WishlistScreen() {
         </HapticButton>
         <Text style={styles.headerTitle}>Wishlist</Text>
         <View style={styles.headerRight}>
-          <HapticButton
-            style={styles.iconBtn}
-            onPress={() => router.push("/searchPage")}
-          >
-            <Ionicons name="search-outline" size={22} color={COLORS.text} />
-          </HapticButton>
-          <HapticButton style={styles.iconBtn}>
-            <Ionicons name="heart" size={22} color={COLORS.primary} />
-          </HapticButton>
           <View style={styles.iconBtn}>
             <CartBadge iconSize={22} iconColor={COLORS.text} />
           </View>
@@ -254,7 +245,7 @@ export default function WishlistScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "white",
     paddingTop: Platform.OS === "android" ? 30 : 0,
   },
   header: {
