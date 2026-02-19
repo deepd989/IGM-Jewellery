@@ -13,12 +13,14 @@ export default function GiftingCard({
   amount,
   description,
   sendAGiftButton,
+  imgUrl,
 }: {
   showExploreButton?: boolean;
   showHeader?: boolean;
   amount?: number;
   description?: string;
   sendAGiftButton?: boolean;
+  imgUrl?: string;
 }) {
   const router = useRouter();
   return (
@@ -32,7 +34,7 @@ export default function GiftingCard({
       )}
 
       {/* Card */}
-      <RibbonGiftCard />
+      <RibbonGiftCard imgUrl={imgUrl} />
 
       {amount && amount > 0 && (
         <Text

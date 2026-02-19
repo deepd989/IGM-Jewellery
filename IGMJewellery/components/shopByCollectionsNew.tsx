@@ -59,7 +59,7 @@ const Card = ({ item, cardWidth }) => {
 };
 
 export default function BrandCollectionCards() {
-  const { data, isLoading, error } = useGetCollectionsQuery({});
+  const { data: collectionsData, isLoading, error } = useGetCollectionsQuery();
   const { width } = useWindowDimensions();
 
   /**
@@ -68,20 +68,20 @@ export default function BrandCollectionCards() {
    * from each seller.
    */
   const formattedData = useMemo(() => {
-    if (!data) return [];
+    if (!collectionsData) return [];
 
-    return Object.keys(data).map((key) => {
-      const seller = data[key];
+    return Object.keys(collectionsData).map((key) => {
+      const seller = collectionsData[key];
       const firstCollection = seller.collections?.[0];
 
       return {
         id: key, // Using the object key (e.g., "4") as the ID
-        title: firstCollection?.collectionName || "New Arrivals",
-        image: seller.sellerBannerImgUrl,
+        title: firstCollection.title || "New Arrivals",
+        image: seller.sellerBannerImgUrl || "", // Fallback to empty string if no image
         sellerName: seller.sellerName,
       };
     });
-  }, [data]);
+  }, [collectionsData]);
 
   // Layout Calculations
   const numVisibleCards = width > 600 ? 3.5 : 1.2;

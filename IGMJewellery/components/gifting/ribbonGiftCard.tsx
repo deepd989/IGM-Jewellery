@@ -1,5 +1,5 @@
 import React from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../../constants/theme";
 
 const { width } = Dimensions.get("window");
@@ -8,6 +8,7 @@ const CARD_HEIGHT = 320;
 const CARD_RADIUS = 16;
 
 type RibbonGiftCardProps = {
+  imgUrl?: string;
   cardBackgroundColor?: string; // default: '#F7F7F7'
   ribbonColor?: string;
   petalColor?: string; // default: '#D9D9D9'
@@ -17,6 +18,7 @@ type RibbonGiftCardProps = {
 };
 
 const RibbonGiftCard: React.FC<RibbonGiftCardProps> = ({
+  imgUrl,
   cardBackgroundColor = COLORS.primaryLight,
   ribbonColor = "#C7DEE5",
   petalColor = COLORS.primary,
@@ -57,6 +59,15 @@ const RibbonGiftCard: React.FC<RibbonGiftCardProps> = ({
             />
           ))}
         </View>
+
+        {/* Positioned Image (Replacing the Red Box) */}
+        {imgUrl && (
+          <Image
+            source={{ uri: imgUrl }}
+            style={styles.cardImage}
+            resizeMode="cover"
+          />
+        )}
 
         {/* Centered heading and caption */}
         <View style={styles.textOverlay}>
@@ -101,14 +112,22 @@ const styles = StyleSheet.create({
     height: 24,
     backgroundColor: "#D9D9D9",
   },
+  cardImage: {
+    position: "absolute",
+    top: 20,
+    right: 22,
+    width: "70%",
+    height: 180,
+    borderRadius: 12,
+    zIndex: 2,
+  },
   knot: {
     position: "absolute",
-    // left: vertical ribbon left (32) + vertical ribbon width/2 (12) - knot width/2 (28)
     left: 8,
-    // bottom: horizontal ribbon bottom (56) + horizontal ribbon height/2 (12) - knot height/2 (28)
     bottom: 56,
     width: 56,
     height: 56,
+    zIndex: 5, // Ensures knot stays on top of ribbons
   },
   knotPetal: {
     position: "absolute",
@@ -127,7 +146,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 16,
-    zIndex: 2,
+    zIndex: 3,
   },
   heading: {
     fontSize: 22,

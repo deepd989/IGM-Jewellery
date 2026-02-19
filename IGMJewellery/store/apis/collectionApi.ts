@@ -3,27 +3,33 @@ import { WRAPPER_API } from "../newApis/apiUrl.const";
 
 export interface BrandCollection {
   title: string;
-  description?: string;
-  imageUri: string; //https://www.experapps.xyz/media/avatar/{file_id}
+  description: string;
+  collectionBannerImgUrl: string;
   productIds: string[];
 }
+export interface CollectionsResponse {
+  [brandId: string]: {
+    sellerName: string;
+    sellerBannerImgUrl: string;
+    collections: BrandCollection[];
+  };
+}
 
-// Define the API slice
 export const collectionsApi = createApi({
   reducerPath: "collectionsApi",
   baseQuery: fetchBaseQuery({
-    // Replace with your actual backend base URL
     baseUrl: WRAPPER_API + "/",
   }),
   tagTypes: ["Collections"],
   endpoints: (builder) => ({
-    // Define the getCollections query
-    getCollections: builder.query({
+    // 1. Pass <ResultType, QueryArgType>
+    // Since you aren't passing any arguments (query: () => ...), use 'void'
+    getCollections: builder.query<CollectionsResponse, void>({
       query: () => "/getCollections",
-      // This tag allows you to "invalidate" and refetch data later if needed
       providesTags: ["Collections"],
 
-      transformResponse: (response) => {
+      // The response is now automatically typed as CollectionsResponse
+      transformResponse: (response: CollectionsResponse) => {
         return response;
       },
     }),
