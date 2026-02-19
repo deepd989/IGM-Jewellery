@@ -30,8 +30,8 @@ import { COLORS, SPACING } from "../../constants/theme";
 import { useGetImage } from "../customHooks/tryOnImageLoader";
 
 export default function ProductDetailScreen() {
-  const { id } = useLocalSearchParams();
-
+  const { id: productId, fromTryOn } = useLocalSearchParams();
+  console.log("ProductDetailScreen params:", { productId, fromTryOn });
   const router = useRouter();
   const [isCustomizeVisible, setIsCustomizeVisible] = useState(false);
   const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
@@ -42,7 +42,7 @@ export default function ProductDetailScreen() {
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
   const [showSuccess, setShowSuccess] = useState(false);
   const { base64String: tryOnImage, isLoading: isTryOnImageLoading } =
-    useGetImage(`${id}_${userId}`);
+    useGetImage(`${productId}_${userId}`);
 
   // Fetch product from Redux API
   const {
@@ -50,7 +50,7 @@ export default function ProductDetailScreen() {
     isLoading,
     isError,
     error,
-  } = useGetProductByIdQuery(id as string);
+  } = useGetProductByIdQuery(productId as string);
 
   // Get wishlist data for header heart icon
   const { data: wishlistData } = useGetWishlistQuery();
@@ -67,6 +67,18 @@ export default function ProductDetailScreen() {
       console.error("Add to cart error:", error);
       Alert.alert("Error", "Failed to add item to cart");
     }
+  };
+
+  const getImageUrls = () => {
+    if (!product) return [];
+    if (fromTryOn === "true" && tryOnImage) {
+      return [tryOnImage, ...(product?.thumbnailUrls || [])];
+    }
+    return [
+      product?.thumbnailUrls[0],
+      tryOnImage,
+      ...(product?.thumbnailUrls.slice(1) || []),
+    ];
   };
 
   const handleTryAtHome = async () => {
@@ -179,14 +191,7 @@ export default function ProductDetailScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <ProductImageGallery
-          images={[
-            product.thumbnailUrls[0],
-            tryOnImage,
-            ...product.thumbnailUrls.slice(1),
-          ]}
-          product={product}
-        />
+        <ProductImageGallery images={getImageUrls()} product={product} />
 
         <View style={styles.infoWrapper}>
           <ProductInfo
@@ -264,6 +269,9 @@ export default function ProductDetailScreen() {
         onSelectAI={() => {
           router.push({
             pathname: "/tryOn",
+            params: {
+              productId: product.id,
+            },
           });
         }}
       />

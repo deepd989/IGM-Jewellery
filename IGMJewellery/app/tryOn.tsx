@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -16,6 +16,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../auth/authContext";
+import { COLORS } from "../constants/theme";
+import { generateJewelleryImage } from "../helpers/generateJewelleryImage";
+import { useGetProductByIdQuery } from "../store/apis/product";
 import { WRAPPER_API } from "../store/newApis/apiUrl.const";
 
 const { width } = Dimensions.get("window");
@@ -29,6 +32,11 @@ export default function JewelleryTryOn() {
   const [isUploading, setIsUploading] = useState(false); // New loading state
   const cameraRef = useRef(null);
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const productId = params.productId as string | undefined;
+  const { data: product } = useGetProductByIdQuery(productId as string);
+  const [showImageGeneratingModal, setShowImageGeneratingModal] =
+    useState(false);
 
   const handleUpload = async (uri: string) => {
     setIsUploading(true);
@@ -61,6 +69,20 @@ export default function JewelleryTryOn() {
       // We stop the loading spinner, but we DON'T reset isImageUploaded here.
       setIsUploading(false);
     }
+  };
+
+  const handleProductPageRedirection = async (productId: string) => {
+    console.log("Starting image generation for productId:", productId, product);
+    setShowImageGeneratingModal(true);
+    await generateJewelleryImage(userId as string, product, () => {});
+    setShowImageGeneratingModal(false);
+    router.push({
+      pathname: `/product/${productId}`,
+      params: {
+        fromTryOn: "true",
+      },
+    });
+    console.log("redirecting to product page for productId:", productId);
   };
 
   useEffect(() => {
@@ -203,22 +225,53 @@ export default function JewelleryTryOn() {
               </TouchableOpacity>
             </View>
           </View>
-
-          <View style={styles.footer}>
-            <Text style={styles.ctaTitle}>
-              Become The Model To See How Your Favourite Jewellery Looks On You
-            </Text>
-            <Text style={styles.ctaSubtitle}>
-              The product images in your 'Wishlist' will be revamped with your
-              image
-            </Text>
-            <TouchableOpacity
-              style={styles.confirmBtn}
-              onPress={() => setShowSuccessModal(true)}
-            >
-              <Text style={styles.confirmBtnText}>Confirm & Proceed</Text>
-            </TouchableOpacity>
-          </View>
+          {!productId && (
+            <View style={styles.footer}>
+              <Text style={styles.ctaTitle}>
+                Become The Model To See How Your Favourite Jewellery Looks On
+                You
+              </Text>
+              <Text style={styles.ctaSubtitle}>
+                The product images in your 'Wishlist' will be revamped with your
+                image
+              </Text>
+              <TouchableOpacity
+                style={styles.confirmBtn}
+                onPress={() => setShowSuccessModal(true)}
+              >
+                <Text style={styles.confirmBtnText}>Confirm & Proceed</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          {productId && (
+            <View>
+              {showImageGeneratingModal ? (
+                <ActivityIndicator
+                  size="large"
+                  color={COLORS.primary}
+                  style={{ marginVertical: 20 }}
+                />
+              ) : (
+                <View style={styles.footer}>
+                  <Text style={styles.ctaTitle}>
+                    See How This Jewellery Looks On You
+                  </Text>
+                  <Text style={styles.ctaSubtitle}>
+                    We will show you a try-on of this product with your image
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.confirmBtn}
+                    onPress={() => {
+                      handleProductPageRedirection(productId);
+                    }}
+                    disabled={showImageGeneratingModal}
+                  >
+                    <Text style={styles.confirmBtnText}>Proceed</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          )}
         </View>
       )}
 
@@ -375,6 +428,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
+    padding: 8,
   },
   confirmBtnText: { color: "#FFF", fontSize: 15, fontWeight: "600" },
   modalOverlay: {

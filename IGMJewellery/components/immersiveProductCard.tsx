@@ -138,8 +138,8 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
         <View style={styles.content}>
           <View style={styles.mainInfo}>
             <View style={styles.leftInfo}>
-              <Text style={styles.title}>{`24K ${typeLabel}`}</Text>
-              <Text style={styles.brand}>Kalyan Jewellers</Text>
+              <Text style={styles.title}>{product.name}</Text>
+              <Text style={styles.brand}>{product.brand}</Text>
               <View style={styles.ratingContainer}>
                 {[1, 2, 3, 4, 5].map((i) => (
                   <Star key={i} size={14} fill="white" color="white" />
@@ -239,6 +239,9 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
         onSelectAI={() => {
           router.push({
             pathname: "/tryOn",
+            params: {
+              productId: product.id,
+            },
           });
         }}
       />
