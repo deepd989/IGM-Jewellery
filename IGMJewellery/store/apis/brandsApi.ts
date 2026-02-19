@@ -7,6 +7,7 @@ export interface BrandAboutSection {
 }
 
 export interface Brand {
+  id: string;
   bwThumbnailUri?: string;
   profileImageUri: string;
   businessNameKey: string; // optional key for internal use
@@ -38,6 +39,7 @@ export const convertApiBrandToBrand = (apiBrand: ApiBrand): Brand => {
   const randomRating = (Math.random() * (5.0 - 3.5) + 3.5).toFixed(1);
 
   return {
+    id: apiBrand.brandid.toString(),
     bwThumbnailUri: apiBrand.logoPic || undefined,
     profileImageUri: apiBrand.logoPic || "",
     businessNameKey:

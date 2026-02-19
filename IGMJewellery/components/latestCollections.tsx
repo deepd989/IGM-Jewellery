@@ -1,8 +1,12 @@
 import { COLORS } from "@/constants/theme";
-import { useGetBrandsQuery } from "@/store/apis/brandsApi";
+import { Brand, useGetBrandsQuery } from "@/store/apis/brandsApi";
 import { useRouter } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  BrandCollection,
+  useGetCollectionsQuery,
+} from "../store/apis/collectionApi";
 import { HapticButton } from "./basic components/hapticButton";
 
 export default function LatestCollections() {
@@ -14,27 +18,37 @@ export default function LatestCollections() {
     refetch,
   } = useGetBrandsQuery({});
   const router = useRouter();
-  const [activeBrand, setActiveBrand] = useState<string | null>(null);
+  const [activeBrandName, setActiveBrand] = useState<string | null>(null);
+  const {
+    data: collectionData,
+    isLoading: collectionIsLoading,
+    error: collectionError,
+  } = useGetCollectionsQuery();
 
+  const [collections, setCollections] = useState<BrandCollection[]>([]);
   useEffect(() => {
-    if (!activeBrand && brandsData.length > 0) {
+    if (!activeBrandName && brandsData.length > 0) {
       setActiveBrand(brandsData[0].businessName);
     }
-  }, [brandsData, activeBrand]);
+  }, [brandsData, activeBrandName]);
 
   const brandNames = useMemo(
     () => brandsData.map((b) => b.businessName),
     [brandsData]
   );
 
-  const activeBrandData = useMemo(
-    () => brandsData.find((b) => b.businessName === activeBrand),
-    [brandsData, activeBrand]
-  );
+  useMemo(() => {
+    const aBrand = brandsData.find(
+      (b) => b.businessName === activeBrandName
+    ) as Brand;
+    if (aBrand && collectionData && collectionData[aBrand.id]) {
+      setCollections(collectionData[aBrand.id].collections.slice(0, 3)); // Show only top 3 collections for the active brand
+    }
+  }, [brandsData, activeBrandName]);
 
   const handleRedirect = (collectionName: string) => {
     const navigationData = {
-      brand: activeBrand,
+      brand: activeBrandName,
       collection: collectionName,
     };
     router.push({
@@ -55,7 +69,7 @@ export default function LatestCollections() {
         contentContainerStyle={styles.brandRow}
       >
         {brandNames.map((brand) => {
-          const isActive = brand === activeBrand;
+          const isActive = brand === activeBrandName;
 
           return (
             <HapticButton
@@ -92,7 +106,7 @@ export default function LatestCollections() {
       </ScrollView>
 
       {/* Collection Cards */}
-      {activeBrandData?.collections.map((collection, i) => (
+      {collections?.map((collection, i) => (
         <HapticButton
           key={i}
           style={styles.collectionCard}
