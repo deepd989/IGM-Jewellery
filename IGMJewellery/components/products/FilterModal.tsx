@@ -1,17 +1,17 @@
 import { FILTER_CATEGORIES } from "@/dummyData/filters";
-import { BACKEND_BASE_URL } from "@/store/newApis/apiUrl.const";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useMemo, useState } from "react";
 import {
-    Dimensions,
-    FlatList,
-    Modal,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    View,
+  Dimensions,
+  FlatList,
+  Modal,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SPACING } from "../../constants/theme";
+import { WRAPPER_API } from "../../store/newApis/apiUrl.const";
 import { HapticButton } from "../basic components/hapticButton";
 
 interface FilterModalProps {
@@ -40,7 +40,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const response = await fetch(`${BACKEND_BASE_URL}/getSellers`);
+        const response = await fetch(`${WRAPPER_API}/getSellers`);
         if (response.ok) {
           const sellers = await response.json();
           const options = sellers.map(

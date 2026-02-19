@@ -2,21 +2,21 @@ import { TryOnSelectorModal } from "@/components/products/TryOnSelectorModal";
 import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import {
-    useAddToWishlistMutation,
-    useGetWishlistQuery,
-    useRemoveFromWishlistMutation,
+  useAddToWishlistMutation,
+  useGetWishlistQuery,
+  useRemoveFromWishlistMutation,
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Dimensions,
-    Image,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { useAuth } from "../../auth/authContext";
 import { COLORS, SPACING } from "../../constants/theme";
@@ -47,7 +47,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onToggleCompare,
   loadAiPreview = false,
 }) => {
-  const { userId, apiUrl, imageGlobal } = useAuth();
+  const { userId } = useAuth();
   const router = useRouter();
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
@@ -373,6 +373,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         onSelectAI={() => {
           router.push({
             pathname: "/tryOn",
+            params: {
+              productId: product.id,
+            },
           });
         }}
       />
