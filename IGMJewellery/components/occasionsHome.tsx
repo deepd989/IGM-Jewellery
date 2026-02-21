@@ -66,7 +66,7 @@ const CategoryCard = ({ title, image }) => {
 export default function OccasionCardList() {
   return (
     <>
-      <SectionHeader value="Shop by Occasion" />
+      <SectionHeader value="Celebrate Important Moments" />
       <View style={styles.container}>
         <FlatList
           data={OCCASIONS}

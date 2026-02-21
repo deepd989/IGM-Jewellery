@@ -9,10 +9,7 @@ export default function EventCard() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <Text style={styles.header}>We have put together looks for you!</Text>
-      <Text style={styles.caption}>
-        Here’s what we have based on your search and taste
-      </Text>
+      <Text style={styles.header}>Looks styled for you</Text>
 
       {/* Image Section */}
       <ImageBackground
@@ -56,6 +53,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
     color: COLORS.primary,
+    marginBottom: 16,
   },
 
   caption: {

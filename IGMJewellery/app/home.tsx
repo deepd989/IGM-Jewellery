@@ -19,9 +19,11 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useRef,
   useState,
 } from "react";
 import {
+  Animated,
   BackHandler,
   ScrollView,
   StyleSheet,
@@ -62,6 +64,35 @@ export default function HomeScreen() {
   const { userId } = useAuth();
   const { balance: walletBalance } = useWalletBalance(userId as string);
 
+  const revolvingTexts = [
+    "I want a necklace",
+    "I want a ring for my mom",
+    "Help me find a bracelet",
+    "What should I give her on anniversary?",
+    "Wedding rings",
+    "Earrings like Deepika Padukone",
+  ];
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        setPlaceholderIndex((prev) => (prev + 1) % revolvingTexts.length);
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      });
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     (async () => {
       const pin = await getUserPincode();
@@ -87,10 +118,10 @@ export default function HomeScreen() {
     useCallback(() => {
       const backHandler = BackHandler.addEventListener(
         "hardwareBackPress",
-        () => true
+        () => true,
       );
       return () => backHandler.remove();
-    }, [])
+    }, []),
   );
 
   return (
@@ -102,10 +133,7 @@ export default function HomeScreen() {
             {pincode || "Fetching..."}
           </Text>
         </Text>
-        <Text style={styles.balance}>
-          {"\u20B9"}
-          {walletBalance}
-        </Text>
+        {/* Wallet balance pill hidden for now */}
       </View>
       <SearchBar />
       <ScrollView style={styles.container}>
@@ -125,20 +153,41 @@ export default function HomeScreen() {
 
             {/* 2. Main Title */}
             <Text style={styles.mainTitle}>
-              What sparkle are we looking for today?
+              Tell us what you are looking for
             </Text>
 
             {/* 3. Enhanced Search Bar */}
             <View style={styles.searchBox}>
-              <TextInput
-                placeholder="Zeywar Ai is listening"
-                placeholderTextColor="#1A3B4A"
-                style={styles.inputText}
-                value={textInput}
-                returnKeyType="send" // or "done", "go", "search"
-                onSubmitEditing={handleSubmit}
-                onChangeText={(text) => setTextInput(text)}
-              />
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  placeholder=" "
+                  style={styles.inputText}
+                  value={textInput}
+                  returnKeyType="send"
+                  onSubmitEditing={handleSubmit}
+                  onChangeText={(text) => setTextInput(text)}
+                />
+                {!textInput && (
+                  <Animated.Text
+                    style={[
+                      styles.inputText,
+                      {
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        textAlignVertical: "center",
+                        color: "#1A3B4A",
+                        opacity: fadeAnim,
+                      },
+                    ]}
+                    pointerEvents="none"
+                  >
+                    {revolvingTexts[placeholderIndex]}
+                  </Animated.Text>
+                )}
+              </View>
               <View style={styles.iconGroup}>
                 <HapticButton
                   onPress={() => {
