@@ -18,6 +18,10 @@ export interface StoredMessage {
     subCategoryName?: string;
     minPrice?: string;
     maxPrice?: string;
+    metal?: string;
+    gemstone?: string;
+    brand?: string;
+    searchQuery?: string;
   };
 }
 
