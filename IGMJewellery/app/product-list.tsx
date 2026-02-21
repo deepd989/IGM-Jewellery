@@ -84,6 +84,9 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   const collection = params.collection as string | undefined;
   const minPrice = params.minPrice as string | undefined;
   const maxPrice = params.maxPrice as string | undefined;
+  const metal = params.metal as string | undefined;
+  const gemstone = params.gemstone as string | undefined;
+  const searchQuery = params.searchQuery as string | undefined;
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedFilter, setSelectedFilter] = useState("All");
@@ -189,6 +192,23 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       newFilters.maxPrice = [maxPrice];
     }
 
+    // Handle metal filter (from AI chat)
+    const metalValues = parseFilterParam(metal);
+    if (metalValues.length > 0) {
+      newFilters.metal = metalValues;
+    }
+
+    // Handle gemstone filter (from AI chat)
+    const gemstoneValues = parseFilterParam(gemstone);
+    if (gemstoneValues.length > 0) {
+      newFilters.gemstone = gemstoneValues;
+    }
+
+    // Handle searchQuery filter (from AI chat — name search)
+    if (searchQuery) {
+      newFilters.searchQuery = [searchQuery];
+    }
+
     // Merge with filters passed as props
     if (filters && Object.keys(filters).length > 0) {
       Object.keys(filters).forEach((key) => {
@@ -211,6 +231,9 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     gender,
     minPrice,
     maxPrice,
+    metal,
+    gemstone,
+    searchQuery,
     params.priceRange,
     filters,
   ]);

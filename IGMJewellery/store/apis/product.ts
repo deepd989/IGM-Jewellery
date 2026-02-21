@@ -173,6 +173,17 @@ const applyFilters = (
           );
         }
         break;
+
+      case "searchQuery":
+        const query = selectedOptions[0]?.toLowerCase();
+        if (query) {
+          filteredProducts = filteredProducts.filter(
+            (p) =>
+              p.name.toLowerCase().includes(query) ||
+              p.description?.toLowerCase().includes(query)
+          );
+        }
+        break;
     }
   });
 

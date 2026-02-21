@@ -35,6 +35,10 @@ interface IMessage {
     subCategoryName?: string;
     minPrice?: string;
     maxPrice?: string;
+    metal?: string;
+    gemstone?: string;
+    brand?: string;
+    searchQuery?: string;
   };
 }
 
@@ -143,6 +147,10 @@ export default function AiChatComponent({
           subCategoryName: query.subCategoryName,
           minPrice: query.priceRange?.min?.toString(),
           maxPrice: query.priceRange?.max?.toString(),
+          metal: query.metalType || query.metal,
+          gemstone: query.gemstone || (query.studded === true ? "Natural Diamond" : query.studded === false ? undefined : undefined),
+          brand: query.brand,
+          searchQuery: query.name || query.searchQuery,
         };
 
         const redirectMsg: IMessage = {
@@ -248,14 +256,18 @@ export default function AiChatComponent({
     }
   };
 
-  /** Build a short label from searchParams, e.g. "Necklace • Female • ₹5K–₹20K" */
+  /** Build a short label from searchParams, e.g. "Necklace • Female • Gold • ₹5K–₹20K" */
   const buildFilterLabel = useCallback(
     (params: NonNullable<IMessage["searchParams"]>) => {
       const parts: string[] = [];
+      if (params.searchQuery) parts.push(`"${params.searchQuery}"`);
       if (params.productType) parts.push(params.productType);
       if (params.categoryName) parts.push(params.categoryName);
       if (params.gender) parts.push(params.gender);
       if (params.occasion) parts.push(params.occasion);
+      if (params.metal) parts.push(params.metal);
+      if (params.gemstone) parts.push(params.gemstone);
+      if (params.brand) parts.push(params.brand);
       if (params.minPrice || params.maxPrice) {
         const fmt = (v?: string) =>
           v ? (Number(v) >= 1000 ? `₹${(Number(v) / 1000).toFixed(0)}K` : `₹${v}`) : "";
