@@ -1,17 +1,23 @@
 import BottomNavBar from "@/components/bottomNavBar";
 import { COLORS, SPACING } from "@/constants/theme";
+import {
+    clearChatHistory,
+    loadChatHistory,
+} from "@/store/apis/chatStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { AudioLines, Mic, Send, Sparkles } from "lucide-react-native";
-import React, { useState } from "react";
+import { AudioLines, MessageSquare, Mic, Send, Sparkles } from "lucide-react-native";
+import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../auth/authContext";
 import { HapticButton } from "../components/basic components/hapticButton";
 import AiChatComponent from "../components/exploreAi/aiChat";
 
 export default function ExploreAi() {
   const params = useLocalSearchParams();
   const router = useRouter();
+  const { userId } = useAuth();
   const searchQuery = (params.value as string) || "";
   const [showVoiceVideoInterface, setShowVoiceVideoInterface] = useState(
     params.mode
@@ -20,6 +26,15 @@ export default function ExploreAi() {
   const [inputText, setInputText] = useState("");
   const [showChat, setShowChat] = useState(false);
   const [userMessage, setUserMessage] = useState("");
+  const [hasHistory, setHasHistory] = useState(false);
+
+  // Check for persisted chat history on mount
+  useEffect(() => {
+    (async () => {
+      const history = await loadChatHistory(userId);
+      setHasHistory(history.length > 0);
+    })();
+  }, [userId]);
 
   const suggestions = [
     "Our New collection",
@@ -49,11 +64,11 @@ export default function ExploreAi() {
 
   // Show chat component if user sent a message
   if (showChat) {
-    return <AiChatComponent initialMessage={userMessage} />;
+    return <AiChatComponent initialMessage={userMessage} userId={userId} />;
   }
 
   if (searchQuery && searchQuery != "") {
-    return <AiChatComponent initialMessage={searchQuery} />;
+    return <AiChatComponent initialMessage={searchQuery} userId={userId} />;
   }
 
   if (showVoiceVideoInterface) {
@@ -61,6 +76,7 @@ export default function ExploreAi() {
       <AiChatComponent
         initialMessage={""}
         mode={showVoiceVideoInterface as "voice" | "video"}
+        userId={userId}
       />
     );
   }
@@ -114,6 +130,31 @@ export default function ExploreAi() {
             </HapticButton>
           )}
         </View>
+
+        {/* Continue / Clear Chat */}
+        {hasHistory && (
+          <View style={styles.historyActions}>
+            <HapticButton
+              style={styles.continueChatButton}
+              onPress={() => {
+                setUserMessage("");
+                setShowChat(true);
+              }}
+            >
+              <MessageSquare size={16} color="#fff" style={{ marginRight: 8 }} />
+              <Text style={styles.continueChatText}>Continue Previous Chat</Text>
+            </HapticButton>
+            <HapticButton
+              style={styles.clearChatButton}
+              onPress={async () => {
+                await clearChatHistory(userId);
+                setHasHistory(false);
+              }}
+            >
+              <Text style={styles.clearChatText}>Clear Chat</Text>
+            </HapticButton>
+          </View>
+        )}
 
         {/* Suggestion Chips */}
         <ScrollView
@@ -216,6 +257,35 @@ const styles = StyleSheet.create({
   suggestionText: {
     fontSize: 12,
     color: "#333",
+    fontWeight: "400",
+  },
+  historyActions: {
+    marginBottom: 16,
+    alignItems: "center",
+    gap: 10,
+  },
+  continueChatButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#053844",
+    borderRadius: 24,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    width: "100%",
+  },
+  continueChatText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  clearChatButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+  },
+  clearChatText: {
+    color: "#999",
+    fontSize: 12,
     fontWeight: "400",
   },
 });

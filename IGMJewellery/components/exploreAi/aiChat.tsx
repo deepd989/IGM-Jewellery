@@ -1,17 +1,22 @@
 import { COLORS } from "@/constants/theme";
+import {
+    loadChatHistory,
+    saveChatHistory,
+    StoredMessage,
+} from "@/store/apis/chatStorage";
 import { useSearchJewelryMutation } from "@/store/apis/textSearchApi";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-  FlatList,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    FlatList,
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../basic components/hapticButton";
@@ -21,20 +26,54 @@ interface IMessage {
   text: string;
   sender: "user" | "ai";
   timestamp: Date;
+  searchParams?: {
+    occasion?: string;
+    gender?: string;
+    productType?: string;
+    categoryName?: string;
+    subCategoryName?: string;
+    minPrice?: string;
+    maxPrice?: string;
+  };
+}
+
+/** Convert runtime IMessage → serialisable StoredMessage */
+function toStored(msg: IMessage): StoredMessage {
+  return {
+    id: msg.id,
+    text: msg.text,
+    sender: msg.sender,
+    timestamp:
+      msg.timestamp instanceof Date
+        ? msg.timestamp.toISOString()
+        : String(msg.timestamp),
+    searchParams: msg.searchParams,
+  };
+}
+
+/** Convert stored JSON → runtime IMessage */
+function fromStored(msg: StoredMessage): IMessage {
+  return {
+    ...msg,
+    timestamp: new Date(msg.timestamp),
+  };
 }
 
 export default function AiChatComponent({
   initialMessage = "",
   mode,
+  userId = null,
 }: {
   initialMessage: string;
   mode?: "voice" | "video";
+  userId?: string | null;
 }) {
   const router = useRouter();
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [inputText, setInputText] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [redirection, setRedirection] = useState(false);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const [showVoiceVideoInterface, setShowVoiceVideoInterface] = useState(
     !!mode
   );
@@ -42,6 +81,7 @@ export default function AiChatComponent({
     mode || "voice"
   );
   const flatListRef = useRef<FlatList>(null);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [searchJewelry, { isLoading: replyLoading }] =
     useSearchJewelryMutation();
@@ -77,14 +117,6 @@ export default function AiChatComponent({
         setMessages((prev) => [aiResponse, ...prev]);
       } else {
         setRedirection(true);
-        const redirectMsg: IMessage = {
-          id: "redirect",
-          text: "Found your style! Redirecting...",
-          sender: "ai",
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [redirectMsg, ...prev]);
-
         const query = response.searchQuery || {};
 
         // Map relationship-based whoFor to gender filter values
@@ -93,8 +125,8 @@ export default function AiChatComponent({
           sister: "Female",
           father: "Male",
           brother: "Male",
-          partner: "",     // could be either, skip gender filter
-          sibling: "",     // could be either, skip gender filter
+          partner: "",
+          sibling: "",
           male: "Male",
           female: "Female",
         };
@@ -102,18 +134,29 @@ export default function AiChatComponent({
           ? whoForToGender[query.whoFor.toLowerCase()] ?? query.whoFor
           : undefined;
 
+        const searchParams = {
+          occasion: query.occasion,
+          gender: mappedGender || undefined,
+          productType: query.productType,
+          categoryName: query.categoryName,
+          subCategoryName: query.subCategoryName,
+          minPrice: query.priceRange?.min?.toString(),
+          maxPrice: query.priceRange?.max?.toString(),
+        };
+
+        const redirectMsg: IMessage = {
+          id: Math.random().toString(36).substring(2, 11),
+          text: "Found your style! Redirecting...",
+          sender: "ai",
+          timestamp: new Date(),
+          searchParams,
+        };
+        setMessages((prev) => [redirectMsg, ...prev]);
+
         setTimeout(() => {
           router.push({
             pathname: "/product-list",
-            params: {
-              occasion: query.occasion,
-              gender: mappedGender || undefined,
-              productType: query.productType,
-              categoryName: query.categoryName,
-              subCategoryName: query.subCategoryName,
-              minPrice: query.priceRange?.min,
-              maxPrice: query.priceRange?.max,
-            },
+            params: searchParams as Record<string, string>,
           });
         }, 1500);
       }
@@ -131,24 +174,49 @@ export default function AiChatComponent({
 
   // Watch for new user messages to trigger AI
   useEffect(() => {
+    if (!historyLoaded) return; // skip until history is loaded
     const lastMessage = messages[0]; // Newest is at index 0
     if (lastMessage?.sender === "user" && !replyLoading && !redirection) {
       handleAiLogic(messages);
     }
-  }, [messages]);
+  }, [messages, historyLoaded]);
 
-  // Initial Message mount
+  // Persist messages to storage (debounced 500ms)
   useEffect(() => {
-    if (initialMessage.trim()) {
-      const startMsg: IMessage = {
-        id: Date.now().toString(),
-        text: initialMessage.trim(),
-        sender: "user",
-        timestamp: new Date(),
-      };
-      setMessages([startMsg]);
-    }
-  }, [initialMessage]);
+    if (!historyLoaded) return;
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      saveChatHistory(userId, messages.map(toStored));
+    }, 500);
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
+  }, [messages, historyLoaded, userId]);
+
+  // Load persisted history + seed initial message on mount
+  useEffect(() => {
+    (async () => {
+      // Reset redirection so the user can search again in continued chats
+      setRedirection(false);
+
+      const stored = await loadChatHistory(userId);
+      const history = stored.map(fromStored);
+
+      if (initialMessage.trim()) {
+        const startMsg: IMessage = {
+          id: Date.now().toString(),
+          text: initialMessage.trim(),
+          sender: "user",
+          timestamp: new Date(),
+        };
+        // Prepend new message to existing history (newest-first order)
+        setMessages([startMsg, ...history]);
+      } else {
+        setMessages(history);
+      }
+      setHistoryLoaded(true);
+    })();
+  }, []);
 
   const onSendPress = () => {
     if (!inputText.trim() || replyLoading) return;
@@ -177,6 +245,24 @@ export default function AiChatComponent({
     }
   };
 
+  /** Build a short label from searchParams, e.g. "Necklace • Female • ₹5K–₹20K" */
+  const buildFilterLabel = useCallback(
+    (params: NonNullable<IMessage["searchParams"]>) => {
+      const parts: string[] = [];
+      if (params.productType) parts.push(params.productType);
+      if (params.categoryName) parts.push(params.categoryName);
+      if (params.gender) parts.push(params.gender);
+      if (params.occasion) parts.push(params.occasion);
+      if (params.minPrice || params.maxPrice) {
+        const fmt = (v?: string) =>
+          v ? (Number(v) >= 1000 ? `₹${(Number(v) / 1000).toFixed(0)}K` : `₹${v}`) : "";
+        parts.push(`${fmt(params.minPrice)}–${fmt(params.maxPrice)}`.replace(/^–/, "").replace(/–$/, ""));
+      }
+      return parts.join(" • ") || "View Results";
+    },
+    []
+  );
+
   const renderMessage = ({ item }: { item: IMessage }) => {
     const isUser = item.sender === "user";
     return (
@@ -200,6 +286,27 @@ export default function AiChatComponent({
           >
             {item.text}
           </Text>
+          {!isUser && item.searchParams && (
+            <HapticButton
+              style={styles.visitSearchButton}
+              onPress={() =>
+                router.push({
+                  pathname: "/product-list",
+                  params: item.searchParams as Record<string, string>,
+                })
+              }
+            >
+              <Ionicons
+                name="search"
+                size={14}
+                color="#fff"
+                style={{ marginRight: 6 }}
+              />
+              <Text style={styles.visitSearchText}>
+                {buildFilterLabel(item.searchParams)}
+              </Text>
+            </HapticButton>
+          )}
         </View>
         {isUser && <View style={styles.userAvatar} />}
       </View>
@@ -391,4 +498,19 @@ const styles = StyleSheet.create({
   modalContainer: { flex: 1, backgroundColor: "#f5f5f5" },
   closeButton: { position: "absolute", top: 50, right: 20, zIndex: 10 },
   recordingButton: { backgroundColor: "#FFE0E0", borderRadius: 20 },
+  visitSearchButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#053844",
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginTop: 10,
+    alignSelf: "flex-start",
+  },
+  visitSearchText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "500",
+  },
 });
