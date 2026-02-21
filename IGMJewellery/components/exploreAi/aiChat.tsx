@@ -1,22 +1,22 @@
 import { COLORS } from "@/constants/theme";
 import {
-    loadChatHistory,
-    saveChatHistory,
-    StoredMessage,
+  loadChatHistory,
+  saveChatHistory,
+  StoredMessage,
 } from "@/store/apis/chatStorage";
 import { useSearchJewelryMutation } from "@/store/apis/textSearchApi";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
-    FlatList,
-    KeyboardAvoidingView,
-    Modal,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  FlatList,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../basic components/hapticButton";
@@ -220,6 +220,7 @@ export default function AiChatComponent({
 
   const onSendPress = () => {
     if (!inputText.trim() || replyLoading) return;
+    setRedirection(false); // allow new searches after a previous redirect
 
     const userMsg: IMessage = {
       id: Math.random().toString(36).substring(2, 11),
@@ -234,6 +235,7 @@ export default function AiChatComponent({
 
   const handleTranscript = (text: string) => {
     setShowVoiceVideoInterface(false);
+    setRedirection(false); // allow new searches after a previous redirect
     if (text.trim()) {
       const userMsg: IMessage = {
         id: Date.now().toString(),
