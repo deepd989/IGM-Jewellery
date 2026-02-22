@@ -61,13 +61,13 @@ export default function GiftFinder() {
 
     if (
       maleRelationships.some((rel) =>
-        relationship.toLowerCase().includes(rel.toLowerCase())
+        relationship.toLowerCase().includes(rel.toLowerCase()),
       )
     )
       return "Male";
     if (
       femaleRelationships.some((rel) =>
-        relationship.toLowerCase().includes(rel.toLowerCase())
+        relationship.toLowerCase().includes(rel.toLowerCase()),
       )
     )
       return "Female";
@@ -90,7 +90,7 @@ export default function GiftFinder() {
   const renderDropdown = (
     label: string,
     value: string,
-    type: "category" | "relationship" | "occasion" | "price"
+    type: "category" | "relationship" | "occasion" | "price",
   ) => (
     <View style={styles.dropdownContainer}>
       <Text style={styles.label}>{label}</Text>
@@ -109,7 +109,7 @@ export default function GiftFinder() {
   const renderListModal = (
     type: "category" | "relationship" | "occasion",
     data: string[],
-    setter: any
+    setter: any,
   ) => (
     <Modal
       isVisible={openDropdown === type}
@@ -151,7 +151,7 @@ export default function GiftFinder() {
       <Text style={styles.subtitle}>
         Let{" "}
         <Text
-          style={{ fontWeight: "bold", fontStyle: "italic", color: "#1D3D47" }}
+          style={{ fontWeight: "bold", fontStyle: "italic", color: "#FFFFFF" }}
         >
           Zeywar Ai
         </Text>{" "}
@@ -163,14 +163,14 @@ export default function GiftFinder() {
         {renderDropdown(
           "within",
           `₹${priceRange[0]} - ₹${priceRange[1]}`,
-          "price"
+          "price",
         )}
         {renderDropdown("for my", selectedRelationship, "relationship")}
         {renderDropdown("on the occasion of", selectedOccasion, "occasion")}
 
         <HapticButton style={styles.submitButton} onPress={handleStartLooking}>
           <Text style={styles.buttonText}>Start looking</Text>
-          <Ionicons name="sparkles-outline" size={20} color="white" />
+          <Ionicons name="sparkles-outline" size={18} color="#053844" />
         </HapticButton>
       </View>
 
@@ -215,10 +215,10 @@ export default function GiftFinder() {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: "#F0F7F8", // Light teal background like the image
+    backgroundColor: "#053844",
   },
   logoContainer: {
-    backgroundColor: "#E6F2F4",
+    backgroundColor: "#053844",
     height: 160,
     width: "100%",
     justifyContent: "center",
@@ -230,28 +230,28 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: "#1D4E5F", // Dark teal icon background
+    backgroundColor: "#0A4D5C",
     justifyContent: "center",
     alignItems: "center",
   },
   title: {
     fontSize: 26,
     fontWeight: "700",
-    color: "#1D3D47",
+    color: "#FFFFFF",
     textAlign: "center",
     marginTop: 25,
   },
   subtitle: {
     fontSize: 18,
-    color: "#4A6269",
+    color: "#FFFFFF",
     textAlign: "center",
     marginBottom: 20,
   },
   mainCard: {
-    backgroundColor: "#F8FCFD", // The inner white-ish bubble
+    backgroundColor: "#053844",
     flex: 1,
     marginHorizontal: 10,
-    marginBottom: -20, // Extends to bottom
+    marginBottom: -20,
     borderTopLeftRadius: 60,
     borderTopRightRadius: 60,
     paddingHorizontal: 35,
@@ -263,38 +263,40 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: "#1D3D47",
+    color: "#FFFFFF",
     marginBottom: 8,
   },
   dropdown: {
     backgroundColor: "white",
     borderRadius: 30,
-    height: 55,
+    height: 50,
     width: "100%",
     paddingHorizontal: 20,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#A9D0D5", // Light teal borders
+    borderWidth: 0,
+    borderColor: "transparent",
   },
   dropdownText: {
-    fontSize: 16,
+    fontSize: 15,
     color: "#1D3D47",
   },
   submitButton: {
-    backgroundColor: "#163038", // Dark slate button
-    height: 60,
-    borderRadius: 15,
-    marginTop: 15,
+    backgroundColor: "#FFFFFF",
+    height: 48,
+    borderRadius: 30,
+    marginTop: 20,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    gap: 10,
+    gap: 8,
+    paddingHorizontal: 30,
+    alignSelf: "center",
   },
   buttonText: {
-    color: "white",
-    fontSize: 18,
+    color: "#053844",
+    fontSize: 16,
     fontWeight: "600",
   },
   modalBox: {

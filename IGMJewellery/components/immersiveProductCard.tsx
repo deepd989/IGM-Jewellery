@@ -43,7 +43,7 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
   const typeLabel = product.productType;
 
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.product.id === product.id
+    (item) => item.product.id === product.id,
   );
 
   const handleAddToCart = async (e: any) => {
@@ -101,7 +101,7 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
         if (error?.data === "Item already in wishlist") {
           Alert.alert(
             "Already in Wishlist",
-            "This item is already wishlisted."
+            "This item is already wishlisted.",
           );
         } else {
           Alert.alert("Error", "Failed to add to wishlist");
@@ -183,7 +183,7 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
               style={styles.tryNowBtn}
               onPress={() => setIsTryOnSelectorVisible(true)}
             >
-              <Sparkles size={18} color="#C5A059" fill="#C5A059" />
+              <Sparkles size={18} color="#FFFFFF" fill="#FFFFFF" />
               <Text style={styles.tryNowText}>Try Now</Text>
             </HapticButton>
 
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
   buttonRow: { flexDirection: "row", gap: 12 },
   tryNowBtn: {
     flex: 1,
-    backgroundColor: "rgba(197, 160, 89, 0.8)",
+    backgroundColor: "#003A45",
     flexDirection: "row",
     height: 56,
     borderRadius: 12,

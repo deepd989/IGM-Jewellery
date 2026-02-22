@@ -105,7 +105,7 @@ export default function BrandCollectionCards() {
 
   return (
     <View style={styles.container}>
-      <SectionHeader value="Shop by Collections" />
+      <SectionHeader value="The Latest Arrivals" />
       <FlatList
         data={formattedData}
         renderItem={({ item }) => <Card item={item} cardWidth={cardWidth} />}

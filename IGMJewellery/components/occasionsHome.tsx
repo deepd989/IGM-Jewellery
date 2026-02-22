@@ -18,22 +18,22 @@ const OCCASIONS = [
   {
     id: "1",
     title: OccasiomEnum.Wedding,
-    image: require("../assets/images/collectionImages/wedding.png"),
+    image: require("../assets/images/occasionImages/wedding.jpg"),
   },
   {
     id: "2",
     title: OccasiomEnum.Anniversary,
-    image: require("../assets/images/collectionImages/anniversary.png"),
+    image: require("../assets/images/occasionImages/anniversary.jpg"),
   },
   {
     id: "3",
     title: OccasiomEnum.Birthday,
-    image: require("../assets/images/collectionImages/birthday.png"),
+    image: require("../assets/images/occasionImages/birthday.jpg"),
   },
   {
     id: "4",
     title: OccasiomEnum.Engagement,
-    image: require("../assets/images/collectionImages/engagement.png"),
+    image: require("../assets/images/occasionImages/engagement.jpg"),
   },
 ];
 
@@ -66,7 +66,7 @@ const CategoryCard = ({ title, image }) => {
 export default function OccasionCardList() {
   return (
     <>
-      <SectionHeader value="Shop by Occasion" />
+      <SectionHeader value="Celebrate Important Moments" />
       <View style={styles.container}>
         <FlatList
           data={OCCASIONS}

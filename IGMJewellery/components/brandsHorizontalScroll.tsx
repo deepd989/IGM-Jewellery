@@ -38,11 +38,11 @@ export default function BrandsHorizontalScroll() {
           router.push(`/brandProfile/${brand.businessNameKey}`);
         },
       };
-    }
+    },
   );
   return (
     <>
-      <SectionHeader value="Shop by Brands" />
+      <SectionHeader value="House of Brands" />
       <GradientHorizontalScroll data={brandsDataScroll} />
     </>
   );

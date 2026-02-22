@@ -20,7 +20,7 @@ export function TrendingProducts({ products }: TrendingProductsProps) {
   };
   return (
     <>
-      <SectionHeader value="Trending Now" />
+      <SectionHeader value="This Season's Finest Finds" />
       <FlatList
         horizontal
         data={trendingProducts}
