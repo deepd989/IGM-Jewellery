@@ -12,7 +12,7 @@ import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../components/basic components/hapticButton";
 import HashtagComponent from "../components/hashtagComponent";
-import BrandCollectionCards from "../components/shopByCollectionsNew";
+import LatestCollections from "../components/latestCollections";
 
 export default function Gift() {
   const giftOptions = [
@@ -33,8 +33,7 @@ export default function Gift() {
         <HorizontalRuleIGM />
         <GiftingCard sendAGiftButton={true} />
         <HorizontalRuleIGM />
-        {/* <LatestCollections /> */}
-        <BrandCollectionCards />
+        <LatestCollections />
         <HorizontalRuleIGM />
         <HashtagComponent />
       </ScrollView>
