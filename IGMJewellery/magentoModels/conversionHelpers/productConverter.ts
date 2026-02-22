@@ -467,6 +467,8 @@ export function convertResolvedProduct(
     isImmersiveProduct: isImmersiveProduct(magentoProduct),
     immersiveThumbnailUrl: getImmersiveThumbnailUrl(magentoProduct),
     immersiveVideoUrl: magentoProduct.immersiveVideoUrl || undefined,
+    region:
+      (getCustomAttribute(magentoProduct, "region") as string) || "Gujrat",
   };
 }
 

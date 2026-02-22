@@ -2,15 +2,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    ImageBackground,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  FlatList,
+  ImageBackground,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 
 import { CartBadge } from "@/components/cart/CardBadge";
@@ -82,6 +82,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   const productType = params.productType as string | undefined;
   const brand = params.brand as string | undefined;
   const collection = params.collection as string | undefined;
+  const region = params.region as string | undefined;
   const minPrice = params.minPrice as string | undefined;
   const maxPrice = params.maxPrice as string | undefined;
   const metal = params.metal as string | undefined;
@@ -158,6 +159,11 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       newFilters.collection = collectionValues;
     }
 
+    const regionValues = parseFilterParam(region);
+    if (regionValues.length > 0) {
+      newFilters.region = regionValues;
+    }
+
     // Handle gender filter from departmentId (categories page sends departmentId)
     if (departmentId) {
       const deptGenderMap: Record<string, string> = {
@@ -228,6 +234,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     occasion,
     brand,
     collection,
+    region,
     gender,
     minPrice,
     maxPrice,
@@ -339,6 +346,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       } Collection`;
     if (brand) return brand;
     if (collection) return `${collection} Collection`;
+    if (region) return `From ${region} Region`;
     if (gender)
       return `${gender.charAt(0).toUpperCase() + gender.slice(1)}'s Jewellery`;
     if (hierarchy?.category) return hierarchy.category.name;
@@ -364,6 +372,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
         parts.push(occasion.charAt(0).toUpperCase() + occasion.slice(1));
       if (brand) parts.push(brand);
       if (collection) parts.push(collection);
+      if (region) parts.push(`${region}`);
     }
 
     return parts.join(" / ");

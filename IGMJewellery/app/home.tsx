@@ -41,6 +41,7 @@ import HowItLooksWrapper from "../components/homePageCard";
 import LatestCollections from "../components/latestCollections";
 import { SectionHeader } from "../components/section";
 import BrandCollectionCards from "../components/shopByCollectionsNew";
+import ShopByRegionCards from "../components/shopByRegion";
 import { TrendingProducts } from "../components/TrendingProducts";
 import TrustBar from "../components/trustBarBanner";
 import { COLORS } from "../constants/theme";
@@ -118,10 +119,10 @@ export default function HomeScreen() {
     useCallback(() => {
       const backHandler = BackHandler.addEventListener(
         "hardwareBackPress",
-        () => true,
+        () => true
       );
       return () => backHandler.remove();
-    }, []),
+    }, [])
   );
 
   return (
@@ -206,6 +207,8 @@ export default function HomeScreen() {
         <AnnouncementSection />
         <HorizontalRuleIGM />
         <BrandCollectionCards />
+        <HorizontalRuleIGM />
+        <ShopByRegionCards />
         <HorizontalRuleIGM />
         <CategoriesHorizontalScroll />
         <TrustBar />

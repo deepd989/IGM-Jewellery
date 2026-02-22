@@ -184,6 +184,13 @@ const applyFilters = (
           );
         }
         break;
+      case "region":
+        filteredProducts = filteredProducts.filter((p) =>
+          selectedOptions.some(
+            (opt) => p.region?.toLowerCase() === opt.toLowerCase()
+          )
+        );
+        break;
     }
   });
 

@@ -4,9 +4,9 @@ import { Animated, Easing, StyleSheet, Text, View } from "react-native";
 
 const TrustBar = () => {
   const trustItems = [
-    { id: 1, icon: "shield-check", text: "5000+ Brands" },
-    { id: 2, icon: "shield-check", text: "100% Refund" },
-    { id: 3, icon: "shield-check", text: "Lifetime Exchange" },
+    { id: 1, icon: "shield-check", text: "Infinite Designs" },
+    { id: 2, icon: "shield-check", text: "Global Jewellery Standards" },
+    { id: 3, icon: "shield-check", text: "Insured Delivery" },
   ];
 
   const scrollX = useRef(new Animated.Value(0)).current;
