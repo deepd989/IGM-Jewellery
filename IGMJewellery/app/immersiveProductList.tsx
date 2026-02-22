@@ -60,7 +60,7 @@ const ImmersiveProductList = () => {
           }),
         ]),
         Animated.delay(300),
-      ]),
+      ])
     );
 
     // Card nudge: slight lift up and back
@@ -102,7 +102,9 @@ const ImmersiveProductList = () => {
   }, [showHint]);
 
   const immersiveProducts = useMemo(() => {
-    return products.filter((product) => product.isImmersiveProduct === true);
+    return products.filter((product) => {
+      return product.immersiveVideoUrl || product.isImmersiveProduct;
+    });
   }, [products]);
 
   if (isLoading) return <ActivityIndicator size="large" style={{ flex: 1 }} />;

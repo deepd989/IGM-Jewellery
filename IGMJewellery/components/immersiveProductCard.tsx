@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { ResizeMode, Video } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { Sparkles, Star, X } from "lucide-react-native";
@@ -7,12 +8,13 @@ import {
   ActivityIndicator,
   Alert,
   Animated,
-  Dimensions,
-  ImageBackground,
+  Dimensions, // Re-added for fallback
   StyleSheet,
   Text,
   View,
 } from "react-native";
+
+import { ImageBackground } from "expo-image";
 import { COLORS } from "../constants/theme";
 import { Product } from "../interfaces/product.interface";
 import { useAddToCartMutation } from "../store/apis/cart";
@@ -28,9 +30,10 @@ const { width, height } = Dimensions.get("window");
 
 export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
   const router = useRouter();
+  const videoRef = useRef(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
-  const fadeAnim = useRef(new Animated.Value(1)).current; // For smooth transition
+  const fadeAnim = useRef(new Animated.Value(1)).current;
 
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const { data: wishlistData } = useGetWishlistQuery();
@@ -40,18 +43,14 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
     useRemoveFromWishlistMutation();
 
   const discountedPrice = product.discountedPrice;
-  const typeLabel = product.productType;
-
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.product.id === product.id,
+    (item) => item.product.id === product.id
   );
 
   const handleAddToCart = async (e: any) => {
     e.stopPropagation();
     try {
       await addToCart({ product, quantity: 1 }).unwrap();
-
-      // Animate out, change state, animate in
       Animated.timing(fadeAnim, {
         toValue: 0,
         duration: 100,
@@ -64,8 +63,6 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
           useNativeDriver: true,
         }).start();
       });
-
-      // Reset after 2 seconds
       setTimeout(() => {
         Animated.timing(fadeAnim, {
           toValue: 0,
@@ -81,7 +78,6 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
         });
       }, 2000);
     } catch (error) {
-      console.error("Failed to add to cart:", error);
       Alert.alert("Error", "Failed to add item to cart");
     }
   };
@@ -92,42 +88,63 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
       try {
         await removeFromWishlist(product.id).unwrap();
       } catch (error) {
-        Alert.alert("Error", "Failed to remove from wishlist");
+        Alert.alert("Error", "Failed to remove");
       }
     } else {
       try {
         await addToWishlist(product).unwrap();
       } catch (error: any) {
-        if (error?.data === "Item already in wishlist") {
-          Alert.alert(
-            "Already in Wishlist",
-            "This item is already wishlisted.",
-          );
-        } else {
-          Alert.alert("Error", "Failed to add to wishlist");
-        }
+        Alert.alert("Error", "Failed to add");
       }
     }
   };
 
-  return (
-    <View style={styles.card}>
+  // --- Logic for background rendering ---
+  const renderBackground = () => {
+    if (product.immersiveVideoUrl) {
+      return (
+        <Video
+          ref={videoRef}
+          style={StyleSheet.absoluteFill}
+          source={{ uri: product.immersiveVideoUrl }}
+          resizeMode={ResizeMode.COVER}
+          shouldPlay
+          isLooping
+          isMuted
+          posterSource={{
+            uri: product.immersiveThumbnailUrl || product.thumbnailUrls[0],
+          }}
+          usePoster={true}
+        />
+      );
+    }
+
+    return (
       <ImageBackground
         source={{
           uri: product.immersiveThumbnailUrl || product.thumbnailUrls[0],
         }}
-        style={styles.image}
+        style={StyleSheet.absoluteFill}
         resizeMode="cover"
-      >
-        <LinearGradient
-          colors={["rgba(0,0,0,0.5)", "transparent"]}
-          style={styles.topGradient}
-        />
-        <LinearGradient
-          colors={["transparent", "rgba(0,0,0,0.8)"]}
-          style={styles.bottomGradient}
-        />
+      />
+    );
+  };
 
+  return (
+    <View style={styles.card}>
+      {renderBackground()}
+
+      {/* Overlays */}
+      <LinearGradient
+        colors={["rgba(0,0,0,0.6)", "transparent"]}
+        style={styles.topGradient}
+      />
+      <LinearGradient
+        colors={["transparent", "rgba(0,0,0,0.9)"]}
+        style={styles.bottomGradient}
+      />
+
+      <View style={styles.uiContainer}>
         <View style={styles.header}>
           <HapticButton style={styles.iconBtn} onPress={() => router.back()}>
             <X color="white" size={24} />
@@ -222,7 +239,7 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
             </HapticButton>
           </View>
         </View>
-      </ImageBackground>
+      </View>
 
       <TryOnSelectorModal
         visible={isTryOnSelectorVisible}
@@ -230,18 +247,13 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
         onSelectVR={() => {
           router.push({
             pathname: "/virtualTryOn2",
-            params: {
-              productId: product.id,
-              productTitle: product.title,
-            },
+            params: { productId: product.id, productTitle: product.title },
           });
         }}
         onSelectAI={() => {
           router.push({
             pathname: "/tryOn",
-            params: {
-              productId: product.id,
-            },
+            params: { productId: product.id },
           });
         }}
       />
@@ -250,15 +262,31 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
 };
 
 const styles = StyleSheet.create({
-  card: { width, height },
-  image: { flex: 1, justifyContent: "space-between" },
-  topGradient: { ...StyleSheet.absoluteFillObject, height: "25%" },
-  bottomGradient: { ...StyleSheet.absoluteFillObject, top: "40%" },
+  card: { width, height, backgroundColor: "black" },
+  uiContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "space-between",
+  },
+  topGradient: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "30%",
+  },
+  bottomGradient: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: "50%",
+  },
   header: {
     paddingTop: 60,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
+    zIndex: 10,
   },
   headerText: {
     color: "white",
@@ -275,9 +303,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     marginBottom: 25,
   },
-  leftInfo: {}, // Added for layout consistency
-  rightInfo: {}, // Added for layout consistency
-  title: { color: "white", fontSize: 22, fontWeight: "bold" },
+  title: { color: "white", fontSize: 22, fontWeight: "bold", maxWidth: 250 },
   brand: { color: "#ddd", fontSize: 16, marginVertical: 4 },
   ratingContainer: { flexDirection: "row", alignItems: "center", gap: 2 },
   ratingText: { color: "white", fontSize: 12, marginLeft: 4 },
@@ -311,36 +337,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   addBagBtnSuccess: {
     backgroundColor: "#f0fff4",
     borderWidth: 1,
     borderColor: "#27ae60",
   },
-  buttonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
+  buttonContent: { flexDirection: "row", alignItems: "center", gap: 6 },
   tryNowText: { color: "white", fontWeight: "bold", fontSize: 16 },
   addBagText: { color: "black", fontWeight: "bold", fontSize: 16 },
-  favIcon: {
-    position: "absolute",
-    top: -50,
-    right: -5,
-    padding: 6,
-  },
-  addBagBtnDisabled: {
-    opacity: 0.6,
-  },
-  iconBtn: {
-    padding: 8,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    borderRadius: 20,
-  },
+  favIcon: { position: "absolute", top: -50, right: -5, padding: 6 },
+  addBagBtnDisabled: { opacity: 0.6 },
+  iconBtn: { padding: 8, backgroundColor: "rgba(0,0,0,0.3)", borderRadius: 20 },
 });
