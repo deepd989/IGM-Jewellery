@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   imageCard: {
     width: 100,
     height: 100,
-    borderRadius: 8,
+    borderRadius: 50,
     overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
@@ -93,8 +93,6 @@ const styles = StyleSheet.create({
   },
   whiteBackground: {
     backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#F0F0F0",
   },
   gradient: {
     width: "100%",
@@ -103,8 +101,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   productImage: {
-    width: "80%",
-    height: "80%",
+    width: "100%",
+    height: "100%",
   },
   cardLabel: {
     fontSize: 14,

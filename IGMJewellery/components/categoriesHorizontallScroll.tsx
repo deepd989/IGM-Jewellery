@@ -9,11 +9,7 @@ export default function CategoriesHorizontalScroll() {
   const CategoriesData = [
     {
       name: "Necklace",
-      img: require("../assets/images/dummyImages/dummyNecklace.png"),
-      gradient: {
-        gradientStartColor: "#F7FCFB",
-        gradientEndColor: "#EBF5F3",
-      },
+      img: require("../assets/images/categoryIcons/necklace.png"),
       onpress: () => {
         router.push({
           pathname: `/product-list`,
@@ -23,11 +19,7 @@ export default function CategoriesHorizontalScroll() {
     },
     {
       name: "Bracelets",
-      img: require("../assets/images/dummyImages/dummyBracelete.png"),
-      gradient: {
-        gradientStartColor: "#FDF9F3",
-        gradientEndColor: "#F8F1E5",
-      },
+      img: require("../assets/images/categoryIcons/bracelet.png"),
       onpress: () => {
         router.push({
           pathname: `/product-list`,
@@ -37,11 +29,7 @@ export default function CategoriesHorizontalScroll() {
     },
     {
       name: "Earrings",
-      img: require("../assets/images/dummyImages/dummyEarring.png"),
-      gradient: {
-        gradientStartColor: "#F3F7FA",
-        gradientEndColor: "#E6EEF4",
-      },
+      img: require("../assets/images/categoryIcons/earring.png"),
       onpress: () => {
         router.push({
           pathname: `/product-list`,
@@ -51,11 +39,7 @@ export default function CategoriesHorizontalScroll() {
     },
     {
       name: "Rings",
-      img: require("../assets/images/dummyImages/dummyRing.png"),
-      gradient: {
-        gradientStartColor: "#F7FCFB",
-        gradientEndColor: "#EBF5F3",
-      },
+      img: require("../assets/images/categoryIcons/ring.png"),
       onpress: () => {
         router.push({
           pathname: `/product-list`,
@@ -64,16 +48,22 @@ export default function CategoriesHorizontalScroll() {
       },
     },
     {
-      name: "Diamonds",
-      img: require("../assets/images/dummyImages/dummyDiamond.png"),
-      gradient: {
-        gradientStartColor: "#FDF9F3",
-        gradientEndColor: "#F8F1E5",
-      },
+      name: "Bangles",
+      img: require("../assets/images/categoryIcons/bangles.png"),
       onpress: () => {
         router.push({
           pathname: `/product-list`,
-          params: { categoryName: "Diamond", productType: "diamond" },
+          params: { categoryName: "Bangles", productType: "bangle" },
+        });
+      },
+    },
+    {
+      name: "Mangalsutra",
+      img: require("../assets/images/categoryIcons/mangalsutra.png"),
+      onpress: () => {
+        router.push({
+          pathname: `/product-list`,
+          params: { categoryName: "Mangalsutra", productType: "mangalsutra" },
         });
       },
     },
