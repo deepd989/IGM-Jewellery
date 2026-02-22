@@ -2,10 +2,11 @@ import { ScrollingColumn } from "@/components/scrollingColumn";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../components/basic components/hapticButton";
 import HealthCheckModal from "../components/connectionModal";
+import { COLORS } from "../constants/theme";
 import { useGetProductsQuery } from "../store/apis/product";
 
 const { width, height } = Dimensions.get("window");
@@ -22,6 +23,25 @@ export default function JewelryLanding() {
     error,
     refetch,
   } = useGetProductsQuery({});
+
+  // Loading State
+  if (isLoading) {
+    return (
+      <SafeAreaView style={[styles.safeArea, styles.centered]}>
+        <View style={styles.logoCircleLarge}>
+          <Image
+            source={require("../assets/images/icon.png")}
+            style={styles.logoImage}
+          />
+        </View>
+        <View style={styles.progressBarContainer}>
+          <View
+            style={[styles.progressBar, { backgroundColor: COLORS.primary }]}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const Tile = ({ children, style, isLogo }) => (
     <View style={[styles.tile, style]}>
@@ -106,7 +126,7 @@ export default function JewelryLanding() {
             pointerEvents="none"
           />
 
-          {/* Bottom Fade Overlay - NEW */}
+          {/* Bottom Fade Overlay */}
           <LinearGradient
             colors={["transparent", "#FFFFFF"]}
             style={styles.bottomGradient}
@@ -163,6 +183,45 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF",
   },
+  centered: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  logoCircleLarge: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "#FFF",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#EEE",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+  },
+  logoTextLarge: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#053844",
+  },
+  logoImage: {
+    width: 80, // Adjust this based on your icon's aspect ratio
+    height: 80,
+  },
+  progressBarContainer: {
+    width: width * 0.4,
+    height: 4,
+    backgroundColor: "#F0F0F0",
+    borderRadius: 2,
+    marginTop: 20,
+    overflow: "hidden",
+  },
+  progressBar: {
+    height: "100%",
+    width: "60%", // Static visual for progress, can be animated if needed
+  },
   container: {
     flex: 1,
     justifyContent: "space-between",
@@ -172,7 +231,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     paddingHorizontal: 10,
-    height: height * 0.42, // Adjusted slightly to give grid more room
+    height: height * 0.42,
     overflow: "hidden",
   },
   column: {
@@ -212,10 +271,10 @@ const styles = StyleSheet.create({
   },
   bottomGradient: {
     position: "absolute",
-    bottom: 0, // Anchored to the bottom of the grid
+    bottom: 0,
     left: 0,
     right: 0,
-    height: 20, // Slightly taller for a smoother fade into the hero
+    height: 20,
     zIndex: 2,
   },
   heroSection: {
@@ -223,7 +282,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 30,
-    marginTop: -40, // Pulls the hero up so it sits "under" the fade
+    marginTop: -40,
   },
   mainRingContainer: {
     height: 120,
