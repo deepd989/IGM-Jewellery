@@ -20,7 +20,7 @@ export function TopPicks({ products }: TopPicksProps) {
   };
   return (
     <>
-      <SectionHeader value="Top Picks" />
+      <SectionHeader value="Handpicked for You" />
       <FlatList
         data={topPicksProducts}
         renderItem={({ item }) => (

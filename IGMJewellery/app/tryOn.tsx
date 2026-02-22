@@ -170,7 +170,7 @@ export default function JewelleryTryOn() {
         // --- STEP 1: CAPTURE/SELECTION ---
         <View style={styles.content}>
           <View style={styles.textGroup}>
-            <Text style={styles.titleLight}>Take Your Photo</Text>
+            <Text style={styles.titleLight}>Click Your Photo</Text>
             <Text style={styles.subtitleLight}>
               Or Upload your photo to continue
             </Text>

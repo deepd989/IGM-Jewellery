@@ -34,12 +34,12 @@ export default function LatestCollections() {
 
   const brandNames = useMemo(
     () => brandsData.map((b) => b.businessName),
-    [brandsData]
+    [brandsData],
   );
 
   useMemo(() => {
     const aBrand = brandsData.find(
-      (b) => b.businessName === activeBrandName
+      (b) => b.businessName === activeBrandName,
     ) as Brand;
     if (aBrand && collectionData && collectionData[aBrand.id]) {
       setCollections(collectionData[aBrand.id].collections.slice(0, 3)); // Show only top 3 collections for the active brand
@@ -60,7 +60,7 @@ export default function LatestCollections() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Title */}
-      <Text style={styles.title}>Latest Collections</Text>
+      <Text style={styles.title}>Newly Unveiled Collections</Text>
 
       {/* Brand Selector */}
       <ScrollView

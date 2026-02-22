@@ -138,7 +138,7 @@ export default function HomeScreen() {
       <SearchBar />
       <ScrollView style={styles.container}>
         <LinearGradient
-          colors={["#EDF6F8", "#C2E2EA"]}
+          colors={["#003A45", "#003A45"]}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
           style={styles.container}
@@ -178,7 +178,7 @@ export default function HomeScreen() {
                         right: 0,
                         bottom: 0,
                         textAlignVertical: "center",
-                        color: "#1A3B4A",
+                        color: "#FFFFFF",
                         opacity: fadeAnim,
                       },
                     ]}
@@ -197,12 +197,10 @@ export default function HomeScreen() {
                     });
                   }}
                 >
-                  <Ionicons name="mic-outline" size={22} />
+                  <Ionicons name="mic-outline" size={22} color="#003A45" />
                 </HapticButton>
               </View>
             </View>
-
-            <CategoriesHorizontalScroll />
           </View>
         </LinearGradient>
         <AnnouncementSection />
@@ -216,7 +214,7 @@ export default function HomeScreen() {
         <TopPicks products={products} />
         <HorizontalRuleIGM />
         <>
-          <SectionHeader value="Explore Virual Try On"></SectionHeader>
+          <SectionHeader value="Explore AI Try On"></SectionHeader>
           <HowItLooksWrapper seeHowItLooks={true}></HowItLooksWrapper>
         </>
         <HorizontalRuleIGM />
@@ -237,7 +235,7 @@ export default function HomeScreen() {
         />
         <HorizontalRuleIGM />
         <>
-          <SectionHeader value="Our Best Sellers"></SectionHeader>
+          <SectionHeader value="Trending Products"></SectionHeader>
           <HowItLooksWrapper seeHowItLooks={false}></HowItLooksWrapper>
         </>
         <HorizontalRuleIGM />
@@ -416,7 +414,7 @@ const styles = StyleSheet.create({
   },
   aiBadge: {
     flexDirection: "row",
-    backgroundColor: "#1A3B4A", // Dark navy/teal
+    backgroundColor: "#7CBFB2",
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 20,
@@ -424,14 +422,14 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   aiBadgeText: {
-    color: "#FFF",
+    color: "#003A45",
     fontSize: 14,
-    fontWeight: "500",
+    fontWeight: "600",
   },
   mainTitle: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#1A3B4A",
+    color: "#FFFFFF",
     textAlign: "center",
     marginBottom: 30,
   },
