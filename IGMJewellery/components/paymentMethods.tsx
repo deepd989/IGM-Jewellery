@@ -1,31 +1,41 @@
-import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../constants/theme";
 
 export default function PaymentMethods() {
+  const paymentIcons = [
+    {
+      name: "PhonePe",
+      uri: "https://drive.google.com/uc?export=view&id=1sTBoePSN7S_U_PE3s1Ehely4MjOQnI7M",
+    },
+    {
+      name: "GPay",
+      uri: "https://drive.google.com/uc?export=view&id=1dos8DTWR05FAc0nPeVIlNmvIlhy2UowR",
+    },
+    {
+      name: "Paytm",
+      uri: "https://drive.google.com/uc?export=view&id=1jCi1WkNc6ck_wA8Kd0gI_Q2tVB_i2JG2",
+    },
+    {
+      name: "Amex",
+      uri: "https://drive.google.com/uc?export=view&id=1Jbrdq-W5JhrqDMlfMj-qqDU20Ybxaudi",
+    },
+    {
+      name: "Mastercard",
+      uri: "https://drive.google.com/uc?export=view&id=1z0ugQX0ewzKCXubMooUS_eGEe4Ug41v2",
+    },
+  ];
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>We Accept</Text>
+      <Text style={styles.title}>Secure & Easy Payments</Text>
+
       <View style={styles.logoRow}>
-        <View style={styles.logoBox}>
-          <Text style={styles.logoText}>PhonePe</Text>
-        </View>
-        <View style={styles.logoBox}>
-          <Text style={styles.logoText}>GPay</Text>
-        </View>
-        <View style={styles.logoBox}>
-          <Ionicons name="card-outline" size={20} color="#1434CB" />
-          <Text style={styles.logoText}>Amex</Text>
-        </View>
-        <View style={styles.logoBox}>
-          <Ionicons name="card-outline" size={20} color="#EB001B" />
-          <Text style={styles.logoText}>Mastercard</Text>
-        </View>
-        <View style={styles.logoBox}>
-          <Ionicons name="card-outline" size={20} c olor="#006FCF" />
-          <Text style={styles.logoText}>Visa</Text>
-        </View>
+        {paymentIcons.map((item, index) => (
+          <View key={index} style={styles.logoBox}>
+            <Image source={{ uri: item.uri }} style={styles.icon} />
+          </View>
+        ))}
       </View>
     </View>
   );
@@ -45,9 +55,9 @@ const styles = StyleSheet.create({
   },
   logoRow: {
     flexDirection: "row",
-    gap: 8,
-    justifyContent: "center",
     flexWrap: "wrap",
+    justifyContent: "center",
+    gap: 8,
   },
   logoBox: {
     width: 55,
@@ -58,10 +68,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#FAFAFA",
+    overflow: "hidden",
   },
-  logoText: {
-    fontSize: 9,
-    fontWeight: "600",
-    color: COLORS.primary,
+  icon: {
+    width: "80%",
+    height: "80%",
+    resizeMode: "contain",
   },
 });

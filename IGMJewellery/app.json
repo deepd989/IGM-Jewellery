@@ -14,7 +14,8 @@
       "bundleIdentifier": "com.deepd989.IGMJewellery",
       "infoPlist": {
         "NSCameraUsageDescription": "Allow IGM Jewellery to access your camera for the Virtual Try-on feature.",
-        "NSMicrophoneUsageDescription": "Allow IGM Jewellery to access your microphone."
+        "NSMicrophoneUsageDescription": "Allow IGM Jewellery to access your microphone.",
+        "LSApplicationQueriesSchemes": ["tel", "whatsapp"]
       }
     },
     "plugins": [

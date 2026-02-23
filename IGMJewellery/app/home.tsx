@@ -6,7 +6,6 @@ import GiftFinder from "@/components/giftFinder";
 import GiftingCard from "@/components/giftingCard";
 import HorizontalRuleIGM from "@/components/horizontalRuleIGM";
 import OccasionCardList from "@/components/occasionsHome";
-import PaymentMethods from "@/components/paymentMethods";
 import SearchBar from "@/components/searchBar";
 import { TopPicks } from "@/components/topPicks";
 import { getUserPincode } from "@/scripts/location";
@@ -34,6 +33,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../auth/authContext";
 import AnnouncementSection from "../components/announcementSectionHome";
+import CallUsComponent from "../components/basic components/callUsComponent";
 import { HapticButton } from "../components/basic components/hapticButton";
 import BrandsHorizontalScroll from "../components/brandsHorizontalScroll";
 import CategoriesHorizontalScroll from "../components/categoriesHorizontallScroll";
@@ -250,26 +250,7 @@ export default function HomeScreen() {
         <HorizontalRuleIGM />
         <EventCard />
         <TrustBar />
-        <View style={styles.contactSection}>
-          <Text style={styles.contactTitle}>
-            For any queries, feel free to contact us:
-          </Text>
-          <View style={styles.contactRow}>
-            <HapticButton style={styles.contactBtn}>
-              <Ionicons name="call-outline" size={20} color={COLORS.primary} />
-              <Text style={styles.contactBtnText}>Call Us</Text>
-            </HapticButton>
-            <HapticButton style={styles.contactBtn}>
-              <Ionicons
-                name="chatbubble-outline"
-                size={20}
-                color={COLORS.primary}
-              />
-              <Text style={styles.contactBtnText}>Chat With Us</Text>
-            </HapticButton>
-          </View>
-        </View>
-        <PaymentMethods />
+        <CallUsComponent></CallUsComponent>
 
         {/* Necklace Section */}
       </ScrollView>
@@ -395,22 +376,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   tryButtonText: { color: "#fff", fontWeight: "600" },
-  contactSection: { alignItems: "center", padding: 16 },
-  contactTitle: { fontSize: 13, color: COLORS.primary, marginBottom: 20 },
-  contactRow: { flexDirection: "row", gap: 12 },
-  contactBtn: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    height: 50,
-    borderWidth: 0.5,
-    borderColor: "#DDD",
-    borderRadius: 8,
-    minWidth: 150,
-    backgroundColor: "#FFF",
-  },
-  contactBtnText: { marginLeft: 8, fontWeight: "600", color: COLORS.primary },
   badgeContainer: {
     alignItems: "center",
     marginBottom: 20,
