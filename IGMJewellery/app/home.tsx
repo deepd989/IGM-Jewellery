@@ -155,7 +155,7 @@ export default function HomeScreen() {
             <View style={styles.searchBox}>
               <View style={{ flex: 1 }}>
                 <TextInput
-                  placeholder="Hello Chintan"
+                  placeholder="Search for ..."
                   style={styles.inputText}
                   value={textInput}
                   returnKeyType="send"

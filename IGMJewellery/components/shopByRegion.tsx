@@ -101,6 +101,7 @@ const Card = ({ item, cardWidth }) => {
             pathname: "/product-list",
             params: {
               region: item.region.toLowerCase(),
+              bannerImageUrl: encodeURIComponent(item.image),
             },
           });
         }}

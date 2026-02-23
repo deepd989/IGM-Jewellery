@@ -477,7 +477,6 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
             </HapticButton>
           </View>
 
-          {/* Active Filter Tags */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
