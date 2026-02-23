@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import CallUsComponent from "../../components/basic components/callUsComponent";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS } from "../../constants/theme";
 
@@ -65,21 +66,7 @@ export default function PrivacyPoliciesScreen() {
           </View>
         )}
 
-        <View style={styles.contactSection}>
-          <Text style={styles.contactTitle}>
-            For any queries, feel free to contact us:
-          </Text>
-          <View style={styles.contactRow}>
-            <HapticButton style={styles.contactBtn}>
-              <Ionicons name="call-outline" size={20} color="#053844" />
-              <Text style={styles.contactBtnText}>Call Us</Text>
-            </HapticButton>
-            <HapticButton style={styles.contactBtn}>
-              <Ionicons name="chatbubble-outline" size={20} color="#053844" />
-              <Text style={styles.contactBtnText}>Chat With Us</Text>
-            </HapticButton>
-          </View>
-        </View>
+        <CallUsComponent />
       </ScrollView>
     </SafeAreaView>
   );
@@ -111,23 +98,13 @@ const styles = StyleSheet.create({
   tabText: { color: "#888", fontWeight: "600" },
   activeTabText: { color: "#053844" },
   scroll: { padding: 16, paddingBottom: 100 },
-  introTitle: { fontSize: 15, fontWeight: "700", marginBottom: 20, color: COLORS.text },
+  introTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    marginBottom: 20,
+    color: COLORS.text,
+  },
   content: { gap: 16 },
   bodyText: { fontSize: 13, color: COLORS.textSecondary, lineHeight: 22 },
   loading: { textAlign: "center", marginTop: 40 },
-  contactSection: { marginTop: 60, alignItems: "center" },
-  contactTitle: { fontSize: 13, color: COLORS.textSecondary, marginBottom: 20 },
-  contactRow: { flexDirection: "row", gap: 12 },
-  contactBtn: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#DDD",
-    borderRadius: 8,
-    minWidth: 150,
-  },
-  contactBtnText: { marginLeft: 8, fontWeight: "600", color: COLORS.text },
 });

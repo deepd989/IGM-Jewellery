@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { useGetOrdersQuery } from "@/store/apis/profile";
 import { SafeAreaView } from "react-native-safe-area-context";
+import CallUsComponent from "../../components/basic components/callUsComponent";
 import { HapticButton } from "../../components/basic components/hapticButton";
 
 export default function AllOrdersScreen() {
@@ -167,21 +168,7 @@ export default function AllOrdersScreen() {
           ))}
         </View>
 
-        <View style={styles.contactSection}>
-          <Text style={styles.contactTitle}>
-            For any queries, feel free to contact us:
-          </Text>
-          <View style={styles.contactRow}>
-            <HapticButton style={styles.contactBtn}>
-              <Ionicons name="call-outline" size={20} />
-              <Text style={styles.contactBtnText}>Call Us</Text>
-            </HapticButton>
-            <HapticButton style={styles.contactBtn}>
-              <Ionicons name="chatbubble-outline" size={20} />
-              <Text style={styles.contactBtnText}>Chat With Us</Text>
-            </HapticButton>
-          </View>
-        </View>
+        <CallUsComponent />
       </ScrollView>
     </SafeAreaView>
   );
@@ -304,21 +291,5 @@ const styles = StyleSheet.create({
     paddingVertical: 32,
     opacity: 0.5,
   },
-  contactSection: { alignItems: "center", padding: 16 },
-  contactTitle: { fontSize: 13, color: "#333", marginBottom: 20 },
-  contactRow: { flexDirection: "row", gap: 12 },
-  contactBtn: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#DDD",
-    borderRadius: 8,
-    minWidth: 150,
-    backgroundColor: "#FFF",
-  },
-  contactBtnText: { marginLeft: 8, fontWeight: "600" },
   loading: { textAlign: "center", marginTop: 40 },
 });

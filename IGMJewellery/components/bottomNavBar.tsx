@@ -30,7 +30,6 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab }) => {
   }) => {
     const isActive = activeTab === label;
     const iconStyle = isActive ? iconName : iconName + "-outline";
-    console.log(iconName, isActive, iconStyle);
 
     const handlePress = () => {
       router.push(route as any);

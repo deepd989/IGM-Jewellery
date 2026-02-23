@@ -88,9 +88,17 @@ export const brandsApiService = createApi({
           name,
           brands.map((b) => b.businessNameKey)
         );
-        const found = brands.find(
+        let found = brands.find(
           (b) => b.businessNameKey.toLowerCase() === name.toLowerCase()
         );
+        if (!found) {
+          found = brands.find(
+            (b) => b.businessName.toLowerCase() === name.toLowerCase()
+          );
+        }
+        if (!found) {
+          console.warn(`Brand not found for name: ${name}`);
+        }
         return found;
       },
     }),

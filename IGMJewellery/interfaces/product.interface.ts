@@ -64,4 +64,6 @@ export interface Product {
   productDetails?: ProductDetails;
   isImmersiveProduct: boolean;
   immersiveThumbnailUrl?: string; // URL for immersive product thumbnail
+  immersiveVideoUrl?: string; // URL for immersive product video (if available)
+  region: string;
 }

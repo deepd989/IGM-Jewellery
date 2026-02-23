@@ -39,7 +39,11 @@ const ProfileHeader = ({
   onEnterStore,
 }: ProfileHeaderProps) => (
   <View style={styles.headerContainer}>
-    <Image source={{ uri: profileImageUri }} style={styles.profileImage} />
+    <Image
+      source={{ uri: profileImageUri }}
+      style={styles.profileImage}
+      resizeMode="contain"
+    />
     <Text style={styles.businessName}>{businessName}</Text>
     <Text style={styles.tagline}>{tagline}</Text>
     <View style={styles.actionRow}>
@@ -358,6 +362,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#d3d3d3",
     marginTop: 20,
+    borderRadius: 12,
     marginBottom: 20,
   },
   businessName: {

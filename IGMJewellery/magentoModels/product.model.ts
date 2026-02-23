@@ -15,6 +15,7 @@ export interface MagentoProduct {
   media_gallery_entries: unknown[];
   tier_prices: unknown[];
   custom_attributes: CustomAttribute[];
+  immersiveVideoUrl: string | null;
   //product type missing eg ring, necklace etc.
   // rating of the product missing
   // product should be mapped to occaision or gender

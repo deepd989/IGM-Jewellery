@@ -1,65 +1,63 @@
 import { COLORS } from "@/constants/theme";
-import { Brand, useGetBrandsQuery } from "@/store/apis/brandsApi";
+import { useGetBrandsQuery } from "@/store/apis/brandsApi";
 import { useRouter } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import {
   BrandCollection,
   useGetCollectionsQuery,
 } from "../store/apis/collectionApi";
 import { HapticButton } from "./basic components/hapticButton";
 
-export default function LatestCollections() {
-  const {
-    data: brandsData = [],
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useGetBrandsQuery({});
-  const router = useRouter();
-  const [activeBrandName, setActiveBrand] = useState<string | null>(null);
-  const {
-    data: collectionData,
-    isLoading: collectionIsLoading,
-    error: collectionError,
-  } = useGetCollectionsQuery();
+const { width } = Dimensions.get("window");
 
+export default function LatestCollections() {
+  const router = useRouter();
+  const { data: brandsData = [] } = useGetBrandsQuery({});
+  const { data: collectionData } = useGetCollectionsQuery();
+
+  const [activeBrandName, setActiveBrand] = useState<string | null>(null);
   const [collections, setCollections] = useState<BrandCollection[]>([]);
+
+  // Initialize active brand
   useEffect(() => {
     if (!activeBrandName && brandsData.length > 0) {
       setActiveBrand(brandsData[0].businessName);
     }
   }, [brandsData, activeBrandName]);
 
+  // Update collections when active brand changes
+  useEffect(() => {
+    const aBrand = brandsData.find((b) => b.businessName === activeBrandName);
+    if (aBrand && collectionData && collectionData[aBrand.id]) {
+      setCollections(collectionData[aBrand.id].collections.slice(0, 3));
+    }
+  }, [activeBrandName, brandsData, collectionData]);
+
   const brandNames = useMemo(
     () => brandsData.map((b) => b.businessName),
-    [brandsData],
+    [brandsData]
   );
 
-  useMemo(() => {
-    const aBrand = brandsData.find(
-      (b) => b.businessName === activeBrandName,
-    ) as Brand;
-    if (aBrand && collectionData && collectionData[aBrand.id]) {
-      setCollections(collectionData[aBrand.id].collections.slice(0, 3)); // Show only top 3 collections for the active brand
-    }
-  }, [brandsData, activeBrandName]);
-
   const handleRedirect = (collectionName: string) => {
-    const navigationData = {
-      brand: activeBrandName,
-      collection: collectionName,
-    };
     router.push({
       pathname: "/product-list",
-      params: navigationData,
+      params: { brand: activeBrandName, collection: collectionName },
     });
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* Title */}
+    <ScrollView
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={false}
+    >
       <Text style={styles.title}>Newly Unveiled Collections</Text>
 
       {/* Brand Selector */}
@@ -70,33 +68,30 @@ export default function LatestCollections() {
       >
         {brandNames.map((brand) => {
           const isActive = brand === activeBrandName;
+          const brandInfo = brandsData.find((b) => b.businessName === brand);
 
           return (
             <HapticButton
               key={brand}
               style={styles.brandItem}
               onPress={() => setActiveBrand(brand)}
-              activeOpacity={0.8}
             >
               <View
                 style={[
                   styles.brandRectangle,
-                  isActive && styles.brandCircleActive,
+                  isActive && styles.brandActiveBorder,
                 ]}
               >
                 {isActive && <View style={styles.diamond} />}
                 <Image
-                  source={{
-                    uri: brandsData.find((b) => b.businessName === brand)
-                      ?.profileImageUri,
-                  }}
-                  style={styles.image}
-                  resizeMode="cover"
+                  source={{ uri: brandInfo?.profileImageUri }}
+                  style={styles.brandImage}
+                  resizeMode="contain"
                 />
               </View>
-
               <Text
                 style={[styles.brandLabel, isActive && styles.brandLabelActive]}
+                numberOfLines={1}
               >
                 {brand}
               </Text>
@@ -106,31 +101,31 @@ export default function LatestCollections() {
       </ScrollView>
 
       {/* Collection Cards */}
-      {collections?.map((collection, i) => (
-        <HapticButton
-          key={i}
-          style={styles.collectionCard}
-          onPress={() => handleRedirect(collection.title)}
-        >
-          {/* <Image 
-            source={{ uri: collection.imageUri }} 
-            style={styles.collectionImage}
-            resizeMode="cover"
-          /> */}
-          <Text style={styles.placeholder}>
-            {" "}
-            Insert Collection Display Cover Here
-          </Text>
-          <View style={styles.collectionOverlay}>
-            <Text style={styles.collectionTitle}>{collection.title}</Text>
-            {collection.description && (
-              <Text style={styles.collectionDescription}>
-                {collection.description}
-              </Text>
-            )}
-          </View>
-        </HapticButton>
-      ))}
+      <View style={styles.collectionsList}>
+        {collections.map((collection, i) => (
+          <HapticButton
+            key={i}
+            style={styles.collectionCard}
+            onPress={() => handleRedirect(collection.title)}
+          >
+            <Image
+              source={{ uri: collection.collectionBannerImgUrl }}
+              style={styles.collectionImage}
+              resizeMode="cover"
+            />
+
+            {/* The "Shop Now" Pill Button */}
+            <View style={styles.shopNowBadge}>
+              <Text style={styles.shopNowText}>Shop Now</Text>
+            </View>
+
+            {/* Optional Title Overlay */}
+            <View style={styles.textOverlay}>
+              <Text style={styles.collectionTitle}>{collection.title}</Text>
+            </View>
+          </HapticButton>
+        ))}
+      </View>
     </ScrollView>
   );
 }
@@ -140,116 +135,116 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     backgroundColor: "#fff",
   },
-  placeholder: {
-    color: "#AAA",
-    fontSize: 16,
-    textAlign: "center",
-    marginTop: 80,
-  },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "600",
     textAlign: "center",
     marginBottom: 20,
-    color: COLORS.text,
+    color: COLORS.primary || "#053844",
   },
-
-  /* Brands */
   brandRow: {
     paddingHorizontal: 16,
-    paddingBottom: 24,
+    paddingBottom: 30,
   },
-
   brandItem: {
     alignItems: "center",
-    marginRight: 24,
+    marginRight: 20,
   },
-  image: {
-    width: "100%",
-    height: "100%",
-    padding: 10,
-  },
-
   brandRectangle: {
-    width: 64,
-    height: 64,
-    // borderRadius: 32,
-    backgroundColor: "#F3F3F3",
-    marginBottom: 8,
+    width: 70,
+    height: 70,
+    backgroundColor: "#F9F9F9",
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 8, // Light rounding for the brand boxes
   },
-
-  brandCircleActive: {
+  brandActiveBorder: {
+    borderWidth: 1.5,
+    borderColor: "#053844",
     backgroundColor: "#FFF",
-    borderWidth: 2,
-    borderColor: "#777",
   },
-
+  brandImage: {
+    width: "80%",
+    height: "80%",
+  },
   diamond: {
     position: "absolute",
-    top: -10,
-    width: 10,
-    height: 10,
+    top: -6,
+    width: 12,
+    height: 12,
     backgroundColor: "#053844",
     transform: [{ rotate: "45deg" }],
   },
-
   brandLabel: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
+    fontSize: 12,
+    marginTop: 8,
+    color: "#666",
+    width: 80,
     textAlign: "center",
-    width: 100,
-    overflow: "hidden",
   },
-
   brandLabelActive: {
     color: "#053844",
-    fontWeight: "600",
+    fontWeight: "700",
   },
 
-  /* Collections */
+  /* Collection Card Styles matching the Image */
+  collectionsList: {
+    paddingHorizontal: 16,
+  },
   collectionCard: {
-    height: 200,
-    marginHorizontal: 16,
-    marginBottom: 16,
+    width: "100%",
+    height: 160,
+    marginBottom: 24,
     backgroundColor: "#F2F2F2",
-    borderRadius: 32,
+    // This creates the distinctive curved shape
+    borderTopLeftRadius: 100,
+    borderBottomRightRadius: 100,
+    borderTopRightRadius: 20,
+    borderBottomLeftRadius: 20,
     overflow: "hidden",
     position: "relative",
+    // Shadow for iOS
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    // Elevation for Android
+    elevation: 5,
   },
-
   collectionImage: {
     width: "100%",
     height: "100%",
   },
-
-  collectionOverlay: {
+  shopNowBadge: {
     position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    padding: 16,
+    bottom: 25,
+    right: 35,
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 30,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
   },
-
-  collectionTitle: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-
-  collectionDescription: {
-    color: "#FFF",
+  shopNowText: {
+    color: "#000",
     fontSize: 14,
-    opacity: 0.9,
+    fontWeight: "500",
   },
-
-  collectionText: {
-    color: "#CFCFCF",
-    fontSize: 16,
-    fontWeight: "600",
-    letterSpacing: 1,
+  textOverlay: {
+    position: "absolute",
+    top: 30,
+    left: 40,
+  },
+  collectionTitle: {
+    fontSize: 18,
+    color: "#FFF",
+    fontWeight: "300",
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
 });

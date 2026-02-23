@@ -8,6 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import { useAuth } from "../../auth/authContext";
 import { HapticButton } from "../../components/basic components/hapticButton";
+import PaymentMethods from "../../components/paymentMethods";
 import { COLORS } from "../../constants/theme";
 
 const PROFILE_STATS = [
@@ -250,11 +251,13 @@ export default function ProfileScreen() {
             </HapticButton>
           ))}
         </View>
+
         {userId && (
           <HapticButton style={styles.logoutBtn} onPress={handleLogout}>
             <Text style={styles.logoutText}>Logout</Text>
           </HapticButton>
         )}
+        <PaymentMethods />
         <Text style={styles.version}>APP VERSION 1.1.0</Text>
       </ScrollView>
       <BottomNavBar activeTab="Profile" />

@@ -198,6 +198,9 @@ function isImmersiveProduct(product: MagentoProduct): boolean {
       (entry: any) => entry?.label === "immersive_image"
     );
   }
+  if (product.immersiveVideoUrl) {
+    return true;
+  }
   return false;
 }
 
@@ -463,6 +466,9 @@ export function convertResolvedProduct(
     productDetails: extractProductDetails(magentoProduct),
     isImmersiveProduct: isImmersiveProduct(magentoProduct),
     immersiveThumbnailUrl: getImmersiveThumbnailUrl(magentoProduct),
+    immersiveVideoUrl: magentoProduct.immersiveVideoUrl || undefined,
+    region:
+      (getCustomAttribute(magentoProduct, "region") as string) || "Gujrat",
   };
 }
 

@@ -236,7 +236,6 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
       }
     }
   };
-  console.log("product type is ", product?.productType, product?.name);
   const deliveryDate = useMemo(() => {
     const delivery = new Date();
     delivery.setDate(delivery.getDate() + 2);
