@@ -103,7 +103,7 @@ const ImmersiveProductList = () => {
 
   const immersiveProducts = useMemo(() => {
     return products.filter((product) => {
-      return product.immersiveVideoUrl || product.isImmersiveProduct;
+      return product.immersiveVideoUrl;
     });
   }, [products]);
 
@@ -160,7 +160,7 @@ const hintStyles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: "flex-end",
     alignItems: "center",
-    paddingBottom: 140,
+    paddingBottom: 250,
   },
   hintContainer: {
     alignItems: "center",

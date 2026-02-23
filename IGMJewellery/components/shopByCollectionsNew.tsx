@@ -26,7 +26,7 @@ const Card = ({ item, cardWidth }) => {
       <Image
         source={{ uri: item.image || "" }}
         style={styles.image}
-        resizeMode="cover"
+        resizeMode="contain"
       />
 
       {/* Text Overlay for better readability */}
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   card: {
-    height: 220,
+    height: 180,
     marginRight: 16,
     backgroundColor: "#f0f0f0",
     borderRadius: 12,

@@ -9,7 +9,6 @@ import {
 } from "lucide-react-native";
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS } from "../../constants/theme";
 
@@ -36,7 +35,7 @@ const BespokePage4 = () => {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header Section */}
         <View style={styles.header}>
@@ -91,12 +90,12 @@ const BespokePage4 = () => {
         </HapticButton> */}
         <HapticButton
           style={styles.continueButton}
-          onPress={() => router.push("/product-list")}
+          onPress={() => router.push("/home")}
         >
           <Text style={styles.continueButtonText}>Continue Shopping</Text>
         </HapticButton>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

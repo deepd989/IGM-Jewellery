@@ -22,7 +22,7 @@ export const useGetImage = (imageId: string) => {
         console.log("fetching image from:", `${BASE_URL}/getImage/${imageId}`);
 
         if (!response.ok) {
-          throw new Error("Image not found or server error");
+          console.log("Response status:", response.status);
         }
 
         // Get the response as an arrayBuffer

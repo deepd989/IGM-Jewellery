@@ -11,7 +11,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   FlatList,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   StyleSheet,
   Text,
@@ -20,7 +19,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../basic components/hapticButton";
-import VoiceVideoInterface from "./aiVoice";
 
 interface IMessage {
   id: string;
@@ -148,7 +146,13 @@ export default function AiChatComponent({
           minPrice: query.priceRange?.min?.toString(),
           maxPrice: query.priceRange?.max?.toString(),
           metal: query.metalType || query.metal,
-          gemstone: query.gemstone || (query.studded === true ? "Natural Diamond" : query.studded === false ? undefined : undefined),
+          gemstone:
+            query.gemstone ||
+            (query.studded === true
+              ? "Natural Diamond"
+              : query.studded === false
+              ? undefined
+              : undefined),
           brand: query.brand,
           searchQuery: query.name || query.searchQuery,
         };
@@ -167,7 +171,7 @@ export default function AiChatComponent({
             pathname: "/product-list",
             params: searchParams as Record<string, string>,
           });
-        }, 1500);
+        }, 5000);
       }
     } catch (error) {
       console.error("Gemini API Error:", error);
@@ -270,8 +274,16 @@ export default function AiChatComponent({
       if (params.brand) parts.push(params.brand);
       if (params.minPrice || params.maxPrice) {
         const fmt = (v?: string) =>
-          v ? (Number(v) >= 1000 ? `₹${(Number(v) / 1000).toFixed(0)}K` : `₹${v}`) : "";
-        parts.push(`${fmt(params.minPrice)}–${fmt(params.maxPrice)}`.replace(/^–/, "").replace(/–$/, ""));
+          v
+            ? Number(v) >= 1000
+              ? `₹${(Number(v) / 1000).toFixed(0)}K`
+              : `₹${v}`
+            : "";
+        parts.push(
+          `${fmt(params.minPrice)}–${fmt(params.maxPrice)}`
+            .replace(/^–/, "")
+            .replace(/–$/, "")
+        );
       }
       return parts.join(" • ") || "View Results";
     },
@@ -410,7 +422,7 @@ export default function AiChatComponent({
         </View>
       </KeyboardAvoidingView>
 
-      <Modal visible={showVoiceVideoInterface} animationType="slide">
+      {/* <Modal visible={showVoiceVideoInterface} animationType="slide">
         <SafeAreaView style={styles.modalContainer}>
           <HapticButton
             style={styles.closeButton}
@@ -424,7 +436,7 @@ export default function AiChatComponent({
             onClose={() => setShowVoiceVideoInterface(false)}
           />
         </SafeAreaView>
-      </Modal>
+      </Modal> */}
     </SafeAreaView>
   );
 }

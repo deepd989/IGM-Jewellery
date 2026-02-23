@@ -1,7 +1,7 @@
 import { COLORS, SPACING } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import { useGetWishlistQuery } from "../store/apis/wishlist";
 import { HapticButton } from "./basic components/hapticButton";
 import { CartBadge } from "./cart/CardBadge";
@@ -15,8 +15,16 @@ export default function searchBar() {
     <View style={styles.searchRow}>
       <HapticButton onPress={() => router.push("/searchPage")}>
         <View style={{ flexDirection: "row" }}>
-          <Ionicons name="search" size={22} color={COLORS.primary} />
-          <Text style={styles.searchPlaceholder}>Search</Text>
+          {/* <Ionicons name="search" size={22} color={COLORS.primary} /> */}
+          <Image
+            source={require("../assets/images/elanziaPng.png")}
+            style={{
+              height: 200,
+              width: 200,
+              position: "relative",
+              left: -50,
+            }}
+          />
         </View>
       </HapticButton>
 

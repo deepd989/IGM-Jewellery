@@ -70,7 +70,7 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab }) => {
         isCenter
         route="/exploreAi"
       />
-      <NavItem iconName="gift" label="Gifting" route="/gift" />
+      <NavItem iconName="diamond" label="Bespoke" route="/bespoke" />
       <NavItem iconName="person" label="Profile" route="/profile" />
     </View>
   );

@@ -1,5 +1,6 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import { Animated, Easing, Image, StyleSheet, Text, View } from "react-native";
+import { COLORS } from "../constants/theme";
 
 // 1. Move the item renderer outside to prevent re-mounting flicker
 const TrustItem = memo(({ item }) => (
@@ -97,13 +98,15 @@ const TrustBar = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#f9fbfb",
+    backgroundColor: COLORS.primary,
     paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
     overflow: "hidden",
     marginTop: 60,
     marginBottom: 40,
+    marginHorizontal: 5,
+    borderRadius: 10,
   },
   tickerWrapper: {
     flexDirection: "row",
@@ -124,9 +127,9 @@ const styles = StyleSheet.create({
   },
   text: {
     marginLeft: 10,
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: "700",
-    color: "#4a6767",
+    color: "white",
     textTransform: "uppercase",
   },
   divider: {

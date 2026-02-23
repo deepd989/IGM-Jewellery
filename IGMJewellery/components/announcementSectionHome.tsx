@@ -36,7 +36,9 @@ const SwipeAndShopComponent = () => {
         style={styles.buttonWrapper}
       >
         <Image
-          source={require("../assets/images/featureButtons/becomeModel.jpg")}
+          source={{
+            uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Feature%20Buttons%2FBecome_Model_4.webp?alt=media&token=5e3fddfc-e39b-4aac-bf2d-c328a80d6fb1",
+          }}
           style={styles.buttonImage}
           contentFit="cover"
           transition={200}
@@ -68,6 +70,16 @@ const styles = StyleSheet.create({
   buttonImage: {
     width: "100%",
     height: "100%",
+    // Shadow for iOS
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
 });
 

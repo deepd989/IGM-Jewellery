@@ -3,10 +3,10 @@ import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-
 import {
   Dimensions,
   Image,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,8 +14,7 @@ import {
 } from "react-native";
 import Modal from "react-native-modal";
 
-import { OCCASIONS } from "@/constants/occasions";
-import { ProductTypes } from "@/constants/productTypes";
+import { OccasionEnum } from "@/constants/occasions";
 import { RELATIONSHIPS } from "@/constants/relationships";
 import { RouteParam } from "@/constants/routeNavigationConstants";
 import { HapticButton } from "./basic components/hapticButton";
@@ -26,18 +25,36 @@ export default function GiftFinder() {
   const navigation = useNavigation<NavigationProp<RouteParam>>();
   const router = useRouter();
 
+  // State for selections
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedRelationship, setSelectedRelationship] = useState("");
   const [selectedOccasion, setSelectedOccasion] = useState("");
-  const [priceRange, setPriceRange] = useState<[number, number]>([5000, 50000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([
+    5000, 500000,
+  ]);
 
+  // State for controlling which modal is open
   const [openDropdown, setOpenDropdown] = useState<
     "category" | "relationship" | "occasion" | "price" | null
   >(null);
 
-  const categories = ProductTypes;
+  const categories = [
+    "Rings",
+    "Earrings",
+    "Bangles",
+    "Bracelets",
+    "Necklaces",
+    "Mangalsutras",
+  ];
   const relationships = RELATIONSHIPS;
-  const occasions = OCCASIONS;
+  const occasions = [
+    OccasionEnum.Dhanteras,
+    OccasionEnum.Tritiya,
+    OccasionEnum.KarwaChauth,
+    OccasionEnum.DailyWear,
+    OccasionEnum.OfficeWear,
+    OccasionEnum.PartyWear,
+  ];
 
   const getGenderFromRelationship = (relationship: string): string => {
     const maleRelationships = [
@@ -61,13 +78,13 @@ export default function GiftFinder() {
 
     if (
       maleRelationships.some((rel) =>
-        relationship.toLowerCase().includes(rel.toLowerCase()),
+        relationship.toLowerCase().includes(rel.toLowerCase())
       )
     )
       return "Male";
     if (
       femaleRelationships.some((rel) =>
-        relationship.toLowerCase().includes(rel.toLowerCase()),
+        relationship.toLowerCase().includes(rel.toLowerCase())
       )
     )
       return "Female";
@@ -77,20 +94,18 @@ export default function GiftFinder() {
   const handleStartLooking = () => {
     const gender = getGenderFromRelationship(selectedRelationship);
     router.push({
-      pathname: "/product-list",
+      pathname: "/exploreAi",
       params: {
-        categoryId: selectedCategory,
-        gender: gender,
-        occasion: selectedOccasion,
-        productType: selectedCategory,
+        value: `I'm looking for a piece of ${selectedCategory} for ${selectedRelationship}. It's to celebrate ${selectedOccasion}, and my budget is around ${priceRange}. Could you show me some options that would be a good fit?`,
       },
     });
   };
 
-  const renderDropdown = (
+  // Helper to render the triggers (buttons) inside the dark card
+  const renderDropdownTrigger = (
     label: string,
     value: string,
-    type: "category" | "relationship" | "occasion" | "price",
+    type: "category" | "relationship" | "occasion" | "price"
   ) => (
     <View style={styles.dropdownContainer}>
       <Text style={styles.label}>{label}</Text>
@@ -99,35 +114,53 @@ export default function GiftFinder() {
         onPress={() => setOpenDropdown(type)}
       >
         <Text style={styles.dropdownText}>
-          {value !== "" ? value : `Choose ${label}`}
+          {value !== ""
+            ? value
+            : `Choose ${type.charAt(0).toUpperCase() + type.slice(1)}`}
         </Text>
         <Ionicons name="chevron-down" size={20} color="#1D3D47" />
       </HapticButton>
     </View>
   );
 
+  // Helper to render the selection modals
   const renderListModal = (
     type: "category" | "relationship" | "occasion",
     data: string[],
-    setter: any,
+    currentValue: string,
+    setter: (val: string) => void
   ) => (
     <Modal
       isVisible={openDropdown === type}
       onBackdropPress={() => setOpenDropdown(null)}
-      backdropOpacity={0.4}
+      onBackButtonPress={() => setOpenDropdown(null)}
+      backdropOpacity={0.5}
+      useNativeDriverForBackdrop
+      style={styles.modalMargin}
     >
       <View style={styles.modalBox}>
+        <Text style={styles.modalTitle}>Select {type}</Text>
         <ScrollView showsVerticalScrollIndicator={false}>
           {data.map((item) => (
             <HapticButton
               key={item}
-              style={styles.modalItem}
+              style={[
+                styles.modalItem,
+                currentValue === item && styles.modalItemSelected,
+              ]}
               onPress={() => {
                 setter(item);
                 setOpenDropdown(null);
               }}
             >
-              <Text style={styles.modalItemText}>{item}</Text>
+              <Text
+                style={[
+                  styles.modalItemText,
+                  currentValue === item && styles.modalItemTextSelected,
+                ]}
+              >
+                {item}
+              </Text>
             </HapticButton>
           ))}
         </ScrollView>
@@ -136,56 +169,90 @@ export default function GiftFinder() {
   );
 
   return (
-    <View style={styles.wrapper}>
-      {/* Top Logo Section */}
-      <View style={styles.logoContainer}>
-        <View style={styles.logoCircle}>
+    <SafeAreaView style={styles.wrapper}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.logoContainer}>
           <Image
             source={require("../assets/images/icon.png")}
-            style={{ width: 80, height: 80, borderRadius: 50 }}
+            style={{ width: 80, height: 80, borderRadius: 40 }}
           />
         </View>
-      </View>
 
-      <Text style={styles.title}>Not sure what to gift?</Text>
-      <Text style={styles.subtitle}>
-        Let{" "}
-        <Text
-          style={{ fontWeight: "bold", fontStyle: "italic", color: "#FFFFFF" }}
-        >
-          Zeywar Ai
-        </Text>{" "}
-        help you
-      </Text>
+        <View style={styles.headerText}>
+          <Text style={styles.title}>Not sure what to gift?</Text>
+          <Text style={styles.subtitle}>
+            Let <Text style={styles.brandText}>Elanzia Ai</Text> help you
+          </Text>
+        </View>
 
-      <View style={styles.mainCard}>
-        {renderDropdown("I am looking for...", selectedCategory, "category")}
-        {renderDropdown(
-          "within",
-          `₹${priceRange[0]} - ₹${priceRange[1]}`,
-          "price",
-        )}
-        {renderDropdown("for my", selectedRelationship, "relationship")}
-        {renderDropdown("on the occasion of", selectedOccasion, "occasion")}
+        {/* THE VISUAL CARD FROM YOUR IMAGE */}
+        <View style={styles.mainCard}>
+          {renderDropdownTrigger(
+            "I am looking for...",
+            selectedCategory,
+            "category"
+          )}
 
-        <HapticButton style={styles.submitButton} onPress={handleStartLooking}>
-          <Text style={styles.buttonText}>Start looking</Text>
-          <Ionicons name="sparkles-outline" size={18} color="#053844" />
-        </HapticButton>
-      </View>
+          {renderDropdownTrigger(
+            "within",
+            `₹${priceRange[0]} - ₹${priceRange[1]}`,
+            "price"
+          )}
 
-      {renderListModal("category", categories, setSelectedCategory)}
-      {renderListModal("relationship", relationships, setSelectedRelationship)}
-      {renderListModal("occasion", occasions, setSelectedOccasion)}
+          {renderDropdownTrigger(
+            "for my",
+            selectedRelationship,
+            "relationship"
+          )}
+
+          {renderDropdownTrigger(
+            "on the occasion of",
+            selectedOccasion,
+            "occasion"
+          )}
+
+          <HapticButton
+            style={styles.submitButton}
+            onPress={handleStartLooking}
+          >
+            <Text style={styles.buttonText}>Start looking</Text>
+            <Ionicons name="sparkles-outline" size={20} color="#1D3D47" />
+          </HapticButton>
+        </View>
+      </ScrollView>
+
+      {/* SELECTION MODALS */}
+      {renderListModal(
+        "category",
+        categories,
+        selectedCategory,
+        setSelectedCategory
+      )}
+      {renderListModal(
+        "relationship",
+        relationships,
+        selectedRelationship,
+        setSelectedRelationship
+      )}
+      {renderListModal(
+        "occasion",
+        occasions,
+        selectedOccasion,
+        setSelectedOccasion
+      )}
 
       {/* PRICE RANGE MODAL */}
       <Modal
         isVisible={openDropdown === "price"}
         onBackdropPress={() => setOpenDropdown(null)}
+        style={styles.modalMargin}
       >
         <View style={styles.modalBox}>
           <Text style={styles.modalTitle}>Select Price Range</Text>
-          <View style={{ alignItems: "center", paddingVertical: 20 }}>
+          <View style={{ alignItems: "center", paddingVertical: 30 }}>
             <MultiSlider
               sliderLength={SCREEN_WIDTH - 120}
               values={[priceRange[0], priceRange[1]]}
@@ -196,87 +263,93 @@ export default function GiftFinder() {
                 setPriceRange(values as [number, number])
               }
               selectedStyle={{ backgroundColor: "#1D3D47" }}
-              markerStyle={{
-                backgroundColor: "#1D3D47",
-                height: 24,
-                width: 24,
-              }}
+              unselectedStyle={{ backgroundColor: "#E0E0E0" }}
+              markerStyle={styles.sliderMarker}
             />
           </View>
           <Text style={styles.priceText}>
-            ₹{priceRange[0]} — ₹{priceRange[1]}
+            ₹{priceRange[0].toLocaleString()} — ₹
+            {priceRange[1].toLocaleString()}
           </Text>
+          <HapticButton
+            style={styles.modalCloseButton}
+            onPress={() => setOpenDropdown(null)}
+          >
+            <Text style={styles.modalCloseButtonText}>Apply</Text>
+          </HapticButton>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: "#053844",
+    backgroundColor: "#FFFFFF",
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 40,
   },
   logoContainer: {
-    backgroundColor: "#053844",
-    height: 160,
-    width: "100%",
-    justifyContent: "center",
+    paddingTop: 40,
     alignItems: "center",
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
+    marginBottom: 10,
   },
-  logoCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "#0A4D5C",
-    justifyContent: "center",
+  headerText: {
+    marginBottom: 25,
     alignItems: "center",
   },
   title: {
-    fontSize: 26,
-    fontWeight: "700",
-    color: "#FFFFFF",
-    textAlign: "center",
-    marginTop: 25,
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#163339",
   },
   subtitle: {
-    fontSize: 18,
-    color: "#FFFFFF",
-    textAlign: "center",
-    marginBottom: 20,
+    fontSize: 16,
+    color: "#666",
+    marginTop: 4,
+  },
+  brandText: {
+    fontWeight: "bold",
+    fontStyle: "italic",
+    color: "#163339",
   },
   mainCard: {
-    backgroundColor: "#053844",
-    flex: 1,
-    marginHorizontal: 10,
-    marginBottom: -20,
-    borderTopLeftRadius: 60,
-    borderTopRightRadius: 60,
-    paddingHorizontal: 35,
-    paddingTop: 40,
+    backgroundColor: "#163339",
+    marginHorizontal: 15,
+    paddingHorizontal: 30,
+    paddingVertical: 50,
+    borderTopRightRadius: 80,
+    borderBottomLeftRadius: 80,
+    borderTopLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    elevation: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
   },
   dropdownContainer: {
     marginBottom: 20,
     alignItems: "center",
   },
   label: {
-    fontSize: 16,
-    color: "#FFFFFF",
+    fontSize: 18,
+    color: "white",
     marginBottom: 8,
+    opacity: 0.8,
   },
   dropdown: {
-    backgroundColor: "white",
-    borderRadius: 30,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
     height: 50,
     width: "100%",
     paddingHorizontal: 20,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    borderWidth: 0,
-    borderColor: "transparent",
   },
   dropdownText: {
     fontSize: 15,
@@ -284,47 +357,79 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: "#FFFFFF",
-    height: 48,
-    borderRadius: 30,
+    height: 55,
+    borderRadius: 20,
     marginTop: 20,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 30,
     alignSelf: "center",
+    gap: 10,
+    width: 225,
   },
   buttonText: {
-    color: "#053844",
-    fontSize: 16,
-    fontWeight: "600",
+    color: "#1D3D47",
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  /* MODAL STYLES */
+  modalMargin: {
+    margin: 20,
+    justifyContent: "center",
   },
   modalBox: {
     backgroundColor: "white",
-    padding: 25,
-    borderRadius: 25,
-    maxHeight: "60%",
+    padding: 20,
+    borderRadius: 20,
+    maxHeight: "80%",
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: "700",
-    color: "#1D3D47",
-    marginBottom: 15,
+    fontWeight: "bold",
+    color: "#163339",
     textAlign: "center",
+    marginBottom: 15,
+    textTransform: "capitalize",
   },
   modalItem: {
     paddingVertical: 15,
+    paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderColor: "#F0F0F0",
+  },
+  modalItemSelected: {
+    backgroundColor: "#F0F7F8",
   },
   modalItemText: {
     fontSize: 16,
     color: "#333",
   },
+  modalItemTextSelected: {
+    color: "#163339",
+    fontWeight: "bold",
+  },
   priceText: {
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: "bold",
     color: "#1D3D47",
     textAlign: "center",
+    marginBottom: 20,
+  },
+  sliderMarker: {
+    backgroundColor: "#1D3D47",
+    height: 24,
+    width: 24,
+    borderRadius: 12,
+  },
+  modalCloseButton: {
+    backgroundColor: "#163339",
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalCloseButtonText: {
+    color: "#FFF",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });

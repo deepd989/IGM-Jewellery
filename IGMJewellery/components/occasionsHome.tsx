@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { OccasiomEnum } from "../constants/occasions";
+import { OccasionEnum } from "../constants/occasions";
 import { SectionHeader } from "./section";
 
 const { width } = Dimensions.get("window");
@@ -17,23 +17,27 @@ const { width } = Dimensions.get("window");
 const OCCASIONS = [
   {
     id: "1",
-    title: OccasiomEnum.Wedding,
-    image: require("../assets/images/occasionImages/wedding.jpg"),
+    title: OccasionEnum.Wedding,
+    image:
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Wedding%20without%20text.webp?alt=media&token=c99ac289-f19d-4095-a3f2-461ef8e01c89",
   },
   {
     id: "2",
-    title: OccasiomEnum.Anniversary,
-    image: require("../assets/images/occasionImages/anniversary.jpg"),
+    title: OccasionEnum.Anniversary,
+    image:
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Anniversary%20without%20text.webp?alt=media&token=67bda32c-ccae-4f4a-ae07-bf8bbab330b7",
   },
   {
     id: "3",
-    title: OccasiomEnum.Birthday,
-    image: require("../assets/images/occasionImages/birthday.jpg"),
+    title: OccasionEnum.Birthday,
+    image:
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Birthday%20without%20text.webp?alt=media&token=3825cad2-1991-422e-a5ac-86f5b30d6a86",
   },
   {
     id: "4",
-    title: OccasiomEnum.Engagement,
-    image: require("../assets/images/occasionImages/engagement.jpg"),
+    title: OccasionEnum.Engagement,
+    image:
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Engagement%20without%20text.webp?alt=media&token=f35bde9d-e180-4deb-ad81-1bb263b99327",
   },
 ];
 
@@ -46,12 +50,15 @@ const CategoryCard = ({ title, image }) => {
       onPress={() =>
         router.push({
           pathname: "/product-list",
-          params: { occasion: title.toLowerCase() },
+          params: {
+            occasion: title.toLowerCase(),
+            bannerImageUrl: encodeURIComponent(image),
+          },
         })
       }
     >
       <ImageBackground
-        source={image}
+        source={{ uri: image }}
         style={styles.image}
         imageStyle={{ borderRadius: 15 }} // Smooth corners like the reference
       >

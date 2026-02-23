@@ -159,10 +159,10 @@ export default function JewelleryTryOn() {
       {/* Loading Overlay */}
       {isUploading && (
         <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#FFF" />
           <Text style={{ color: "#FFF", marginTop: 10 }}>
-            Processing Face...
+            Generating your look....
           </Text>
+          <ActivityIndicator size="large" color="#FFF" />
         </View>
       )}
 
@@ -246,11 +246,22 @@ export default function JewelleryTryOn() {
           {productId && (
             <View>
               {showImageGeneratingModal ? (
-                <ActivityIndicator
-                  size="large"
-                  color={COLORS.primary}
-                  style={{ marginVertical: 20 }}
-                />
+                <View style={{ alignItems: "center", marginTop: 20 }}>
+                  <Text
+                    style={{
+                      color: COLORS.primary,
+                      fontSize: 16,
+                      fontWeight: "300",
+                    }}
+                  >
+                    Generating your look...
+                  </Text>
+                  <ActivityIndicator
+                    size="large"
+                    color={COLORS.primary}
+                    style={{ marginVertical: 20 }}
+                  />
+                </View>
               ) : (
                 <View style={styles.footer}>
                   <Text style={styles.ctaTitle}>
@@ -301,7 +312,7 @@ export default function JewelleryTryOn() {
               </View>
             </View>
 
-            <Text style={styles.modalTitle}>Zeywar Ai is at Work!</Text>
+            <Text style={styles.modalTitle}>Elanzia Ai is at Work!</Text>
             <Text style={styles.modalSubtitle}>
               We will replace the model's images in your wishlisted items with
               your image. You can check the progress in your wishlist

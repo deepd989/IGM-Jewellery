@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   imageCard: {
     width: 100,
     height: 100,
-    borderRadius: 50,
+    borderRadius: 20,
     overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",

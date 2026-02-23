@@ -11,7 +11,6 @@ import { TopPicks } from "@/components/topPicks";
 import { getUserPincode } from "@/scripts/location";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 import { Sparkles } from "lucide-react-native";
 import React, {
@@ -137,14 +136,9 @@ export default function HomeScreen() {
         {/* Wallet balance pill hidden for now */}
       </View>
       <SearchBar />
-      <ScrollView style={styles.container}>
-        <LinearGradient
-          colors={["#003A45", "#003A45"]}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
-          style={styles.container}
-        >
-          <View style={(styles.centerBox, styles.viewZeywarIsListening)}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.AiContainer}>
+          <View style={(styles.centerBox, styles.viewElanziaIsListening)}>
             <View style={styles.badgeContainer}>
               <View style={styles.aiBadge}>
                 <Sparkles size={16} color="#FFF" fill="#FFF" />
@@ -161,14 +155,14 @@ export default function HomeScreen() {
             <View style={styles.searchBox}>
               <View style={{ flex: 1 }}>
                 <TextInput
-                  placeholder=" "
+                  placeholder="Search for ..."
                   style={styles.inputText}
                   value={textInput}
                   returnKeyType="send"
                   onSubmitEditing={handleSubmit}
                   onChangeText={(text) => setTextInput(text)}
                 />
-                {!textInput && (
+                {/* {!textInput && (
                   <Animated.Text
                     style={[
                       styles.inputText,
@@ -187,7 +181,7 @@ export default function HomeScreen() {
                   >
                     {revolvingTexts[placeholderIndex]}
                   </Animated.Text>
-                )}
+                )} */}
               </View>
               <View style={styles.iconGroup}>
                 <HapticButton
@@ -203,12 +197,12 @@ export default function HomeScreen() {
               </View>
             </View>
           </View>
-        </LinearGradient>
+        </View>
         <AnnouncementSection />
         <HorizontalRuleIGM />
-        <BrandCollectionCards />
-        <HorizontalRuleIGM />
         <ShopByRegionCards />
+        <HorizontalRuleIGM />
+        <BrandCollectionCards />
         <HorizontalRuleIGM />
         <CategoriesHorizontalScroll />
         <TrustBar />
@@ -220,9 +214,9 @@ export default function HomeScreen() {
           <SectionHeader value="Explore AI Try On"></SectionHeader>
           <HowItLooksWrapper seeHowItLooks={true}></HowItLooksWrapper>
         </>
-        <HorizontalRuleIGM />
+        {/* <HorizontalRuleIGM /> */}
         <GiftFinder />
-        <HorizontalRuleIGM />
+
         <OccasionCardList />
         <HorizontalRuleIGM />
         <TrendingProducts products={products} />
@@ -234,7 +228,7 @@ export default function HomeScreen() {
         {/* <TryAtHomeCard /> */}
         <GiftingCard
           showExploreButton={true}
-          imgUrl="https://drive.google.com/thumbnail?id=1NS9dwRMawoz92JKdTbTKq-ZwwPccMPvM&sz=w1000"
+          imgUrl="https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Gifting%20Banner%2FGifting_banner-05.webp?alt=media&token=5b1e9a31-d5c7-47ee-bf47-8abcca8b5475"
         />
         <HorizontalRuleIGM />
         <>
@@ -261,7 +255,10 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 8, backgroundColor: "white" },
-
+  AiContainer: {
+    backgroundColor: COLORS.primary,
+    borderRadius: 20,
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -269,7 +266,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 5,
   },
-  viewZeywarIsListening: {
+  viewElanziaIsListening: {
     padding: 16,
     borderRadius: 12,
   },
@@ -399,16 +396,16 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#FFFFFF",
     textAlign: "center",
-    marginBottom: 30,
+    marginBottom: 20,
   },
   searchBox: {
     flexDirection: "row",
-    backgroundColor: "#FFF",
-    height: 70,
-    borderRadius: 12, // More rectangular than before
+    backgroundColor: "white",
+    height: 50,
+    borderRadius: 15, // More rectangular than before
     alignItems: "center",
     paddingHorizontal: 16,
-    marginBottom: 30,
+    marginBottom: 10,
     // Subtle shadow
     elevation: 2,
     shadowColor: "#000",

@@ -37,7 +37,7 @@ export function TrendingProducts({ products }: TrendingProductsProps) {
       />
       <ViewAllButton
         onPress={() => {
-          router.push("/product-lists");
+          router.push("/product-list");
         }}
       ></ViewAllButton>
     </>

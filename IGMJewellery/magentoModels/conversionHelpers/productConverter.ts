@@ -1,5 +1,5 @@
 import { Gender } from "@/constants/genderEnum";
-import { OccasiomEnum } from "@/constants/occasions";
+import { OccasionEnum } from "@/constants/occasions";
 import { Brand } from "@/enums/brand.enum";
 import { ProductType } from "@/enums/productType.enum";
 import { Product, ProductDetails } from "@/interfaces/product.interface";
@@ -42,18 +42,18 @@ const PRODUCT_TYPE_MAP: Record<string, ProductType> = {
 // Map seller_id to Brand enum (based on known seller IDs from API response)
 
 // Map occasion resolved labels to OccasionEnum
-const OCCASION_MAP: Record<string, OccasiomEnum> = {
-  birthday: OccasiomEnum.Birthday,
-  anniversary: OccasiomEnum.Anniversary,
-  wedding: OccasiomEnum.Wedding,
-  graduation: OccasiomEnum.Graduation,
-  diwali: OccasiomEnum.Diwali,
-  dhanteras: OccasiomEnum.Diwali,
-  festive: OccasiomEnum.Diwali,
-  festival: OccasiomEnum.Diwali,
-  "daily wear": OccasiomEnum.DailyWear,
-  "office wear": OccasiomEnum.DailyWear,
-  "party wear": OccasiomEnum.PartyWear,
+const OCCASION_MAP: Record<string, OccasionEnum> = {
+  birthday: OccasionEnum.Birthday,
+  anniversary: OccasionEnum.Anniversary,
+  wedding: OccasionEnum.Wedding,
+  graduation: OccasionEnum.Graduation,
+  diwali: OccasionEnum.Diwali,
+  dhanteras: OccasionEnum.Diwali,
+  festive: OccasionEnum.Diwali,
+  festival: OccasionEnum.Diwali,
+  "daily wear": OccasionEnum.DailyWear,
+  "office wear": OccasionEnum.DailyWear,
+  "party wear": OccasionEnum.PartyWear,
 };
 
 // Map user_type values to Gender enum
@@ -74,6 +74,9 @@ function getCustomAttribute(
   const attr = product.custom_attributes?.find(
     (a: CustomAttribute) => a.attribute_code === attributeCode
   );
+  // if (typeof attr?.value == "array") {
+  //   return attr.value[0];
+  // }
   return attr?.value;
 }
 
@@ -126,12 +129,12 @@ function parseBrandFromSellerId(sellerId: string): Brand {
 /**
  * Parse occasions from occasion_tags (pre-resolved label)
  */
-function parseOccasions(product: MagentoProduct): OccasiomEnum[] {
+function parseOccasions(product: MagentoProduct): OccasionEnum[] {
   const occasionTags = getCustomAttribute(product, "occasion_tags");
   if (!occasionTags) return [];
 
   const resolved = String(occasionTags).toLowerCase();
-  const occasions: OccasiomEnum[] = [];
+  const occasions: OccasionEnum[] = [];
 
   for (const [keyword, occasion] of Object.entries(OCCASION_MAP)) {
     if (resolved.includes(keyword)) {
@@ -468,7 +471,7 @@ export function convertResolvedProduct(
     immersiveThumbnailUrl: getImmersiveThumbnailUrl(magentoProduct),
     immersiveVideoUrl: magentoProduct.immersiveVideoUrl || undefined,
     region:
-      (getCustomAttribute(magentoProduct, "region") as string) || "Gujrat",
+      (getCustomAttribute(magentoProduct, "regional_tags") as string) || "",
   };
 }
 

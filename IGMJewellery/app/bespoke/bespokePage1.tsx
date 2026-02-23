@@ -1,12 +1,21 @@
+import { LinearGradient } from "expo-linear-gradient";
 import {
   ArrowRight,
+  CheckCircle,
   Diamond,
-  Home,
   ShoppingBag,
+  Truck,
   User,
 } from "lucide-react-native";
 import React from "react";
-import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS } from "../../constants/theme";
 
@@ -15,24 +24,29 @@ const { width } = Dimensions.get("window");
 const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
   const steps = [
     {
-      title: "Send us your idea",
-      description: "Make Sketches or attach images",
+      title: "Inspire",
+      description: "Send us your idea, sketches, or reference images",
       icon: <Diamond size={24} color={COLORS.primary} />,
     },
     {
-      title: "We will assign a Designer",
-      description: "Select you convenient date, time, and place",
-      icon: <Home size={24} color={COLORS.primary} />,
+      title: "Approve",
+      description: "Finalize your choice of stones and design details",
+      icon: <CheckCircle size={24} color={COLORS.primary} />, // Suggested: CheckCircle or Edit
     },
     {
-      title: "Get on a call to discuss",
-      description: "Our consultant will get you your chosen designs",
+      title: "Consult",
+      description: "Meet your assigned designer at your convenient time",
       icon: <User size={24} color={COLORS.primary} />,
     },
     {
-      title: "Complete the partial payment",
-      description: "Our consultant will get you your chosen designs",
+      title: "Secure",
+      description: "Complete the partial payment to begin crafting",
       icon: <ShoppingBag size={24} color={COLORS.primary} />,
+    },
+    {
+      title: "Receive",
+      description: "Your masterpiece delivered with full certification",
+      icon: <Truck size={24} color={COLORS.primary} />, // Suggested: Truck or Package
     },
   ];
 
@@ -41,6 +55,7 @@ const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        style={{}}
       >
         {/* Header Section */}
         <View style={styles.header}>
@@ -53,8 +68,7 @@ const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
         </View>
 
         {/* Product Visual Area */}
-        <View style={styles.heroContainer}>
-          {/* Background Grid Pattern */}
+        {/* <View style={styles.heroContainer}>
           <View style={styles.gridContainer}>
             <View style={styles.bgGrid1}>
               <View style={[styles.gridBox]} />
@@ -72,8 +86,6 @@ const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
               <View style={[styles.gridBox]} />
             </View>
           </View>
-
-          {/* Floating Badges */}
           <View style={styles.badgeTopLeft}>
             <Text style={styles.badgeText}>💍 Curated for you</Text>
           </View>
@@ -83,26 +95,35 @@ const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
           <View style={styles.badgeBottomLeft}>
             <Text style={styles.badgeText}>💍 Made with love</Text>
           </View>
-
-          {/* Main Ring Image - Placeholder */}
           <View style={styles.mainRingContainer}>
-            {/* Placeholder for the large central rings */}
             <View style={styles.mainRingPlaceholder}>
               <Text style={{ fontSize: 80 }}>💍</Text>
             </View>
           </View>
+        </View> */}
+        <View style={styles.imgcontainer}>
+          <Image
+            source={{
+              uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Bespoke%20Banners%2FExplore%20Bespoke%2Fbespoke-01.webp?alt=media&token=5cb0fb49-268e-4953-acc5-92abb0db0249",
+            }}
+            style={styles.image}
+            resizeMode="cover"
+          />
+
+          {/* The Gradient Overlay */}
+          <LinearGradient
+            // Colors: Solid background color at the top -> Transparent
+            colors={["white", "transparent"]}
+            style={styles.gradient}
+          />
         </View>
 
         {/* CTA Button */}
-        <HapticButton style={styles.ctaButton} onPress={nextStepFn}>
-          <Text style={styles.ctaText}>Start Customisation</Text>
-          <ArrowRight size={18} color="white" />
-        </HapticButton>
 
         <View style={styles.dividerContainer}>
-          <View style={styles.line} />
+          {/* <View style={styles.line} />
           <View style={styles.diamond} />
-          <View style={styles.line} />
+          <View style={styles.line} /> */}
         </View>
 
         {/* Process Section */}
@@ -112,6 +133,11 @@ const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
             Bespoke happens in 5 simple steps. Customise your jewellery from
             scratch.
           </Text>
+          <View style={styles.dividerContainer}>
+            {/* <View style={styles.line} />
+          <View style={styles.diamond} />
+          <View style={styles.line} /> */}
+          </View>
 
           {steps.map((step, index) => (
             <View key={index} style={styles.stepRow}>
@@ -121,8 +147,6 @@ const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
                   <>
                     <View style={styles.verticalLine} />
                     <View style={styles.smallDiamond} />
-
-                    <View style={styles.verticalLine} />
                     <View style={styles.verticalLine} />
                   </>
                 )}
@@ -134,13 +158,27 @@ const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
             </View>
           ))}
         </View>
+
+        <View style={(styles.imgcontainer, { paddingBottom: 80 })}>
+          <Image
+            source={{
+              uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Bespoke%20Banners%2FExplore%20Bespoke%2Fbespoke-02.webp?alt=media&token=9e40b901-d9eb-491c-ac15-5e419466639b",
+            }}
+            style={styles.image}
+            resizeMode="cover"
+          />
+        </View>
       </ScrollView>
+      <HapticButton style={styles.ctaButton} onPress={nextStepFn}>
+        <Text style={styles.ctaText}>Start Customisation</Text>
+        <ArrowRight size={18} color="white" />
+      </HapticButton>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FFF" },
+  container: { flex: 1 },
   mainRingContainer: {
     width: "100%",
     height: "100%",
@@ -160,7 +198,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   scrollContent: { paddingBottom: 40 },
-  header: { alignItems: "center", padding: 20, marginTop: 20 },
+  header: { alignItems: "center", padding: 20, marginTop: 0 },
   title: {
     fontSize: 22,
     fontWeight: "700",
@@ -248,6 +286,8 @@ const styles = StyleSheet.create({
   badgeText: { fontSize: 12, fontWeight: "500", color: COLORS.primary },
 
   ctaButton: {
+    position: "absolute",
+    bottom: 35,
     backgroundColor: COLORS.primary,
     flexDirection: "row",
     alignSelf: "center",
@@ -276,9 +316,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
   },
 
-  processSection: { paddingHorizontal: 25 },
+  processSection: { paddingHorizontal: 25, marginTop: 10 },
   processTitle: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: "700",
     textAlign: "center",
     color: COLORS.primary,
@@ -303,20 +343,35 @@ const styles = StyleSheet.create({
     zIndex: 2,
     color: COLORS.primary,
   },
-  verticalLine: { width: 1.5, height: 30, backgroundColor: COLORS.primary },
+  verticalLine: { width: 1.5, height: 25, backgroundColor: COLORS.primary },
   smallDiamond: {
     width: 8,
     height: 8,
     borderWidth: 1,
     borderColor: "#333",
     transform: [{ rotate: "45deg" }],
-    marginVertical: 2,
+    marginVertical: 3,
     backgroundColor: COLORS.primary,
   },
 
   stepContent: { flex: 1, marginLeft: 15, paddingTop: 5, paddingBottom: 35 },
   stepTitle: { fontSize: 16, fontWeight: "700", color: COLORS.primary },
   stepDescription: { fontSize: 14, color: COLORS.primary, marginTop: 4 },
+  image: {
+    height: 400,
+    width: "100%",
+  },
+  gradient: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    height: "100%", // Adjust this to make the fade longer or shorter
+  },
+  imgcontainer: {
+    height: 400,
+    width: "100%",
+  },
 });
 
 export default BespokePage1;
