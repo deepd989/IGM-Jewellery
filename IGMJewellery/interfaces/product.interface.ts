@@ -1,5 +1,5 @@
 import { Gender } from "@/constants/genderEnum";
-import { OccasiomEnum } from "@/constants/occasions";
+import { OccasionEnum } from "@/constants/occasions";
 import { Brand } from "@/enums/brand.enum";
 import { ProductType } from "@/enums/productType.enum";
 import { Review } from "./review.interface";
@@ -59,7 +59,7 @@ export interface Product {
   rating?: number; // p_ratings
   specifications?: ProductSpecification[];
   reviews?: Review[];
-  occaision: OccasiomEnum[];
+  occaision: OccasionEnum[];
   gender: Gender;
   productDetails?: ProductDetails;
   isImmersiveProduct: boolean;

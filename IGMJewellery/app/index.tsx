@@ -147,7 +147,7 @@ export default function JewelryLanding() {
               onLongPress={() => setShowModal(true)}
               delayLongPress={800}
             >
-              <Text style={styles.title}>Zeywar</Text>
+              <Text style={styles.title}>Elanzia</Text>
             </HapticButton>
             <Text style={styles.subtitle}>
               India's first AI-powered jewellery marketplace, where heritage

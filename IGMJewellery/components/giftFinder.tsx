@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import Modal from "react-native-modal";
 
-import { OCCASIONS } from "@/constants/occasions";
+import { OccasionEnum } from "@/constants/occasions";
 import { RELATIONSHIPS } from "@/constants/relationships";
 import { RouteParam } from "@/constants/routeNavigationConstants";
 import { HapticButton } from "./basic components/hapticButton";
@@ -30,7 +30,7 @@ export default function GiftFinder() {
   const [selectedRelationship, setSelectedRelationship] = useState("");
   const [selectedOccasion, setSelectedOccasion] = useState("");
   const [priceRange, setPriceRange] = useState<[number, number]>([
-    5000, 200000,
+    5000, 500000,
   ]);
 
   // State for controlling which modal is open
@@ -47,7 +47,14 @@ export default function GiftFinder() {
     "Mangalsutras",
   ];
   const relationships = RELATIONSHIPS;
-  const occasions = OCCASIONS;
+  const occasions = [
+    OccasionEnum.Dhanteras,
+    OccasionEnum.Tritiya,
+    OccasionEnum.KarwaChauth,
+    OccasionEnum.DailyWear,
+    OccasionEnum.OfficeWear,
+    OccasionEnum.PartyWear,
+  ];
 
   const getGenderFromRelationship = (relationship: string): string => {
     const maleRelationships = [
@@ -87,12 +94,9 @@ export default function GiftFinder() {
   const handleStartLooking = () => {
     const gender = getGenderFromRelationship(selectedRelationship);
     router.push({
-      pathname: "/product-list",
+      pathname: "/exploreAi",
       params: {
-        categoryId: selectedCategory,
-        gender: gender,
-        occasion: selectedOccasion,
-        productType: selectedCategory,
+        value: `I'm looking for a piece of ${selectedCategory} for ${selectedRelationship}. It's to celebrate ${selectedOccasion}, and my budget is around ${priceRange}. Could you show me some options that would be a good fit?`,
       },
     });
   };
@@ -180,7 +184,7 @@ export default function GiftFinder() {
         <View style={styles.headerText}>
           <Text style={styles.title}>Not sure what to gift?</Text>
           <Text style={styles.subtitle}>
-            Let <Text style={styles.brandText}>Zeywar Ai</Text> help you
+            Let <Text style={styles.brandText}>Elanzia Ai</Text> help you
           </Text>
         </View>
 

@@ -301,7 +301,7 @@ export default function JewelleryTryOn() {
               </View>
             </View>
 
-            <Text style={styles.modalTitle}>Zeywar Ai is at Work!</Text>
+            <Text style={styles.modalTitle}>Elanzia Ai is at Work!</Text>
             <Text style={styles.modalSubtitle}>
               We will replace the model's images in your wishlisted items with
               your image. You can check the progress in your wishlist

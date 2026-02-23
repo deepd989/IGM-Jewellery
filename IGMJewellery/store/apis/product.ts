@@ -276,19 +276,26 @@ export const productApiService = createApi({
 
     // Get single product by ID
     getProductById: builder.query<Product, string>({
-      queryFn: async (id) => {
+      queryFn: async (id, _queryApi, _extraOptions, baseQuery) => {
         try {
+          // 1. Fetch the full list locally/initially
           const products = await fetchAllProducts();
-          const product = products.find((p) => p.id === id);
+          let product = products.find((p) => p.sku === id);
 
+          // 2. Fallback: If not found in the list, call the specific SKU endpoint
           if (!product) {
-            return {
-              error: {
-                status: 404,
-                statusText: "Not Found",
-                data: "Product not found",
-              },
-            };
+            console.log(
+              `SKU ${id} not found in local list. Fetching from server...`
+            );
+
+            const result = await baseQuery(`/getProduct/${id}`);
+
+            // If the server also can't find it, return the error
+            if (result.error) {
+              return { error: result.error };
+            }
+
+            product = result.data as Product;
           }
 
           return { data: product };
@@ -297,7 +304,6 @@ export const productApiService = createApi({
           return {
             error: {
               status: 500,
-              statusText: "Error",
               data: "Failed to fetch product",
             },
           };

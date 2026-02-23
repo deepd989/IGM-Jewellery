@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { OccasiomEnum } from "../constants/occasions";
+import { OccasionEnum } from "../constants/occasions";
 import { SectionHeader } from "./section";
 
 const { width } = Dimensions.get("window");
@@ -17,22 +17,22 @@ const { width } = Dimensions.get("window");
 const OCCASIONS = [
   {
     id: "1",
-    title: OccasiomEnum.Wedding,
+    title: OccasionEnum.Wedding,
     image: require("../assets/images/occasionImages/wedding.jpg"),
   },
   {
     id: "2",
-    title: OccasiomEnum.Anniversary,
+    title: OccasionEnum.Anniversary,
     image: require("../assets/images/occasionImages/anniversary.jpg"),
   },
   {
     id: "3",
-    title: OccasiomEnum.Birthday,
+    title: OccasionEnum.Birthday,
     image: require("../assets/images/occasionImages/birthday.jpg"),
   },
   {
     id: "4",
-    title: OccasiomEnum.Engagement,
+    title: OccasionEnum.Engagement,
     image: require("../assets/images/occasionImages/engagement.jpg"),
   },
 ];

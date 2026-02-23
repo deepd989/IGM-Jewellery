@@ -63,8 +63,6 @@ const CATEGORY_ICON_MAP: Record<string, string> = {
   diamond: "diamond-outline",
 };
 
-const BANNER_IMAGE = require("@/assets/images/product_list_banner.png");
-
 export default function ListingScreen({ filters }: ListingScreenProps) {
   const router = useRouter();
   const params = useLocalSearchParams();
@@ -88,6 +86,9 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   const metal = params.metal as string | undefined;
   const gemstone = params.gemstone as string | undefined;
   const searchQuery = params.searchQuery as string | undefined;
+  const bannerImageUrl = "@/assets/images/product_list_banner.png";
+  console.log(params);
+  const BANNER_IMAGE = require(bannerImageUrl);
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedFilter, setSelectedFilter] = useState("All");

@@ -23,7 +23,9 @@ export default function LatestCollections() {
   const { data: brandsData = [] } = useGetBrandsQuery({});
   const { data: collectionData } = useGetCollectionsQuery();
 
-  const [activeBrandName, setActiveBrand] = useState<string | null>(null);
+  const [activeBrandName, setActiveBrand] = useState<string | null>(
+    brandsData[0]?.businessName || ""
+  );
   const [collections, setCollections] = useState<BrandCollection[]>([]);
 
   // Initialize active brand
@@ -167,14 +169,6 @@ const styles = StyleSheet.create({
     width: "80%",
     height: "80%",
   },
-  diamond: {
-    position: "absolute",
-    top: -6,
-    width: 12,
-    height: 12,
-    backgroundColor: "#053844",
-    transform: [{ rotate: "45deg" }],
-  },
   brandLabel: {
     fontSize: 12,
     marginTop: 8,
@@ -197,10 +191,10 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     backgroundColor: "#F2F2F2",
     // This creates the distinctive curved shape
-    borderTopLeftRadius: 100,
-    borderBottomRightRadius: 100,
-    borderTopRightRadius: 20,
-    borderBottomLeftRadius: 20,
+    borderTopLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    borderTopRightRadius: 60,
+    borderBottomLeftRadius: 60,
     overflow: "hidden",
     position: "relative",
     // Shadow for iOS

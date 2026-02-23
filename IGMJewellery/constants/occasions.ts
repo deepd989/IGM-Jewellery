@@ -1,4 +1,4 @@
-export enum OccasiomEnum {
+export enum OccasionEnum {
   Birthday = "Birthday",
   Anniversary = "Anniversary",
   Wedding = "Wedding",
@@ -7,14 +7,18 @@ export enum OccasiomEnum {
   Diwali = "Diwali",
   DailyWear = "Daily Wear",
   PartyWear = "Party Wear",
+  Tritiya = "Tritiya",
+  KarwaChauth = "Karwa Chauth",
+  Dhanteras = "Dhanteras",
+  OfficeWear = "Office Wear",
 }
 export const OCCASIONS = [
-  OccasiomEnum.Anniversary,
-  OccasiomEnum.Wedding,
-  OccasiomEnum.Graduation,
-  OccasiomEnum.Diwali,
-  OccasiomEnum.DailyWear,
-  OccasiomEnum.PartyWear,
-  OccasiomEnum.Engagement,
-  OccasiomEnum.Birthday,
+  OccasionEnum.Anniversary,
+  OccasionEnum.Wedding,
+  OccasionEnum.Graduation,
+  OccasionEnum.Diwali,
+  OccasionEnum.DailyWear,
+  OccasionEnum.PartyWear,
+  OccasionEnum.Engagement,
+  OccasionEnum.Birthday,
 ];

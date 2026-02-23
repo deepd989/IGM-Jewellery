@@ -138,7 +138,7 @@ export default function HomeScreen() {
       <SearchBar />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.AiContainer}>
-          <View style={(styles.centerBox, styles.viewZeywarIsListening)}>
+          <View style={(styles.centerBox, styles.viewElanziaIsListening)}>
             <View style={styles.badgeContainer}>
               <View style={styles.aiBadge}>
                 <Sparkles size={16} color="#FFF" fill="#FFF" />
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 5,
   },
-  viewZeywarIsListening: {
+  viewElanziaIsListening: {
     padding: 16,
     borderRadius: 12,
   },
