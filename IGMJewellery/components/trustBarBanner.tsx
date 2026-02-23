@@ -1,26 +1,49 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React, { useEffect, useRef, useState } from "react";
-import { Animated, Easing, StyleSheet, Text, View } from "react-native";
+import React, { memo, useEffect, useRef, useState } from "react";
+import { Animated, Easing, Image, StyleSheet, Text, View } from "react-native";
+
+// 1. Move the item renderer outside to prevent re-mounting flicker
+const TrustItem = memo(({ item }) => (
+  <View style={styles.item}>
+    <Image
+      source={item.icon}
+      style={styles.icon}
+      fadeDuration={0} // Removes the default Android fade-in flicker
+    />
+    <Text style={styles.text}>{item.text}</Text>
+    <View style={styles.divider} />
+  </View>
+));
 
 const TrustBar = () => {
   const trustItems = [
-    { id: 1, icon: "shield-check", text: "Infinite Designs" },
-    { id: 2, icon: "shield-check", text: "Global Jewellery Standards" },
-    { id: 3, icon: "shield-check", text: "Insured Delivery" },
+    {
+      id: 1,
+      icon: require("../assets/icons/ICONS_GlobalJewelleryStandards.png"),
+      text: "Infinite Designs",
+    },
+    {
+      id: 2,
+      icon: require("../assets/icons/ICONS_InfiniteDesigns.png"),
+      text: "Global Jewellery Standards",
+    },
+    {
+      id: 3,
+      icon: require("../assets/icons/ICONS_InsuredDelivery.png"),
+      text: "Insured Delivery",
+    },
   ];
 
   const scrollX = useRef(new Animated.Value(0)).current;
   const [contentWidth, setContentWidth] = useState(0);
 
   useEffect(() => {
-    // Only start animation once we know how wide the content is
     if (contentWidth > 0) {
       const startAnimation = () => {
         scrollX.setValue(0);
         Animated.loop(
           Animated.timing(scrollX, {
-            toValue: -contentWidth, // Move by exactly one full set width
-            duration: 10000, // Adjust for speed (higher = slower)
+            toValue: -contentWidth,
+            duration: 15000, // Slightly slower for readability
             easing: Easing.linear,
             useNativeDriver: true,
           })
@@ -28,36 +51,45 @@ const TrustBar = () => {
       };
       startAnimation();
     }
+    // Clean up animation on unmount
+    return () => scrollX.stopAnimation();
   }, [contentWidth]);
-
-  const RenderItems = () => (
-    <View
-      style={styles.row}
-      onLayout={(e) => {
-        // Measure the width of exactly one set of items
-        if (contentWidth === 0) setContentWidth(e.nativeEvent.layout.width);
-      }}
-    >
-      {trustItems.map((item) => (
-        <View key={item.id} style={styles.item}>
-          <MaterialCommunityIcons name={item.icon} size={20} color="#1a3a3a" />
-          <Text style={styles.text}>{item.text}</Text>
-          <View style={styles.divider} />
-        </View>
-      ))}
-    </View>
-  );
 
   return (
     <View style={styles.container}>
       <Animated.View
-        style={[styles.tickerWrapper, { transform: [{ translateX: scrollX }] }]}
+        style={[
+          styles.tickerWrapper,
+          {
+            transform: [{ translateX: scrollX }],
+            // Use contentWidth to set a precise width instead of 5000
+            width: contentWidth ? contentWidth * 3 : 5000,
+          },
+        ]}
       >
-        <RenderItems />
-        {/* The "Clone" that fills the gap */}
-        <RenderItems />
-        {/* A third one is often added for extra wide screens to prevent flickering */}
-        <RenderItems />
+        <View
+          style={styles.row}
+          onLayout={(e) => {
+            const width = e.nativeEvent.layout.width;
+            if (width > 0 && contentWidth === 0) setContentWidth(width);
+          }}
+        >
+          {trustItems.map((item) => (
+            <TrustItem key={`set1-${item.id}`} item={item} />
+          ))}
+        </View>
+
+        {/* Clones for seamless looping */}
+        <View style={styles.row}>
+          {trustItems.map((item) => (
+            <TrustItem key={`set2-${item.id}`} item={item} />
+          ))}
+        </View>
+        <View style={styles.row}>
+          {trustItems.map((item) => (
+            <TrustItem key={`set3-${item.id}`} item={item} />
+          ))}
+        </View>
       </Animated.View>
     </View>
   );
@@ -69,13 +101,12 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
-    overflow: "hidden", // This clips the content so it doesn't overlap your margins
+    overflow: "hidden",
     marginTop: 60,
     marginBottom: 40,
   },
   tickerWrapper: {
     flexDirection: "row",
-    width: 5000, // Ensure the container is wide enough to hold multiple sets
   },
   row: {
     flexDirection: "row",
@@ -85,6 +116,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
+  },
+  icon: {
+    height: 30,
+    width: 30,
+    resizeMode: "contain",
   },
   text: {
     marginLeft: 10,

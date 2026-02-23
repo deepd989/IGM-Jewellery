@@ -3,6 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
+  Image,
   LayoutAnimation,
   Platform,
   StyleSheet,
@@ -11,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
+import { useGetBrandByNameQuery } from "../../store/apis/brandsApi";
 import { getBrandKey } from "../../utils/brandKeyMap";
 import { HapticButton } from "../basic components/hapticButton";
 
@@ -64,6 +66,12 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
   const [openSection, setOpenSection] = useState<string | null>(
     "PRODUCT DETAILS"
   );
+  const {
+    data: brandData,
+    isLoading,
+    error,
+  } = useGetBrandByNameQuery(product.brand);
+
   const router = useRouter();
 
   const toggleSection = (section: string) => {
@@ -194,14 +202,10 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
 
         {/* Metal summary */}
         {metalLabel ? (
-          <Text style={styles.metalLine}>
-            Metal Purity: {metalLabel}
-          </Text>
+          <Text style={styles.metalLine}>Metal Purity: {metalLabel}</Text>
         ) : null}
         {d.grossWeight ? (
-          <Text style={styles.metalLine}>
-            Metal Weight: {d.grossWeight}
-          </Text>
+          <Text style={styles.metalLine}>Metal Weight: {d.grossWeight}</Text>
         ) : null}
 
         {/* Certificate badge */}
@@ -225,7 +229,6 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
               <Text style={styles.infoSectionTitle}>
                 1. GEMSTONE INFORMATION
               </Text>
-              
             </View>
             <View style={styles.infoTable}>
               {gemstoneRows.map((row, i) => (
@@ -242,7 +245,6 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
               <Text style={styles.infoSectionTitle}>
                 {hasGemstone ? "2." : "1."} DIAMOND INFORMATION
               </Text>
-              
             </View>
             <View style={styles.infoTable}>
               {diamondRows.map((row, i) => (
@@ -281,21 +283,23 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
           </Text>
 
           <View style={styles.storyFeatures}>
-            <Text style={styles.storyFeaturesText}>
-              100% Certified
-            </Text>
+            <Text style={styles.storyFeaturesText}>100% Certified</Text>
             <Text style={styles.storyFeaturesDivider}>|</Text>
-            <Text style={styles.storyFeaturesText}>
-              15 Days return
-            </Text>
+            <Text style={styles.storyFeaturesText}>15 Days return</Text>
             <Text style={styles.storyFeaturesDivider}>|</Text>
-            <Text style={styles.storyFeaturesText}>
-              1 year Warranty
-            </Text>
+            <Text style={styles.storyFeaturesText}>1 year Warranty</Text>
           </View>
 
           <View style={styles.storyBrandBox}>
-            <View style={styles.placeholderLogo} />
+            <Image
+              style={styles.placeholderLogo}
+              source={
+                brandData?.profileImageUri
+                  ? { uri: brandData.profileImageUri }
+                  : require("../../assets/images/icon.png") // Fallback local image
+              }
+              resizeMode="contain"
+            />
             <Text style={styles.storyTitle}>
               ABOUT {product.brand.toUpperCase()}
             </Text>
@@ -512,10 +516,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.m,
   },
   placeholderLogo: {
-    width: 60,
-    height: 60,
+    width: 100,
+    height: 100,
     backgroundColor: "#F5F5F5",
-    borderRadius: 30,
+    borderRadius: 10,
     marginBottom: SPACING.m,
   },
   storyTitle: {
