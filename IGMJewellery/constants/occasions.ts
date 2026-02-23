@@ -8,9 +8,7 @@ export enum OccasiomEnum {
   DailyWear = "Daily Wear",
   PartyWear = "Party Wear",
 }
-
 export const OCCASIONS = [
-  OccasiomEnum.Birthday,
   OccasiomEnum.Anniversary,
   OccasiomEnum.Wedding,
   OccasiomEnum.Graduation,
@@ -18,4 +16,5 @@ export const OCCASIONS = [
   OccasiomEnum.DailyWear,
   OccasiomEnum.PartyWear,
   OccasiomEnum.Engagement,
+  OccasiomEnum.Birthday,
 ];

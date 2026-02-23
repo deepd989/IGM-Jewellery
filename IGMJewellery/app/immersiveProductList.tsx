@@ -160,7 +160,7 @@ const hintStyles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: "flex-end",
     alignItems: "center",
-    paddingBottom: 140,
+    paddingBottom: 250,
   },
   hintContainer: {
     alignItems: "center",

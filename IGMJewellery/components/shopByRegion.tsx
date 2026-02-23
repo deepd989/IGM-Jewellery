@@ -135,7 +135,7 @@ export default function ShopByRegionCards() {
 
   return (
     <View style={styles.container}>
-      <SectionHeader value="The Latest Arrivals" />
+      <SectionHeader value="Regional Wonders" />
       <FlatList
         data={formattedData}
         renderItem={({ item }) => <Card item={item} cardWidth={cardWidth} />}
