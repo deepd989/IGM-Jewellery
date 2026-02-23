@@ -103,7 +103,7 @@ const ImmersiveProductList = () => {
 
   const immersiveProducts = useMemo(() => {
     return products.filter((product) => {
-      return product.immersiveVideoUrl || product.isImmersiveProduct;
+      return product.immersiveVideoUrl;
     });
   }, [products]);
 

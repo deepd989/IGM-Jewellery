@@ -113,7 +113,7 @@ export default function LatestCollections() {
             <Image
               source={{ uri: collection.collectionBannerImgUrl }}
               style={styles.collectionImage}
-              resizeMode="cover"
+              resizeMode="center"
             />
 
             {/* The "Shop Now" Pill Button */}
@@ -122,9 +122,9 @@ export default function LatestCollections() {
             </View>
 
             {/* Optional Title Overlay */}
-            <View style={styles.textOverlay}>
+            {/* <View style={styles.textOverlay}>
               <Text style={styles.collectionTitle}>{collection.title}</Text>
-            </View>
+            </View> */}
           </HapticButton>
         ))}
       </View>
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   },
   collectionCard: {
     width: "100%",
-    height: 160,
+    height: 200,
     marginBottom: 24,
     backgroundColor: "#F2F2F2",
     // This creates the distinctive curved shape

@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Modal, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../../constants/theme";
 import { HapticButton } from "../basic components/hapticButton";
 
@@ -18,84 +19,84 @@ export const TryOnSelectorModal: React.FC<TryOnSelectorModalProps> = ({
   onSelectAI,
 }) => {
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent
-      onRequestClose={onClose}
-    >
-      <View style={styles.overlay}>
-        {/* Tappable backdrop */}
-        <HapticButton
-          style={styles.backdrop}
-          onPress={onClose}
-          activeOpacity={1}
-        >
-          <View />
-        </HapticButton>
-
-        <View style={styles.sheet}>
-          {/* Close button */}
-          <HapticButton style={styles.closeBtn} onPress={onClose}>
-            <Ionicons name="close" size={24} color={COLORS.text} />
+    <SafeAreaView style={{ flex: 1 }}>
+      <Modal
+        visible={visible}
+        animationType="slide"
+        transparent
+        onRequestClose={onClose}
+      >
+        <View style={styles.overlay}>
+          {/* Tappable backdrop */}
+          <HapticButton
+            style={styles.backdrop}
+            onPress={onClose}
+            activeOpacity={1}
+          >
+            <View />
           </HapticButton>
 
-          {/* Face icon with sparkle */}
-          <View style={styles.iconWrap}>
-            <View style={styles.faceCircle}>
-              <Ionicons name="happy-outline" size={32} color={COLORS.text} />
+          <View style={styles.sheet}>
+            {/* Close button */}
+            <HapticButton style={styles.closeBtn} onPress={onClose}>
+              <Ionicons name="close" size={24} color={COLORS.text} />
+            </HapticButton>
+
+            {/* Face icon with sparkle */}
+            <View style={styles.iconWrap}>
+              <View style={styles.faceCircle}>
+                <Ionicons name="happy-outline" size={32} color={COLORS.text} />
+              </View>
+              <Ionicons
+                name="sparkles"
+                size={12}
+                color={COLORS.text}
+                style={styles.sparkleIcon}
+              />
             </View>
-            <Ionicons
-              name="sparkles"
-              size={12}
-              color={COLORS.text}
-              style={styles.sparkleIcon}
-            />
+
+            {/* Title */}
+            <Text style={styles.title}>Select your Try-On{"\n"}experience</Text>
+
+            {/* VR Try-On */}
+            <HapticButton
+              style={[styles.card, styles.cardVR]}
+              onPress={() => {
+                onClose();
+                onSelectVR();
+              }}
+            >
+              <View style={styles.cardText}>
+                <Text style={styles.cardTitle}>VR Try-On</Text>
+                <Text style={styles.cardDesc}>
+                  Open your camera & visualise how jewellery looks on you in
+                  real time
+                </Text>
+              </View>
+              <Ionicons name="arrow-forward" size={22} color={COLORS.text} />
+            </HapticButton>
+
+            {/* AI Style Try-On */}
+            <HapticButton
+              style={[styles.card, styles.cardAI]}
+              onPress={() => {
+                onClose();
+                onSelectAI();
+              }}
+            >
+              <View style={styles.cardText}>
+                <Text style={styles.cardTitle}>Ai Style Try-On</Text>
+                <Text style={styles.cardDesc}>
+                  Upload your photo to style & visualise jewellery on you, using
+                  Ai
+                </Text>
+              </View>
+              <Ionicons name="arrow-forward" size={22} color={COLORS.text} />
+            </HapticButton>
           </View>
-
-          {/* Title */}
-          <Text style={styles.title}>
-            Select your Try-On{"\n"}experience
-          </Text>
-
-          {/* VR Try-On */}
-          <HapticButton
-            style={[styles.card, styles.cardVR]}
-            onPress={() => {
-              onClose();
-              onSelectVR();
-            }}
-          >
-            <View style={styles.cardText}>
-              <Text style={styles.cardTitle}>VR Try-On</Text>
-              <Text style={styles.cardDesc}>
-                Open your camera & visualise how jewellery looks on you in real
-                time
-              </Text>
-            </View>
-            <Ionicons name="arrow-forward" size={22} color={COLORS.text} />
-          </HapticButton>
-
-          {/* AI Style Try-On */}
-          <HapticButton
-            style={[styles.card, styles.cardAI]}
-            onPress={() => {
-              onClose();
-              onSelectAI();
-            }}
-          >
-            <View style={styles.cardText}>
-              <Text style={styles.cardTitle}>Ai Style Try-On</Text>
-              <Text style={styles.cardDesc}>
-                Upload your photo to style & visualise jewellery on you, using
-                Ai
-              </Text>
-            </View>
-            <Ionicons name="arrow-forward" size={22} color={COLORS.text} />
-          </HapticButton>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+    </SafeAreaView>
   );
 };
 
@@ -103,6 +104,7 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: "flex-end",
+    paddingVertical: 30,
   },
 
   backdrop: {

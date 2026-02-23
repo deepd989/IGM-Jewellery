@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     bottom: 36,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.primary,
+    backgroundColor: "white",
     borderRadius: 999,
     paddingVertical: 10,
     paddingLeft: 18,
@@ -176,8 +176,8 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    color: "#FFF",
-    fontSize: 14,
+    color: COLORS.primary,
+    fontSize: 16,
     fontWeight: "600",
     marginRight: 10,
   },

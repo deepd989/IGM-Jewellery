@@ -60,7 +60,7 @@ const BespokePage3 = ({ nextStepFn }: { nextStepFn: () => void }) => {
             <Text style={styles.label}>Who is it for</Text>
             <TextInput
               style={styles.input}
-              placeholder="Eg: 14KT yellow gold, silver, platinum etc"
+              placeholder="Wife / Husband / Daughter / Son etc"
               placeholderTextColor="#A0A0A0"
               value={recipient}
               onChangeText={setRecipient}
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   textArea: {
-    height: 50,
+    height: 80,
     textAlignVertical: "top",
   },
   footer: {

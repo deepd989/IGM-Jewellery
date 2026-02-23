@@ -59,7 +59,6 @@ export default function BespokePage2({
       {/* Header Section */}
       <View style={styles.header}>
         <Text style={styles.title}>What do you wish to customize</Text>
-        <Text style={styles.subtitle}>Upload an image of your outfit</Text>
       </View>
 
       {/* Options List */}

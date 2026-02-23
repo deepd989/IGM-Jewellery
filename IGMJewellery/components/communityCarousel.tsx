@@ -1,13 +1,15 @@
-import React, { useRef } from "react";
+import { ResizeMode, Video } from "expo-av"; // Corrected import
+import { useRouter } from "expo-router";
+import React, { useMemo, useRef } from "react";
 import { Animated, Dimensions, StyleSheet, Text, View } from "react-native";
+import { useGetProductsQuery } from "../store/apis/product";
+import { HapticButton } from "./basic components/hapticButton";
 import { SectionHeader } from "./section";
 
 const { width } = Dimensions.get("window");
 
-// Account for parent container padding (16px on each side in home.tsx)
 const PARENT_PADDING = 16;
 const FULL_WIDTH = width;
-
 const CARD_WIDTH = FULL_WIDTH * 0.75;
 const CARD_SPACING = 10;
 
@@ -16,44 +18,51 @@ const DATA = [
     id: "1",
     title: "24K Diamond Ring",
     brand: "Kalyan Jewellers",
-    video: "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
+    video:
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Swipe%20%26%20Shop%20Videos%2FDER-ER03.mp4?alt=media&token=3d9a5c46-295c-4edb-8063-5e05ceaf095f",
   },
   {
     id: "2",
     title: "Gold Necklace",
     brand: "Tanishq",
-    video: "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
+    video:
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Swipe%20%26%20Shop%20Videos%2FDER-ER04.mp4?alt=media&token=ea0772fe-c0d3-4bd6-9d10-9fb5a86accd4",
   },
   {
     id: "3",
     title: "Wedding Set",
     brand: "Malabar",
-    video: "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
+    video:
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Swipe%20%26%20Shop%20Videos%2FDER-ER05.mp4?alt=media&token=a92ba75e-c216-4d0e-ab69-b7ec1b0e4658",
   },
 ];
 
 export default function CommunityCarousel() {
+  const router = useRouter();
+  const { data: products = [], isLoading, isError } = useGetProductsQuery({});
   const scrollX = useRef(new Animated.Value(0)).current;
-
-  // Calculate padding to center the card, accounting for parent padding
   const SIDE_PADDING = (FULL_WIDTH - CARD_WIDTH) / 2 - CARD_SPACING;
-
-  // Total item width including margins on both sides
   const SNAP_INTERVAL = CARD_WIDTH + CARD_SPACING * 2;
 
+  let immersiveProducts = useMemo(() => {
+    const arr = products
+      .filter((product) => {
+        return product.immersiveVideoUrl; // Only include products that have an immersive video URL
+      })
+      .slice(0, 5); // Limits the array to a maximum of 5 item
+    return arr;
+  }, [products]);
   return (
     <View style={styles.container}>
       <SectionHeader value="From the Community" />
       <Animated.FlatList
-        data={DATA}
+        data={immersiveProducts} // Limit to 5 items for better performance
         keyExtractor={(item) => item.id}
         horizontal
         showsHorizontalScrollIndicator={false}
         snapToInterval={SNAP_INTERVAL}
         decelerationRate="fast"
-        contentContainerStyle={{
-          paddingHorizontal: SIDE_PADDING,
-        }}
+        contentContainerStyle={{ paddingHorizontal: SIDE_PADDING }}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
           { useNativeDriver: true }
@@ -79,34 +88,31 @@ export default function CommunityCarousel() {
 
           return (
             <Animated.View
-              style={[
-                styles.card,
-                {
-                  transform: [{ scale }, { translateY }],
-                },
-              ]}
+              style={[styles.card, { transform: [{ scale }, { translateY }] }]}
             >
-              {/* Video */}
-              {/* <Video
-                source={{ uri: item.video }}
-                style={styles.video}
-                resizeMode={ResizeMode.COVER}
-                shouldPlay
-                isLooping
-                isMuted
-              /> */}
-              <View style={styles.videoPlaceholder}>
-                <Text style={styles.placeholderText}>Video Placeholder</Text>
-              </View>
-
-              {/* Footer */}
-              <View style={styles.footer}>
-                <View style={styles.dot} />
-                <View>
+              {/* This now uses expo-av Video */}
+              <HapticButton
+                onPress={() => {
+                  // Debug log to check the product ID
+                  router.push({
+                    pathname: "/product/[id]",
+                    params: { id: item.id },
+                  });
+                }}
+              >
+                <Video
+                  source={{ uri: item.immersiveVideoUrl }}
+                  style={styles.video}
+                  resizeMode={ResizeMode.COVER}
+                  shouldPlay
+                  isLooping
+                  isMuted
+                />
+                <View style={styles.videoCaption}>
                   <Text style={styles.title}>{item.title}</Text>
                   <Text style={styles.brand}>{item.brand}</Text>
                 </View>
-              </View>
+              </HapticButton>
             </Animated.View>
           );
         }}
@@ -118,57 +124,30 @@ export default function CommunityCarousel() {
 const PARENT_PADDING_STYLE = 16;
 
 const styles = StyleSheet.create({
-  container: {
-    // Offset the parent's 16px padding to make carousel full-width
-    marginHorizontal: -PARENT_PADDING_STYLE,
-  },
-  heading: {
-    fontSize: 18,
-    fontWeight: "600",
-    textAlign: "center",
-    marginBottom: 16,
-  },
+  container: { marginHorizontal: -PARENT_PADDING_STYLE },
   card: {
     width: CARD_WIDTH,
     height: 420,
     marginHorizontal: CARD_SPACING,
     borderRadius: 16,
-    backgroundColor: "#E5E5E5",
+    backgroundColor: "white",
     overflow: "hidden",
   },
-  video: {
-    width: "100%",
-    height: "85%",
-  },
-  videoPlaceholder: {
-    width: "100%",
-    height: "85%",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#E5E5E5",
-  },
-  placeholderText: {
-    color: "#999",
-    fontSize: 14,
-  },
-  footer: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 12,
-  },
-  dot: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: "#999",
-    marginRight: 10,
+  video: { width: "100%", height: "100%" },
+  videoCaption: {
+    position: "relative",
+    top: -80,
   },
   title: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "600",
+    color: "white",
+    paddingHorizontal: 10,
   },
   brand: {
     fontSize: 12,
-    color: "#777",
+    paddingHorizontal: 10,
+    fontWeight: "500",
+    color: "black",
   },
 });

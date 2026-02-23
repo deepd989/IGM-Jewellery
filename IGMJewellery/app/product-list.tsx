@@ -5,7 +5,6 @@ import {
   ActivityIndicator,
   FlatList,
   ImageBackground,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -390,11 +389,11 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
           (v) => !["new-arrival", "bestseller"].includes(v)
         );
         nonChipValues.forEach((value) => {
-          tags.push(`${key}: ${value}`);
+          tags.push(` ${value}`);
         });
       } else {
         values.forEach((value) => {
-          tags.push(`${key}: ${value}`);
+          tags.push(`${value}`);
         });
       }
     });
@@ -407,7 +406,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       {/* Page Header with back + actions */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <HapticButton onPress={() => router.back()} style={styles.iconBtn}>
+          <HapticButton onPress={() => router.back()}>
             <Ionicons name="chevron-back" size={24} color={COLORS.text} />
           </HapticButton>
           {/* <Text style={styles.headerTitle}>Explore</Text> */}
@@ -455,7 +454,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       >
         <View style={styles.bannerOverlay} />
       </ImageBackground>
-      <Text style={styles.pageTitle}>{getPageTitle()}</Text>
+      {/* <Text style={styles.pageTitle}>{getPageTitle()}</Text> */}
 
       {/* Filter Chips */}
       <ScrollView
@@ -467,15 +466,11 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       {/* Active Filters Summary */}
       {activeFilterCount > 0 && (
         <View style={styles.activeFiltersContainer}>
-          <View style={styles.activeFiltersBar}>
-            <Text style={styles.activeFiltersText}>
-              {activeFilterCount}{" "}
-              {activeFilterCount === 1 ? "filter" : "filters"} applied
-            </Text>
+          {/* <View style={styles.activeFiltersBar}>
             <HapticButton onPress={handleClearFilters}>
               <Text style={styles.clearFiltersText}>Clear All</Text>
             </HapticButton>
-          </View>
+          </View> */}
 
           <ScrollView
             horizontal
@@ -487,19 +482,33 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
                 <Text style={styles.filterTagText}>{tag}</Text>
                 <HapticButton
                   onPress={() => {
-                    const [filterKey, filterValue] = tag.split(": ");
-                    const newFilters = { ...activeFilters };
-                    newFilters[filterKey] = newFilters[filterKey].filter(
-                      (v) => v !== filterValue
-                    );
-                    if (newFilters[filterKey].length === 0) {
-                      delete newFilters[filterKey];
-                    }
+                    const filterValue = tag;
+
+                    // 1. Create a fresh object to avoid mutating state directly
+                    const newFilters = {};
+
+                    // 2. Iterate over existing keys
+                    Object.keys(activeFilters).forEach((key) => {
+                      // Filter out the specific value from the current array
+                      const updatedArray = activeFilters[key].filter(
+                        (v) => v !== filterValue
+                      );
+
+                      // 3. Only add the key back to the new object if the array isn't empty
+                      if (updatedArray.length > 0) {
+                        newFilters[key] = updatedArray;
+                      }
+                    });
+
                     setActiveFilters(newFilters);
                   }}
                   style={styles.filterTagClose}
                 >
-                  <Ionicons name="close" size={14} color={COLORS.text} />
+                  <Ionicons
+                    name="close"
+                    size={14}
+                    color={COLORS.primaryLight}
+                  />
                 </HapticButton>
               </View>
             ))}
@@ -720,7 +729,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFFFF",
-    paddingTop: Platform.OS === "android" ? 30 : 0,
+    paddingTop: 0,
   },
   centerContent: {
     flex: 1,
@@ -867,14 +876,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   activeFiltersContainer: {
-    backgroundColor: "#F9F9F9",
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
     borderColor: "#E5E5EA",
+    marginBottom: SPACING.s,
   },
   activeFiltersBar: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     alignItems: "center",
     paddingHorizontal: SPACING.m,
     paddingVertical: SPACING.s,
@@ -896,7 +903,7 @@ const styles = StyleSheet.create({
   filterTag: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: COLORS.primary,
     borderRadius: 16,
     paddingVertical: 6,
     paddingLeft: 12,
@@ -907,11 +914,12 @@ const styles = StyleSheet.create({
   },
   filterTagText: {
     fontSize: 12,
-    color: COLORS.text,
+    color: COLORS.primaryLight,
     marginRight: 6,
   },
   filterTagClose: {
     padding: 2,
+    color: COLORS.primaryLight,
   },
   listContent: {
     paddingHorizontal: SPACING.m,

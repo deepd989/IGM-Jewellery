@@ -228,7 +228,7 @@ export default function HomeScreen() {
         {/* <TryAtHomeCard /> */}
         <GiftingCard
           showExploreButton={true}
-          imgUrl="https://drive.google.com/thumbnail?id=1NS9dwRMawoz92JKdTbTKq-ZwwPccMPvM&sz=w1000"
+          imgUrl="https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Gifting%20Banner%2FGifting_banner-05.webp?alt=media&token=5b1e9a31-d5c7-47ee-bf47-8abcca8b5475"
         />
         <HorizontalRuleIGM />
         <>

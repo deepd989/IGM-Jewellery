@@ -1,5 +1,6 @@
+import { ImageBackground } from "expo-image";
 import React from "react";
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../../constants/theme";
 
 const { width } = Dimensions.get("window");
@@ -28,7 +29,10 @@ const RibbonGiftCard: React.FC<RibbonGiftCardProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <View style={[styles.card, { backgroundColor: cardBackgroundColor }]}>
+      <ImageBackground
+        source={imgUrl ? { uri: imgUrl } : undefined}
+        style={[styles.card, { backgroundColor: cardBackgroundColor }]}
+      >
         {/* Vertical ribbon */}
         <View
           style={[styles.verticalRibbon, { backgroundColor: ribbonColor }]}
@@ -61,13 +65,13 @@ const RibbonGiftCard: React.FC<RibbonGiftCardProps> = ({
         </View>
 
         {/* Positioned Image (Replacing the Red Box) */}
-        {imgUrl && (
+        {/* {imgUrl && (
           <Image
             source={{ uri: imgUrl }}
             style={styles.cardImage}
             resizeMode="cover"
           />
-        )}
+        )} */}
 
         {/* Centered heading and caption */}
         <View style={styles.textOverlay}>
@@ -75,7 +79,7 @@ const RibbonGiftCard: React.FC<RibbonGiftCardProps> = ({
           {caption ? <Text style={styles.caption}>{caption}</Text> : null}
           {amount ? <Text style={styles.amount}>{"₹" + amount}</Text> : null}
         </View>
-      </View>
+      </ImageBackground>
     </View>
   );
 };
@@ -104,6 +108,7 @@ const styles = StyleSheet.create({
     width: 24,
     backgroundColor: COLORS.primary,
     zIndex: 2,
+    opacity: 0,
   },
   horizontalRibbon: {
     position: "absolute",
@@ -113,6 +118,7 @@ const styles = StyleSheet.create({
     height: 24,
     backgroundColor: "#D9D9D9",
     zIndex: 2,
+    opacity: 0,
   },
   cardImage: {
     position: "absolute",
@@ -130,6 +136,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     zIndex: 5, // Ensures knot stays on top of ribbons
+    opacity: 0,
   },
   knotPetal: {
     position: "absolute",
