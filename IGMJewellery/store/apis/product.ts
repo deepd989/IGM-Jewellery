@@ -185,10 +185,12 @@ const applyFilters = (
         }
         break;
       case "region":
-        filteredProducts = filteredProducts.filter((p) =>
-          selectedOptions.some(
-            (opt) => p.region?.toLowerCase() === opt.toLowerCase()
-          )
+        filteredProducts = filteredProducts.filter(
+          (p) =>
+            p.region &&
+            selectedOptions.some(
+              (opt) => p.region?.toLowerCase() === opt.toLowerCase()
+            )
         );
         break;
     }
@@ -280,22 +282,22 @@ export const productApiService = createApi({
         try {
           // 1. Fetch the full list locally/initially
           const products = await fetchAllProducts();
-          let product = products.find((p) => p.sku === id);
+          let product = products.find((p) => p.id === id);
 
           // 2. Fallback: If not found in the list, call the specific SKU endpoint
           if (!product) {
             console.log(
-              `SKU ${id} not found in local list. Fetching from server...`
+              `id ${id} not found in local list. Fetching from server...`
             );
 
-            const result = await baseQuery(`/getProduct/${id}`);
+            // const result = await baseQuery(`/getProduct/${id}`);
 
             // If the server also can't find it, return the error
-            if (result.error) {
-              return { error: result.error };
-            }
+            // if (result.error) {
+            //   return { error: result.error };
+            // }
 
-            product = result.data as Product;
+            // product = result.data as Product;
           }
 
           return { data: product };

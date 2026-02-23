@@ -86,9 +86,9 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   const metal = params.metal as string | undefined;
   const gemstone = params.gemstone as string | undefined;
   const searchQuery = params.searchQuery as string | undefined;
-  const bannerImageUrl = "@/assets/images/product_list_banner.png";
-  console.log(params);
-  const BANNER_IMAGE = require(bannerImageUrl);
+  const bannerImageUrl = params.bannerImageUrl;
+  console.log(params.bannerImageUrl);
+  const BANNER_IMAGE = bannerImageUrl;
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedFilter, setSelectedFilter] = useState("All");
@@ -445,22 +445,15 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
 
       {/* Banner & Category Icon */}
       <ImageBackground
-        source={BANNER_IMAGE}
+        source={
+          BANNER_IMAGE
+            ? { uri: BANNER_IMAGE }
+            : require("@/assets/images/product_list_banner.png")
+        }
         style={styles.bannerBackground}
         imageStyle={styles.bannerImage}
       >
         <View style={styles.bannerOverlay} />
-        <View style={styles.categoryIconCircle}>
-          <Ionicons
-            name={
-              (CATEGORY_ICON_MAP[
-                (productType || categoryId || getPageTitle()).toLowerCase()
-              ] as any) || "sparkles-outline"
-            }
-            size={28}
-            color={COLORS.primary}
-          />
-        </View>
       </ImageBackground>
       <Text style={styles.pageTitle}>{getPageTitle()}</Text>
 
@@ -469,27 +462,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.filterContainer}
-      >
-        {FILTER_CHIPS.map((filter) => (
-          <HapticButton
-            key={filter}
-            style={[
-              styles.chip,
-              selectedFilter === filter && styles.chipActive,
-            ]}
-            onPress={() => handleChipPress(filter)}
-          >
-            <Text
-              style={[
-                styles.chipText,
-                selectedFilter === filter && styles.chipTextActive,
-              ]}
-            >
-              {filter}
-            </Text>
-          </HapticButton>
-        ))}
-      </ScrollView>
+      ></ScrollView>
 
       {/* Active Filters Summary */}
       {activeFilterCount > 0 && (
@@ -840,7 +813,7 @@ const styles = StyleSheet.create({
     height: 140,
     justifyContent: "flex-end",
     alignItems: "center",
-    marginBottom: 30, // half of icon circle overflows below
+    marginBottom: 10, // half of icon circle overflows below
   },
   bannerImage: {
     borderRadius: 0,

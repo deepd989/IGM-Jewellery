@@ -1,3 +1,4 @@
+import { LinearGradient } from "expo-linear-gradient";
 import {
   ArrowRight,
   Diamond,
@@ -6,7 +7,14 @@ import {
   User,
 } from "lucide-react-native";
 import React from "react";
-import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS } from "../../constants/theme";
 
@@ -53,8 +61,7 @@ const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
         </View>
 
         {/* Product Visual Area */}
-        <View style={styles.heroContainer}>
-          {/* Background Grid Pattern */}
+        {/* <View style={styles.heroContainer}>
           <View style={styles.gridContainer}>
             <View style={styles.bgGrid1}>
               <View style={[styles.gridBox]} />
@@ -72,8 +79,6 @@ const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
               <View style={[styles.gridBox]} />
             </View>
           </View>
-
-          {/* Floating Badges */}
           <View style={styles.badgeTopLeft}>
             <Text style={styles.badgeText}>💍 Curated for you</Text>
           </View>
@@ -83,14 +88,27 @@ const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
           <View style={styles.badgeBottomLeft}>
             <Text style={styles.badgeText}>💍 Made with love</Text>
           </View>
-
-          {/* Main Ring Image - Placeholder */}
           <View style={styles.mainRingContainer}>
-            {/* Placeholder for the large central rings */}
             <View style={styles.mainRingPlaceholder}>
               <Text style={{ fontSize: 80 }}>💍</Text>
             </View>
           </View>
+        </View> */}
+        <View style={styles.imgcontainer}>
+          <Image
+            source={{
+              uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Bespoke%20Banners%2FExplore%20Bespoke%2Fbespoke-01.webp?alt=media&token=5cb0fb49-268e-4953-acc5-92abb0db0249",
+            }}
+            style={styles.image}
+            resizeMode="cover"
+          />
+
+          {/* The Gradient Overlay */}
+          <LinearGradient
+            // Colors: Solid background color at the top -> Transparent
+            colors={["white", "transparent"]}
+            style={styles.gradient}
+          />
         </View>
 
         {/* CTA Button */}
@@ -317,6 +335,21 @@ const styles = StyleSheet.create({
   stepContent: { flex: 1, marginLeft: 15, paddingTop: 5, paddingBottom: 35 },
   stepTitle: { fontSize: 16, fontWeight: "700", color: COLORS.primary },
   stepDescription: { fontSize: 14, color: COLORS.primary, marginTop: 4 },
+  image: {
+    height: 400,
+    width: "100%",
+  },
+  gradient: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    height: "30%", // Adjust this to make the fade longer or shorter
+  },
+  imgcontainer: {
+    height: 400,
+    width: "100%",
+  },
 });
 
 export default BespokePage1;

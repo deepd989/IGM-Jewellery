@@ -16,31 +16,66 @@ import { SectionHeader } from "./section";
 // --- Dummy Data Definition ---
 const REGIONS_DUMMY_DATA = {
   "1": {
-    sellerName: "Nordic Designs",
+    sellerName: "Assam Heritage",
     sellerBannerImgUrl:
-      "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?q=80&w=500",
-    collections: [{ title: "Minimalist Furniture" }],
-    region: "Gujrat",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FAssam.webp?alt=media&token=585608eb-b703-4f04-9183-117cbdc179a5",
+    collections: [{ title: "Silk & Tea Crafts" }],
+    region: "Assam",
   },
   "2": {
-    sellerName: "Tokyo Tech & Style",
+    sellerName: "Gujarat Gold & Silk",
     sellerBannerImgUrl:
-      "https://images.unsplash.com/photo-1526738549149-8e07eca2c1cf?q=80&w=500",
-    collections: [{ title: "Cyberpunk Tech" }],
-    region: "Maharastra",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FGujarat.webp?alt=media&token=0c187c11-3240-4630-9dac-efa1c314b1f0",
+    collections: [{ title: "Patola Collections" }],
+    region: "Gujarat",
   },
   "3": {
-    sellerName: "Sahara Artisans",
+    sellerName: "Kerala Spices & Arts",
     sellerBannerImgUrl:
-      "https://images.unsplash.com/photo-1505691938895-1758d7eaa511?q=80&w=500",
-    collections: [{ title: "Handwoven Rugs" }],
-    region: "Maharastra",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FKerala.webp?alt=media&token=12bef91c-3f2b-4263-9797-ac9570a8e738",
+    collections: [{ title: "Traditional Handloom" }],
+    region: "Kerala",
   },
   "4": {
-    sellerName: "Alpine Outdoor",
+    sellerName: "Odisha Temple Crafts",
     sellerBannerImgUrl:
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=500",
-    collections: [{ title: "Winter Gear" }],
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FOdisha.webp?alt=media&token=264f073e-0ca8-4c8e-b316-755a58af3a70",
+    collections: [{ title: "Silver Filigree" }],
+    region: "Odisha",
+  },
+  "5": {
+    sellerName: "Punjab Phulkari House",
+    sellerBannerImgUrl:
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FPunjab.webp?alt=media&token=e68e7ad9-d7bf-4318-a4e7-5876867ebb78",
+    collections: [{ title: "Embroidered Heritage" }],
+    region: "Punjab",
+  },
+  "6": {
+    sellerName: "Rajasthan Royal Gems",
+    sellerBannerImgUrl:
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FRajasthan.webp?alt=media&token=52ed7845-1514-47bb-80af-648441526c57",
+    collections: [{ title: "Jaipur Jewelry" }],
+    region: "Rajasthan",
+  },
+  "7": {
+    sellerName: "Tamil Nadu Silks",
+    sellerBannerImgUrl:
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FTamil%20Nadu.webp?alt=media&token=4e789072-3553-4552-9e3c-541f0d2b7e9f",
+    collections: [{ title: "Kanchipuram Specials" }],
+    region: "Tamil Nadu",
+  },
+  "8": {
+    sellerName: "Telangana Pearl Co.",
+    sellerBannerImgUrl:
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FTelangana.webp?alt=media&token=fcdc5631-ce8c-47f7-9e66-17a1e7883ee5",
+    collections: [{ title: "Hyderabadi Jewelry" }],
+    region: "Telangana",
+  },
+  "9": {
+    sellerName: "West Bengal Artistry",
+    sellerBannerImgUrl:
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FWest%20Bengal.webp?alt=media&token=2a546938-3731-43a2-9b7a-bcbca11ca117",
+    collections: [{ title: "Terracotta & Silk" }],
     region: "West Bengal",
   },
 };
@@ -57,15 +92,6 @@ const Card = ({ item, cardWidth }) => {
         style={styles.image}
         resizeMode="cover"
       />
-
-      <View style={styles.textContainer}>
-        <Text style={styles.collectionTitle} numberOfLines={1}>
-          {item.title}
-        </Text>
-        <Text style={styles.sellerName} numberOfLines={1}>
-          {item.sellerName}
-        </Text>
-      </View>
 
       <TouchableOpacity
         activeOpacity={0.8}

@@ -26,27 +26,27 @@ const SIDE_INSET = (SCREEN_WIDTH - CARD_WIDTH) / 2;
 
 const FESTIVE_ITEMS = [
   {
-    id: "GNK-40",
+    id: 49,
     image: require("../assets/images/festiveInspo/GNK-40.jpg"),
     sku: "GNK-40",
   },
   {
-    id: "GNK-NK-37",
+    id: 98,
     image: require("../assets/images/festiveInspo/GNK-NK-37.jpg"),
     sku: "GNK-NK-37",
   },
   {
-    id: "DER-109",
+    id: 92,
     image: require("../assets/images/festiveInspo/DER-109.jpg"),
     sku: "DER-109-01",
   },
   {
-    id: "Kana1",
+    id: 100,
     image: require("../assets/images/festiveInspo/Kana1.jpg"),
     sku: "Kana1",
   },
   {
-    id: "DNK-108",
+    id: 129,
     image: require("../assets/images/festiveInspo/DNK-108.jpg"),
     sku: "DNK-108",
   },
@@ -69,10 +69,10 @@ export default function EventCard() {
     viewAreaCoveragePercentThreshold: 50,
   }).current;
 
-  const handlePress = (sku: string) => {
+  const handlePress = (id: number) => {
     router.push({
       pathname: "/product/[id]",
-      params: { id: sku },
+      params: { id: id },
     });
   };
 
@@ -107,7 +107,7 @@ export default function EventCard() {
         style={[styles.cardContainer, { opacity, transform: [{ scale }] }]}
       >
         <HapticButton
-          onPress={() => handlePress(item.sku)}
+          onPress={() => handlePress(item.id)}
           style={styles.imageWrapper}
         >
           <Image source={item.image} style={styles.image} resizeMode="cover" />

@@ -74,6 +74,9 @@ function getCustomAttribute(
   const attr = product.custom_attributes?.find(
     (a: CustomAttribute) => a.attribute_code === attributeCode
   );
+  // if (typeof attr?.value == "array") {
+  //   return attr.value[0];
+  // }
   return attr?.value;
 }
 
@@ -468,7 +471,7 @@ export function convertResolvedProduct(
     immersiveThumbnailUrl: getImmersiveThumbnailUrl(magentoProduct),
     immersiveVideoUrl: magentoProduct.immersiveVideoUrl || undefined,
     region:
-      (getCustomAttribute(magentoProduct, "region") as string) || "Gujrat",
+      (getCustomAttribute(magentoProduct, "regional_tags") as string) || "",
   };
 }
 

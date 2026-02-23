@@ -132,8 +132,7 @@ export default function ProductDetailScreen() {
   }
 
   // Error state
-  if (!product) {
-    console.log("Product not found for ID:", productId, product);
+  if (isError || !product) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
