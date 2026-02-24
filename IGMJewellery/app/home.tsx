@@ -118,10 +118,10 @@ export default function HomeScreen() {
     useCallback(() => {
       const backHandler = BackHandler.addEventListener(
         "hardwareBackPress",
-        () => true
+        () => true,
       );
       return () => backHandler.remove();
-    }, [])
+    }, []),
   );
 
   return (
@@ -156,6 +156,7 @@ export default function HomeScreen() {
               <View style={{ flex: 1 }}>
                 <TextInput
                   placeholder="Search for ..."
+                  placeholderTextColor="#999"
                   style={styles.inputText}
                   value={textInput}
                   returnKeyType="send"
