@@ -85,30 +85,31 @@ const REGIONS_DUMMY_DATA = {
  */
 const Card = ({ item, cardWidth }) => {
   const router = useRouter();
+  const navigateToRegion = () => {
+    router.push({
+      pathname: "/product-list",
+      params: {
+        region: item.region.toLowerCase(),
+        bannerImageUrl: encodeURIComponent(item.image),
+      },
+    });
+  };
   return (
-    <View style={[styles.card, { width: cardWidth }]}>
+    <TouchableOpacity
+      activeOpacity={0.85}
+      style={[styles.card, { width: cardWidth }]}
+      onPress={navigateToRegion}
+    >
       <Image
         source={{ uri: item.image || "https://via.placeholder.com/500" }}
         style={styles.image}
         resizeMode="cover"
       />
 
-      <TouchableOpacity
-        activeOpacity={0.8}
-        style={styles.buttonContainer}
-        onPress={() => {
-          router.push({
-            pathname: "/product-list",
-            params: {
-              region: item.region.toLowerCase(),
-              bannerImageUrl: encodeURIComponent(item.image),
-            },
-          });
-        }}
-      >
+      <View style={styles.buttonContainer}>
         <Text style={styles.buttonText}>Shop Now</Text>
-      </TouchableOpacity>
-    </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 

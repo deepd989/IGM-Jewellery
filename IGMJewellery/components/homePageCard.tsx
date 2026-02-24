@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
 const necklaceCardStyle = StyleSheet.create({
   wrapper: {
     alignItems: "center",
-    paddingBottom: 20, // Space for the button to hang off the bottom
+    paddingBottom: 12, // Space for the button to hang off the bottom
   },
   card: {
     backgroundColor: "#EBF2F5",
