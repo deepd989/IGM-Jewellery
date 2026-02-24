@@ -1,15 +1,12 @@
 import React, { memo, useEffect, useRef, useState } from "react";
-import { Animated, Easing, Image, StyleSheet, Text, View } from "react-native";
+import { Animated, Easing, StyleSheet, Text, View } from "react-native";
+import { SvgUri } from "react-native-svg";
 import { COLORS } from "../constants/theme";
 
 // 1. Move the item renderer outside to prevent re-mounting flicker
 const TrustItem = memo(({ item }) => (
   <View style={styles.item}>
-    <Image
-      source={item.icon}
-      style={styles.icon}
-      fadeDuration={0} // Removes the default Android fade-in flicker
-    />
+    <SvgUri uri={item.icon} width={30} height={30} />
     <Text style={styles.text}>{item.text}</Text>
     <View style={styles.divider} />
   </View>
@@ -19,17 +16,17 @@ const TrustBar = () => {
   const trustItems = [
     {
       id: 1,
-      icon: require("../assets/icons/ICONS_GlobalJewelleryStandards.png"),
+      icon: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FTrust%20Badges%2FICONS%20_Infinite%20Designs.svg?alt=media&token=27cf866d-d590-4d26-8d56-d1aeedbb89ac",
       text: "Infinite Designs",
     },
     {
       id: 2,
-      icon: require("../assets/icons/ICONS_InfiniteDesigns.png"),
+      icon: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FTrust%20Badges%2FICONS%20_Global%20Jewellery%20Standards.svg?alt=media&token=4990b5f0-3124-4c7e-b7c8-1d811f501dfc",
       text: "Global Jewellery Standards",
     },
     {
       id: 3,
-      icon: require("../assets/icons/ICONS_InsuredDelivery.png"),
+      icon: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FTrust%20Badges%2FICONS%20_Insured%20Delivery.svg?alt=media&token=3858495a-afe4-4c1c-b4b5-9c24eb59fd3a",
       text: "Insured Delivery",
     },
   ];
@@ -47,7 +44,7 @@ const TrustBar = () => {
             duration: 15000, // Slightly slower for readability
             easing: Easing.linear,
             useNativeDriver: true,
-          })
+          }),
         ).start();
       };
       startAnimation();
@@ -103,8 +100,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
     overflow: "hidden",
-    marginTop: 60,
-    marginBottom: 40,
+    marginTop: 36,
+    marginBottom: 24,
     marginHorizontal: 5,
     borderRadius: 10,
   },
