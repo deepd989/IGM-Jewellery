@@ -5,6 +5,7 @@ import { categoryApiService } from "./apis/categories";
 import { checkoutApiService } from "./apis/checkout";
 import { collectionsApi } from "./apis/collectionApi";
 import { giftApi } from "./apis/giftApi";
+import { multiBrandCollectionsApi } from "./apis/multibrandCollectionsApi";
 import { productApiService } from "./apis/product";
 import { profileApiService } from "./apis/profile";
 import { textSearchApi } from "./apis/textSearchApi";
@@ -26,6 +27,7 @@ export const store = configureStore({
     [magentoApiService.reducerPath]: magentoApiService.reducer,
     [textSearchApi.reducerPath]: textSearchApi.reducer,
     [collectionsApi.reducerPath]: collectionsApi.reducer,
+    [multiBrandCollectionsApi.reducerPath]: multiBrandCollectionsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -39,7 +41,8 @@ export const store = configureStore({
       giftApi.middleware,
       magentoApiService.middleware,
       textSearchApi.middleware,
-      collectionsApi.middleware
+      collectionsApi.middleware,
+      multiBrandCollectionsApi.middleware
     ),
 });
 

@@ -48,10 +48,14 @@ export default function LatestCollections() {
     [brandsData]
   );
 
-  const handleRedirect = (collectionName: string) => {
+  const handleRedirect = (collection: BrandCollection) => {
     router.push({
       pathname: "/product-list",
-      params: { brand: activeBrandName, collection: collectionName },
+      params: {
+        brand: activeBrandName,
+        collection: collection.title,
+        bannerImageUrl: encodeURIComponent(collection.collectionBannerImgUrl),
+      },
     });
   };
 
@@ -108,7 +112,7 @@ export default function LatestCollections() {
           <HapticButton
             key={i}
             style={styles.collectionCard}
-            onPress={() => handleRedirect(collection.title)}
+            onPress={() => handleRedirect(collection)}
           >
             <Image
               source={{ uri: collection.collectionBannerImgUrl }}

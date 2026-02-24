@@ -1,3 +1,4 @@
+import { ResizeMode, Video } from "expo-av";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -11,6 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../components/basic components/hapticButton";
 import HealthCheckModal from "../components/connectionModal";
+import { useGetProductsQuery } from "../store/apis/product";
 
 const { width } = Dimensions.get("window");
 
@@ -18,6 +20,7 @@ const { width } = Dimensions.get("window");
 const CAROUSEL_ITEM_WIDTH = width * 0.85;
 const SPACING = 10;
 const SNAP_INTERVAL = CAROUSEL_ITEM_WIDTH + SPACING * 2;
+const COLORS = { primary: "#053844" };
 
 const BANNER_IMAGES = [
   {
@@ -37,24 +40,33 @@ const BANNER_IMAGES = [
 export default function JewelryLanding() {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
-  const flatListRef = useRef(null);
+  const [isVideoFinished, setIsVideoFinished] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const flatListRef = useRef(null);
 
-  // Auto-scroll Effect
+  const { isLoading, isError } = useGetProductsQuery({});
+
+  // Auto-scroll Effect for Carousel
   useEffect(() => {
+    if (!isVideoFinished || isLoading) return; // Don't start timer until landing is visible
+
     const timer = setInterval(() => {
       let nextIndex = (currentIndex + 1) % BANNER_IMAGES.length;
-
       flatListRef.current?.scrollToIndex({
         index: nextIndex,
         animated: true,
       });
-
       setCurrentIndex(nextIndex);
-    }, 3500); // 3.5 seconds for a premium feel
+    }, 3500);
 
     return () => clearInterval(timer);
-  }, [currentIndex]);
+  }, [currentIndex, isVideoFinished, isLoading]);
+
+  const handlePlaybackStatusUpdate = (status) => {
+    if (status.didJustFinish) {
+      setIsVideoFinished(true);
+    }
+  };
 
   const renderItem = ({ item }) => (
     <View style={styles.cardContainer}>
@@ -66,6 +78,46 @@ export default function JewelryLanding() {
     </View>
   );
 
+  // --- LOADING / VIDEO STATE ---
+  // We stay in this block until the video finishes AND the API is done.
+  if (!isVideoFinished || isLoading) {
+    return (
+      <View style={[styles.container, { flex: 1, backgroundColor: "#000" }]}>
+        {!isVideoFinished ? (
+          <Video
+            source={require("../assets/splash.mp4")}
+            style={StyleSheet.absoluteFill}
+            resizeMode={ResizeMode.COVER}
+            shouldPlay
+            rate={2.0}
+            isLooping={false} // Play only once
+            isMuted={true}
+            onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+          />
+        ) : (
+          /* Fallback UI: If video ends but data is still fetching */
+          <SafeAreaView style={[styles.safeArea, styles.centered]}>
+            <View style={styles.logoCircleLarge}>
+              <Image
+                source={require("../assets/images/icon.png")}
+                style={styles.logoImage}
+              />
+            </View>
+            <View style={styles.progressBarContainer}>
+              <View
+                style={[
+                  styles.progressBar,
+                  { backgroundColor: COLORS.primary },
+                ]}
+              />
+            </View>
+          </SafeAreaView>
+        )}
+      </View>
+    );
+  }
+
+  // --- MAIN LANDING UI ---
   return (
     <SafeAreaView style={styles.safeArea}>
       {showModal && (
@@ -83,10 +135,7 @@ export default function JewelryLanding() {
           >
             <Image
               source={require("../assets/images/elanziaIndex.png")}
-              style={{
-                height: 60,
-                width: 200,
-              }}
+              style={{ height: 60, width: 200 }}
             />
           </HapticButton>
           <Text style={styles.subtitle}>
@@ -111,7 +160,6 @@ export default function JewelryLanding() {
               offset: SNAP_INTERVAL * index,
               index,
             })}
-            // Update index if user manually swipes
             onMomentumScrollEnd={(event) => {
               const newIndex = Math.round(
                 event.nativeEvent.contentOffset.x / SNAP_INTERVAL
@@ -121,7 +169,7 @@ export default function JewelryLanding() {
           />
         </View>
 
-        {/* Buttons */}
+        {/* Action Buttons */}
         <View style={styles.authContainer}>
           <HapticButton
             style={styles.fullButton}
@@ -134,7 +182,7 @@ export default function JewelryLanding() {
             style={[styles.fullButton, styles.secondaryButton]}
             onPress={() => router.push("/home")}
           >
-            <Text style={[styles.buttonText, { color: "#053844" }]}>
+            <Text style={[styles.buttonText, { color: COLORS.primary }]}>
               Explore as Guest
             </Text>
           </HapticButton>
@@ -145,26 +193,21 @@ export default function JewelryLanding() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 20,
+  },
   safeArea: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
   },
-  container: {
-    flex: 1,
-    paddingVertical: 20,
-    justifyContent: "space-between",
+  centered: {
+    justifyContent: "center",
+    alignItems: "center",
   },
   textContainer: {
     alignItems: "center",
     marginTop: 20,
     paddingHorizontal: 30,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "300",
-    color: "#053844",
-    letterSpacing: 6,
-    textTransform: "uppercase",
   },
   subtitle: {
     fontSize: 16,
@@ -177,7 +220,7 @@ const styles = StyleSheet.create({
   },
   carouselSection: {
     height: 420,
-    marginVertical: 20,
+    marginVertical: 40,
   },
   flatListPadding: {
     paddingHorizontal: (width - CAROUSEL_ITEM_WIDTH) / 2 - SPACING,
@@ -189,7 +232,6 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     backgroundColor: "#F9F9F9",
     overflow: "hidden",
-    // Shadow/Elevation
     elevation: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 6 },
@@ -221,5 +263,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     letterSpacing: 1,
+  },
+  logoCircleLarge: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "#FFF",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#EEE",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+  },
+  logoImage: {
+    width: 60,
+    height: 60,
+    resizeMode: "contain",
+  },
+  progressBarContainer: {
+    width: width * 0.4,
+    height: 4,
+    backgroundColor: "#F0F0F0",
+    borderRadius: 2,
+    marginTop: 20,
+    overflow: "hidden",
+  },
+  progressBar: {
+    height: "100%",
+    width: "60%",
   },
 });

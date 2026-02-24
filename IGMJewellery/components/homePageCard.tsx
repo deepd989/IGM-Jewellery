@@ -350,6 +350,9 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
         onSelectAI={() => {
           router.push({
             pathname: "/tryOn",
+            params: {
+              productId: product.id,
+            },
           });
         }}
       />
