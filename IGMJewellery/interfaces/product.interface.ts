@@ -66,4 +66,5 @@ export interface Product {
   immersiveThumbnailUrl?: string; // URL for immersive product thumbnail
   immersiveVideoUrl?: string; // URL for immersive product video (if available)
   region: string;
+  subCategories: string[];
 }

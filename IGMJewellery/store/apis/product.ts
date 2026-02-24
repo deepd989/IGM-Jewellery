@@ -78,16 +78,28 @@ const applyFilters = (
 ): Product[] => {
   let filteredProducts = [...products];
 
-  Object.entries(filters).forEach(([categoryId, selectedOptions]) => {
+  Object.entries(filters).forEach(([filterKey, selectedOptions]) => {
     if (selectedOptions.length === 0) return;
 
-    switch (categoryId) {
+    switch (filterKey) {
       case "productType":
         filteredProducts = filteredProducts.filter((p) =>
           selectedOptions.some(
             (opt) => p.productType.toLowerCase() === opt.toLowerCase()
           )
         );
+        break;
+
+      case "subCategoryId":
+        filteredProducts = filteredProducts.filter((p) => {
+          console.log(p.subCategories);
+          return selectedOptions.some((opt) =>
+            p.subCategories.some(
+              (subCat) => subCat.toLowerCase() === opt.toLowerCase()
+            )
+          );
+        });
+
         break;
 
       case "brand":

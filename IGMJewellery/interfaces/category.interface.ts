@@ -4,6 +4,7 @@ export interface SubCategory {
   id: string;
   name: string;
   imageUrl?: string;
+  subCategoryBannerUrl: string;
 }
 
 export interface Category {
@@ -22,7 +23,7 @@ export interface SidebarCategory {
 export interface Department {
   id: string;
   name: string; // e.g. "Men's", "Women's"
-  imageUrl: ImageSourcePropType ; // URL for the department header image
+  imageUrl: ImageSourcePropType; // URL for the department header image
   categories: SidebarCategory[];
 }
 

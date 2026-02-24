@@ -1,14 +1,18 @@
 import BottomNavBar from "@/components/bottomNavBar";
 import { COLORS, SPACING } from "@/constants/theme";
-import {
-    clearChatHistory,
-    loadChatHistory,
-} from "@/store/apis/chatStorage";
+import { clearChatHistory, loadChatHistory } from "@/store/apis/chatStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { AudioLines, MessageSquare, Mic, Send, Sparkles } from "lucide-react-native";
+import { MessageSquare, Mic, Send } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../auth/authContext";
 import { HapticButton } from "../components/basic components/hapticButton";
@@ -89,13 +93,35 @@ export default function ExploreAi() {
       <View style={styles.container}>
         {/* Sparkle Icon */}
         <View style={styles.iconContainer}>
-          <Sparkles size={48} color="#d4d4d4" strokeWidth={1.5} />
+          <Image
+            source={require("../assets/images/elanziaNav.png")}
+            style={styles.aiImage}
+          />
         </View>
 
         {/* Greeting Text */}
         <Text style={styles.greetingBold}>Hey there!</Text>
-        <Text style={styles.greetingLight}>What sparkle</Text>
-        <Text style={styles.greetingLight}>are we looking for today?</Text>
+        {/* <Text style={styles.greetingLight}>What sparkle</Text> */}
+        <Text style={styles.greetingLight}>
+          Tell us what you are looking for today?
+        </Text>
+
+        <ScrollView
+          style={styles.suggestionsContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.suggestionsGrid}>
+            {suggestions.map((suggestion, index) => (
+              <HapticButton
+                key={index}
+                style={styles.suggestionChip}
+                onPress={() => handleSuggestionPress(suggestion)}
+              >
+                <Text style={styles.suggestionText}>{suggestion}</Text>
+              </HapticButton>
+            ))}
+          </View>
+        </ScrollView>
 
         {/* Input Field */}
         <View style={styles.inputContainer}>
@@ -116,14 +142,14 @@ export default function ExploreAi() {
           >
             <Mic size={20} color="#333" />
           </HapticButton>
-          <HapticButton
+          {/* <HapticButton
             style={styles.iconButton}
             onPress={() => {
               setShowVoiceVideoInterface("video");
             }}
           >
             <AudioLines />
-          </HapticButton>
+          </HapticButton> */}
           {inputText.trim().length > 0 && (
             <HapticButton style={styles.sendButton} onPress={handleSend}>
               <Send size={18} color="#fff" />
@@ -141,8 +167,14 @@ export default function ExploreAi() {
                 setShowChat(true);
               }}
             >
-              <MessageSquare size={16} color="#fff" style={{ marginRight: 8 }} />
-              <Text style={styles.continueChatText}>Continue Previous Chat</Text>
+              <MessageSquare
+                size={16}
+                color="#fff"
+                style={{ marginRight: 8 }}
+              />
+              <Text style={styles.continueChatText}>
+                Continue Previous Chat
+              </Text>
             </HapticButton>
             <HapticButton
               style={styles.clearChatButton}
@@ -155,24 +187,6 @@ export default function ExploreAi() {
             </HapticButton>
           </View>
         )}
-
-        {/* Suggestion Chips */}
-        <ScrollView
-          style={styles.suggestionsContainer}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.suggestionsGrid}>
-            {suggestions.map((suggestion, index) => (
-              <HapticButton
-                key={index}
-                style={styles.suggestionChip}
-                onPress={() => handleSuggestionPress(suggestion)}
-              >
-                <Text style={styles.suggestionText}>{suggestion}</Text>
-              </HapticButton>
-            ))}
-          </View>
-        </ScrollView>
       </View>
       <BottomNavBar activeTab="AiDiscover"></BottomNavBar>
     </SafeAreaView>
@@ -184,25 +198,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     paddingHorizontal: 20,
-    paddingTop: 60,
+    paddingTop: 10,
   },
   iconContainer: {
-    alignItems: "center",
+    alignSelf: "center",
     marginBottom: 20,
+    height: 80,
+    borderRadius: 40,
+    width: 80,
+    backgroundColor: COLORS.primary,
+  },
+  aiImage: {
+    height: 80,
+    width: 80,
   },
   iconBtn: {
     marginLeft: SPACING.l,
     marginTop: SPACING.m,
   },
   greetingBold: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "600",
     color: "#333",
     textAlign: "center",
     marginBottom: 4,
   },
   greetingLight: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "300",
     color: "#666",
     textAlign: "center",
@@ -215,7 +237,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    marginTop: 30,
     marginBottom: 20,
   },
   input: {
@@ -238,6 +259,7 @@ const styles = StyleSheet.create({
   },
   suggestionsContainer: {
     flex: 1,
+    marginTop: 30,
   },
   suggestionsGrid: {
     flexDirection: "row",

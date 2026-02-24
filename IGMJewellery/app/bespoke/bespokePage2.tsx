@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { HapticButton } from "../../components/basic components/hapticButton";
+import { COLORS } from "../../constants/theme";
 
 const categories = [
   {
@@ -58,7 +59,7 @@ export default function BespokePage2({
     <View style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
-        <Text style={styles.title}>What do you wish to customize</Text>
+        <Text style={styles.title}>What do you wish to customize?</Text>
       </View>
 
       {/* Options List */}
@@ -142,11 +143,12 @@ const styles = StyleSheet.create({
     borderColor: "transparent",
   },
   selectedCard: {
-    borderColor: "#053844",
+    borderColor: COLORS.secondary,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
+    borderWidth: 4,
     shadowRadius: 4,
   },
   backgroundImage: {
