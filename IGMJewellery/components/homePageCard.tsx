@@ -36,12 +36,12 @@ export default function HowItLooksWrapper({
   const { userId } = useAuth();
   const { data: products = [] } = useGetProductsQuery({});
   const [cardTitle, setCardTitle] = React.useState<string>(
-    ProductType.Necklace
+    ProductType.Necklace,
   );
   let filteredProduct = products[0];
   products.forEach((p) => {
     const filteredProducts = products.filter(
-      (prod) => prod.productType === cardTitle
+      (prod) => prod.productType === cardTitle,
     );
     filteredProduct =
       filteredProducts[filteredProducts.length - 1] || products[0];
@@ -210,7 +210,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
     useRemoveFromWishlistMutation();
 
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.product?.id === product?.id
+    (item) => item.product?.id === product?.id,
   );
   const handleToggleWishlist = async (e: any) => {
     e.stopPropagation();
@@ -228,7 +228,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
         if (error?.data === "Item already in wishlist") {
           Alert.alert(
             "Already in Wishlist",
-            "This item is already wishlisted."
+            "This item is already wishlisted.",
           );
         } else {
           Alert.alert("Error", "Failed to add to wishlist");
