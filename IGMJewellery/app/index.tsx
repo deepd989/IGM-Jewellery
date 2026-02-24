@@ -91,7 +91,8 @@ export default function JewelryLanding() {
             shouldPlay
             rate={2.0}
             isLooping={false} // Play only once
-            isMuted={true}
+            isMuted={false}
+            volume={1.0}
             onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
           />
         ) : (
@@ -162,7 +163,7 @@ export default function JewelryLanding() {
             })}
             onMomentumScrollEnd={(event) => {
               const newIndex = Math.round(
-                event.nativeEvent.contentOffset.x / SNAP_INTERVAL
+                event.nativeEvent.contentOffset.x / SNAP_INTERVAL,
               );
               setCurrentIndex(newIndex);
             }}
