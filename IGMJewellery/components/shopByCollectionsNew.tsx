@@ -29,13 +29,26 @@ const Card = ({
   cardWidth: number;
 }) => {
   const router = useRouter();
+  const navigateToCollection = () => {
+    router.push({
+      pathname: "/product-list",
+      params: {
+        subCategoryId: String(item.id),
+        bannerImageUrl: encodeURIComponent(item.collectionBannerUrl),
+      },
+    });
+  };
   return (
-    <View style={[styles.card, { width: cardWidth }]}>
+    <TouchableOpacity
+      activeOpacity={0.85}
+      style={[styles.card, { width: cardWidth }]}
+      onPress={navigateToCollection}
+    >
       {/* Background Image: Seller Banner */}
       <Image
         source={{ uri: item.collectionBannerUrl || "" }}
         style={styles.image}
-        resizeMode="contain"
+        resizeMode="cover"
       />
 
       {/* Text Overlay for better readability */}
@@ -45,22 +58,10 @@ const Card = ({
         </Text>
       </View>
 
-      <TouchableOpacity
-        activeOpacity={0.8}
-        style={styles.buttonContainer}
-        onPress={() => {
-          router.push({
-            pathname: "/product-list",
-            params: {
-              subCategoryId: String(item.id),
-              bannerImageUrl: encodeURIComponent(item.collectionBannerUrl),
-            },
-          });
-        }}
-      >
+      <View style={styles.buttonContainer}>
         <Text style={styles.buttonText}>Shop Now</Text>
-      </TouchableOpacity>
-    </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 

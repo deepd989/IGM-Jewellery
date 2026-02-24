@@ -54,14 +54,14 @@ export default function GradientHorizontalScroll({
                   <Image
                     source={item.img}
                     style={styles.productImage}
-                    resizeMode="contain"
+                    resizeMode="cover"
                   />
                 </LinearGradient>
               ) : (
                 <Image
                   source={item.img}
                   style={styles.productImage}
-                  resizeMode="contain"
+                  resizeMode="cover"
                 />
               )}
             </View>
@@ -83,8 +83,8 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   imageCard: {
-    width: 100,
-    height: 100,
+    width: 120,
+    height: 150,
     borderRadius: 20,
     overflow: "hidden",
     justifyContent: "center",
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#1A3B4A",
     fontWeight: "500",
-    maxWidth: 100,
+    maxWidth: 120,
     flexWrap: "wrap",
     textAlign: "center",
   },
