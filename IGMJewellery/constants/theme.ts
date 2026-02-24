@@ -3,7 +3,7 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
-import { Dimensions, Platform } from "react-native";
+import { Dimensions } from "react-native";
 const { width } = Dimensions.get("window");
 
 const tintColorLight = "#0a7ea4";
@@ -28,31 +28,23 @@ export const Colors = {
   },
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: "system-ui",
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: "ui-serif",
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: "ui-rounded",
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: "ui-monospace",
-  },
-  default: {
-    sans: "normal",
-    serif: "serif",
-    rounded: "normal",
-    mono: "monospace",
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded:
-      "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
+/**
+ * Manrope font family mapping.
+ * Use these constants for fontFamily in styles.
+ * The keys match the font weight names from @expo-google-fonts/manrope.
+ */
+export const ManropeFonts = {
+  extraLight: "Manrope_200ExtraLight",
+  light: "Manrope_300Light",
+  regular: "Manrope_400Regular",
+  medium: "Manrope_500Medium",
+  semiBold: "Manrope_600SemiBold",
+  bold: "Manrope_700Bold",
+  extraBold: "Manrope_800ExtraBold",
+} as const;
+
+/** Default font family used throughout the app */
+export const DEFAULT_FONT_FAMILY = ManropeFonts.regular;
 
 export const COLORS = {
   primary: "#053844", // Deep Teal Green
@@ -84,22 +76,22 @@ export const SIZES = {
 export const FONTS = {
   header: {
     fontSize: 24,
-    fontWeight: "700" as const,
+    fontFamily: ManropeFonts.bold,
     color: COLORS.text,
   },
   subheader: {
     fontSize: 18,
-    fontWeight: "600" as const,
+    fontFamily: ManropeFonts.semiBold,
     color: COLORS.text,
   },
   body: {
     fontSize: 14,
-    fontWeight: "400" as const,
+    fontFamily: ManropeFonts.regular,
     color: COLORS.textSecondary,
   },
   price: {
     fontSize: 16,
-    fontWeight: "700" as const,
+    fontFamily: ManropeFonts.bold,
     color: COLORS.primary,
   },
 };
