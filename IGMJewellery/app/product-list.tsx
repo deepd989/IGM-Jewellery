@@ -823,12 +823,13 @@ const styles = StyleSheet.create({
 
   // Banner & category icon
   bannerBackground: {
-    width: "100%",
+    width: "110%",
     height: 180,
     justifyContent: "flex-end",
     alignItems: "center",
     marginBottom: 10, // half of icon circle overflows below
     position: "relative",
+    left: "-10%",
   },
   bannerImage: {
     borderRadius: 0,

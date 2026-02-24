@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import React, { useMemo } from "react";
+import React from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -11,20 +11,29 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { useGetCollectionsQuery } from "../store/apis/collectionApi";
+import {
+  MultiBrandCollection,
+  useGetMultiBrandCollectionsQuery,
+} from "../store/apis/multibrandCollectionsApi";
 import { SectionHeader } from "./section";
 
 /**
  * Individual Card Component
  * Displays the Seller's Banner and the Title of their first collection
  */
-const Card = ({ item, cardWidth }) => {
+const Card = ({
+  item,
+  cardWidth,
+}: {
+  item: MultiBrandCollection;
+  cardWidth: number;
+}) => {
   const router = useRouter();
   return (
     <View style={[styles.card, { width: cardWidth }]}>
       {/* Background Image: Seller Banner */}
       <Image
-        source={{ uri: item.image || "" }}
+        source={{ uri: item.collectionBannerUrl || "" }}
         style={styles.image}
         resizeMode="contain"
       />
@@ -32,10 +41,7 @@ const Card = ({ item, cardWidth }) => {
       {/* Text Overlay for better readability */}
       <View style={styles.textContainer}>
         <Text style={styles.collectionTitle} numberOfLines={1}>
-          {item.title}
-        </Text>
-        <Text style={styles.sellerName} numberOfLines={1}>
-          {item.sellerName}
+          {item.name}
         </Text>
       </View>
 
@@ -46,8 +52,8 @@ const Card = ({ item, cardWidth }) => {
           router.push({
             pathname: "/product-list",
             params: {
-              collection: item.title.toLowerCase(),
-              brand: item.sellerName.toLowerCase(),
+              subCategoryId: String(item.id),
+              bannerImageUrl: encodeURIComponent(item.collectionBannerUrl),
             },
           });
         }}
@@ -59,29 +65,12 @@ const Card = ({ item, cardWidth }) => {
 };
 
 export default function BrandCollectionCards() {
-  const { data: collectionsData, isLoading, error } = useGetCollectionsQuery();
+  const {
+    data: multiBrandCollectionsData,
+    isLoading,
+    error,
+  } = useGetMultiBrandCollectionsQuery();
   const { width } = useWindowDimensions();
-
-  /**
-   * Data Transformation:
-   * Converts the API Object into an Array, picking only the first collection
-   * from each seller.
-   */
-  const formattedData = useMemo(() => {
-    if (!collectionsData) return [];
-
-    return Object.keys(collectionsData).map((key) => {
-      const seller = collectionsData[key];
-      const firstCollection = seller.collections?.[0];
-
-      return {
-        id: key, // Using the object key (e.g., "4") as the ID
-        title: firstCollection.title || "New Arrivals",
-        image: seller.sellerBannerImgUrl || "", // Fallback to empty string if no image
-        sellerName: seller.sellerName,
-      };
-    });
-  }, [collectionsData]);
 
   // Layout Calculations
   const numVisibleCards = width > 600 ? 3.5 : 1.2;
@@ -107,7 +96,7 @@ export default function BrandCollectionCards() {
     <View style={styles.container}>
       <SectionHeader value="The Latest Arrivals" />
       <FlatList
-        data={formattedData}
+        data={multiBrandCollectionsData}
         renderItem={({ item }) => <Card item={item} cardWidth={cardWidth} />}
         keyExtractor={(item) => item.id}
         horizontal

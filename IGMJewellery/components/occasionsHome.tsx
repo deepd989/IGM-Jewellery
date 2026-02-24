@@ -5,7 +5,6 @@ import {
   FlatList,
   ImageBackground,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -19,25 +18,25 @@ const OCCASIONS = [
     id: "1",
     title: OccasionEnum.Wedding,
     image:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Wedding%20without%20text.webp?alt=media&token=c99ac289-f19d-4095-a3f2-461ef8e01c89",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Wedding%20with%20text.webp?alt=media&token=70ca4103-9084-4fe1-bcb2-0d048e3a5152",
   },
   {
     id: "2",
     title: OccasionEnum.Anniversary,
     image:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Anniversary%20without%20text.webp?alt=media&token=67bda32c-ccae-4f4a-ae07-bf8bbab330b7",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Anniversary%20with%20text.webp?alt=media&token=00fa1f1e-de69-411d-88c2-ede1f7f54e73",
   },
   {
     id: "3",
     title: OccasionEnum.Birthday,
     image:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Birthday%20without%20text.webp?alt=media&token=3825cad2-1991-422e-a5ac-86f5b30d6a86",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Birthday%20with%20text.webp?alt=media&token=896dc501-4df7-4366-b829-b16f3a43972b",
   },
   {
     id: "4",
     title: OccasionEnum.Engagement,
     image:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Engagement%20without%20text.webp?alt=media&token=f35bde9d-e180-4deb-ad81-1bb263b99327",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Engagement%20with%20text.webp?alt=media&token=63ead9fb-6a8e-497c-8f7e-49b7321375d5",
   },
 ];
 
@@ -62,9 +61,9 @@ const CategoryCard = ({ title, image }) => {
         style={styles.image}
         imageStyle={{ borderRadius: 15 }} // Smooth corners like the reference
       >
-        <View style={styles.overlay}>
+        {/* <View style={styles.overlay}>
           <Text style={styles.text}>{title}</Text>
-        </View>
+        </View> */}
       </ImageBackground>
     </TouchableOpacity>
   );
