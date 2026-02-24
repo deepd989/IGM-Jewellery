@@ -24,7 +24,7 @@ const OCCASIONS = [
     id: "2",
     title: OccasionEnum.Anniversary,
     image:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Anniversary%20with%20text.webp?alt=media&token=00fa1f1e-de69-411d-88c2-ede1f7f54e73",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2Focasssion%20banner_Anniversary%20with%20text.webp?alt=media&token=4040cf38-94d8-4054-a5dd-ee8cfc1fdb17",
   },
   {
     id: "3",
@@ -36,7 +36,7 @@ const OCCASIONS = [
     id: "4",
     title: OccasionEnum.Engagement,
     image:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Engagement%20with%20text.webp?alt=media&token=63ead9fb-6a8e-497c-8f7e-49b7321375d5",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2Focasssion%20banner_Engagement%20with%20text.webp?alt=media&token=5466465d-eb33-4733-a668-d0afade15567",
   },
 ];
 
