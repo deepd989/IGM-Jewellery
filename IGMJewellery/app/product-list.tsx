@@ -794,7 +794,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: SPACING.m,
     paddingVertical: SPACING.s,
   },
   headerLeft: {
@@ -817,11 +816,13 @@ const styles = StyleSheet.create({
 
   // Banner & category icon
   bannerBackground: {
-    width: "100%",
-    height: 140,
+    width: "110%",
+    height: 180,
     justifyContent: "flex-end",
     alignItems: "center",
     marginBottom: 10, // half of icon circle overflows below
+    position: "relative",
+    left: -20,
   },
   bannerImage: {
     borderRadius: 0,
