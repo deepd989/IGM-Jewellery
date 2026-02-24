@@ -91,7 +91,7 @@ export default function JewelryLanding() {
             shouldPlay
             rate={2.0}
             isLooping={false} // Play only once
-            isMuted={false}
+            isMuted={true}
             volume={1.0}
             onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
           />
