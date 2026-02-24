@@ -119,6 +119,32 @@ function parseProductType(product: MagentoProduct): ProductType {
   return ProductType.Ring;
 }
 
+function parseSubCategories(product: MagentoProduct): string[] {
+  const categoryIds = getCustomAttribute(product, "category_ids");
+  const mainCategories = [
+    "Earrings",
+    "Earring",
+    "Necklace",
+    "Necklaces",
+    "Bracelet",
+    "Bracelets",
+    "Bangle",
+    "Bangles",
+    "Rings",
+    "Ring",
+  ];
+  const mappedSubCategories: string[] = [];
+  if (Array.isArray(categoryIds)) {
+    for (const cat of categoryIds) {
+      if (cat in mainCategories || cat.toLowerCase() in mainCategories)
+        continue;
+      const parsedCategory = String(cat).toLowerCase();
+      mappedSubCategories.push(parsedCategory || String(cat));
+    }
+  }
+  return mappedSubCategories;
+}
+
 /**
  * Parse brand from sellerId (passed from the API response wrapper)
  */
@@ -472,6 +498,7 @@ export function convertResolvedProduct(
     immersiveVideoUrl: magentoProduct.immersiveVideoUrl || undefined,
     region:
       (getCustomAttribute(magentoProduct, "regional_tags") as string) || "",
+    subCategories: parseSubCategories(magentoProduct),
   };
 }
 

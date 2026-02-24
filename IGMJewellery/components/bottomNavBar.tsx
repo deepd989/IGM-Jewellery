@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../constants/theme";
 import { HapticButton } from "./basic components/hapticButton";
 
@@ -38,14 +38,15 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab }) => {
     if (isCenter) {
       return (
         <HapticButton style={[styles.centerButton]} onPress={handlePress}>
-          <View
-            style={[
-              styles.centerIconContainer,
-              { backgroundColor: COLORS.primary },
-            ]}
-          >
-            <Ionicons name={iconStyle} size={28} color={"white"} />
-          </View>
+          <Image
+            source={require("../assets/images/elanziaNav.png")}
+            style={{
+              height: 60,
+              width: 60,
+              position: "relative",
+              left: 0,
+            }}
+          />
         </HapticButton>
       );
     }
@@ -97,10 +98,23 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   centerButton: {
-    flex: 1,
+    backgroundColor: COLORS.primary,
+    width: 70, // Width and Height must be equal
+    height: 70,
+    borderRadius: 35, // Should be exactly half of the width/height
     alignItems: "center",
     justifyContent: "center",
     marginTop: 0,
+    elevation: 8,
+
+    // Shadow for iOS
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
   },
   centerIconContainer: {
     width: 64,

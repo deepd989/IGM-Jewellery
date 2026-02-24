@@ -11,6 +11,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   FlatList,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   StyleSheet,
   Text,
@@ -19,6 +20,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../basic components/hapticButton";
+import VoiceVideoInterface from "./aiVoice";
 
 interface IMessage {
   id: string;
@@ -335,7 +337,11 @@ export default function AiChatComponent({
             </HapticButton>
           )}
         </View>
-        {isUser && <View style={styles.userAvatar} />}
+        {isUser && (
+          <View style={styles.userAvatar}>
+            <Ionicons name="person" size={14} color="#fff" />
+          </View>
+        )}
       </View>
     );
   };
@@ -422,7 +428,7 @@ export default function AiChatComponent({
         </View>
       </KeyboardAvoidingView>
 
-      {/* <Modal visible={showVoiceVideoInterface} animationType="slide">
+      <Modal visible={showVoiceVideoInterface} animationType="slide">
         <SafeAreaView style={styles.modalContainer}>
           <HapticButton
             style={styles.closeButton}
@@ -436,7 +442,7 @@ export default function AiChatComponent({
             onClose={() => setShowVoiceVideoInterface(false)}
           />
         </SafeAreaView>
-      </Modal> */}
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -481,8 +487,10 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: "#E0E0E0",
+    backgroundColor: "black",
     marginLeft: 8,
+    alignItems: "center",
+    justifyContent: "center",
   },
   inputContainer: {
     flexDirection: "row",

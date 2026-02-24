@@ -19,10 +19,10 @@ export default function searchBar() {
           <Image
             source={require("../assets/images/elanziaPng.png")}
             style={{
-              height: 200,
-              width: 200,
+              height: 150,
+              width: 150,
               position: "relative",
-              left: -50,
+              left: -20,
             }}
           />
         </View>

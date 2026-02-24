@@ -150,6 +150,7 @@ export default function CategoriesScreen() {
         subCategoryId: subCategory.id,
         categoryName: currentCategory?.name || "Products",
         subCategoryName: subCategory.name,
+        bannerImageUrl: encodeURIComponent(subCategory.subCategoryBannerUrl),
       },
     });
   };

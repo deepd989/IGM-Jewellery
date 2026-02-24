@@ -1,51 +1,68 @@
-import { ScrollingColumn } from "@/components/scrollingColumn";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../components/basic components/hapticButton";
 import HealthCheckModal from "../components/connectionModal";
-import { COLORS } from "../constants/theme";
-import { useGetProductsQuery } from "../store/apis/product";
 
-const { width, height } = Dimensions.get("window");
-const COLUMN_WIDTH = (width - 40) / 4;
-const TILE_HEIGHT = height * 0.12;
+const { width } = Dimensions.get("window");
+
+// Carousel Constants
+const CAROUSEL_ITEM_WIDTH = width * 0.85;
+const SPACING = 10;
+const SNAP_INTERVAL = CAROUSEL_ITEM_WIDTH + SPACING * 2;
+
+const BANNER_IMAGES = [
+  {
+    id: "1",
+    url: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Login%20Banner%2FLogin_Banner_1.webp?alt=media&token=41ad9077-7d17-49d2-b1bc-2cca962ad579",
+  },
+  {
+    id: "2",
+    url: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Login%20Banner%2FLogin_Banner_2.webp?alt=media&token=1fefb9d8-429e-4733-99de-e3925ccedf89",
+  },
+  {
+    id: "3",
+    url: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Login%20Banner%2FLogin_Banner_3.webp?alt=media&token=4f33cd4d-ee51-439e-b263-3476e065f44d",
+  },
+];
 
 export default function JewelryLanding() {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
-  const {
-    data: products = [],
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useGetProductsQuery({});
+  const flatListRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Loading State
-  if (isLoading) {
-    return (
-      <SafeAreaView style={[styles.safeArea, styles.centered]}>
-        <View style={styles.logoCircleLarge}>
-          <Image
-            source={require("../assets/images/icon.png")}
-            style={styles.logoImage}
-          />
-        </View>
-        <View style={styles.progressBarContainer}>
-          <View
-            style={[styles.progressBar, { backgroundColor: COLORS.primary }]}
-          />
-        </View>
-      </SafeAreaView>
-    );
-  }
+  // Auto-scroll Effect
+  useEffect(() => {
+    const timer = setInterval(() => {
+      let nextIndex = (currentIndex + 1) % BANNER_IMAGES.length;
 
-  const Tile = ({ children, style, isLogo }) => (
-    <View style={[styles.tile, style]}>
-      {isLogo ? <View style={styles.logoCircle}>{children}</View> : children}
+      flatListRef.current?.scrollToIndex({
+        index: nextIndex,
+        animated: true,
+      });
+
+      setCurrentIndex(nextIndex);
+    }, 3500); // 3.5 seconds for a premium feel
+
+    return () => clearInterval(timer);
+  }, [currentIndex]);
+
+  const renderItem = ({ item }) => (
+    <View style={styles.cardContainer}>
+      <Image
+        source={{ uri: item.url }}
+        style={styles.image}
+        resizeMode="cover"
+      />
     </View>
   );
 
@@ -58,120 +75,69 @@ export default function JewelryLanding() {
       )}
 
       <View style={styles.container}>
-        {/* The Masonry Background Grid */}
-        <View style={styles.gridContainer}>
-          {/* Column 1 */}
-          <View style={styles.column}>
-            <ScrollingColumn duration={10000}>
-              <View style={{ height: 40 }} />
-              <Tile style={styles.emptyTile} />
-              <Tile isLogo>
-                <Text style={styles.logoText}>M</Text>
-              </Tile>
-              <Tile>
-                <Text style={styles.placeholderImg}>💍</Text>
-              </Tile>
-              <Tile style={styles.emptyTile} />
-            </ScrollingColumn>
-          </View>
+        {/* Top Header */}
+        <View style={styles.textContainer}>
+          <HapticButton
+            onLongPress={() => setShowModal(true)}
+            delayLongPress={800}
+          >
+            <Image
+              source={require("../assets/images/elanziaIndex.png")}
+              style={{
+                height: 60,
+                width: 200,
+              }}
+            />
+          </HapticButton>
+          <Text style={styles.subtitle}>
+            India's first AI-powered jewellery marketplace
+          </Text>
+        </View>
 
-          {/* Column 2 */}
-          <ScrollingColumn duration={10000} reverse={true}>
-            <View style={[styles.column, { marginTop: -40 }]}>
-              <Tile style={styles.emptyTile} />
-              <Tile style={styles.emptyTile} />
-              <Tile>
-                <Text style={styles.placeholderImg}>💎</Text>
-              </Tile>
-              <Tile isLogo>
-                <Text style={styles.logoTextSmall}>tbz</Text>
-              </Tile>
-            </View>
-          </ScrollingColumn>
-
-          {/* Column 3 */}
-          <ScrollingColumn duration={10000}>
-            <View style={[styles.column, { marginTop: 20 }]}>
-              <Tile style={styles.emptyTile} />
-              <Tile isLogo>
-                <Text style={styles.logoTextSmall}>PCJ</Text>
-              </Tile>
-              <Tile>
-                <Text style={styles.placeholderImg}>💚</Text>
-              </Tile>
-              <Tile style={styles.emptyTile} />
-            </View>
-          </ScrollingColumn>
-
-          {/* Column 4 */}
-          <ScrollingColumn duration={10000} reverse={true}>
-            <View style={[styles.column, { marginTop: -20 }]}>
-              <Tile>
-                <Text style={styles.placeholderImg}>💍</Text>
-              </Tile>
-              <Tile>
-                <Text style={styles.placeholderImg}>🔶</Text>
-              </Tile>
-              <Tile isLogo>
-                <Text style={styles.logoTextSmall}>TANISHQ</Text>
-              </Tile>
-              <Tile style={styles.emptyTile} />
-            </View>
-          </ScrollingColumn>
-
-          {/* Top Fade Overlay */}
-          <LinearGradient
-            colors={["#FFFFFF", "transparent"]}
-            style={styles.topGradient}
-            pointerEvents="none"
-          />
-
-          {/* Bottom Fade Overlay */}
-          <LinearGradient
-            colors={["transparent", "#FFFFFF"]}
-            style={styles.bottomGradient}
-            pointerEvents="none"
+        {/* Auto-Scrolling Carousel */}
+        <View style={styles.carouselSection}>
+          <FlatList
+            ref={flatListRef}
+            data={BANNER_IMAGES}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={SNAP_INTERVAL}
+            decelerationRate="fast"
+            contentContainerStyle={styles.flatListPadding}
+            getItemLayout={(_, index) => ({
+              length: SNAP_INTERVAL,
+              offset: SNAP_INTERVAL * index,
+              index,
+            })}
+            // Update index if user manually swipes
+            onMomentumScrollEnd={(event) => {
+              const newIndex = Math.round(
+                event.nativeEvent.contentOffset.x / SNAP_INTERVAL
+              );
+              setCurrentIndex(newIndex);
+            }}
           />
         </View>
 
-        {/* Hero Section */}
-        <View style={styles.heroSection}>
-          <View style={styles.mainRingContainer}>
-            <View style={styles.mainRingPlaceholder}>
-              <Text style={{ fontSize: 50 }}>💍</Text>
-            </View>
-          </View>
+        {/* Buttons */}
+        <View style={styles.authContainer}>
+          <HapticButton
+            style={styles.fullButton}
+            onPress={() => router.push("/login")}
+          >
+            <Text style={styles.buttonText}>Get Started</Text>
+          </HapticButton>
 
-          <View style={styles.textContainer}>
-            <HapticButton
-              onLongPress={() => setShowModal(true)}
-              delayLongPress={800}
-            >
-              <Text style={styles.title}>Elanzia</Text>
-            </HapticButton>
-            <Text style={styles.subtitle}>
-              India's first AI-powered jewellery marketplace, where heritage
-              meets high tech
+          <HapticButton
+            style={[styles.fullButton, styles.secondaryButton]}
+            onPress={() => router.push("/home")}
+          >
+            <Text style={[styles.buttonText, { color: "#053844" }]}>
+              Explore as Guest
             </Text>
-          </View>
-
-          <View style={styles.authContainer}>
-            <HapticButton
-              style={styles.fullButton}
-              onPress={() => router.push("/login")}
-            >
-              <Text style={styles.buttonText}>Login</Text>
-            </HapticButton>
-
-            <HapticButton
-              style={[styles.fullButton, styles.secondaryButton]}
-              onPress={() => router.push("/home")}
-            >
-              <Text style={[styles.buttonText, { color: "#053844" }]}>
-                Explore as Guest
-              </Text>
-            </HapticButton>
-          </View>
+          </HapticButton>
         </View>
       </View>
     </SafeAreaView>
@@ -183,159 +149,77 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF",
   },
-  centered: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  logoCircleLarge: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "#FFF",
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#EEE",
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-  },
-  logoTextLarge: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#053844",
-  },
-  logoImage: {
-    width: 80, // Adjust this based on your icon's aspect ratio
-    height: 80,
-  },
-  progressBarContainer: {
-    width: width * 0.4,
-    height: 4,
-    backgroundColor: "#F0F0F0",
-    borderRadius: 2,
-    marginTop: 20,
-    overflow: "hidden",
-  },
-  progressBar: {
-    height: "100%",
-    width: "60%", // Static visual for progress, can be animated if needed
-  },
   container: {
     flex: 1,
+    paddingVertical: 20,
     justifyContent: "space-between",
-    paddingBottom: 10,
-  },
-  gridContainer: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    paddingHorizontal: 10,
-    height: height * 0.42,
-    overflow: "hidden",
-  },
-  column: {
-    width: COLUMN_WIDTH,
-  },
-  tile: {
-    width: COLUMN_WIDTH - 10,
-    height: TILE_HEIGHT,
-    backgroundColor: "#FAFAFA",
-    borderRadius: 12,
-    marginVertical: 6,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#F0F0F0",
-  },
-  emptyTile: { backgroundColor: "#F9F9F9" },
-  logoCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#EEE",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  logoText: { fontSize: 18, color: "#AAA" },
-  logoTextSmall: { fontSize: 9, color: "#AAA", fontWeight: "600" },
-  placeholderImg: { fontSize: 20 },
-  topGradient: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 80,
-    zIndex: 2,
-  },
-  bottomGradient: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 20,
-    zIndex: 2,
-  },
-  heroSection: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 30,
-    marginTop: -40,
-  },
-  mainRingContainer: {
-    height: 120,
-    justifyContent: "center",
-  },
-  mainRingPlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: "#FFF",
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
   },
   textContainer: {
-    marginVertical: 15,
     alignItems: "center",
+    marginTop: 20,
+    paddingHorizontal: 30,
   },
   title: {
-    fontSize: 26,
-    fontWeight: "700",
+    fontSize: 32,
+    fontWeight: "300",
     color: "#053844",
-    textAlign: "center",
-    marginBottom: 6,
+    letterSpacing: 6,
+    textTransform: "uppercase",
   },
   subtitle: {
-    fontSize: 14,
-    color: "#666",
+    fontSize: 16,
+    color: "black",
     textAlign: "center",
+    marginTop: 8,
     lineHeight: 18,
+    letterSpacing: 0.5,
+    fontWeight: "400",
+  },
+  carouselSection: {
+    height: 420,
+    marginVertical: 20,
+  },
+  flatListPadding: {
+    paddingHorizontal: (width - CAROUSEL_ITEM_WIDTH) / 2 - SPACING,
+  },
+  cardContainer: {
+    width: CAROUSEL_ITEM_WIDTH,
+    height: 400,
+    marginHorizontal: SPACING,
+    borderRadius: 24,
+    backgroundColor: "#F9F9F9",
+    overflow: "hidden",
+    // Shadow/Elevation
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+  },
+  image: {
+    width: "100%",
+    height: "100%",
   },
   authContainer: {
-    width: "100%",
-    gap: 8,
+    paddingHorizontal: 30,
+    paddingBottom: 20,
+    gap: 12,
   },
   fullButton: {
     backgroundColor: "#053844",
-    width: "100%",
-    paddingVertical: 14,
-    borderRadius: 8,
+    paddingVertical: 16,
+    borderRadius: 14,
     alignItems: "center",
   },
   secondaryButton: {
     backgroundColor: "transparent",
     borderWidth: 1,
-    borderColor: "#DDD",
+    borderColor: "#E0E0E0",
   },
   buttonText: {
     color: "#FFF",
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "600",
+    letterSpacing: 1,
   },
 });

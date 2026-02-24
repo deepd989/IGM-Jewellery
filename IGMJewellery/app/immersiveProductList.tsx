@@ -10,6 +10,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { ImmersiveProductCard } from "../components/immersiveProductCard";
 import { useGetProductsQuery } from "../store/apis/product";
 
@@ -111,7 +112,7 @@ const ImmersiveProductList = () => {
   if (isError) return <Text>Error loading products</Text>;
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#000" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
       <Animated.View
         style={{ flex: 1, transform: [{ translateY: cardNudge }] }}
       >
@@ -151,7 +152,7 @@ const ImmersiveProductList = () => {
           </Animated.View>
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 

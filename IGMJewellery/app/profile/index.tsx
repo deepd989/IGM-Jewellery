@@ -3,7 +3,14 @@ import { RootState } from "@/store/store";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Image,
+  ImageBackground,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import { useAuth } from "../../auth/authContext";
@@ -105,6 +112,11 @@ const MENU_ITEMS = [
 ];
 
 export default function ProfileScreen() {
+  const productImageLinks = [
+    "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FRings%2FRing_Eternity.webp?alt=media&token=195729b9-5863-440c-b8cd-762318f7de62",
+    "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FRings%2FRing_anniversary.webp?alt=media&token=9cad0037-bb91-4334-a586-d5290f309bdb",
+  ];
+
   const router = useRouter();
   const profile = useSelector((state: RootState) => state.user.profile);
   const { userId, logout } = useAuth();
@@ -117,13 +129,13 @@ export default function ProfileScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
-        <HapticButton
+        {/* <HapticButton
           style={styles.pointsBadge}
           onPress={() => router.push("/profile/loyalty")}
         >
           <Ionicons name="trophy" size={14} color="#053844" />
           <Text style={styles.pointsText}>{profile.points} Points</Text>
-        </HapticButton>
+        </HapticButton> */}
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -156,16 +168,10 @@ export default function ProfileScreen() {
           {PROFILE_STATS.map((stat, index) => (
             <HapticButton
               key={stat.id}
-              style={[
-                styles.statCard,
-                (index === 1 || index === 2) && {
-                  backgroundColor: COLORS.secondary,
-                  opacity: 0.9,
-                },
-              ]}
+              style={[styles.statCard]}
               onPress={() => stat.path && router.push(stat.path as any)}
             >
-              <Ionicons name={stat.icon as any} size={24} color="#053844" />
+              <Ionicons name={stat.icon as any} size={24} color="white" />
               <Text style={styles.statTitle}>{stat.title}</Text>
               <Text style={styles.statDesc}>{stat.desc}</Text>
             </HapticButton>
@@ -201,7 +207,10 @@ export default function ProfileScreen() {
 
         <View style={styles.orderCard}>
           <View style={styles.orderTop}>
-            <View style={styles.orderThumb} />
+            <ImageBackground
+              style={styles.orderThumb}
+              source={{ uri: productImageLinks[0] }}
+            />
             <View style={styles.orderInfo}>
               <Text style={styles.orderId}>Order ID #12345667</Text>
               <Text style={styles.orderDate}>Placed on Sun, 3 Nov</Text>
@@ -216,21 +225,27 @@ export default function ProfileScreen() {
             <Text style={styles.statusText}>1 item delivered</Text>
           </View>
 
-          {[1, 2, 3].map((_, i) => (
+          {[...Array(2)].map((_, i) => (
             <HapticButton
               key={i}
               style={styles.subOrderItem}
               onPress={() => router.push("/orders/ord1")}
             >
-              <View style={styles.subOrderThumb} />
+              <ImageBackground
+                style={styles.subOrderThumb}
+                source={{ uri: productImageLinks[i] }}
+              />
               <View style={styles.subOrderInfo}>
+                {/* Changed i === 2 to i === 1 */}
                 <Text style={styles.subOrderStatus}>
-                  {i === 2 ? "Delivered" : "Dispatched"} on Mon, 2 Nov
+                  {i === 1 ? "Delivered" : "Dispatched"} on Mon, 2 Nov
                 </Text>
+
                 <Text style={styles.subOrderTitle}>
-                  Diamond Ring 24K, Kal...
+                  Diamond {i === 1 ? "Earring" : "Ring"} 24K, Kal...
                 </Text>
-                <Text style={styles.subOrderPrice}>₹3,000</Text>
+
+                <Text style={styles.subOrderPrice}>₹30,000</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#CCC" />
             </HapticButton>
@@ -295,7 +310,11 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#FFF",
   },
-  avatarPlaceholder: { width: 50, height: 50, borderRadius: 25 },
+  avatarPlaceholder: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
   userInfo: { flex: 1, marginLeft: 16 },
   userName: { fontSize: 16, fontWeight: "700", color: COLORS.primary },
   userPhone: { fontSize: 12, color: "#666", marginTop: 2 },
@@ -305,7 +324,7 @@ const styles = StyleSheet.create({
   statsGrid: { flexDirection: "row", flexWrap: "wrap", padding: 8 },
   statCard: {
     width: "46%",
-    backgroundColor: COLORS.primaryLight || "#E6F0F2",
+    backgroundColor: COLORS.primary,
     margin: "2%",
     padding: 16,
     borderRadius: 8,
@@ -314,9 +333,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "700",
     marginTop: 8,
-    color: COLORS.primary,
+    color: "white",
   },
-  statDesc: { fontSize: 11, color: "#666", marginTop: 4 },
+  statDesc: { fontSize: 11, color: "white", marginTop: 4 },
   menuList: { backgroundColor: "#FFF", marginTop: 12 },
   menuItem: {
     flexDirection: "row",
@@ -348,7 +367,7 @@ const styles = StyleSheet.create({
   orderThumb: {
     width: 40,
     height: 40,
-    backgroundColor: "#F0F0F0",
+    backgroundColor: "red",
     borderRadius: 4,
   },
   orderInfo: { flex: 1, marginLeft: 12 },
@@ -376,7 +395,7 @@ const styles = StyleSheet.create({
   subOrderThumb: {
     width: 50,
     height: 50,
-    backgroundColor: "#F9F9F9",
+    backgroundColor: "red",
     borderRadius: 4,
   },
   subOrderInfo: { flex: 1, marginLeft: 12 },

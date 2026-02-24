@@ -147,6 +147,11 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       newFilters.occasion = occasionValues;
     }
 
+    const subCategoriesValues = parseFilterParam(subCategoryId);
+    if (subCategoriesValues.length > 0 && subCategoryId !== "all") {
+      newFilters.subCategoryId = subCategoriesValues;
+    }
+
     // Handle brand filter
     const brandValues = parseFilterParam(brand);
     if (brandValues.length > 0) {
@@ -230,6 +235,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   }, [
     departmentId,
     categoryId,
+    subCategoryId,
     productType,
     occasion,
     brand,
@@ -254,7 +260,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
     if (lowerCatId.includes("earring")) return "earring";
     if (lowerCatId.includes("bracelet")) return "bracelet";
     if (lowerCatId.includes("pendant")) return "pendant";
-    if (lowerCatId.includes("bangle")) return "bangle";
+    if (lowerCatId.includes("bangle")) return "bangles";
     if (lowerCatId.includes("anklet")) return "anklet";
     if (lowerCatId.includes("mangalsutra")) return "mangalsutra";
     if (lowerCatId.includes("nose-pin")) return "nose-pin";
@@ -794,8 +800,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: SPACING.m,
     paddingVertical: SPACING.s,
+    paddingHorizontal: SPACING.s,
   },
   headerLeft: {
     flexDirection: "row",
@@ -818,19 +824,19 @@ const styles = StyleSheet.create({
   // Banner & category icon
   bannerBackground: {
     width: "100%",
-    height: 140,
+    height: 180,
     justifyContent: "flex-end",
     alignItems: "center",
     marginBottom: 10, // half of icon circle overflows below
+    position: "relative",
   },
   bannerImage: {
     borderRadius: 0,
-    opacity: 0.85,
   },
-  bannerOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.15)",
-  },
+  // bannerOverlay: {
+  //   ...StyleSheet.absoluteFillObject,
+  //   backgroundColor: "rgba(0,0,0,0.15)",
+  // },
   categoryIconCircle: {
     width: 64,
     height: 64,
