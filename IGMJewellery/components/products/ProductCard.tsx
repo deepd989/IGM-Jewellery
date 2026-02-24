@@ -93,8 +93,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       : wishlistData?.items.some((item) => item.product.id === product.id);
 
   const isGrid = viewMode === "grid";
+  const GRID_GAP = SPACING.s; // 8px gap between cards
   const cardWidth = isGrid
-    ? (width - SPACING.m * 3) / 2
+    ? (width - SPACING.m * 2 - GRID_GAP) / 2
     : width - SPACING.m * 2;
 
   const handleAddToCart = async (e: any) => {

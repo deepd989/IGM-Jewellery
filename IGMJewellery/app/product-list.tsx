@@ -934,6 +934,7 @@ const styles = StyleSheet.create({
   },
   columnWrapper: {
     justifyContent: "space-between",
+    alignItems: "flex-start",
   },
   leftFab: {
     position: "absolute",
