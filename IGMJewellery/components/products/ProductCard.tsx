@@ -73,7 +73,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             product,
             setFirstImageBase64State,
             "any outfit that goes with the jewellery and a person's face",
-            "any color",
+            "any color"
           );
           setIsPreviewLoading(false);
         } catch (error) {
@@ -135,7 +135,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               router.push("/cart?tab=trial");
             },
           },
-        ],
+        ]
       );
     } catch (error: any) {
       console.error("Failed to add to trial:", error);
@@ -150,7 +150,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               text: "View Trial List",
               onPress: () => router.push("/cart?tab=trial"),
             },
-          ],
+          ]
         );
       } else {
         Alert.alert("Error", "Failed to add item to trial. Please try again.");
@@ -180,7 +180,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         if (error?.data === "Item already in wishlist") {
           Alert.alert(
             "Already in Wishlist",
-            "This item is already wishlisted.",
+            "This item is already wishlisted."
           );
         } else {
           Alert.alert("Error", "Failed to add to wishlist");
@@ -242,7 +242,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               uri: firstImageHelper(
                 firstImageBase64State,
                 product.thumbnailUrls[0],
-                loadAiPreview,
+                loadAiPreview
               ),
             }}
             style={styles.image}
@@ -408,6 +408,7 @@ const styles = StyleSheet.create({
     borderColor: "#F5F5F5",
     borderRadius: 8,
     overflow: "hidden",
+    height: 300,
   },
   imageWrapper: {
     width: "100%",

@@ -8,11 +8,12 @@ import {
   ActivityIndicator,
   Alert,
   Animated,
-  Dimensions, // Re-added for fallback
+  Dimensions,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context"; // Critical for responsiveness
 
 import { ImageBackground } from "expo-image";
 import { COLORS } from "../constants/theme";
@@ -30,7 +31,9 @@ const { width, height } = Dimensions.get("window");
 
 export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
   const router = useRouter();
+  const insets = useSafeAreaInsets(); // Dynamically gets notch and bottom bar heights
   const videoRef = useRef(null);
+
   const [showSuccess, setShowSuccess] = useState(false);
   const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -99,7 +102,6 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
     }
   };
 
-  // --- Logic for background rendering ---
   const renderBackground = () => {
     if (product.immersiveVideoUrl) {
       return (
@@ -118,7 +120,6 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
         />
       );
     }
-
     return (
       <ImageBackground
         source={{
@@ -134,9 +135,8 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
     <View style={styles.card}>
       {renderBackground()}
 
-      {/* Overlays */}
       <LinearGradient
-        colors={["rgba(0,0,0,0.6)", "transparent"]}
+        colors={["rgba(0,0,0,0.7)", "transparent"]}
         style={styles.topGradient}
       />
       <LinearGradient
@@ -144,18 +144,30 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
         style={styles.bottomGradient}
       />
 
-      <View style={styles.uiContainer}>
+      {/* Main UI Container using Safe Area Insets */}
+      <View
+        style={[
+          styles.uiContainer,
+          { paddingTop: insets.top, paddingBottom: insets.bottom + 15 },
+        ]}
+      >
+        {/* Header */}
         <View style={styles.header}>
           <HapticButton style={styles.iconBtn} onPress={() => router.back()}>
             <X color="white" size={24} />
           </HapticButton>
           <Text style={styles.headerText}>Swipe & Shop</Text>
+          <View style={{ width: 40 }} />
         </View>
 
+        {/* Content Area */}
         <View style={styles.content}>
           <View style={styles.mainInfo}>
+            {/* Left Column: Title & Brand */}
             <View style={styles.leftInfo}>
-              <Text style={styles.title}>{product.name}</Text>
+              <Text style={styles.title} numberOfLines={2} ellipsizeMode="tail">
+                {product.name}
+              </Text>
               <Text style={styles.brand}>{product.brand}</Text>
               <View style={styles.ratingContainer}>
                 {[1, 2, 3, 4, 5].map((i) => (
@@ -165,9 +177,10 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
               </View>
             </View>
 
+            {/* Right Column: Wishlist & Price */}
             <View style={styles.rightInfo}>
               <HapticButton
-                style={styles.favIcon}
+                style={styles.favIconWrapper}
                 onPress={handleToggleWishlist}
                 disabled={isAddingToWishlist || isRemovingFromWishlist}
               >
@@ -181,7 +194,8 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
                   />
                 )}
               </HapticButton>
-              <Text style={styles.price}>
+
+              <Text style={styles.price} numberOfLines={1} adjustsFontSizeToFit>
                 ₹{discountedPrice.toLocaleString()}
               </Text>
               <Text style={styles.oldPrice}>
@@ -195,6 +209,7 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
             </View>
           </View>
 
+          {/* Buttons Row */}
           <View style={styles.buttonRow}>
             <HapticButton
               style={styles.tryNowBtn}
@@ -244,27 +259,30 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
       <TryOnSelectorModal
         visible={isTryOnSelectorVisible}
         onClose={() => setIsTryOnSelectorVisible(false)}
-        onSelectVR={() => {
+        onSelectVR={() =>
           router.push({
             pathname: "/virtualTryOn2",
             params: { productId: product.id, productTitle: product.title },
-          });
-        }}
-        onSelectAI={() => {
-          router.push({
-            pathname: "/tryOn",
-            params: { productId: product.id },
-          });
-        }}
+          })
+        }
+        onSelectAI={() =>
+          router.push({ pathname: "/tryOn", params: { productId: product.id } })
+        }
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  card: { width, height, backgroundColor: "black" },
+  card: {
+    width: width,
+    height: height, // Use the constant height here
+    backgroundColor: "black",
+    overflow: "hidden", // Ensures nothing bleeds into the next product
+  },
   uiContainer: {
     ...StyleSheet.absoluteFillObject,
+    // Ensure content is spread across the FULL height
     justifyContent: "space-between",
   },
   topGradient: {
@@ -272,17 +290,16 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: "30%",
+    height: "25%",
   },
   bottomGradient: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    height: "50%",
+    height: "45%",
   },
   header: {
-    paddingTop: 60,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
@@ -294,20 +311,28 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     flex: 1,
     textAlign: "center",
-    marginRight: 40,
   },
-  content: { paddingHorizontal: 20, paddingBottom: 50 },
+  content: { paddingHorizontal: 20, position: "relative", bottom: 50 },
   mainInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
-    marginBottom: 25,
+    marginBottom: 20,
+    gap: 15, // Prevents text from colliding
   },
-  title: { color: "white", fontSize: 22, fontWeight: "bold", maxWidth: 250 },
+  leftInfo: { flex: 2 }, // Title gets more horizontal space
+  rightInfo: { flex: 1.2, alignItems: "flex-end" }, // Price gets enough space to avoid cut-off
+  title: { color: "white", fontSize: 22, fontWeight: "bold" },
   brand: { color: "#ddd", fontSize: 16, marginVertical: 4 },
   ratingContainer: { flexDirection: "row", alignItems: "center", gap: 2 },
   ratingText: { color: "white", fontSize: 12, marginLeft: 4 },
-  price: { color: "white", fontSize: 24, fontWeight: "bold" },
+  favIconWrapper: { marginBottom: 12 }, // Spacing between heart and price
+  price: {
+    color: "white",
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "right",
+  },
   oldPrice: {
     color: "#bbb",
     textDecorationLine: "line-through",
@@ -319,7 +344,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: "right",
   },
-  buttonRow: { flexDirection: "row", gap: 12 },
+  buttonRow: { flexDirection: "row", gap: 12, width: "100%" },
   tryNowBtn: {
     flex: 1,
     backgroundColor: "#003A45",
@@ -346,7 +371,6 @@ const styles = StyleSheet.create({
   buttonContent: { flexDirection: "row", alignItems: "center", gap: 6 },
   tryNowText: { color: "white", fontWeight: "bold", fontSize: 16 },
   addBagText: { color: "black", fontWeight: "bold", fontSize: 16 },
-  favIcon: { position: "absolute", top: -50, right: -5, padding: 6 },
   addBagBtnDisabled: { opacity: 0.6 },
   iconBtn: { padding: 8, backgroundColor: "rgba(0,0,0,0.3)", borderRadius: 20 },
 });

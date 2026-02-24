@@ -19,22 +19,26 @@ export const useGetImage = (imageId: string) => {
 
       try {
         const response = await fetch(`${BASE_URL}/getImage/${imageId}`);
-        console.log("fetching image from:", `${BASE_URL}/getImage/${imageId}`);
 
         if (!response.ok) {
-          console.log("Response status:", response.status);
+          throw new Error(`Failed to fetch image: ${response.status}`);
         }
 
-        // Get the response as an arrayBuffer
         const arrayBuffer = await response.arrayBuffer();
 
-        // Convert Buffer to Base64
-        const base64 = Buffer.from(arrayBuffer).toString("base64");
+        // Check if the buffer actually contains data
+        if (arrayBuffer.byteLength === 0) {
+          console.warn("Received empty image data");
+          setBase64String(""); // Explicitly set to null
+          return;
+        }
 
+        const base64 = Buffer.from(arrayBuffer).toString("base64");
         setBase64String(`data:image/png;base64,${base64}`);
       } catch (err) {
         console.error("Error fetching image:", err);
         setError(err.message);
+        setBase64String(""); // Ensure state is cleared on error
       } finally {
         setIsLoading(false);
       }

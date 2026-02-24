@@ -121,11 +121,21 @@ const ImmersiveProductList = () => {
           data={immersiveProducts}
           renderItem={({ item }) => <ImmersiveProductCard item={item} />}
           keyExtractor={(item) => item.id.toString()}
+          // 2. Core Paging Props
           pagingEnabled={true}
-          showsVerticalScrollIndicator={false}
           snapToInterval={height}
           snapToAlignment="start"
           decelerationRate="fast"
+          disableIntervalMomentum={true} // Prevents accidental double-scrolling
+          showsVerticalScrollIndicator={false}
+          // 3. Performance & Layout (Crucial for "cutting" issues)
+          getItemLayout={(_, index) => ({
+            length: height,
+            offset: height * index,
+            index,
+          })}
+          // This ensures the list fills the whole screen space
+          contentContainerStyle={{ flexGrow: 1 }}
           onScrollBeginDrag={() => setShowHint(false)}
         />
       </Animated.View>
