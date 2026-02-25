@@ -1,5 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -9,6 +15,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ViewToken,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ImmersiveProductCard } from "../components/immersiveProductCard";
@@ -19,6 +26,20 @@ const { height } = Dimensions.get("window");
 const ImmersiveProductList = () => {
   const { data: products = [], isLoading, isError } = useGetProductsQuery({});
   const [showHint, setShowHint] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      if (viewableItems.length > 0 && viewableItems[0].index != null) {
+        setActiveIndex(viewableItems[0].index);
+      }
+    },
+    [],
+  );
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 50,
+  }).current;
 
   // Swoosh arrow animation (pulsing up)
   const arrowTranslateY = useRef(new Animated.Value(0)).current;
@@ -61,7 +82,7 @@ const ImmersiveProductList = () => {
           }),
         ]),
         Animated.delay(300),
-      ])
+      ]),
     );
 
     // Card nudge: slight lift up and back
@@ -119,7 +140,12 @@ const ImmersiveProductList = () => {
         <FlatList
           ref={flatListRef}
           data={immersiveProducts}
-          renderItem={({ item }) => <ImmersiveProductCard item={item} />}
+          renderItem={({ item, index }) => (
+            <ImmersiveProductCard
+              item={item}
+              isActive={index === activeIndex}
+            />
+          )}
           keyExtractor={(item) => item.id.toString()}
           // 2. Core Paging Props
           pagingEnabled={true}
@@ -137,6 +163,13 @@ const ImmersiveProductList = () => {
           // This ensures the list fills the whole screen space
           contentContainerStyle={{ flexGrow: 1 }}
           onScrollBeginDrag={() => setShowHint(false)}
+          // 4. Video memory management — only render nearby items
+          onViewableItemsChanged={onViewableItemsChanged}
+          viewabilityConfig={viewabilityConfig}
+          windowSize={3}
+          maxToRenderPerBatch={2}
+          removeClippedSubviews={true}
+          initialNumToRender={1}
         />
       </Animated.View>
 

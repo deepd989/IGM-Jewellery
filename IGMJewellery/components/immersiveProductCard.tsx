@@ -29,7 +29,13 @@ import { TryOnSelectorModal } from "./products/TryOnSelectorModal";
 
 const { width, height } = Dimensions.get("window");
 
-export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
+export const ImmersiveProductCard = ({
+  item: product,
+  isActive = true,
+}: {
+  item: Product;
+  isActive?: boolean;
+}) => {
   const router = useRouter();
   const insets = useSafeAreaInsets(); // Dynamically gets notch and bottom bar heights
   const videoRef = useRef(null);
@@ -47,7 +53,7 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
 
   const discountedPrice = product.discountedPrice;
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.product.id === product.id
+    (item) => item.product.id === product.id,
   );
 
   const handleAddToCart = async (e: any) => {
@@ -103,28 +109,35 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
   };
 
   const renderBackground = () => {
+    const posterUri = product.immersiveThumbnailUrl || product.thumbnailUrls[0];
+
     if (product.immersiveVideoUrl) {
+      // Always show poster image as base layer
+      // Only mount the Video component when this card is active
       return (
-        <Video
-          ref={videoRef}
-          style={StyleSheet.absoluteFill}
-          source={{ uri: product.immersiveVideoUrl }}
-          resizeMode={ResizeMode.COVER}
-          shouldPlay
-          isLooping
-          isMuted
-          posterSource={{
-            uri: product.immersiveThumbnailUrl || product.thumbnailUrls[0],
-          }}
-          usePoster={true}
-        />
+        <View style={styles.videoContainer}>
+          <ImageBackground
+            source={{ uri: posterUri }}
+            style={styles.videoFill}
+            resizeMode="cover"
+          />
+          {isActive && (
+            <Video
+              ref={videoRef}
+              style={styles.videoFill}
+              source={{ uri: product.immersiveVideoUrl }}
+              resizeMode={ResizeMode.COVER}
+              shouldPlay
+              isLooping
+              isMuted
+            />
+          )}
+        </View>
       );
     }
     return (
       <ImageBackground
-        source={{
-          uri: product.immersiveThumbnailUrl || product.thumbnailUrls[0],
-        }}
+        source={{ uri: posterUri }}
         style={StyleSheet.absoluteFill}
         resizeMode="cover"
       />
@@ -150,7 +163,7 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
       <View
         style={[
           styles.uiContainer,
-          { paddingTop: insets.top, paddingBottom: insets.bottom + 15 },
+          { paddingTop: 8, paddingBottom: insets.bottom + 15 },
         ]}
       >
         {/* Header */}
@@ -278,9 +291,19 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
 const styles = StyleSheet.create({
   card: {
     width: width,
-    height: height, // Use the constant height here
+    height: height,
     backgroundColor: "black",
-    overflow: "hidden", // Ensures nothing bleeds into the next product
+    overflow: "hidden",
+  },
+  videoContainer: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: -width * 0.1,
+    width: width * 1.2,
+  },
+  videoFill: {
+    ...StyleSheet.absoluteFillObject,
   },
   uiContainer: {
     ...StyleSheet.absoluteFillObject,

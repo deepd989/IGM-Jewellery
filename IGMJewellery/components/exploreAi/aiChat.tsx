@@ -164,19 +164,12 @@ export default function AiChatComponent({
 
         const redirectMsg: IMessage = {
           id: Math.random().toString(36).substring(2, 11),
-          text: "Found your style! Redirecting...",
+          text: "✨ Your customised product list is ready!",
           sender: "ai",
           timestamp: new Date(),
           searchParams,
         };
         setMessages((prev) => [redirectMsg, ...prev]);
-
-        setTimeout(() => {
-          router.push({
-            pathname: "/product-list",
-            params: searchParams as Record<string, string>,
-          });
-        }, 5000);
       }
     } catch (error) {
       console.error("Gemini API Error:", error);
@@ -319,25 +312,33 @@ export default function AiChatComponent({
             {item.text}
           </Text>
           {!isUser && item.searchParams && (
-            <HapticButton
-              style={styles.visitSearchButton}
-              onPress={() =>
-                router.push({
-                  pathname: "/product-list",
-                  params: item.searchParams as Record<string, string>,
-                })
-              }
-            >
-              <Ionicons
-                name="search"
-                size={14}
-                color="#fff"
-                style={{ marginRight: 6 }}
-              />
-              <Text style={styles.visitSearchText}>
-                {buildFilterLabel(item.searchParams)}
-              </Text>
-            </HapticButton>
+            <View style={styles.readyCardContainer}>
+              <HapticButton
+                style={styles.visitSearchButton}
+                onPress={() =>
+                  router.push({
+                    pathname: "/product-list",
+                    params: item.searchParams as Record<string, string>,
+                  })
+                }
+              >
+                <Ionicons
+                  name="search"
+                  size={14}
+                  color="#fff"
+                  style={{ marginRight: 6 }}
+                />
+                <Text style={styles.visitSearchText}>
+                  {buildFilterLabel(item.searchParams)}
+                </Text>
+                <Ionicons
+                  name="arrow-forward"
+                  size={14}
+                  color="#fff"
+                  style={{ marginLeft: 8 }}
+                />
+              </HapticButton>
+            </View>
           )}
         </View>
         {isUser && (
@@ -609,13 +610,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#053844",
     borderRadius: 16,
     paddingHorizontal: 14,
-    paddingVertical: 8,
-    marginTop: 10,
+    paddingVertical: 10,
     alignSelf: "flex-start",
   },
   visitSearchText: {
     color: "#fff",
-    fontSize: 12,
-    fontWeight: "500",
+    fontSize: 13,
+    fontWeight: "600",
+    flexShrink: 1,
+  },
+  readyCardContainer: {
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: "#E0E0E0",
   },
 });
