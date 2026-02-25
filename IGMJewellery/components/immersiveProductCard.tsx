@@ -163,7 +163,7 @@ export const ImmersiveProductCard = ({
       <View
         style={[
           styles.uiContainer,
-          { paddingTop: insets.top, paddingBottom: insets.bottom + 15 },
+          { paddingTop: 8, paddingBottom: insets.bottom + 15 },
         ]}
       >
         {/* Header */}
