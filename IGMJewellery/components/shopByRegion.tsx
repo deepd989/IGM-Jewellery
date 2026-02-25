@@ -13,14 +13,22 @@ import {
 } from "react-native";
 import { SectionHeader } from "./section";
 
+const CUSTOM_ORDER = ["7", "6", "2", "1", "3", "4", "5", "8", "9"];
 // --- Dummy Data Definition ---
 const REGIONS_DUMMY_DATA = {
-  "1": {
-    sellerName: "Assam Heritage",
+  "7": {
+    sellerName: "Tamil Nadu Silks",
     sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FAssam.webp?alt=media&token=585608eb-b703-4f04-9183-117cbdc179a5",
-    collections: [{ title: "Silk & Tea Crafts" }],
-    region: "Assam",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FTamil%20Nadu.webp?alt=media&token=4e789072-3553-4552-9e3c-541f0d2b7e9f",
+    collections: [{ title: "Kanchipuram Specials" }],
+    region: "Tamil Nadu",
+  },
+  "6": {
+    sellerName: "Rajasthan Royal Gems",
+    sellerBannerImgUrl:
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FRajasthan.webp?alt=media&token=52ed7845-1514-47bb-80af-648441526c57",
+    collections: [{ title: "Jaipur Jewelry" }],
+    region: "Rajasthan",
   },
   "2": {
     sellerName: "Gujarat Gold & Silk",
@@ -28,6 +36,13 @@ const REGIONS_DUMMY_DATA = {
       "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FGujarat.webp?alt=media&token=0c187c11-3240-4630-9dac-efa1c314b1f0",
     collections: [{ title: "Patola Collections" }],
     region: "Gujarat",
+  },
+  "1": {
+    sellerName: "Assam Heritage",
+    sellerBannerImgUrl:
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FAssam.webp?alt=media&token=585608eb-b703-4f04-9183-117cbdc179a5",
+    collections: [{ title: "Silk & Tea Crafts" }],
+    region: "Assam",
   },
   "3": {
     sellerName: "Kerala Spices & Arts",
@@ -49,20 +64,6 @@ const REGIONS_DUMMY_DATA = {
       "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FPunjab.webp?alt=media&token=e68e7ad9-d7bf-4318-a4e7-5876867ebb78",
     collections: [{ title: "Embroidered Heritage" }],
     region: "Punjab",
-  },
-  "6": {
-    sellerName: "Rajasthan Royal Gems",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FRajasthan.webp?alt=media&token=52ed7845-1514-47bb-80af-648441526c57",
-    collections: [{ title: "Jaipur Jewelry" }],
-    region: "Rajasthan",
-  },
-  "7": {
-    sellerName: "Tamil Nadu Silks",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FTamil%20Nadu.webp?alt=media&token=4e789072-3553-4552-9e3c-541f0d2b7e9f",
-    collections: [{ title: "Kanchipuram Specials" }],
-    region: "Tamil Nadu",
   },
   "8": {
     sellerName: "Telangana Pearl Co.",
@@ -127,18 +128,22 @@ export default function ShopByRegionCards() {
   const formattedData = useMemo(() => {
     if (!regionsData) return [];
 
-    return Object.keys(regionsData).map((key) => {
-      const seller = regionsData[key];
-      const firstCollection = seller.collections?.[0];
+    return Object.keys(regionsData)
+      .map((key) => {
+        const seller = regionsData[key];
+        const firstCollection = seller.collections?.[0];
 
-      return {
-        id: key,
-        title: firstCollection?.title || "New Arrivals",
-        image: seller.sellerBannerImgUrl || "",
-        sellerName: seller.sellerName,
-        region: seller.region,
-      };
-    });
+        return {
+          id: key,
+          title: firstCollection?.title || "New Arrivals",
+          image: seller.sellerBannerImgUrl || "",
+          sellerName: seller.sellerName,
+          region: seller.region,
+        };
+      })
+      .sort((a, b) => {
+        return CUSTOM_ORDER.indexOf(a.id) - CUSTOM_ORDER.indexOf(b.id);
+      });
   }, [regionsData]);
 
   // Layout Calculations

@@ -117,7 +117,7 @@ export default function LatestCollections() {
             <Image
               source={{ uri: collection.collectionBannerImgUrl }}
               style={styles.collectionImage}
-              resizeMode="center"
+              resizeMode="cover"
             />
 
             {/* The "Shop Now" Pill Button */}

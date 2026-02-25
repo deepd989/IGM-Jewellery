@@ -38,15 +38,15 @@ export default function BrandsHorizontalScroll() {
           router.push(`/brandProfile/${brand.businessNameKey}`);
         },
       };
-    },
+    }
   );
   return (
     <>
       <SectionHeader value="House of Brands" />
       <GradientHorizontalScroll
         data={brandsDataScroll}
-        cardWidth={140}
-        cardHeight={170}
+        cardWidth={125}
+        cardHeight={125}
       />
     </>
   );
