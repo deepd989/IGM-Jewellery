@@ -11,6 +11,7 @@ import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   FlatList,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -83,10 +84,11 @@ export default function AiChatComponent({
   const [isRecording, setIsRecording] = useState(false);
   const [redirection, setRedirection] = useState(false);
   const [historyLoaded, setHistoryLoaded] = useState(false);
-  const [showVoiceVideoInterface, setShowVoiceVideoInterface] =
-    useState(!!mode);
+  const [showVoiceVideoInterface, setShowVoiceVideoInterface] = useState(
+    !!mode
+  );
   const [interfaceMode, setInterfaceMode] = useState<"voice" | "video">(
-    mode || "voice",
+    mode || "voice"
   );
   const flatListRef = useRef<FlatList>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -139,7 +141,7 @@ export default function AiChatComponent({
           female: "Female",
         };
         const mappedGender = query.whoFor
-          ? (whoForToGender[query.whoFor.toLowerCase()] ?? query.whoFor)
+          ? whoForToGender[query.whoFor.toLowerCase()] ?? query.whoFor
           : undefined;
 
         const searchParams = {
@@ -156,8 +158,8 @@ export default function AiChatComponent({
             (query.studded === true
               ? "Natural Diamond"
               : query.studded === false
-                ? undefined
-                : undefined),
+              ? undefined
+              : undefined),
           brand: query.brand,
           searchQuery: query.name || query.searchQuery,
         };
@@ -280,12 +282,12 @@ export default function AiChatComponent({
         parts.push(
           `${fmt(params.minPrice)}–${fmt(params.maxPrice)}`
             .replace(/^–/, "")
-            .replace(/–$/, ""),
+            .replace(/–$/, "")
         );
       }
       return parts.join(" • ") || "View Results";
     },
-    [],
+    []
   );
 
   const renderMessage = ({ item }: { item: IMessage }) => {
@@ -318,7 +320,12 @@ export default function AiChatComponent({
                 onPress={() =>
                   router.push({
                     pathname: "/product-list",
-                    params: item.searchParams as Record<string, string>,
+                    params: {
+                      ...(item.searchParams as Record<string, string>),
+                      bannerImageUrl: encodeURIComponent(
+                        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"
+                      ),
+                    },
                   })
                 }
               >
@@ -379,7 +386,14 @@ export default function AiChatComponent({
               color={COLORS.text || "#053844"}
             />
           </HapticButton>
-          <Text style={styles.headerTitle}>elanzia ai</Text>
+          <Image
+            source={require("../../assets/images/elanziaPng.png")}
+            style={{
+              height: 50,
+              width: 150,
+              backgroundColor: "white",
+            }}
+          />
           <View style={styles.headerIcons}>
             <HapticButton
               style={styles.headerIconBtn}
@@ -557,7 +571,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 4,
+    paddingRight: 20,
+    paddingLeft: 10,
     paddingVertical: 4,
   },
   headerTitle: {

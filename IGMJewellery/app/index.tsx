@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     alignItems: "center",
-    // paddingTop: 10,
+    paddingVertical: 10,
     paddingHorizontal: 30,
   },
   subtitle: {
