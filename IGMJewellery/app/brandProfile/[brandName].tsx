@@ -26,7 +26,7 @@ export default function BrandDetailPage() {
         <HapticButton onPress={() => router.back()} style={styles.iconBtn}>
           <Ionicons name="chevron-back" size={24} color={COLORS.text} />
         </HapticButton>
-        <Text style={styles.headerTitle}>Brands</Text>
+        <View />
         <View style={styles.headerIcons}>
           <HapticButton
             style={styles.iconBtn}
@@ -60,7 +60,7 @@ export default function BrandDetailPage() {
           onEnterStore: () => console.log("Enter Store"),
         }}
         tabs={["About", "Products"]}
-        initialActiveTab="About"
+        initialActiveTab="Products"
         aboutSections={brand.aboutSections}
       />
       <BottomNavBar activeTab="Categories"></BottomNavBar>

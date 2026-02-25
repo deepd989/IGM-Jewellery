@@ -3,7 +3,6 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { COLORS, SPACING } from "../../constants/theme";
-import { HapticButton } from "../basic components/hapticButton";
 
 interface ReviewSectionProps {
   product: Product;
@@ -12,22 +11,37 @@ interface ReviewSectionProps {
 const MOCK_REVIEWS = [
   {
     id: "1",
-    name: "Vibhu Sharma",
+    name: "Ananya Mehta",
     rating: 4,
-    date: "21 Jan, 2025",
+    date: "15 Feb, 2025",
     comment:
-      "Beautiful Product. Delivery was seamless. I will recommend it to my friends. Pick Up attempt failed. Set up a new request",
+      "Absolutely beautiful piece. The finish, weight, and detailing feel truly luxurious. Packaging and certification were flawless too. Will definitely shop again.",
   },
   {
     id: "2",
-    name: "Anjali Gupta",
+    name: "Priya Shah",
     rating: 5,
-    date: "20 Jan, 2025",
-    comment: "Absolutely love the design! Looks exactly like the picture.",
+    date: "10 Feb, 2025",
+    comment:
+      "Lovely craftsmanship and great sparkle. Slight delay in delivery, but the jewellery itself was perfect and worth the wait.",
+  },
+  {
+    id: "3",
+    name: "Neha Khanna",
+    rating: 5,
+    date: "5 Feb, 2025",
+    comment:
+      "Beautiful design with impeccable finishing. Comfortable for daily wear yet special enough for occasions. Great experience overall.",
+  },
+  {
+    id: "4",
+    name: "Vikram Sethi",
+    rating: 5,
+    date: "1 Feb, 2025",
+    comment:
+      "Bought this as a gift and it was loved instantly. Premium look, authentic certification, and secure packaging. Highly recommended.",
   },
 ];
-
-const FILTER_TAGS = ["All Reviews", "Latest", "Above 3 ★", "5 ★"];
 
 const ReviewItem = ({ item }: { item: (typeof MOCK_REVIEWS)[0] }) => (
   <View style={styles.reviewItem}>
@@ -70,8 +84,8 @@ const ReviewItem = ({ item }: { item: (typeof MOCK_REVIEWS)[0] }) => (
 export const ReviewSection: React.FC<ReviewSectionProps> = ({ product }) => {
   return (
     <View style={styles.container}>
-      {/* Seen On You Video Placeholder */}
-      <View style={styles.seenOnYouContainer}>
+      {/* Seen On You Video Placeholder - Hidden for now, will add product video later */}
+      {/* <View style={styles.seenOnYouContainer}>
         <Text style={styles.sectionHeader}>SEEN ON YOU!</Text>
         <View style={styles.videoBox}>
           <View style={styles.playIconContainer}>
@@ -83,14 +97,10 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({ product }) => {
         </View>
       </View>
 
-      <View style={styles.separator} />
+      <View style={styles.separator} /> */}
 
       <Text style={[styles.sectionHeader, { marginBottom: SPACING.s }]}>
         CUSTOMER REVIEWS
-      </Text>
-      <Text style={styles.sectionSubHeader}>
-        Celebrate every day in style with the subtle grace of these drop
-        earrings crafted in 22 Karat Yellow Gold in a leaf design.
       </Text>
 
       {/* Summary Banner */}
@@ -107,15 +117,6 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({ product }) => {
           ))}
         </View>
         <Text style={styles.ratingsCountText}>100 Ratings/23 reviews</Text>
-      </View>
-
-      {/* Filter Tags */}
-      <View style={styles.filterTagsRow}>
-        {FILTER_TAGS.map((tag, index) => (
-          <HapticButton key={index} style={styles.filterTag}>
-            <Text style={styles.filterTagText}>{tag}</Text>
-          </HapticButton>
-        ))}
       </View>
 
       {/* Reviews List */}

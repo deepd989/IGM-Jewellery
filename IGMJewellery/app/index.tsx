@@ -1,3 +1,4 @@
+import { useAuth } from "@/auth/authContext";
 import { ResizeMode, Video } from "expo-av";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
@@ -11,7 +12,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../components/basic components/hapticButton";
-import { useGetProductsQuery } from "../store/apis/product";
 
 const { width } = Dimensions.get("window");
 
@@ -34,32 +34,26 @@ const BANNER_IMAGES = [
     id: "3",
     url: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Login%20Banner%2FLogin_Banner_3.webp?alt=media&token=4f33cd4d-ee51-439e-b263-3476e065f44d",
   },
+  {
+    id: "4",
+    url: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Login%20Banner%2FLogin_Banner_5.webp?alt=media&token=6547fb7f-7ea9-456f-835d-c5f690fbc751",
+  },
 ];
 
 export default function JewelryLanding() {
   const router = useRouter();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [isVideoFinished, setIsVideoFinished] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef(null);
 
-  const { isLoading, isError } = useGetProductsQuery({});
-
-  // Auto-scroll Effect for Carousel
+  // After video finishes, route based on auth state
   useEffect(() => {
-    if (!isVideoFinished || isLoading) return; // Don't start timer until landing is visible
-
-    const timer = setInterval(() => {
-      let nextIndex = (currentIndex + 1) % BANNER_IMAGES.length;
-      flatListRef.current?.scrollToIndex({
-        index: nextIndex,
-        animated: true,
-      });
-      setCurrentIndex(nextIndex);
-    }, 3500);
-
-    return () => clearInterval(timer);
-  }, [currentIndex, isVideoFinished, isLoading]);
+    if (!isVideoFinished || authLoading) return;
+    if (isAuthenticated) {
+      router.replace("/home");
+    }
+  }, [isVideoFinished, authLoading, isAuthenticated]);
 
   const handlePlaybackStatusUpdate = (status) => {
     if (status.didJustFinish) {
@@ -77,43 +71,29 @@ export default function JewelryLanding() {
     </View>
   );
 
-  // --- LOADING / VIDEO STATE ---
-  // We stay in this block until the video finishes AND the API is done.
-  if (!isVideoFinished || isLoading) {
+  // --- SPLASH VIDEO ---
+  if (!isVideoFinished) {
     return (
       <View style={[styles.container, { flex: 1, backgroundColor: "#000" }]}>
-        {!isVideoFinished ? (
-          <Video
-            source={require("../assets/splash.mp4")}
-            style={StyleSheet.absoluteFill}
-            resizeMode={ResizeMode.COVER}
-            shouldPlay
-            rate={2.0}
-            isLooping={false} // Play only once
-            isMuted={false}
-            volume={1.0}
-            onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
-          />
-        ) : (
-          /* Fallback UI: If video ends but data is still fetching */
-          <SafeAreaView style={[styles.safeArea, styles.centered]}>
-            <View style={styles.logoCircleLarge}>
-              <Image
-                source={require("../assets/images/icon.png")}
-                style={styles.logoImage}
-              />
-            </View>
-            <View style={styles.progressBarContainer}>
-              <View
-                style={[
-                  styles.progressBar,
-                  { backgroundColor: COLORS.primary },
-                ]}
-              />
-            </View>
-          </SafeAreaView>
-        )}
+        <Video
+          source={require("../assets/splash.mp4")}
+          style={StyleSheet.absoluteFill}
+          resizeMode={ResizeMode.COVER}
+          shouldPlay
+          rate={2.0}
+          isLooping={false}
+          isMuted={true}
+          volume={1.0}
+          onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+        />
       </View>
+    );
+  }
+
+  // --- REDIRECTING (authenticated user or still loading auth) ---
+  if (authLoading || isAuthenticated) {
+    return (
+      <View style={[styles.container, { flex: 1, backgroundColor: "#000" }]} />
     );
   }
 
@@ -129,7 +109,7 @@ export default function JewelryLanding() {
           >
             <Image
               source={require("../assets/images/elanziaIndex.png")}
-              style={{ height: 60, width: 200 }}
+              style={{ height: 80, width: 260 }}
             />
           </HapticButton>
           <Text style={styles.subtitle}>
@@ -149,17 +129,6 @@ export default function JewelryLanding() {
             snapToInterval={SNAP_INTERVAL}
             decelerationRate="fast"
             contentContainerStyle={styles.flatListPadding}
-            getItemLayout={(_, index) => ({
-              length: SNAP_INTERVAL,
-              offset: SNAP_INTERVAL * index,
-              index,
-            })}
-            onMomentumScrollEnd={(event) => {
-              const newIndex = Math.round(
-                event.nativeEvent.contentOffset.x / SNAP_INTERVAL
-              );
-              setCurrentIndex(newIndex);
-            }}
           />
         </View>
 
@@ -190,7 +159,8 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFFFFF",
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
+    paddingTop: 10,
   },
   safeArea: {
     flex: 1,

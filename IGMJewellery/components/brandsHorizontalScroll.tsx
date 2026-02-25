@@ -43,7 +43,11 @@ export default function BrandsHorizontalScroll() {
   return (
     <>
       <SectionHeader value="House of Brands" />
-      <GradientHorizontalScroll data={brandsDataScroll} />
+      <GradientHorizontalScroll
+        data={brandsDataScroll}
+        cardWidth={140}
+        cardHeight={170}
+      />
     </>
   );
 }

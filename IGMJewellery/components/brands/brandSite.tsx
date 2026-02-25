@@ -3,9 +3,10 @@ import { BrandAboutSection } from "@/store/apis/brandsApi";
 import { useGetProductsByBrandQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Animated,
   FlatList,
   Image,
   ScrollView,
@@ -50,9 +51,6 @@ const ProfileHeader = ({
       <View style={styles.ratingBadge}>
         <Text style={styles.ratingText}>{ratingText}</Text>
       </View>
-      <HapticButton style={styles.storeButton} onPress={onEnterStore}>
-        <Text style={styles.storeButtonText}>{storeButtonLabel}</Text>
-      </HapticButton>
     </View>
   </View>
 );
@@ -117,6 +115,8 @@ export default function BrandProfile({
 }: BrandProfileProps) {
   const [activeTab, setActiveTab] = useState(initialActiveTab);
   const router = useRouter();
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const HEADER_MAX_HEIGHT = 280; // approximate ProfileHeader height
 
   // Filter and Sort State
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -124,7 +124,7 @@ export default function BrandProfile({
   const [selectedSort, setSelectedSort] = useState("Featured");
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(
-    {}
+    {},
   );
 
   // Use API with filters and sorting - same approach as product-list.tsx
@@ -143,7 +143,7 @@ export default function BrandProfile({
   // Count active filters
   const activeFilterCount = Object.values(activeFilters).reduce(
     (total, options) => total + options.length,
-    0
+    0,
   );
 
   const toggleViewMode = () => {
@@ -162,98 +162,135 @@ export default function BrandProfile({
     setSelectedSort(sort);
   };
 
+  const headerTranslateY = scrollY.interpolate({
+    inputRange: [0, HEADER_MAX_HEIGHT],
+    outputRange: [0, -HEADER_MAX_HEIGHT],
+    extrapolate: "clamp",
+  });
+
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, HEADER_MAX_HEIGHT * 0.6, HEADER_MAX_HEIGHT],
+    outputRange: [1, 0.3, 0],
+    extrapolate: "clamp",
+  });
+
   return (
     <>
-      <ProfileHeader {...header} />
-      <TabNavigation
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
+      <Animated.View
+        style={{
+          transform: [{ translateY: headerTranslateY }],
+          zIndex: 1,
+        }}
+      >
+        <Animated.View style={{ opacity: headerOpacity }}>
+          <ProfileHeader {...header} />
+        </Animated.View>
+        <TabNavigation
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+      </Animated.View>
 
-      {activeTab === "About" && (
-        <ScrollView
-          style={styles.container}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.contentContainer}>
-            {aboutSections.map((section, idx) => (
-              <HeritageSection
-                key={`${section.title}-${idx}`}
-                title={section.title}
-                paragraphs={section.paragraphs}
-              />
-            ))}
-          </View>
-        </ScrollView>
-      )}
-
-      {activeTab === "Products" && (
-        <SafeAreaView style={styles.container} edges={["bottom"]}>
-          <View style={{ flex: 1 }}>
-            {/* Products Count */}
-            <View style={styles.productsHeader}>
-              <Text style={styles.productsCount}>
-                {products.length}{" "}
-                {products.length === 1 ? "Product" : "Products"}
-              </Text>
-              {activeFilterCount > 0 && (
-                <HapticButton onPress={handleClearFilters}>
-                  <Text style={styles.clearFiltersText}>Clear filters</Text>
-                </HapticButton>
-              )}
-            </View>
-
-            {isLoading ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={COLORS.primary} />
-                <Text style={styles.loadingText}>Loading products...</Text>
-              </View>
-            ) : products.length === 0 ? (
-              <View style={styles.emptyContainer}>
-                <Ionicons
-                  name="search-outline"
-                  size={48}
-                  color={COLORS.textSecondary}
+      <Animated.View
+        style={{
+          flex: 1,
+          transform: [{ translateY: headerTranslateY }],
+          marginBottom: scrollY.interpolate({
+            inputRange: [0, HEADER_MAX_HEIGHT],
+            outputRange: [0, -HEADER_MAX_HEIGHT],
+            extrapolate: "clamp",
+          }),
+        }}
+      >
+        {activeTab === "About" && (
+          <ScrollView
+            style={styles.container}
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.contentContainer}>
+              {aboutSections.map((section, idx) => (
+                <HeritageSection
+                  key={`${section.title}-${idx}`}
+                  title={section.title}
+                  paragraphs={section.paragraphs}
                 />
-                <Text style={styles.emptyText}>No products found</Text>
+              ))}
+            </View>
+          </ScrollView>
+        )}
+
+        {activeTab === "Products" && (
+          <SafeAreaView style={styles.container} edges={["bottom"]}>
+            <View style={{ flex: 1 }}>
+              {/* Products Count */}
+              <View style={styles.productsHeader}>
+                <Text style={styles.productsCount}>
+                  {products.length}{" "}
+                  {products.length === 1 ? "Product" : "Products"}
+                </Text>
                 {activeFilterCount > 0 && (
-                  <HapticButton
-                    style={styles.clearButton}
-                    onPress={handleClearFilters}
-                  >
-                    <Text style={styles.clearButtonText}>Clear Filters</Text>
+                  <HapticButton onPress={handleClearFilters}>
+                    <Text style={styles.clearFiltersText}>Clear filters</Text>
                   </HapticButton>
                 )}
               </View>
-            ) : (
-              <FlatList
-                key={viewMode}
-                data={products}
-                keyExtractor={(item) => item.id}
-                numColumns={viewMode === "grid" ? 2 : 1}
-                renderItem={({ item }) => (
-                  <ProductCard
-                    product={item}
-                    viewMode={viewMode}
-                    onPress={() =>
-                      router.push({
-                        pathname: "/product/[id]",
-                        params: { id: item.id },
-                      })
-                    }
-                  />
-                )}
-                columnWrapperStyle={
-                  viewMode === "grid" ? styles.columnWrapper : undefined
-                }
-                contentContainerStyle={styles.listContent}
-                showsVerticalScrollIndicator={false}
-              />
-            )}
 
-            {/* Left: View Toggle */}
-            {/* <HapticButton style={styles.leftFab} onPress={toggleViewMode}>
+              {isLoading ? (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="large" color={COLORS.primary} />
+                  <Text style={styles.loadingText}>Loading products...</Text>
+                </View>
+              ) : products.length === 0 ? (
+                <View style={styles.emptyContainer}>
+                  <Ionicons
+                    name="search-outline"
+                    size={48}
+                    color={COLORS.textSecondary}
+                  />
+                  <Text style={styles.emptyText}>No products found</Text>
+                  {activeFilterCount > 0 && (
+                    <HapticButton
+                      style={styles.clearButton}
+                      onPress={handleClearFilters}
+                    >
+                      <Text style={styles.clearButtonText}>Clear Filters</Text>
+                    </HapticButton>
+                  )}
+                </View>
+              ) : (
+                <FlatList
+                  key={viewMode}
+                  data={products}
+                  keyExtractor={(item) => item.id}
+                  numColumns={viewMode === "grid" ? 2 : 1}
+                  renderItem={({ item }) => (
+                    <ProductCard
+                      product={item}
+                      viewMode={viewMode}
+                      onPress={() =>
+                        router.push({
+                          pathname: "/product/[id]",
+                          params: { id: item.id },
+                        })
+                      }
+                    />
+                  )}
+                  columnWrapperStyle={
+                    viewMode === "grid" ? styles.columnWrapper : undefined
+                  }
+                  contentContainerStyle={styles.listContent}
+                  showsVerticalScrollIndicator={false}
+                  onScroll={Animated.event(
+                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                    { useNativeDriver: false },
+                  )}
+                  scrollEventThrottle={16}
+                />
+              )}
+
+              {/* Left: View Toggle */}
+              {/* <HapticButton style={styles.leftFab} onPress={toggleViewMode}>
               <Ionicons
                 name={viewMode === "grid" ? "list" : "grid"}
                 size={22}
@@ -261,8 +298,8 @@ export default function BrandProfile({
               />
             </HapticButton> */}
 
-            {/* Filter and sort bar Bar */}
-            {/* <View style={styles.bottomBar}>
+              {/* Filter and sort bar Bar */}
+              {/* <View style={styles.bottomBar}>
               <HapticButton
                 style={styles.bottomBarItem}
                 onPress={() => setIsSortVisible(true)}
@@ -302,21 +339,22 @@ export default function BrandProfile({
               </HapticButton>
             </View> */}
 
-            <SortModal
-              visible={isSortVisible}
-              onClose={() => setIsSortVisible(false)}
-              selectedSort={selectedSort}
-              onSelect={handleSortSelect}
-            />
-            <FilterModal
-              visible={isFilterVisible}
-              onClose={() => setIsFilterVisible(false)}
-              onApply={handleApplyFilters}
-              initialFilters={activeFilters}
-            />
-          </View>
-        </SafeAreaView>
-      )}
+              <SortModal
+                visible={isSortVisible}
+                onClose={() => setIsSortVisible(false)}
+                selectedSort={selectedSort}
+                onSelect={handleSortSelect}
+              />
+              <FilterModal
+                visible={isFilterVisible}
+                onClose={() => setIsFilterVisible(false)}
+                onApply={handleApplyFilters}
+                initialFilters={activeFilters}
+              />
+            </View>
+          </SafeAreaView>
+        )}
+      </Animated.View>
     </>
   );
 }

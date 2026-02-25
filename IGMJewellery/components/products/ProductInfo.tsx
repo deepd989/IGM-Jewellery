@@ -84,15 +84,17 @@ export const ProductInfo: React.FC<ProductInfoProps> = ({
           <Ionicons name="chevron-down" size={16} color={COLORS.text} />
         </HapticButton>
 
-        <HapticButton style={styles.actionBtn} onPress={onCustomize}>
+        <View style={[styles.actionBtn, { opacity: 0.4 }]}>
           <Ionicons
             name="sparkles"
             size={14}
-            color={COLORS.text}
+            color={COLORS.textSecondary}
             style={{ marginRight: 6 }}
           />
-          <Text style={styles.actionBtnText}>Customize</Text>
-        </HapticButton>
+          <Text style={[styles.actionBtnText, { color: COLORS.textSecondary }]}>
+            Customize
+          </Text>
+        </View>
       </View>
 
       {/* Footer Actions removed from here and moved to Sticky Footer in ProductDetailScreen */}
