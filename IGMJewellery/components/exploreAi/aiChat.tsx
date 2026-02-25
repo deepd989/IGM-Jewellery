@@ -365,111 +365,111 @@ export default function AiChatComponent({
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.headerRow}>
-        <HapticButton onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons
-            name="chevron-back"
-            size={24}
-            color={COLORS.text || "#053844"}
-          />
-        </HapticButton>
-        <Text style={styles.headerTitle}>elanzia ai</Text>
-        <View style={styles.headerIcons}>
-          <HapticButton
-            style={styles.headerIconBtn}
-            onPress={() => router.push("/wishlist")}
-          >
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.headerRow}>
+          <HapticButton onPress={() => router.back()} style={styles.backButton}>
             <Ionicons
-              name={wishlistCount > 0 ? "heart" : "heart-outline"}
+              name="chevron-back"
               size={24}
-              color={wishlistCount > 0 ? COLORS.primary : COLORS.text}
+              color={COLORS.text || "#053844"}
             />
-            {wishlistCount > 0 && (
-              <View style={styles.headerBadge}>
-                <Text style={styles.headerBadgeText}>{wishlistCount}</Text>
-              </View>
-            )}
           </HapticButton>
-          <View style={styles.headerIconBtn}>
-            <CartBadge iconSize={24} iconColor={COLORS.text} />
+          <Text style={styles.headerTitle}>elanzia ai</Text>
+          <View style={styles.headerIcons}>
+            <HapticButton
+              style={styles.headerIconBtn}
+              onPress={() => router.push("/wishlist")}
+            >
+              <Ionicons
+                name={wishlistCount > 0 ? "heart" : "heart-outline"}
+                size={24}
+                color={wishlistCount > 0 ? COLORS.primary : COLORS.text}
+              />
+              {wishlistCount > 0 && (
+                <View style={styles.headerBadge}>
+                  <Text style={styles.headerBadgeText}>{wishlistCount}</Text>
+                </View>
+              )}
+            </HapticButton>
+            <View style={styles.headerIconBtn}>
+              <CartBadge iconSize={24} iconColor={COLORS.text} />
+            </View>
           </View>
         </View>
-      </View>
 
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
-      >
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          renderItem={renderMessage}
-          keyExtractor={(item) => item.id}
-          inverted={true} // The magic prop
-          contentContainerStyle={styles.messagesList}
-          automaticallyAdjustKeyboardInsets={true}
-          keyboardDismissMode="on-drag"
-          showsVerticalScrollIndicator={false}
-          // In an inverted list, Header is at the bottom (above input)
-          ListHeaderComponent={() =>
-            replyLoading ? renderTypingIndicator() : null
-          }
-        />
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Tell me what you're looking for"
-            placeholderTextColor="#999"
-            value={inputText}
-            onChangeText={setInputText}
-            multiline
-            editable={!replyLoading}
+        <View style={styles.container}>
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            renderItem={renderMessage}
+            keyExtractor={(item) => item.id}
+            inverted={true} // The magic prop
+            contentContainerStyle={styles.messagesList}
+            keyboardDismissMode="on-drag"
+            showsVerticalScrollIndicator={false}
+            // In an inverted list, Header is at the bottom (above input)
+            ListHeaderComponent={() =>
+              replyLoading ? renderTypingIndicator() : null
+            }
           />
-          <HapticButton
-            style={[styles.iconButton, isRecording && styles.recordingButton]}
-            onPress={() => {
-              setInterfaceMode("voice");
-              setShowVoiceVideoInterface(true);
-            }}
-          >
-            <Ionicons
-              name="mic"
-              size={24}
-              color={isRecording ? "#FF0000" : "#666"}
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Tell me what you're looking for"
+              placeholderTextColor="#999"
+              value={inputText}
+              onChangeText={setInputText}
+              multiline
+              editable={!replyLoading}
             />
-          </HapticButton>
-
-          {inputText.trim().length > 0 && (
             <HapticButton
-              style={[styles.sendButton, replyLoading && { opacity: 0.5 }]}
-              onPress={onSendPress}
-              disabled={replyLoading}
+              style={[styles.iconButton, isRecording && styles.recordingButton]}
+              onPress={() => {
+                setInterfaceMode("voice");
+                setShowVoiceVideoInterface(true);
+              }}
             >
-              <Ionicons name="send" size={18} color="#fff" />
+              <Ionicons
+                name="mic"
+                size={24}
+                color={isRecording ? "#FF0000" : "#666"}
+              />
             </HapticButton>
-          )}
-        </View>
-      </KeyboardAvoidingView>
 
-      <Modal visible={showVoiceVideoInterface} animationType="slide">
-        <SafeAreaView style={styles.modalContainer}>
-          <HapticButton
-            style={styles.closeButton}
-            onPress={() => setShowVoiceVideoInterface(false)}
-          >
-            <Ionicons name="close" size={28} color="#053844" />
-          </HapticButton>
-          <VoiceVideoInterface
-            mode={interfaceMode}
-            onTranscript={handleTranscript}
-            onClose={() => setShowVoiceVideoInterface(false)}
-          />
-        </SafeAreaView>
-      </Modal>
-    </SafeAreaView>
+            {inputText.trim().length > 0 && (
+              <HapticButton
+                style={[styles.sendButton, replyLoading && { opacity: 0.5 }]}
+                onPress={onSendPress}
+                disabled={replyLoading}
+              >
+                <Ionicons name="send" size={18} color="#fff" />
+              </HapticButton>
+            )}
+          </View>
+        </View>
+
+        <Modal visible={showVoiceVideoInterface} animationType="slide">
+          <SafeAreaView style={styles.modalContainer}>
+            <HapticButton
+              style={styles.closeButton}
+              onPress={() => setShowVoiceVideoInterface(false)}
+            >
+              <Ionicons name="close" size={28} color="#053844" />
+            </HapticButton>
+            <VoiceVideoInterface
+              mode={interfaceMode}
+              onTranscript={handleTranscript}
+              onClose={() => setShowVoiceVideoInterface(false)}
+            />
+          </SafeAreaView>
+        </Modal>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 

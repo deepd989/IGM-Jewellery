@@ -21,10 +21,14 @@ export interface ScrollGradientItem {
 
 interface GradientHorizontalScroll {
   data: ScrollGradientItem[];
+  cardWidth?: number;
+  cardHeight?: number;
 }
 
 export default function GradientHorizontalScroll({
   data,
+  cardWidth,
+  cardHeight,
 }: GradientHorizontalScroll) {
   return (
     <ScrollView
@@ -39,6 +43,8 @@ export default function GradientHorizontalScroll({
               style={[
                 styles.imageCard,
                 !item.gradient && styles.whiteBackground,
+                cardWidth ? { width: cardWidth } : null,
+                cardHeight ? { height: cardHeight } : null,
               ]}
             >
               {item.gradient ? (
@@ -53,8 +59,8 @@ export default function GradientHorizontalScroll({
                 >
                   <Image
                     source={item.img}
-                    style={styles.productImage}
-                    resizeMode="cover"
+                    style={styles.brandImage}
+                    resizeMode="contain"
                   />
                 </LinearGradient>
               ) : (
@@ -65,7 +71,14 @@ export default function GradientHorizontalScroll({
                 />
               )}
             </View>
-            <Text style={styles.cardLabel}>{item.name}</Text>
+            <Text
+              style={[
+                styles.cardLabel,
+                cardWidth ? { maxWidth: cardWidth } : null,
+              ]}
+            >
+              {item.name}
+            </Text>
           </View>
         </HapticButton>
       ))}
@@ -103,6 +116,10 @@ const styles = StyleSheet.create({
   productImage: {
     width: "100%",
     height: "100%",
+  },
+  brandImage: {
+    width: "80%",
+    height: "80%",
   },
   cardLabel: {
     fontSize: 14,

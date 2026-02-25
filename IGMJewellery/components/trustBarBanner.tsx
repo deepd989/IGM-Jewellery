@@ -4,13 +4,21 @@ import { SvgUri } from "react-native-svg";
 import { COLORS } from "../constants/theme";
 
 // 1. Move the item renderer outside to prevent re-mounting flicker
-const TrustItem = memo(({ item }) => (
-  <View style={styles.item}>
-    <SvgUri uri={item.icon} width={30} height={30} />
-    <Text style={styles.text}>{item.text}</Text>
-    <View style={styles.divider} />
-  </View>
-));
+const TrustItem = memo(
+  ({ item }: { item: { id: number; icon: string; text: string } }) => (
+    <View style={styles.item}>
+      <SvgUri
+        uri={item.icon}
+        width={30}
+        height={30}
+        fill="#FFFFFF"
+        color="#FFFFFF"
+      />
+      <Text style={styles.text}>{item.text}</Text>
+      <View style={styles.divider} />
+    </View>
+  ),
+);
 
 const TrustBar = () => {
   const trustItems = [
