@@ -95,7 +95,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
 
   // Sorting State
   const [isSortVisible, setIsSortVisible] = useState(false);
-  const [selectedSort, setSelectedSort] = useState("Latest");
+  const [selectedSort, setSelectedSort] = useState("Customer Rating");
 
   // Filtering State
   const [isFilterVisible, setIsFilterVisible] = useState(false);
@@ -478,7 +478,8 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
             </HapticButton>
           </View> */}
 
-          <ScrollView
+          {/* FILTER CHIPS THIS SHOULD BE VISIBLE */}
+          {/* <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.filterTagsContainer}
@@ -518,7 +519,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
                 </HapticButton>
               </View>
             ))}
-          </ScrollView>
+          </ScrollView> */}
         </View>
       )}
     </View>

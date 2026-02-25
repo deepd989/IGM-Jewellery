@@ -24,19 +24,19 @@ const COLORS = { primary: "#053844" };
 const BANNER_IMAGES = [
   {
     id: "1",
-    url: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Login%20Banner%2FLogin_Banner_1.webp?alt=media&token=41ad9077-7d17-49d2-b1bc-2cca962ad579",
+    url: require("../assets/images/loginPageImages/Login_Banner_1.webp"),
   },
   {
     id: "2",
-    url: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Login%20Banner%2FLogin_Banner_2.webp?alt=media&token=1fefb9d8-429e-4733-99de-e3925ccedf89",
+    url: require("../assets/images/loginPageImages/Login_Banner_2.webp"),
   },
   {
     id: "3",
-    url: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Login%20Banner%2FLogin_Banner_3.webp?alt=media&token=4f33cd4d-ee51-439e-b263-3476e065f44d",
+    url: require("../assets/images/loginPageImages/Login_Banner_3.webp"),
   },
   {
     id: "4",
-    url: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Login%20Banner%2FLogin_Banner_5.webp?alt=media&token=6547fb7f-7ea9-456f-835d-c5f690fbc751",
+    url: require("../assets/images/loginPageImages/Login_Banner_4.webp"),
   },
 ];
 
@@ -63,11 +63,7 @@ export default function JewelryLanding() {
 
   const renderItem = ({ item }) => (
     <View style={styles.cardContainer}>
-      <Image
-        source={{ uri: item.url }}
-        style={styles.image}
-        resizeMode="cover"
-      />
+      <Image source={item.url} style={styles.image} resizeMode="cover" />
     </View>
   );
 
