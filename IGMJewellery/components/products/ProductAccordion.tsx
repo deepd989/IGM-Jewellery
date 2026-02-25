@@ -64,7 +64,7 @@ const AccordionItem = ({
 
 export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
   const [openSection, setOpenSection] = useState<string | null>(
-    "PRODUCT DETAILS"
+    "PRODUCT DETAILS",
   );
   const {
     data: brandData,
@@ -222,28 +222,12 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
           </View>
         ) : null}
 
-        {/* ── GEMSTONE INFORMATION ── */}
-        {hasGemstone && gemstoneRows.length > 0 && (
-          <View style={styles.infoSection}>
-            <View style={styles.infoSectionHeader}>
-              <Text style={styles.infoSectionTitle}>
-                1. GEMSTONE INFORMATION
-              </Text>
-            </View>
-            <View style={styles.infoTable}>
-              {gemstoneRows.map((row, i) => (
-                <InfoRow key={i} label={row.label} value={row.value} />
-              ))}
-            </View>
-          </View>
-        )}
-
         {/* ── DIAMOND INFORMATION ── */}
         {hasDiamond && diamondRows.length > 0 && (
           <View style={styles.infoSection}>
             <View style={styles.infoSectionHeader}>
               <Text style={styles.infoSectionTitle}>
-                {hasGemstone ? "2." : "1."} DIAMOND INFORMATION
+                1. DIAMOND INFORMATION
               </Text>
             </View>
             <View style={styles.infoTable}>

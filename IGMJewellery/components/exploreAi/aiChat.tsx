@@ -5,6 +5,7 @@ import {
   StoredMessage,
 } from "@/store/apis/chatStorage";
 import { useSearchJewelryMutation } from "@/store/apis/textSearchApi";
+import { useGetWishlistQuery } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -20,6 +21,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../basic components/hapticButton";
+import { CartBadge } from "../cart/CardBadge";
 import VoiceVideoInterface from "./aiVoice";
 
 interface IMessage {
@@ -74,16 +76,17 @@ export default function AiChatComponent({
   userId?: string | null;
 }) {
   const router = useRouter();
+  const { data: wishlistData } = useGetWishlistQuery();
+  const wishlistCount = wishlistData?.items.length || 0;
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [inputText, setInputText] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [redirection, setRedirection] = useState(false);
   const [historyLoaded, setHistoryLoaded] = useState(false);
-  const [showVoiceVideoInterface, setShowVoiceVideoInterface] = useState(
-    !!mode
-  );
+  const [showVoiceVideoInterface, setShowVoiceVideoInterface] =
+    useState(!!mode);
   const [interfaceMode, setInterfaceMode] = useState<"voice" | "video">(
-    mode || "voice"
+    mode || "voice",
   );
   const flatListRef = useRef<FlatList>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -136,7 +139,7 @@ export default function AiChatComponent({
           female: "Female",
         };
         const mappedGender = query.whoFor
-          ? whoForToGender[query.whoFor.toLowerCase()] ?? query.whoFor
+          ? (whoForToGender[query.whoFor.toLowerCase()] ?? query.whoFor)
           : undefined;
 
         const searchParams = {
@@ -153,8 +156,8 @@ export default function AiChatComponent({
             (query.studded === true
               ? "Natural Diamond"
               : query.studded === false
-              ? undefined
-              : undefined),
+                ? undefined
+                : undefined),
           brand: query.brand,
           searchQuery: query.name || query.searchQuery,
         };
@@ -284,12 +287,12 @@ export default function AiChatComponent({
         parts.push(
           `${fmt(params.minPrice)}–${fmt(params.maxPrice)}`
             .replace(/^–/, "")
-            .replace(/–$/, "")
+            .replace(/–$/, ""),
         );
       }
       return parts.join(" • ") || "View Results";
     },
-    []
+    [],
   );
 
   const renderMessage = ({ item }: { item: IMessage }) => {
@@ -363,13 +366,36 @@ export default function AiChatComponent({
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <HapticButton onPress={() => router.back()} style={styles.backButton}>
-        <Ionicons
-          name="chevron-back"
-          size={24}
-          color={COLORS.text || "#053844"}
-        />
-      </HapticButton>
+      <View style={styles.headerRow}>
+        <HapticButton onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons
+            name="chevron-back"
+            size={24}
+            color={COLORS.text || "#053844"}
+          />
+        </HapticButton>
+        <Text style={styles.headerTitle}>elanzia ai</Text>
+        <View style={styles.headerIcons}>
+          <HapticButton
+            style={styles.headerIconBtn}
+            onPress={() => router.push("/wishlist")}
+          >
+            <Ionicons
+              name={wishlistCount > 0 ? "heart" : "heart-outline"}
+              size={24}
+              color={wishlistCount > 0 ? COLORS.primary : COLORS.text}
+            />
+            {wishlistCount > 0 && (
+              <View style={styles.headerBadge}>
+                <Text style={styles.headerBadgeText}>{wishlistCount}</Text>
+              </View>
+            )}
+          </HapticButton>
+          <View style={styles.headerIconBtn}>
+            <CartBadge iconSize={24} iconColor={COLORS.text} />
+          </View>
+        </View>
+      </View>
 
       <KeyboardAvoidingView
         style={styles.container}
@@ -526,6 +552,46 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   backButton: { padding: 10 },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: COLORS.primary,
+    fontStyle: "italic",
+  },
+  headerIcons: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+  },
+  headerIconBtn: {
+    position: "relative" as const,
+  },
+  headerBadge: {
+    position: "absolute" as const,
+    top: -4,
+    right: -6,
+    backgroundColor: "white",
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    justifyContent: "center" as const,
+    alignItems: "center" as const,
+    paddingHorizontal: 4,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+  },
+  headerBadgeText: {
+    color: COLORS.primary,
+    fontSize: 10,
+    fontWeight: "700" as const,
+  },
   typingIndicator: { flexDirection: "row", gap: 4, paddingVertical: 4 },
   typingDot: {
     width: 6,
