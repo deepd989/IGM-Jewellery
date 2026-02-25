@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../components/basic components/hapticButton";
-import HealthCheckModal from "../components/connectionModal";
 import { useGetProductsQuery } from "../store/apis/product";
 
 const { width } = Dimensions.get("window");
@@ -91,7 +90,7 @@ export default function JewelryLanding() {
             shouldPlay
             rate={2.0}
             isLooping={false} // Play only once
-            isMuted={true}
+            isMuted={false}
             volume={1.0}
             onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
           />
@@ -121,12 +120,6 @@ export default function JewelryLanding() {
   // --- MAIN LANDING UI ---
   return (
     <SafeAreaView style={styles.safeArea}>
-      {showModal && (
-        <View style={StyleSheet.absoluteFillObject}>
-          <HealthCheckModal setModalVisible={setShowModal} />
-        </View>
-      )}
-
       <View style={styles.container}>
         {/* Top Header */}
         <View style={styles.textContainer}>
@@ -163,7 +156,7 @@ export default function JewelryLanding() {
             })}
             onMomentumScrollEnd={(event) => {
               const newIndex = Math.round(
-                event.nativeEvent.contentOffset.x / SNAP_INTERVAL,
+                event.nativeEvent.contentOffset.x / SNAP_INTERVAL
               );
               setCurrentIndex(newIndex);
             }}
@@ -196,7 +189,8 @@ export default function JewelryLanding() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFFFFF",
-    paddingVertical: 20,
+    flex: 1,
+    justifyContent: "center",
   },
   safeArea: {
     flex: 1,
@@ -207,7 +201,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     alignItems: "center",
-    marginTop: 20,
+    // paddingTop: 10,
     paddingHorizontal: 30,
   },
   subtitle: {
@@ -221,7 +215,7 @@ const styles = StyleSheet.create({
   },
   carouselSection: {
     height: 420,
-    marginVertical: 40,
+    marginVertical: 20,
   },
   flatListPadding: {
     paddingHorizontal: (width - CAROUSEL_ITEM_WIDTH) / 2 - SPACING,
@@ -245,7 +239,7 @@ const styles = StyleSheet.create({
   },
   authContainer: {
     paddingHorizontal: 30,
-    paddingBottom: 20,
+    // paddingBottom: 20,
     gap: 12,
   },
   fullButton: {

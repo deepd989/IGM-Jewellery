@@ -74,11 +74,14 @@ export default function ProductDetailScreen() {
     if (fromTryOn === "true" && tryOnImage) {
       return [tryOnImage, ...(product?.thumbnailUrls || [])];
     }
-    return [
-      product?.thumbnailUrls[0],
-      tryOnImage,
-      ...(product?.thumbnailUrls.slice(1) || []),
-    ];
+    if (tryOnImage) {
+      return [
+        product?.thumbnailUrls[0],
+        tryOnImage,
+        ...(product?.thumbnailUrls.slice(1) || []),
+      ];
+    }
+    return product?.thumbnailUrls || [];
   };
 
   const handleTryAtHome = async () => {

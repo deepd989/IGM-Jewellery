@@ -100,13 +100,13 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   // Filtering State
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(
-    {},
+    {}
   );
 
   // Get category hierarchy for breadcrumbs
   const { data: hierarchy } = useGetCategoryHierarchyQuery(
     { departmentId, categoryId, subCategoryId },
-    { skip: !departmentId && !categoryId },
+    { skip: !departmentId && !categoryId }
   );
 
   // Get wishlist data for header heart icon
@@ -291,7 +291,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       }
       return total + options.length;
     },
-    0,
+    0
   );
 
   const toggleViewMode = () => {
@@ -392,7 +392,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       // Skip chip-based collection filters
       if (key === "collection") {
         const nonChipValues = values.filter(
-          (v) => !["new-arrival", "bestseller"].includes(v),
+          (v) => !["new-arrival", "bestseller"].includes(v)
         );
         nonChipValues.forEach((value) => {
           tags.push(` ${value}`);
@@ -497,7 +497,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
                     Object.keys(activeFilters).forEach((key) => {
                       // Filter out the specific value from the current array
                       const updatedArray = activeFilters[key].filter(
-                        (v) => v !== filterValue,
+                        (v) => v !== filterValue
                       );
 
                       // 3. Only add the key back to the new object if the array isn't empty
@@ -613,13 +613,13 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       />
 
       {/* Left: View Toggle */}
-      <HapticButton style={styles.leftFab} onPress={toggleViewMode}>
+      {/* <HapticButton style={styles.leftFab} onPress={toggleViewMode}>
         <Ionicons
           name={viewMode === "grid" ? "list" : "grid"}
           size={22}
           color="#053844"
         />
-      </HapticButton>
+      </HapticButton> */}
 
       {/* Right: Support Menu */}
       {!isMenuOpen ? (

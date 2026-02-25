@@ -13,7 +13,7 @@ export default function searchBar() {
 
   return (
     <View style={styles.searchRow}>
-      <HapticButton onPress={() => router.push("/searchPage")}>
+      <HapticButton>
         <View style={{ flexDirection: "row" }}>
           {/* <Ionicons name="search" size={22} color={COLORS.primary} /> */}
           <Image

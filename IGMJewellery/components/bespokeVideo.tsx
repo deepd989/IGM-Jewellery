@@ -1,4 +1,5 @@
-import { useVideoPlayer, VideoView } from "expo-video";
+import { ResizeMode, Video } from "expo-av";
+import { useVideoPlayer } from "expo-video";
 import React, { useEffect } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 
@@ -7,7 +8,7 @@ const { width } = Dimensions.get("window");
 const BespokeVideoComponent = () => {
   // Direct Google Drive link (UC format)
   const videoSource =
-    "https://drive.google.com/uc?export=download&id=1LYb3FLuAQmoP4rktQBbFGxRPkM6fRy5c";
+    "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Bespoke%20Banners%2FExplore%20Bespoke%2FbespokeVideo.mp4?alt=media&token=566bcacd-2d8b-49e3-940b-70880ee0d85c";
 
   const player = useVideoPlayer(videoSource, (playerInstance) => {
     playerInstance.loop = true;
@@ -25,14 +26,22 @@ const BespokeVideoComponent = () => {
   return (
     <View style={styles.container}>
       <View style={styles.videoWrapper}>
-        <VideoView
+        <Video
+          source={{ uri: videoSource }}
+          style={styles.video}
+          resizeMode={ResizeMode.COVER}
+          shouldPlay
+          isLooping
+          isMuted
+        />
+        {/* <VideoView
           style={styles.video}
           player={player}
           nativeControls={false} // Hides play/pause/timeline icons
           allowsFullscreen={false}
           allowsPictureInPicture={false}
           contentFit="cover"
-        />
+        /> */}
       </View>
     </View>
   );

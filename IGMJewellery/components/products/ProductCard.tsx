@@ -73,7 +73,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             product,
             setFirstImageBase64State,
             "any outfit that goes with the jewellery and a person's face",
-            "any color",
+            "any color"
           );
           setIsPreviewLoading(false);
         } catch (error) {
@@ -135,7 +135,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               router.push("/cart?tab=trial");
             },
           },
-        ],
+        ]
       );
     } catch (error: any) {
       console.error("Failed to add to trial:", error);
@@ -150,7 +150,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               text: "View Trial List",
               onPress: () => router.push("/cart?tab=trial"),
             },
-          ],
+          ]
         );
       } else {
         Alert.alert("Error", "Failed to add item to trial. Please try again.");
@@ -180,7 +180,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         if (error?.data === "Item already in wishlist") {
           Alert.alert(
             "Already in Wishlist",
-            "This item is already wishlisted.",
+            "This item is already wishlisted."
           );
         } else {
           Alert.alert("Error", "Failed to add to wishlist");
@@ -213,12 +213,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <HapticButton
-      style={[styles.card, { width: cardWidth }]}
+      style={[styles.card, { width: cardWidth }, isGrid && { height: 300 }]}
       onPress={() => onPress(product)}
       activeOpacity={0.9}
     >
       {/* Image Section */}
-      <View style={[styles.imageWrapper, !isGrid && styles.listImageWrapper]}>
+      <View
+        style={[
+          styles.imageWrapper,
+          !isGrid && styles.listImageWrapper && { height: 300 },
+          ,
+        ]}
+      >
         {isPreviewLoading && loadAiPreview ? (
           <View
             style={[
@@ -242,7 +248,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               uri: firstImageHelper(
                 firstImageBase64State,
                 product.thumbnailUrls[0],
-                loadAiPreview,
+                loadAiPreview
               ),
             }}
             style={styles.image}
@@ -317,13 +323,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </Text>
 
         {/* Brand & Rating */}
-        <View style={styles.metaRow}>
+        <View
+          style={[
+            styles.metaRow,
+            !isGrid && {
+              paddingRight: SPACING.m,
+            },
+          ]}
+        >
           <Text style={styles.brandText}>{product.brand}</Text>
           {product.rating && renderStars(product.rating as number)}
         </View>
 
         {/* Action Buttons */}
-        <View style={styles.actionRow}>
+        <View
+          style={[
+            styles.actionRow,
+            !isGrid && {
+              paddingRight: SPACING.m,
+            },
+          ]}
+        >
           <HapticButton
             style={styles.tryNowBtn}
             onPress={(e) => {
