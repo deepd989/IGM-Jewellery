@@ -121,10 +121,9 @@ export default function HowItLooksWrapper({
                 cardTitle === "Bracelet" ? "#053844" : "transparent",
             }}
           >
-            <MaterialCommunityIcons
-              name="diamond-stone"
-              size={28}
-              color="#053844"
+            <Image
+              source={require("../assets/images/categoryIcons/bracelet-icon.png")}
+              style={{ width: 28, height: 28, tintColor: "#053844" }}
             />
             <Text
               style={{
@@ -148,7 +147,10 @@ export default function HowItLooksWrapper({
                 cardTitle === "Bangles" ? "#053844" : "transparent",
             }}
           >
-            <MaterialCommunityIcons name="gold" size={28} color="#053844" />
+            <Image
+              source={require("../assets/images/categoryIcons/bangles-icon.png")}
+              style={{ width: 28, height: 28, tintColor: "#053844" }}
+            />
             <Text
               style={{
                 marginTop: 5,
