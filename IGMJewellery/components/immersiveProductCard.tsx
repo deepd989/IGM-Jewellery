@@ -138,10 +138,12 @@ export const ImmersiveProductCard = ({ item: product }: { item: Product }) => {
       <LinearGradient
         colors={["rgba(0,0,0,0.7)", "transparent"]}
         style={styles.topGradient}
+        pointerEvents="none"
       />
       <LinearGradient
         colors={["transparent", "rgba(0,0,0,0.9)"]}
         style={styles.bottomGradient}
+        pointerEvents="none"
       />
 
       {/* Main UI Container using Safe Area Insets */}
@@ -284,6 +286,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     // Ensure content is spread across the FULL height
     justifyContent: "space-between",
+    zIndex: 10, // Ensure UI is above gradients and video/image
   },
   topGradient: {
     position: "absolute",

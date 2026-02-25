@@ -213,12 +213,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <HapticButton
-      style={[styles.card, { width: cardWidth }]}
+      style={[styles.card, { width: cardWidth }, isGrid && { height: 300 }]}
       onPress={() => onPress(product)}
       activeOpacity={0.9}
     >
       {/* Image Section */}
-      <View style={[styles.imageWrapper, !isGrid && styles.listImageWrapper]}>
+      <View
+        style={[
+          styles.imageWrapper,
+          !isGrid && styles.listImageWrapper && { height: 300 },
+          ,
+        ]}
+      >
         {isPreviewLoading && loadAiPreview ? (
           <View
             style={[
@@ -317,13 +323,27 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </Text>
 
         {/* Brand & Rating */}
-        <View style={styles.metaRow}>
+        <View
+          style={[
+            styles.metaRow,
+            !isGrid && {
+              paddingRight: SPACING.m,
+            },
+          ]}
+        >
           <Text style={styles.brandText}>{product.brand}</Text>
           {product.rating && renderStars(product.rating as number)}
         </View>
 
         {/* Action Buttons */}
-        <View style={styles.actionRow}>
+        <View
+          style={[
+            styles.actionRow,
+            !isGrid && {
+              paddingRight: SPACING.m,
+            },
+          ]}
+        >
           <HapticButton
             style={styles.tryNowBtn}
             onPress={(e) => {
@@ -408,7 +428,6 @@ const styles = StyleSheet.create({
     borderColor: "#F5F5F5",
     borderRadius: 8,
     overflow: "hidden",
-    height: 300,
   },
   imageWrapper: {
     width: "100%",

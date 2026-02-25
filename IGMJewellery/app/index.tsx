@@ -90,7 +90,7 @@ export default function JewelryLanding() {
             shouldPlay
             rate={2.0}
             isLooping={false} // Play only once
-            isMuted={true}
+            isMuted={false}
             volume={1.0}
             onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
           />
@@ -189,6 +189,8 @@ export default function JewelryLanding() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFFFFF",
+    flex: 1,
+    justifyContent: "center",
   },
   safeArea: {
     flex: 1,
@@ -199,7 +201,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     alignItems: "center",
-    marginTop: 10,
+    // paddingTop: 10,
     paddingHorizontal: 30,
   },
   subtitle: {
@@ -213,7 +215,7 @@ const styles = StyleSheet.create({
   },
   carouselSection: {
     height: 420,
-    marginVertical: 30,
+    marginVertical: 20,
   },
   flatListPadding: {
     paddingHorizontal: (width - CAROUSEL_ITEM_WIDTH) / 2 - SPACING,
@@ -237,7 +239,7 @@ const styles = StyleSheet.create({
   },
   authContainer: {
     paddingHorizontal: 30,
-    paddingBottom: 20,
+    // paddingBottom: 20,
     gap: 12,
   },
   fullButton: {
