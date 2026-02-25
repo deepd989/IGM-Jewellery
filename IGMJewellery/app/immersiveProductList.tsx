@@ -1,5 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ActivityIndicator,
   Animated,
@@ -28,7 +34,7 @@ const ImmersiveProductList = () => {
         setActiveIndex(viewableItems[0].index);
       }
     },
-    []
+    [],
   );
 
   const viewabilityConfig = useRef({
@@ -76,7 +82,7 @@ const ImmersiveProductList = () => {
           }),
         ]),
         Animated.delay(300),
-      ])
+      ]),
     );
 
     // Card nudge: slight lift up and back

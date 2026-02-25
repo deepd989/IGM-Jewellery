@@ -53,7 +53,7 @@ export const ImmersiveProductCard = ({
 
   const discountedPrice = product.discountedPrice;
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.product.id === product.id
+    (item) => item.product.id === product.id,
   );
 
   const handleAddToCart = async (e: any) => {
@@ -109,23 +109,22 @@ export const ImmersiveProductCard = ({
   };
 
   const renderBackground = () => {
-    const posterUri =
-      product.immersiveThumbnailUrl || product.thumbnailUrls[0];
+    const posterUri = product.immersiveThumbnailUrl || product.thumbnailUrls[0];
 
     if (product.immersiveVideoUrl) {
       // Always show poster image as base layer
       // Only mount the Video component when this card is active
       return (
-        <>
+        <View style={styles.videoContainer}>
           <ImageBackground
             source={{ uri: posterUri }}
-            style={StyleSheet.absoluteFill}
+            style={styles.videoFill}
             resizeMode="cover"
           />
           {isActive && (
             <Video
               ref={videoRef}
-              style={StyleSheet.absoluteFill}
+              style={styles.videoFill}
               source={{ uri: product.immersiveVideoUrl }}
               resizeMode={ResizeMode.COVER}
               shouldPlay
@@ -133,7 +132,7 @@ export const ImmersiveProductCard = ({
               isMuted
             />
           )}
-        </>
+        </View>
       );
     }
     return (
@@ -292,9 +291,19 @@ export const ImmersiveProductCard = ({
 const styles = StyleSheet.create({
   card: {
     width: width,
-    height: height, // Use the constant height here
+    height: height,
     backgroundColor: "black",
-    overflow: "hidden", // Ensures nothing bleeds into the next product
+    overflow: "hidden",
+  },
+  videoContainer: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: -width * 0.1,
+    width: width * 1.2,
+  },
+  videoFill: {
+    ...StyleSheet.absoluteFillObject,
   },
   uiContainer: {
     ...StyleSheet.absoluteFillObject,
