@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   orderThumb: {
     width: 40,
     height: 40,
-    backgroundColor: "red",
+    backgroundColor: "white",
     borderRadius: 4,
   },
   orderInfo: { flex: 1, marginLeft: 12 },

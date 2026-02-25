@@ -37,7 +37,6 @@ import { HapticButton } from "../components/basic components/hapticButton";
 import BrandsHorizontalScroll from "../components/brandsHorizontalScroll";
 import CategoriesHorizontalScroll from "../components/categoriesHorizontallScroll";
 import HowItLooksWrapper from "../components/homePageCard";
-import LatestCollections from "../components/latestCollections";
 import { SectionHeader } from "../components/section";
 import BrandCollectionCards from "../components/shopByCollectionsNew";
 import ShopByRegionCards from "../components/shopByRegion";
@@ -118,10 +117,10 @@ export default function HomeScreen() {
     useCallback(() => {
       const backHandler = BackHandler.addEventListener(
         "hardwareBackPress",
-        () => true,
+        () => true
       );
       return () => backHandler.remove();
-    }, []),
+    }, [])
   );
 
   return (
@@ -199,51 +198,61 @@ export default function HomeScreen() {
             </View>
           </View>
         </View>
-        <AnnouncementSection />
+        <View style={{ marginTop: 40 }}>
+          <CategoriesHorizontalScroll />
+        </View>
+        <TrustBar />
+        <BespokeSection />
+        <HorizontalRuleIGM />
+        <BrandsHorizontalScroll />
         <HorizontalRuleIGM />
         <ShopByRegionCards />
         <HorizontalRuleIGM />
+        <CommunityCarousel />
+        <HorizontalRuleIGM />
+        <AnnouncementSection />
+        <HorizontalRuleIGM />
+        <EventCard />
+        <HorizontalRuleIGM />
         <BrandCollectionCards />
         <HorizontalRuleIGM />
-        <CategoriesHorizontalScroll />
-        <TrustBar />
-        <BrandsHorizontalScroll />
-        <HorizontalRuleIGM />
         <TopPicks products={products} />
+        <View style={{ marginTop: 30 }}>
+          <HorizontalRuleIGM />
+        </View>
+        <GiftFinder />
         <HorizontalRuleIGM />
         <>
           <SectionHeader value="Explore AI Try On"></SectionHeader>
           <HowItLooksWrapper seeHowItLooks={true}></HowItLooksWrapper>
         </>
-        {/* <HorizontalRuleIGM /> */}
-        <GiftFinder />
-
+        <HorizontalRuleIGM />
         <OccasionCardList />
         <HorizontalRuleIGM />
         <TrendingProducts products={products} />
         <HorizontalRuleIGM />
-        <LatestCollections />
-        {/* <HorizontalRuleIGM /> */}
-
-        {/* <HorizontalRuleIGM /> */}
-        {/* <TryAtHomeCard /> */}
         <GiftingCard
           showExploreButton={true}
           imgUrl="https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Gifting%20Banner%2FGifting_banner-05.webp?alt=media&token=5b1e9a31-d5c7-47ee-bf47-8abcca8b5475"
         />
-        <HorizontalRuleIGM />
-        <>
+        {/* <HorizontalRuleIGM /> */}
+        {/* <LatestCollections /> */}
+        {/* <HorizontalRuleIGM /> */}
+
+        {/* <HorizontalRuleIGM /> */}
+        {/* <TryAtHomeCard /> */}
+
+        {/* <HorizontalRuleIGM /> */}
+        {/* <>
           <SectionHeader value="Trending Products"></SectionHeader>
           <HowItLooksWrapper seeHowItLooks={false}></HowItLooksWrapper>
         </>
-        <HorizontalRuleIGM />
-        <CommunityCarousel />
+        <HorizontalRuleIGM /> */}
 
         {/* <BestSellersSection /> */}
-        <HorizontalRuleIGM />
+        {/* <HorizontalRuleIGM />
         <BespokeSection />
-        <HorizontalRuleIGM />
-        <EventCard />
+        <HorizontalRuleIGM /> */}
         <TrustBar />
         <CallUsComponent></CallUsComponent>
 

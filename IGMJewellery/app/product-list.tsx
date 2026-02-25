@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   ImageBackground,
   Pressable,
@@ -102,6 +101,13 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(
     {}
   );
+  // const [isLoadingVideoFinished, setIsVideoFinished] = useState(false);
+
+  // const handlePlaybackStatusUpdate = (status) => {
+  //   if (status.didJustFinish) {
+  //     setIsVideoFinished(true);
+  //   }
+  // };
 
   // Get category hierarchy for breadcrumbs
   const { data: hierarchy } = useGetCategoryHierarchyQuery(
@@ -270,7 +276,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   // Fetch products from Redux API with filters and sorting
   const {
     data: products = [],
-    isLoading,
+    isLoading: areProductsLoading,
     isError,
     error,
     refetch,
@@ -479,7 +485,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
           </View> */}
 
           {/* FILTER CHIPS THIS SHOULD BE VISIBLE */}
-          <ScrollView
+          {/* <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.filterTagsContainer}
@@ -519,23 +525,30 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
                 </HapticButton>
               </View>
             ))}
-          </ScrollView>
+          </ScrollView> */}
         </View>
       )}
     </View>
   );
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text style={styles.loadingText}>Loading products...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
+  //intially isLoadingFInished false
+  // if (!isLoadingVideoFinished || areProductsLoading) {
+  //   return (
+  //     <View style={[styles.container, { flex: 1, backgroundColor: "#000" }]}>
+  //       <Video
+  //         source={require("../assets/loaderVideo.mp4")}
+  //         style={StyleSheet.absoluteFill}
+  //         resizeMode={ResizeMode.COVER}
+  //         shouldPlay
+  //         rate={2.0}
+  //         isLooping={true}
+  //         isMuted={true}
+  //         volume={1.0}
+  //         onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+  //       />
+  //     </View>
+  //   );
+  // }
 
   // Error state
   if (isError) {
@@ -735,7 +748,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "white",
     paddingTop: 0,
   },
   centerContent: {
@@ -824,16 +837,15 @@ const styles = StyleSheet.create({
 
   // Banner & category icon
   bannerBackground: {
-    width: "110%",
+    width: "100%",
     height: 180,
     justifyContent: "flex-end",
     alignItems: "center",
     marginBottom: 10, // half of icon circle overflows below
-    position: "relative",
-    left: "-10%",
   },
   bannerImage: {
-    borderRadius: 0,
+    borderRadius: 20,
+    paddingTop: 15,
   },
   // bannerOverlay: {
   //   ...StyleSheet.absoluteFillObject,

@@ -99,8 +99,8 @@ export default function BrandsHorizontalScroll() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F8F8", // Light gray screen background to see the white cards clearly
-    paddingTop: 50,
+    backgroundColor: "white",
+    paddingTop: 0,
   },
   listPadding: {
     paddingHorizontal: 15,

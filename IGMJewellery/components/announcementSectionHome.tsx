@@ -22,7 +22,9 @@ const SwipeAndShopComponent = () => {
         style={styles.buttonWrapper}
       >
         <Image
-          source={require("../assets/images/featureButtons/swipeAndShop.jpg")}
+          source={{
+            uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Feature%20Buttons%2FSwipe%26Shop_5.webp?alt=media&token=c0ca8e88-3abe-4c21-96b2-5054dd6e4b50",
+          }}
           style={styles.buttonImage}
           contentFit="cover"
           transition={200}

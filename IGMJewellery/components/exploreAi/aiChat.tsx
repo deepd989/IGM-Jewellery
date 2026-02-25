@@ -7,6 +7,7 @@ import {
 import { useSearchJewelryMutation } from "@/store/apis/textSearchApi";
 import { useGetWishlistQuery } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
+import { ResizeMode, Video } from "expo-av";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -87,6 +88,9 @@ export default function AiChatComponent({
   const [showVoiceVideoInterface, setShowVoiceVideoInterface] = useState(
     !!mode
   );
+
+  const [showVideo, setShowVideo] = useState(false);
+
   const [interfaceMode, setInterfaceMode] = useState<"voice" | "video">(
     mode || "voice"
   );
@@ -317,17 +321,21 @@ export default function AiChatComponent({
             <View style={styles.readyCardContainer}>
               <HapticButton
                 style={styles.visitSearchButton}
-                onPress={() =>
-                  router.push({
-                    pathname: "/product-list",
-                    params: {
-                      ...(item.searchParams as Record<string, string>),
-                      bannerImageUrl: encodeURIComponent(
-                        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"
-                      ),
-                    },
-                  })
-                }
+                onPress={async () => {
+                  setShowVideo(true);
+                  setTimeout(() => {
+                    setShowVideo(false);
+                    router.push({
+                      pathname: "/product-list",
+                      params: {
+                        ...(item.searchParams as Record<string, string>),
+                        bannerImageUrl: encodeURIComponent(
+                          "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"
+                        ),
+                      },
+                    });
+                  }, 4000); // this should match the duration of the video.
+                }}
               >
                 <Ionicons
                   name="search"
@@ -387,11 +395,13 @@ export default function AiChatComponent({
             />
           </HapticButton>
           <Image
-            source={require("../../assets/images/elanziaPng.png")}
+            source={require("../../assets/images/elanzia_ai.png")}
             style={{
               height: 50,
               width: 150,
-              backgroundColor: "white",
+              paddingLeft: 20,
+
+              alignSelf: "center",
             }}
           />
           <View style={styles.headerIcons}>
@@ -483,6 +493,31 @@ export default function AiChatComponent({
             />
           </SafeAreaView>
         </Modal>
+        {showVideo && (
+          <View
+            style={[
+              styles.videoOverlay,
+              {
+                flex: 1,
+                backgroundColor: "black",
+                height: "120%",
+                width: "100%",
+                zIndex: 999,
+              },
+            ]}
+          >
+            <Video
+              source={require("../../assets/loaderVideo.mp4")}
+              style={StyleSheet.absoluteFill}
+              resizeMode={ResizeMode.COVER}
+              shouldPlay
+              rate={1.25}
+              isLooping={false}
+              isMuted={true}
+              volume={1.0}
+            />
+          </View>
+        )}
       </SafeAreaView>
     </KeyboardAvoidingView>
   );
@@ -496,6 +531,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 16,
     alignItems: "flex-end",
+  },
+  videoOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "black",
+    zIndex: 999, // Ensure it sits above the header and list
+    justifyContent: "center",
+    alignItems: "center",
   },
   messageBubble: {
     maxWidth: "80%",

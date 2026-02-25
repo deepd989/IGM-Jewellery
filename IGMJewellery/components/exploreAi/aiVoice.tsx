@@ -3,7 +3,7 @@ import {
   ExpoSpeechRecognitionModule,
   useSpeechRecognitionEvent,
 } from "expo-speech-recognition";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Animated,
@@ -29,6 +29,11 @@ export default function VoiceVideoInterface({
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [mode, setMode] = useState(initialMode);
   const [transcript, setTranscript] = useState("");
+
+  // Timer Ref for auto-closing after silence
+  const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Animation states
   const [pulseAnim] = useState(new Animated.Value(1));
   const [bar1] = useState(new Animated.Value(0.3));
   const [bar2] = useState(new Animated.Value(0.5));
@@ -43,15 +48,29 @@ export default function VoiceVideoInterface({
 
   useSpeechRecognitionEvent("end", () => {
     setIsListening(false);
-    // When speech recognition ends, send the transcript if available
+    // Cleanup timer if it exists
+    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+
     if (transcript && onTranscript) {
       onTranscript(transcript);
     }
   });
 
   useSpeechRecognitionEvent("result", (event) => {
-    const recognizedText = event.results[0]?.transcript || "";
+    // 1. Update transcript by joining all current results
+    const recognizedText = event.results
+      .map((result) => result.transcript)
+      .join(" ");
     setTranscript(recognizedText);
+
+    // 2. Timer-based Auto-close Logic
+    // Clear existing timer whenever the user is still speaking
+    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+
+    // Set a new timer. If 2500ms pass without a new 'result', stop listening.
+    silenceTimerRef.current = setTimeout(() => {
+      stopListening();
+    }, 2000);
   });
 
   useSpeechRecognitionEvent("error", (event) => {
@@ -60,14 +79,13 @@ export default function VoiceVideoInterface({
     if (event.error === "not-allowed") {
       Alert.alert(
         "Permission Required",
-        "Please grant microphone and speech recognition permissions to use voice search.",
+        "Please grant microphone and speech recognition permissions.",
         [{ text: "OK" }]
       );
     }
   });
 
   useEffect(() => {
-    // Request camera permission for video mode
     if (mode === "video") {
       (async () => {
         const { status } = await Camera.requestCameraPermissionsAsync();
@@ -77,7 +95,6 @@ export default function VoiceVideoInterface({
   }, [mode]);
 
   useEffect(() => {
-    // Pulse animation for the glow
     Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
@@ -95,7 +112,6 @@ export default function VoiceVideoInterface({
   }, []);
 
   useEffect(() => {
-    // Animated bars for voice mode
     if (isListening && mode === "voice") {
       const bars = [bar1, bar2, bar3, bar4, bar5];
       bars.forEach((bar, index) => {
@@ -117,17 +133,13 @@ export default function VoiceVideoInterface({
     }
   }, [isListening, mode]);
 
-  // Auto-start voice recognition when component mounts in voice mode
   useEffect(() => {
     if (mode === "voice") {
       startListening();
     }
-
     return () => {
-      // Cleanup: stop recognition when component unmounts
-      if (isListening) {
-        ExpoSpeechRecognitionModule.stop();
-      }
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+      ExpoSpeechRecognitionModule.stop();
     };
   }, []);
 
@@ -147,10 +159,14 @@ export default function VoiceVideoInterface({
       }
 
       // Start speech recognition
+
+      // Reset transcript for new session
+      setTranscript("");
+
       ExpoSpeechRecognitionModule.start({
-        lang: "en-IN", // Indian English for better recognition
+        lang: "en-IN",
         interimResults: true,
-        continuous: false,
+        continuous: true, // Keep session alive for long sentences
       });
     } catch (error) {
       console.error("Error starting speech recognition:", error);
@@ -176,9 +192,7 @@ export default function VoiceVideoInterface({
   const handleSendTranscript = () => {
     if (transcript && onTranscript) {
       onTranscript(transcript);
-      if (onClose) {
-        onClose();
-      }
+      if (onClose) onClose();
     }
   };
 
@@ -207,7 +221,6 @@ export default function VoiceVideoInterface({
       );
     }
 
-    // Voice mode - render animated bars
     return (
       <HapticButton onPress={toggleListening} activeOpacity={0.8}>
         <View style={styles.visualizerInner}>
@@ -236,9 +249,7 @@ export default function VoiceVideoInterface({
   };
 
   const toggleMode = (newMode: "voice" | "video") => {
-    if (isListening) {
-      stopListening();
-    }
+    if (isListening) stopListening();
     setMode(newMode);
     if (newMode === "voice") {
       // Small delay before starting in new mode
@@ -265,7 +276,6 @@ export default function VoiceVideoInterface({
         {renderVisualizer()}
       </View>
 
-      {/* Status Text */}
       <Text style={styles.statusText}>
         {mode === "video"
           ? "Video call.."
@@ -274,7 +284,6 @@ export default function VoiceVideoInterface({
           : "Tap to speak"}
       </Text>
 
-      {/* Transcript Display */}
       {transcript ? (
         <View style={styles.transcriptContainer}>
           <Text style={styles.transcriptText}>{transcript}</Text>
@@ -296,7 +305,6 @@ export default function VoiceVideoInterface({
         </View>
       )}
 
-      {/* Control Buttons */}
       <View style={styles.controls}>
         <HapticButton
           style={[

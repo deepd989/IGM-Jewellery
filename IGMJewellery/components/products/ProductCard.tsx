@@ -257,11 +257,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* New Badge */}
-        {product.isNew && (
+        {/* {product.isNew && (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>New</Text>
           </View>
-        )}
+        )} */}
 
         {/* Favorite Icon */}
         <HapticButton

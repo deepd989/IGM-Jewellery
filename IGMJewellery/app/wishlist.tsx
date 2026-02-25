@@ -8,6 +8,7 @@ import {
   useToggleCompareMutation,
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
+import { ResizeMode, Video } from "expo-av";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -31,6 +32,14 @@ export default function WishlistScreen() {
   const [removeFromWishlist] = useRemoveFromWishlistMutation();
   const [toggleCompare] = useToggleCompareMutation();
   const [clearCompare] = useClearCompareMutation();
+
+  const [isLoadingVideoFinished, setIsVideoFinished] = useState(false);
+
+  const handlePlaybackStatusUpdate = (status) => {
+    if (status.didJustFinish) {
+      setIsVideoFinished(true);
+    }
+  };
 
   // Extract products from wishlist items (WishlistItem contains { product, addedAt })
   const wishlistItems = wishlistData?.items?.map((item) => item.product) || [];
@@ -205,7 +214,6 @@ export default function WishlistScreen() {
           </View>
         </View>
       </View>
-
       <FlatList
         key={viewMode}
         data={wishlistItems}
@@ -219,7 +227,6 @@ export default function WishlistScreen() {
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
-
       {/* View Toggle FAB */}
       <HapticButton style={styles.leftFab} onPress={toggleViewMode}>
         <Ionicons
@@ -228,7 +235,6 @@ export default function WishlistScreen() {
           color="#053844"
         />
       </HapticButton>
-
       {/* Compare Button */}
       {compareList.length > 0 && (
         <HapticButton
@@ -237,6 +243,32 @@ export default function WishlistScreen() {
         >
           <Text style={styles.compareButtonText}>START COMPARING PRODUCTS</Text>
         </HapticButton>
+      )}
+
+      {!isLoadingVideoFinished && (
+        <View
+          style={[
+            styles.videoOverlay,
+            {
+              flex: 1,
+              backgroundColor: "black",
+              height: "120%",
+              width: "100%",
+            },
+          ]}
+        >
+          <Video
+            source={require("../assets/loaderVideoMorphed.mp4")}
+            style={StyleSheet.absoluteFill}
+            resizeMode={ResizeMode.COVER}
+            shouldPlay
+            rate={1.0}
+            isLooping={false}
+            isMuted={true}
+            volume={1.0}
+            onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+          />
+        </View>
       )}
     </SafeAreaView>
   );
@@ -256,6 +288,11 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.s,
     borderBottomWidth: 1,
     borderBottomColor: "#F0F0F0",
+  },
+  videoOverlay: {
+    ...StyleSheet.absoluteFillObject, // This makes it cover the whole screen
+    backgroundColor: "black",
+    zIndex: 999, // Ensures it is above the header and tabs
   },
   backBtn: {
     padding: 4,

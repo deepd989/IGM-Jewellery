@@ -120,7 +120,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
             <Image
               source={{ uri: img }}
               style={styles.image}
-              resizeMode="contain"
+              resizeMode="cover"
             />
           </View>
         ))}
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
     height: IMAGE_HEIGHT,
     justifyContent: "center",
     alignItems: "center",
-    padding: SPACING.l,
+    paddingBottom: 50,
   },
   image: {
     width: "100%",
