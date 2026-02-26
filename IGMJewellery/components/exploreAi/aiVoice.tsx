@@ -3,7 +3,7 @@ import {
   ExpoSpeechRecognitionModule,
   useSpeechRecognitionEvent,
 } from "expo-speech-recognition";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Animated,
@@ -35,7 +35,6 @@ export default function VoiceVideoInterface({
   const [bar3] = useState(new Animated.Value(0.8));
   const [bar4] = useState(new Animated.Value(0.6));
   const [bar5] = useState(new Animated.Value(0.4));
-  const stopTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Speech recognition event listeners
   useSpeechRecognitionEvent("start", () => {
@@ -53,16 +52,6 @@ export default function VoiceVideoInterface({
   useSpeechRecognitionEvent("result", (event) => {
     const recognizedText = event.results[0]?.transcript || "";
     setTranscript(recognizedText);
-    if (stopTimerRef.current) {
-      clearTimeout(stopTimerRef.current);
-    }
-
-    // Set a new timer to stop listening after 1 second of silence
-    stopTimerRef.current = setTimeout(() => {
-      if (isListening) {
-        stopListening();
-      }
-    }, 2000); // 2 extra second delay
   });
 
   useSpeechRecognitionEvent("error", (event) => {
@@ -76,15 +65,6 @@ export default function VoiceVideoInterface({
       );
     }
   });
-
-  useEffect(() => {
-    return () => {
-      if (stopTimerRef.current) clearTimeout(stopTimerRef.current);
-      if (isListening) {
-        ExpoSpeechRecognitionModule.stop();
-      }
-    };
-  }, [isListening]);
 
   useEffect(() => {
     // Request camera permission for video mode

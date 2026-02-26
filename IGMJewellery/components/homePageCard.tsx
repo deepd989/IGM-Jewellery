@@ -121,11 +121,13 @@ export default function HowItLooksWrapper({
                 cardTitle === "Bracelet" ? "#053844" : "transparent",
             }}
           >
-            <MaterialCommunityIcons
-              name="diamond-stone"
-              size={28}
-              color="#053844"
-            />
+            <Image
+              source={{
+                uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FHomepage%2FCategory-02.png?alt=media&token=4dae78eb-5fa6-4b30-9091-56bebbf8e2f2",
+              }}
+              style={{ width: 28, height: 28 }}
+              contentFit="contain"
+            ></Image>
             <Text
               style={{
                 marginTop: 5,
@@ -148,7 +150,13 @@ export default function HowItLooksWrapper({
                 cardTitle === "Bangles" ? "#053844" : "transparent",
             }}
           >
-            <MaterialCommunityIcons name="gold" size={28} color="#053844" />
+            <Image
+              source={{
+                uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FHomepage%2FCategory-01.png?alt=media&token=5d8465ef-9c5c-4dc1-bdd9-df692b769403",
+              }}
+              style={{ width: 28, height: 28 }}
+              contentFit="contain"
+            ></Image>
             <Text
               style={{
                 marginTop: 5,
