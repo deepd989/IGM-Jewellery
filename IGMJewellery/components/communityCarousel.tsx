@@ -94,7 +94,7 @@ export default function CommunityCarousel() {
               <HapticButton
                 onPress={() => {
                   // Debug log to check the product ID
-                  router.push({
+                  router.navigate({
                     pathname: "/product/[id]",
                     params: { id: item.id },
                   });

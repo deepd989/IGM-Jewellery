@@ -248,7 +248,7 @@ export default function BrandProfile({
                     product={item}
                     viewMode={viewMode}
                     onPress={() =>
-                      router.push({
+                      router.navigate({
                         pathname: "/product/[id]",
                         params: { id: item.id },
                       })

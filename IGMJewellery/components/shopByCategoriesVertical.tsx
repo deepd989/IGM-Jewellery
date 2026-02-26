@@ -65,7 +65,7 @@ export default function CategoriesGrid() {
   ];
 
   const handleNavigation = (item) => {
-    router.push({
+    router.navigate({
       pathname: `/product-list`,
       params: {
         categoryName: item.name,

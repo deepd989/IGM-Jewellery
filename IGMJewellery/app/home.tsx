@@ -99,7 +99,7 @@ export default function HomeScreen() {
     })();
   }, []);
   const handleSubmit = () => {
-    router.push({
+    router.navigate({
       pathname: "/exploreAi",
       params: { value: textInput },
     });
@@ -186,7 +186,7 @@ export default function HomeScreen() {
               <View style={styles.iconGroup}>
                 <HapticButton
                   onPress={() => {
-                    router.push({
+                    router.navigate({
                       pathname: "/exploreAi",
                       params: { mode: "voice" },
                     });

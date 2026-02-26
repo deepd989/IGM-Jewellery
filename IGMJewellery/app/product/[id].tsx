@@ -100,7 +100,7 @@ export default function ProductDetailScreen() {
           },
           {
             text: "View Trial List",
-            onPress: () => router.push("/cart?tab=trial"),
+            onPress: () => router.navigate("/cart?tab=trial"),
           },
         ]
       );
@@ -113,7 +113,7 @@ export default function ProductDetailScreen() {
             { text: "OK", style: "cancel" },
             {
               text: "View Trial List",
-              onPress: () => router.push("/cart?tab=trial"),
+              onPress: () => router.navigate("/cart?tab=trial"),
             },
           ]
         );
@@ -160,14 +160,14 @@ export default function ProductDetailScreen() {
         <View style={styles.headerRight}>
           <HapticButton
             style={styles.iconWrapper}
-            onPress={() => router.push("/searchPage")}
+            onPress={() => router.navigate("/searchPage")}
           >
             <Ionicons name="search-outline" size={22} color={COLORS.text} />
           </HapticButton>
 
           <HapticButton
             style={styles.iconWrapper}
-            onPress={() => router.push("/wishlist")}
+            onPress={() => router.navigate("/wishlist")}
           >
             <Ionicons
               name={wishlistCount > 0 ? "heart" : "heart-outline"}
@@ -183,7 +183,7 @@ export default function ProductDetailScreen() {
 
           <HapticButton
             style={styles.iconWrapper}
-            onPress={() => router.push("/cart")}
+            onPress={() => router.navigate("/cart")}
           >
             <CartBadge iconSize={22} iconColor={COLORS.text} />
           </HapticButton>
@@ -260,7 +260,7 @@ export default function ProductDetailScreen() {
         visible={isTryOnSelectorVisible}
         onClose={() => setIsTryOnSelectorVisible(false)}
         onSelectVR={() => {
-          router.push({
+          router.navigate({
             pathname: "/virtualTryOn2",
             params: {
               productId: product.id,
@@ -270,7 +270,7 @@ export default function ProductDetailScreen() {
           });
         }}
         onSelectAI={() => {
-          router.push({
+          router.navigate({
             pathname: "/tryOn",
             params: {
               productId: product.id,

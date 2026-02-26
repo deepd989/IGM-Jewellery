@@ -17,7 +17,7 @@ export const BrandCard = ({ title, image: item }) => {
       activeOpacity={0.9}
       style={styles.cardContainer}
       onPress={() =>
-        router.push({
+        router.navigate({
           pathname: "/product-list",
           params: {
             brand: title.toLowerCase(),
@@ -68,7 +68,7 @@ export default function BrandsHorizontalScroll() {
       imgUrl: brand.profileImageUri,
       gradient: gradient,
       onpress: () => {
-        router.push(`/brandProfile/${brand.businessNameKey}`);
+        router.navigate(`/brandProfile/${brand.businessNameKey}`);
       },
     };
   });

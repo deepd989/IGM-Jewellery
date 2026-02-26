@@ -13,7 +13,7 @@ export function TrendingProducts({ products }: TrendingProductsProps) {
   const router = useRouter();
   const trendingProducts = products.slice(8, 10); // Get the first 8 products for top picks
   const handleProductPress = (product: Product) => {
-    router.push({
+    router.navigate({
       pathname: "/product/[id]",
       params: { id: product.id },
     });
@@ -37,7 +37,7 @@ export function TrendingProducts({ products }: TrendingProductsProps) {
       />
       <ViewAllButton
         onPress={() => {
-          router.push("/product-list");
+          router.navigate("/product-list");
         }}
       ></ViewAllButton>
     </>

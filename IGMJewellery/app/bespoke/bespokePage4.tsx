@@ -90,7 +90,7 @@ const BespokePage4 = () => {
         </HapticButton> */}
         <HapticButton
           style={styles.continueButton}
-          onPress={() => router.push("/home")}
+          onPress={() => router.navigate("/home")}
         >
           <Text style={styles.continueButtonText}>Continue Shopping</Text>
         </HapticButton>

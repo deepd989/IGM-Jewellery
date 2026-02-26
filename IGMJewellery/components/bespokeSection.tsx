@@ -19,7 +19,10 @@ export default function BespokeSection() {
       <BespokeVideoComponent></BespokeVideoComponent>
 
       {/* CTA */}
-      <HapticButton style={styles.cta} onPress={() => router.push("/bespoke")}>
+      <HapticButton
+        style={styles.cta}
+        onPress={() => router.navigate("/bespoke")}
+      >
         <Text style={styles.ctaText}>Explore Bespoke</Text>
         <View style={styles.iconCircle}>
           <Ionicons name="arrow-forward" size={16} color="#053844" />

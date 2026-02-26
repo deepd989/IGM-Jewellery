@@ -76,7 +76,7 @@ export default function JewelleryTryOn() {
     setShowImageGeneratingModal(true);
     await generateJewelleryImage(userId as string, product, () => {});
     setShowImageGeneratingModal(false);
-    router.push({
+    router.navigate({
       pathname: `/product/${productId}`,
       params: {
         fromTryOn: "true",

@@ -53,7 +53,7 @@ export const ImmersiveProductCard = ({
 
   const discountedPrice = product.discountedPrice;
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.product.id === product.id,
+    (item) => item.product.id === product.id
   );
 
   const handleAddToCart = async (e: any) => {
@@ -217,7 +217,7 @@ export const ImmersiveProductCard = ({
                 ₹{product.givenPrice.toLocaleString()}
               </Text>
               <HapticButton
-                onPress={() => router.push(`/product/${product.id}`)}
+                onPress={() => router.navigate(`/product/${product.id}`)}
               >
                 <Text style={styles.viewLink}>View Product</Text>
               </HapticButton>
@@ -275,13 +275,16 @@ export const ImmersiveProductCard = ({
         visible={isTryOnSelectorVisible}
         onClose={() => setIsTryOnSelectorVisible(false)}
         onSelectVR={() =>
-          router.push({
+          router.navigate({
             pathname: "/virtualTryOn2",
             params: { productId: product.id, productTitle: product.title },
           })
         }
         onSelectAI={() =>
-          router.push({ pathname: "/tryOn", params: { productId: product.id } })
+          router.navigate({
+            pathname: "/tryOn",
+            params: { productId: product.id },
+          })
         }
       />
     </View>

@@ -18,7 +18,7 @@ const SwipeAndShopComponent = () => {
       {/* Swipe & Shop Button */}
       <HapticButton
         activeOpacity={0.9}
-        onPress={() => router.push("/immersiveProductList")}
+        onPress={() => router.navigate("/immersiveProductList")}
         style={styles.buttonWrapper}
       >
         <Image
@@ -34,7 +34,7 @@ const SwipeAndShopComponent = () => {
       {/* Become Model Button */}
       <HapticButton
         activeOpacity={0.9}
-        onPress={() => router.push("/tryOn")}
+        onPress={() => router.navigate("/tryOn")}
         style={styles.buttonWrapper}
       >
         <Image

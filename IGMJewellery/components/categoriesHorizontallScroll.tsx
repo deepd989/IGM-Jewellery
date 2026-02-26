@@ -11,7 +11,7 @@ export default function CategoriesHorizontalScroll() {
       name: "Necklace",
       img: require("../assets/images/categoryIcons/necklace.png"),
       onpress: () => {
-        router.push({
+        router.navigate({
           pathname: `/product-list`,
           params: {
             categoryName: "Necklace",
@@ -27,7 +27,7 @@ export default function CategoriesHorizontalScroll() {
       name: "Bracelets",
       img: require("../assets/images/categoryIcons/bracelet.png"),
       onpress: () => {
-        router.push({
+        router.navigate({
           pathname: `/product-list`,
           params: {
             categoryName: "Bracelet",
@@ -43,7 +43,7 @@ export default function CategoriesHorizontalScroll() {
       name: "Earrings",
       img: require("../assets/images/categoryIcons/earring.png"),
       onpress: () => {
-        router.push({
+        router.navigate({
           pathname: `/product-list`,
           params: {
             categoryName: "Earrings",
@@ -59,7 +59,7 @@ export default function CategoriesHorizontalScroll() {
       name: "Rings",
       img: require("../assets/images/categoryIcons/ring.png"),
       onpress: () => {
-        router.push({
+        router.navigate({
           pathname: `/product-list`,
           params: {
             categoryName: "Rings",
@@ -75,7 +75,7 @@ export default function CategoriesHorizontalScroll() {
       name: "Bangles",
       img: require("../assets/images/categoryIcons/bangles.png"),
       onpress: () => {
-        router.push({
+        router.navigate({
           pathname: `/product-list`,
           params: {
             categoryName: "Bangles",
@@ -91,7 +91,7 @@ export default function CategoriesHorizontalScroll() {
       name: "Mangalsutra",
       img: require("../assets/images/categoryIcons/mangalsutra.png"),
       onpress: () => {
-        router.push({
+        router.navigate({
           pathname: `/product-list`,
           params: { categoryName: "Mangalsutra", productType: "mangalsutra" },
         });

@@ -221,7 +221,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
                   product={item}
                   onPress={() => {
                     setShowSimilarModal(false);
-                    router.push({
+                    router.navigate({
                       pathname: "/product/[id]",
                       params: { id: item.id },
                     });

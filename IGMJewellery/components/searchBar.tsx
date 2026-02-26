@@ -32,7 +32,7 @@ export default function searchBar() {
         <View style={styles.headerActions}>
           <HapticButton
             style={styles.iconBtn}
-            onPress={() => router.push("/wishlist")}
+            onPress={() => router.navigate("/wishlist")}
           >
             <Ionicons
               name={wishlistCount > 0 ? "heart" : "heart-outline"}

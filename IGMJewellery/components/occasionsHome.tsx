@@ -47,7 +47,7 @@ const CategoryCard = ({ title, image }) => {
       activeOpacity={0.9}
       style={styles.cardContainer}
       onPress={() =>
-        router.push({
+        router.navigate({
           pathname: "/product-list",
           params: {
             occasion: title.toLowerCase(),

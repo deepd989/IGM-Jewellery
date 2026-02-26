@@ -131,7 +131,7 @@ export default function ProfileScreen() {
         <Text style={styles.headerTitle}>Profile</Text>
         {/* <HapticButton
           style={styles.pointsBadge}
-          onPress={() => router.push("/profile/loyalty")}
+          onPress={() => router.navigate("/profile/loyalty")}
         >
           <Ionicons name="trophy" size={14} color="#053844" />
           <Text style={styles.pointsText}>{profile.points} Points</Text>
@@ -152,7 +152,7 @@ export default function ProfileScreen() {
           </View>
           <HapticButton
             style={styles.langSelector}
-            onPress={() => router.push("/profile/language-currency")}
+            onPress={() => router.navigate("/profile/language-currency")}
           >
             <Image
               source={{
@@ -169,7 +169,7 @@ export default function ProfileScreen() {
             <HapticButton
               key={stat.id}
               style={[styles.statCard]}
-              onPress={() => stat.path && router.push(stat.path as any)}
+              onPress={() => stat.path && router.navigate(stat.path as any)}
             >
               <Ionicons name={stat.icon as any} size={24} color="white" />
               <Text style={styles.statTitle}>{stat.title}</Text>
@@ -183,7 +183,7 @@ export default function ProfileScreen() {
             <HapticButton
               key={item.id}
               style={styles.menuItem}
-              onPress={() => item.path && router.push(item.path as any)}
+              onPress={() => item.path && router.navigate(item.path as any)}
             >
               <View style={styles.menuIconContainer}>
                 <Ionicons
@@ -229,7 +229,7 @@ export default function ProfileScreen() {
             <HapticButton
               key={i}
               style={styles.subOrderItem}
-              onPress={() => router.push("/orders/ord1")}
+              onPress={() => router.navigate("/orders/ord1")}
             >
               <ImageBackground
                 style={styles.subOrderThumb}
@@ -260,7 +260,7 @@ export default function ProfileScreen() {
             <HapticButton
               key={link.title}
               style={styles.footerLinkItem}
-              onPress={() => link.path && router.push(link.path as any)}
+              onPress={() => link.path && router.navigate(link.path as any)}
             >
               <Text style={styles.footerLinkText}>{link.title}</Text>
             </HapticButton>

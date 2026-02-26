@@ -30,7 +30,7 @@ const Card = ({
 }) => {
   const router = useRouter();
   const navigateToCollection = () => {
-    router.push({
+    router.navigate({
       pathname: "/product-list",
       params: {
         subCategoryId: String(item.id),

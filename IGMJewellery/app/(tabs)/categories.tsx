@@ -142,7 +142,7 @@ export default function CategoriesScreen() {
   const handleSubCategoryPress = (subCategory: SubCategory) => {
     const currentCategory = categories.find((c) => c.id === activeCategoryId);
 
-    router.push({
+    router.navigate({
       pathname: "/product-list",
       params: {
         departmentId: activeDepartmentId,
@@ -181,7 +181,7 @@ export default function CategoriesScreen() {
         <View style={styles.headerRight}>
           <HapticButton
             style={styles.iconBtn}
-            onPress={() => router.push("/wishlist")}
+            onPress={() => router.navigate("/wishlist")}
           >
             <Ionicons
               name={wishlistCount > 0 ? "heart" : "heart-outline"}

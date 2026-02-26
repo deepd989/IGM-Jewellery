@@ -71,7 +71,7 @@ export default function RedeemGiftStep2() {
   const handleContinueShopping = () => {
     setShowSuccessModal(false);
     // Navigate to shopping or back
-    router.push("/home");
+    router.navigate("/home");
   };
 
   return (

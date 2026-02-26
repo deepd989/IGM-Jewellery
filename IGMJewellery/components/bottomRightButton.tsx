@@ -35,7 +35,7 @@ export default function BottomRightButton({
   const handleOptionClick = (option: PopUpOption) => {
     console.log("Option clicked:", option);
     setIsMenuOpen(false);
-    router.push(option.route as any);
+    router.navigate(option.route as any);
   };
 
   return (

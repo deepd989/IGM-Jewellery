@@ -325,7 +325,7 @@ export default function AiChatComponent({
                   setShowVideo(true);
                   setTimeout(() => {
                     setShowVideo(false);
-                    router.push({
+                    router.navigate({
                       pathname: "/product-list",
                       params: {
                         ...(item.searchParams as Record<string, string>),
@@ -400,14 +400,13 @@ export default function AiChatComponent({
               height: 50,
               width: 150,
               paddingLeft: 20,
-
               alignSelf: "center",
             }}
           />
           <View style={styles.headerIcons}>
             <HapticButton
               style={styles.headerIconBtn}
-              onPress={() => router.push("/wishlist")}
+              onPress={() => router.navigate("/wishlist")}
             >
               <Ionicons
                 name={wishlistCount > 0 ? "heart" : "heart-outline"}
@@ -524,7 +523,7 @@ export default function AiChatComponent({
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#fff" },
+  safeArea: { flex: 1, backgroundColor: "white" },
   container: { flex: 1 },
   messagesList: { padding: 16 },
   messageContainer: {

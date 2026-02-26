@@ -309,7 +309,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   };
 
   const handleProductPress = (product: Product) => {
-    router.push({
+    router.navigate({
       pathname: "/product/[id]",
       params: { id: product.id },
     });
@@ -427,14 +427,14 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
         <View style={styles.headerActions}>
           <HapticButton
             style={styles.iconBtn}
-            onPress={() => router.push("/searchPage")}
+            onPress={() => router.navigate("/searchPage")}
           >
             <Ionicons name="search-outline" size={24} color={COLORS.text} />
           </HapticButton>
 
           <HapticButton
             style={styles.iconBtn}
-            onPress={() => router.push("/wishlist")}
+            onPress={() => router.navigate("/wishlist")}
           >
             <Ionicons
               name={wishlistCount > 0 ? "heart" : "heart-outline"}
@@ -661,7 +661,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
               style={styles.menuItem}
               onPress={() => {
                 setIsMenuOpen(false);
-                router.push(item.path as string);
+                router.navigate(item.path as string);
               }}
             >
               <Text style={styles.menuItemText}>{item.key}</Text>

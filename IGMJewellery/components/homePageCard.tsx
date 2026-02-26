@@ -254,7 +254,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
       <HapticButton
         style={necklaceCardStyle.card}
         onPress={() =>
-          router.push({
+          router.navigate({
             pathname: "/product-list",
             params: { categoryName: product.productType },
           })
@@ -339,7 +339,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
         visible={isTryOnSelectorVisible}
         onClose={() => setIsTryOnSelectorVisible(false)}
         onSelectVR={() => {
-          router.push({
+          router.navigate({
             pathname: "/virtualTryOn2",
             params: {
               productId: product.id,
@@ -348,7 +348,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
           });
         }}
         onSelectAI={() => {
-          router.push({
+          router.navigate({
             pathname: "/tryOn",
             params: {
               productId: product.id,

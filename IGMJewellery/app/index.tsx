@@ -132,14 +132,14 @@ export default function JewelryLanding() {
         <View style={styles.authContainer}>
           <HapticButton
             style={styles.fullButton}
-            onPress={() => router.push("/login")}
+            onPress={() => router.navigate("/login")}
           >
             <Text style={styles.buttonText}>Get Started</Text>
           </HapticButton>
 
           <HapticButton
             style={[styles.fullButton, styles.secondaryButton]}
-            onPress={() => router.push("/home")}
+            onPress={() => router.navigate("/home")}
           >
             <Text style={[styles.buttonText, { color: COLORS.primary }]}>
               Explore as Guest

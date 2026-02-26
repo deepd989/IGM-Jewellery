@@ -32,7 +32,7 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab }) => {
     const iconStyle = isActive ? iconName : iconName + "-outline";
 
     const handlePress = () => {
-      router.push(route as any);
+      router.navigate(route as any);
     };
 
     if (isCenter) {

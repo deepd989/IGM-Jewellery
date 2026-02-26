@@ -57,7 +57,7 @@ export default function AiSearchComponent() {
   const handleStartLooking = () => {
     const textInput = buildSearchQuery();
 
-    router.push({
+    router.navigate({
       pathname: "/exploreAi",
       params: { value: textInput },
     });

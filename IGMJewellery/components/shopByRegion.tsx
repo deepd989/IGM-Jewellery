@@ -87,7 +87,7 @@ const REGIONS_DUMMY_DATA = {
 const Card = ({ item, cardWidth }) => {
   const router = useRouter();
   const navigateToRegion = () => {
-    router.push({
+    router.navigate({
       pathname: "/product-list",
       params: {
         region: item.region.toLowerCase(),

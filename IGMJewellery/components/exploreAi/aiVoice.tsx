@@ -29,6 +29,7 @@ export default function VoiceVideoInterface({
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [mode, setMode] = useState(initialMode);
   const [transcript, setTranscript] = useState("");
+  const finalTranscriptRef = useRef("");
 
   // Timer Ref for auto-closing after silence
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -57,17 +58,24 @@ export default function VoiceVideoInterface({
   });
 
   useSpeechRecognitionEvent("result", (event) => {
-    // 1. Update transcript by joining all current results
-    const recognizedText = event.results
-      .map((result) => result.transcript)
-      .join(" ");
-    setTranscript(recognizedText);
+    // Separate the final and interim results from the current event state
+    let finalStr = "";
+    let interimStr = "";
 
-    // 2. Timer-based Auto-close Logic
-    // Clear existing timer whenever the user is still speaking
+    event.results.forEach((result) => {
+      if (result.isFinal) {
+        finalStr += result.transcript + " ";
+      } else {
+        interimStr += result.transcript + " ";
+      }
+    });
+
+    // Combine them for the UI display
+    const displayed = finalStr.trim();
+    setTranscript(displayed);
+
+    // Reset silence timer
     if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
-
-    // Set a new timer. If 2500ms pass without a new 'result', stop listening.
     silenceTimerRef.current = setTimeout(() => {
       stopListening();
     }, 2000);
@@ -162,6 +170,7 @@ export default function VoiceVideoInterface({
 
       // Reset transcript for new session
       setTranscript("");
+      finalTranscriptRef.current = "";
 
       ExpoSpeechRecognitionModule.start({
         lang: "en-IN",

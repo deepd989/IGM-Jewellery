@@ -1,13 +1,13 @@
 import {
-    useGetCheckoutSessionQuery,
-    useGetSavedAddressesQuery,
-    useInitializeCheckoutMutation,
-    useUpdateBillingAddressMutation,
-    useUpdateDeliveryAddressMutation,
+  useGetCheckoutSessionQuery,
+  useGetSavedAddressesQuery,
+  useInitializeCheckoutMutation,
+  useUpdateBillingAddressMutation,
+  useUpdateDeliveryAddressMutation,
 } from "@/store/apis/checkout";
 import {
-    AddressFormData,
-    addressSchema,
+  AddressFormData,
+  addressSchema,
 } from "@/validation-schema/address-schema";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,14 +15,14 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
-    ActivityIndicator,
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../../components/basic components/hapticButton";
@@ -32,8 +32,8 @@ import { AddressCard } from "../../components/shared/AddressCard";
 import { AddressFields } from "../../components/shared/AddressFields";
 import { COLORS, SPACING } from "../../constants/theme";
 import {
-    BillingAddress,
-    DeliveryAddress,
+  BillingAddress,
+  DeliveryAddress,
 } from "../../interfaces/address.interface";
 
 export default function AddressScreen() {
@@ -164,7 +164,7 @@ export default function AddressScreen() {
       }
 
       await updateBillingAddress(billingAddress).unwrap();
-      router.push("/checkout/gifting");
+      router.navigate("/checkout/gifting");
     } catch {
       Alert.alert("Error", "Failed to save address");
     }

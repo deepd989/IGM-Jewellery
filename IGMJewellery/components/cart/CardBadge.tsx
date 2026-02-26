@@ -25,7 +25,7 @@ export const CartBadge: React.FC<CartBadgeProps> = ({
     cartData?.items.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
   const handlePress = () => {
-    router.push("/cart");
+    router.navigate("/cart");
   };
 
   return (

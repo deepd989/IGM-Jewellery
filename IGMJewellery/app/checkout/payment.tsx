@@ -1,19 +1,19 @@
 import { PriceBreakdown } from "@/components/checkout/PriceBreakdown";
 import { useGetCartQuery } from "@/store/apis/cart";
 import {
-    useGetCheckoutSessionQuery,
-    useUpdatePaymentMethodMutation,
+  useGetCheckoutSessionQuery,
+  useUpdatePaymentMethodMutation,
 } from "@/store/apis/checkout";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../../components/basic components/hapticButton";
@@ -77,13 +77,13 @@ export default function PaymentScreen() {
 
     if (!checkoutSession.checkoutState.deliveryAddress) {
       Alert.alert("Missing Information", "Please add delivery address");
-      router.push("/checkout/address");
+      router.navigate("/checkout/address");
       return;
     }
 
     if (!checkoutSession.checkoutState.billingAddress) {
       Alert.alert("Missing Information", "Please add billing address");
-      router.push("/checkout/address");
+      router.navigate("/checkout/address");
       return;
     }
 
@@ -99,7 +99,7 @@ export default function PaymentScreen() {
 
     // Navigate based on payment method WITHOUT clearing session
     if (selectedMethod === "google_pay") {
-      router.push({
+      router.navigate({
         pathname: "/checkout/payment/upi",
         params: { orderId: tempOrderId },
       });
@@ -107,13 +107,13 @@ export default function PaymentScreen() {
       selectedMethod === "credit_card" ||
       selectedMethod === "debit_card"
     ) {
-      router.push({
+      router.navigate({
         pathname: "/checkout/payment/card",
         params: { orderId: tempOrderId },
       });
     } else {
       // For COD and Net Banking, create order directly
-      router.push("/checkout/confirmation");
+      router.navigate("/checkout/confirmation");
     }
   };
 
@@ -239,7 +239,7 @@ export default function PaymentScreen() {
           <Text style={styles.sectionTitle}>Gift Cards</Text>
           <HapticButton
             style={styles.giftCardBox}
-            onPress={() => router.push("/coupons")}
+            onPress={() => router.navigate("/coupons")}
           >
             <View style={styles.squarePlaceholder}>
               <Ionicons name="gift-outline" size={24} color="#666" />

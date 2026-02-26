@@ -50,7 +50,7 @@ const GiftCardRedeemStep1 = () => {
 
   const claimCard = (card: GiftCardData) => {
     const navigationData = {};
-    router.push({
+    router.navigate({
       pathname: "/redeemGiftStep2",
       params: card,
     });

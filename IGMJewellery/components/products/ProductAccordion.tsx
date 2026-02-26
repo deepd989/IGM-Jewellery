@@ -81,7 +81,7 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
 
   const handleExploreBrand = () => {
     const brandKey = getBrandKey(product.brand);
-    router.push(`/brandProfile/${brandKey}`);
+    router.navigate(`/brandProfile/${brandKey}`);
   };
 
   // Extract product details with fallbacks

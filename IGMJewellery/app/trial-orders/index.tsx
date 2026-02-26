@@ -66,7 +66,7 @@ export default function TrialOrdersScreen() {
               key={trial.id}
               style={styles.card}
               onPress={() =>
-                router.push(
+                router.navigate(
                   `/trial-orders/${
                     trial.status === "Executed" ? "tr_delivered" : trial.id
                   }`

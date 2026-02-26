@@ -50,7 +50,7 @@ export default function WishlistScreen() {
   };
 
   const handleProductPress = (product: Product) => {
-    router.push({
+    router.navigate({
       pathname: "/product/[id]",
       params: { id: product.id },
     });
@@ -191,7 +191,7 @@ export default function WishlistScreen() {
           </Text>
           <HapticButton
             style={styles.shopNowBtn}
-            onPress={() => router.push("/product-list")}
+            onPress={() => router.navigate("/product-list")}
           >
             <Text style={styles.shopNowText}>Start Shopping</Text>
           </HapticButton>

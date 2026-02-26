@@ -50,7 +50,7 @@ export default function TrialAddressScreen() {
     const locationStr = `${data.street}, ${data.city}, ${data.pincode}`;
     await clearTrial().unwrap();
 
-    router.push({
+    router.navigate({
       pathname: "/trial/confirmation",
       params: {
         requestId: "#TR-" + Math.floor(10000 + Math.random() * 90000),

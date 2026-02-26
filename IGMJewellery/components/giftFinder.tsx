@@ -78,13 +78,13 @@ export default function GiftFinder() {
 
     if (
       maleRelationships.some((rel) =>
-        relationship.toLowerCase().includes(rel.toLowerCase()),
+        relationship.toLowerCase().includes(rel.toLowerCase())
       )
     )
       return "Male";
     if (
       femaleRelationships.some((rel) =>
-        relationship.toLowerCase().includes(rel.toLowerCase()),
+        relationship.toLowerCase().includes(rel.toLowerCase())
       )
     )
       return "Female";
@@ -93,7 +93,7 @@ export default function GiftFinder() {
 
   const handleStartLooking = () => {
     const gender = getGenderFromRelationship(selectedRelationship);
-    router.push({
+    router.navigate({
       pathname: "/exploreAi",
       params: {
         value: `I'm looking for a piece of ${selectedCategory} for ${selectedRelationship}. It's to celebrate ${selectedOccasion}, and my budget is around ${priceRange}. Could you show me some options that would be a good fit?`,
@@ -105,7 +105,7 @@ export default function GiftFinder() {
   const renderDropdownTrigger = (
     label: string,
     value: string,
-    type: "category" | "relationship" | "occasion" | "price",
+    type: "category" | "relationship" | "occasion" | "price"
   ) => (
     <View style={styles.dropdownContainer}>
       <Text style={styles.label}>{label}</Text>
@@ -128,7 +128,7 @@ export default function GiftFinder() {
     type: "category" | "relationship" | "occasion",
     data: string[],
     currentValue: string,
-    setter: (val: string) => void,
+    setter: (val: string) => void
   ) => (
     <Modal
       isVisible={openDropdown === type}
@@ -193,25 +193,25 @@ export default function GiftFinder() {
           {renderDropdownTrigger(
             "I am looking for...",
             selectedCategory,
-            "category",
+            "category"
           )}
 
           {renderDropdownTrigger(
             "within",
             `₹${priceRange[0]} - ₹${priceRange[1]}`,
-            "price",
+            "price"
           )}
 
           {renderDropdownTrigger(
             "for my",
             selectedRelationship,
-            "relationship",
+            "relationship"
           )}
 
           {renderDropdownTrigger(
             "on the occasion of",
             selectedOccasion,
-            "occasion",
+            "occasion"
           )}
 
           <HapticButton
@@ -229,19 +229,19 @@ export default function GiftFinder() {
         "category",
         categories,
         selectedCategory,
-        setSelectedCategory,
+        setSelectedCategory
       )}
       {renderListModal(
         "relationship",
         relationships,
         selectedRelationship,
-        setSelectedRelationship,
+        setSelectedRelationship
       )}
       {renderListModal(
         "occasion",
         occasions,
         selectedOccasion,
-        setSelectedOccasion,
+        setSelectedOccasion
       )}
 
       {/* PRICE RANGE MODAL */}
