@@ -7,8 +7,7 @@ const { width } = Dimensions.get("window");
 
 const BespokeVideoComponent = () => {
   // Direct Google Drive link (UC format)
-  const videoSource =
-    "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Bespoke%20Banners%2FExplore%20Bespoke%2FbespokeVideo.mp4?alt=media&token=566bcacd-2d8b-49e3-940b-70880ee0d85c";
+  const videoSource = require("../assets/bespokeVideo.mp4");
 
   const player = useVideoPlayer(videoSource, (playerInstance) => {
     playerInstance.loop = true;
@@ -27,7 +26,7 @@ const BespokeVideoComponent = () => {
     <View style={styles.container}>
       <View style={styles.videoWrapper}>
         <Video
-          source={{ uri: videoSource }}
+          source={videoSource}
           style={styles.video}
           resizeMode={ResizeMode.COVER}
           shouldPlay

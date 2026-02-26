@@ -29,6 +29,22 @@ import { TryOnSelectorModal } from "./products/TryOnSelectorModal";
 
 const { width, height } = Dimensions.get("window");
 
+const videoAssetsMap: Record<string, any> = {
+  EA1594: require("../assets/EA1594.mp4"),
+  "GER-24": require("../assets/GER-24.mp4"),
+  "GER-030": require("../assets/GER-030.mp4"),
+  "GER-012023": require("../assets/GER-012023.mp4"),
+  "GNK-026": require("../assets/GNK-026.mp4"),
+  "GNK-89-12": require("../assets/GNK-89-12.mp4"),
+  "GNK-NK-29": require("../assets/GNK-NK-29.mp4"),
+  "KAM-NK-04": require("../assets/KAM-NK-04.mp4"),
+  Kana1: require("../assets/Kana1.mp4"),
+  Moonlight1: require("../assets/Moonlight1.mp4"),
+  Parampara1: require("../assets/Parampara1.mp4"),
+  Shri1: require("../assets/Shri1.mp4"),
+  Swarna1: require("../assets/Swarna1.mp4"),
+};
+
 export const ImmersiveProductCard = ({
   item: product,
   isActive = true,
@@ -125,7 +141,7 @@ export const ImmersiveProductCard = ({
             <Video
               ref={videoRef}
               style={styles.videoFill}
-              source={{ uri: product.immersiveVideoUrl }}
+              source={videoAssetsMap[product.sku as string]}
               resizeMode={ResizeMode.COVER}
               shouldPlay
               isLooping

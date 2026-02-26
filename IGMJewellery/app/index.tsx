@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     flex: 1,
     justifyContent: "flex-start",
-    paddingTop: 10,
+    paddingTop: 20,
   },
   safeArea: {
     flex: 1,

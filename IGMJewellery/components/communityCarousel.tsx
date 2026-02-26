@@ -1,4 +1,5 @@
 import { ResizeMode, Video } from "expo-av"; // Corrected import
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useMemo, useRef } from "react";
 import { Animated, Dimensions, StyleSheet, Text, View } from "react-native";
@@ -109,8 +110,17 @@ export default function CommunityCarousel() {
                   isMuted
                 />
                 <View style={styles.videoCaption}>
-                  <Text style={styles.title}>{item.title}</Text>
-                  <Text style={styles.brand}>{item.brand}</Text>
+                  <LinearGradient
+                    colors={["white", "black"]}
+                    style={{
+                      flex: 1,
+                      justifyContent: "flex-end",
+                      opacity: 0.8,
+                    }}
+                  >
+                    <Text style={styles.title}>{item.title}</Text>
+                    <Text style={styles.brand}>{item.brand}</Text>
+                  </LinearGradient>
                 </View>
               </HapticButton>
             </Animated.View>
@@ -136,18 +146,20 @@ const styles = StyleSheet.create({
   video: { width: "100%", height: "100%" },
   videoCaption: {
     position: "relative",
-    top: -80,
+    top: -100,
+    height: 50,
   },
   title: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "600",
-    color: "white",
+    color: "black",
     paddingHorizontal: 10,
   },
   brand: {
-    fontSize: 12,
+    fontSize: 16,
     paddingHorizontal: 10,
     fontWeight: "500",
-    color: "black",
+    color: "white",
+    paddingBottom: 8,
   },
 });
