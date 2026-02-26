@@ -485,7 +485,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
           </View> */}
 
           {/* FILTER CHIPS THIS SHOULD BE VISIBLE */}
-          {/* <ScrollView
+          <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.filterTagsContainer}
@@ -525,7 +525,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
                 </HapticButton>
               </View>
             ))}
-          </ScrollView> */}
+          </ScrollView>
         </View>
       )}
     </View>
@@ -550,6 +550,18 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   //   );
   // }
 
+  if (areProductsLoading) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { flex: 1, backgroundColor: "white" }]}
+      >
+        <View style={styles.centerContent}>
+          <Ionicons name="hourglass-outline" size={48} color={COLORS.primary} />
+          <Text style={styles.loadingText}>Loading products...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
   // Error state
   if (isError) {
     return (

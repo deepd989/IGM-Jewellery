@@ -78,7 +78,7 @@ export const SUB_CATS_NECKLACE: SubCategory[] = [
     imageUrl:
       "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FNecklace%2FNecklace_Religious.webp?alt=media&token=470b92fc-5ee7-4fe3-9902-3583ff6f533d",
     subCategoryBannerUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategories_banner_Necklace.webp?alt=media&token=58855e44-330e-46c9-ba6a-88790dea2cd2",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategories_Necklace.webp?alt=media&token=ad8ba455-b557-400d-b1e6-eff9488655c4",
   },
   {
     id: "choker",
@@ -86,7 +86,7 @@ export const SUB_CATS_NECKLACE: SubCategory[] = [
     imageUrl:
       "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FNecklace%2FNecklace_choker.webp?alt=media&token=d3498606-54e0-46fc-a3eb-a643a754ce9b",
     subCategoryBannerUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategories_banner_Necklace.webp?alt=media&token=58855e44-330e-46c9-ba6a-88790dea2cd2",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategories_Necklace.webp?alt=media&token=ad8ba455-b557-400d-b1e6-eff9488655c4",
   },
   {
     id: "antique",
@@ -94,7 +94,7 @@ export const SUB_CATS_NECKLACE: SubCategory[] = [
     imageUrl:
       "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FNecklace%2FNeckalace_Antique_religious%20copy%203.webp?alt=media&token=4b8872b8-f7f8-493f-b3e9-2833856c1595",
     subCategoryBannerUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategories_banner_Necklace.webp?alt=media&token=58855e44-330e-46c9-ba6a-88790dea2cd2",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategories_Necklace.webp?alt=media&token=ad8ba455-b557-400d-b1e6-eff9488655c4",
   },
   {
     id: "lariat",
@@ -102,7 +102,7 @@ export const SUB_CATS_NECKLACE: SubCategory[] = [
     imageUrl:
       "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FNecklace%2FNecklace_lariat.webp?alt=media&token=118c700f-0746-4370-86df-5974d4c27907",
     subCategoryBannerUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategories_banner_Necklace.webp?alt=media&token=58855e44-330e-46c9-ba6a-88790dea2cd2",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategories_Necklace.webp?alt=media&token=ad8ba455-b557-400d-b1e6-eff9488655c4",
   },
   {
     id: "gemstone",
@@ -110,7 +110,7 @@ export const SUB_CATS_NECKLACE: SubCategory[] = [
     imageUrl:
       "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FNecklace%2FNeckalace_gemstone.webp?alt=media&token=e8bd0db1-3c90-4dea-b776-4d8cc10bd480",
     subCategoryBannerUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategories_banner_Necklace.webp?alt=media&token=58855e44-330e-46c9-ba6a-88790dea2cd2",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategories_Necklace.webp?alt=media&token=ad8ba455-b557-400d-b1e6-eff9488655c4",
   },
   {
     id: "religious",
@@ -118,7 +118,7 @@ export const SUB_CATS_NECKLACE: SubCategory[] = [
     imageUrl:
       "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FNecklace%2FNecklace_Religious.webp?alt=media&token=470b92fc-5ee7-4fe3-9902-3583ff6f533d",
     subCategoryBannerUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategories_banner_Necklace.webp?alt=media&token=58855e44-330e-46c9-ba6a-88790dea2cd2",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategories_Necklace.webp?alt=media&token=ad8ba455-b557-400d-b1e6-eff9488655c4",
   },
   {
     id: "rani",
@@ -126,7 +126,7 @@ export const SUB_CATS_NECKLACE: SubCategory[] = [
     imageUrl:
       "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FNecklace%2FNecklace_rani%20haar.webp?alt=media&token=b45d16b9-3ecf-479a-8d19-0076fd9fcddd",
     subCategoryBannerUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategories_banner_Necklace.webp?alt=media&token=58855e44-330e-46c9-ba6a-88790dea2cd2",
+      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategories_Necklace.webp?alt=media&token=ad8ba455-b557-400d-b1e6-eff9488655c4",
   },
 ];
 

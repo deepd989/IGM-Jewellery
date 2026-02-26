@@ -1,11 +1,19 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet } from "react-native";
+import {
+  SUB_CATS_BANGLE,
+  SUB_CATS_BRACELET,
+  SUB_CATS_EARRING,
+  SUB_CATS_NECKLACE,
+  SUB_CATS_RINGS,
+} from "../store/data/categoriesData";
 import GradientHorizontalScroll from "./gradientScroll";
 import { SectionHeader } from "./section";
 
 export default function CategoriesHorizontalScroll() {
   const router = useRouter();
+
   const CategoriesData = [
     {
       name: "Necklace",
@@ -17,7 +25,7 @@ export default function CategoriesHorizontalScroll() {
             categoryName: "Necklace",
             productType: "necklace",
             bannerImageUrl: encodeURIComponent(
-              "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategory_Necklace_text.webp?alt=media&token=1d02d70d-2793-441c-accf-bca5b72477e7"
+              SUB_CATS_NECKLACE[0].subCategoryBannerUrl
             ),
           },
         });
@@ -33,7 +41,7 @@ export default function CategoriesHorizontalScroll() {
             categoryName: "Bracelet",
             productType: "bracelet",
             bannerImageUrl: encodeURIComponent(
-              "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FBracelets%2FCategory_Bracelets_text.webp?alt=media&token=5e5b914d-e746-4bf8-8a6a-f5b84d2d4b52"
+              SUB_CATS_BRACELET[0].subCategoryBannerUrl
             ),
           },
         });
@@ -49,7 +57,7 @@ export default function CategoriesHorizontalScroll() {
             categoryName: "Earrings",
             productType: "earring",
             bannerImageUrl: encodeURIComponent(
-              "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FEarrings%2FCategory_Earrings_text.webp?alt=media&token=411c118e-eef5-4b17-9374-7a5cf3693b1f"
+              SUB_CATS_EARRING[0].subCategoryBannerUrl
             ),
           },
         });
@@ -65,7 +73,7 @@ export default function CategoriesHorizontalScroll() {
             categoryName: "Rings",
             productType: "ring",
             bannerImageUrl: encodeURIComponent(
-              "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FRings%2FCategory_Rings_text.webp?alt=media&token=8555d1a9-d749-46d8-acb4-f05b7a5bc487"
+              SUB_CATS_RINGS[0].subCategoryBannerUrl
             ),
           },
         });
@@ -81,7 +89,7 @@ export default function CategoriesHorizontalScroll() {
             categoryName: "Bangles",
             productType: "bangle",
             bannerImageUrl: encodeURIComponent(
-              "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FBangles%2FCategory_Bangels_Text.webp?alt=media&token=d5401dad-faed-4c80-a833-919238055d75"
+              SUB_CATS_BANGLE[0].subCategoryBannerUrl
             ),
           },
         });
@@ -93,7 +101,13 @@ export default function CategoriesHorizontalScroll() {
       onpress: () => {
         router.navigate({
           pathname: `/product-list`,
-          params: { categoryName: "Mangalsutra", productType: "mangalsutra" },
+          params: {
+            categoryName: "Mangalsutra",
+            productType: "mangalsutra",
+            bannerImageUrl: encodeURIComponent(
+              SUB_CATS_BANGLE[0].subCategoryBannerUrl
+            ),
+          },
         });
       },
     },
