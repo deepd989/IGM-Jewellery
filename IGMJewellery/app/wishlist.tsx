@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: SPACING.m,
+    // paddingHorizontal: SPACING.m,
     paddingVertical: SPACING.s,
     borderBottomWidth: 1,
     borderBottomColor: "#F0F0F0",
@@ -304,6 +304,8 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
     marginHorizontal: SPACING.m,
+    paddingLeft: 30,
+    // backgroundColor: "red",
   },
   headerRight: {
     flexDirection: "row",

@@ -484,8 +484,8 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
             </HapticButton>
           </View> */}
 
-          {/* FILTER CHIPS THIS SHOULD BE VISIBLE */}
-          <ScrollView
+          {/* FILTER CHIPS THIS SHOULD BE INVISIBLE FOR DEMO*/}
+          {/* <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.filterTagsContainer}
@@ -525,7 +525,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
                 </HapticButton>
               </View>
             ))}
-          </ScrollView>
+          </ScrollView> */}
         </View>
       )}
     </View>

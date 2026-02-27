@@ -290,8 +290,8 @@ export default function VoiceVideoInterface({
       ) : (
         <View style={styles.messageContainer}>
           <Text style={styles.messageText}>
-            <Text style={styles.messageBold}>Hey there!</Text> What sparkle are
-            we looking for today?
+            <Text style={styles.messageBold}>Hey there! </Text>How can I help
+            you today?
           </Text>
         </View>
       )}
