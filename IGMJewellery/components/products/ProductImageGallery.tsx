@@ -16,11 +16,11 @@ import {
   FlatList,
   Image,
   Modal,
-  ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import ImageViewer from "react-native-image-zoom-viewer";
 import { COLORS, SPACING } from "../../constants/theme";
 import { HapticButton } from "../basic components/hapticButton";
 
@@ -39,6 +39,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
   const router = useRouter();
   const [activeSlide, setActiveSlide] = useState(0);
   const [showSimilarModal, setShowSimilarModal] = useState(false);
+  const imageUrls = images.map((img) => ({ url: img }));
 
   // Wishlist functionality
   const { data: wishlistData } = useGetWishlistQuery();
@@ -107,24 +108,17 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
         </HapticButton>
       </View>
 
-      <ScrollView
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={onScroll}
-        scrollEventThrottle={16}
-        style={styles.scrollView}
-      >
-        {images.map((img, index) => (
-          <View key={index} style={styles.imageContainer}>
-            <Image
-              source={{ uri: img }}
-              style={styles.image}
-              resizeMode="cover"
-            />
-          </View>
-        ))}
-      </ScrollView>
+      <View style={{ width, height: IMAGE_HEIGHT }}>
+        <ImageViewer
+          imageUrls={imageUrls}
+          resizeMode="cover"
+          index={activeSlide}
+          onChange={(index) => setActiveSlide(index || 0)}
+          enableSwipeDown={false}
+          saveToLocalByLongPress={false}
+          renderIndicator={() => {}}
+        />
+      </View>
 
       {/* Pagination Indicators */}
       <View style={styles.pagination}>

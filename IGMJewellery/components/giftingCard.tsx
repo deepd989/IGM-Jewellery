@@ -45,7 +45,7 @@ export default function GiftingCard({
             position: "absolute",
             right: 0,
             bottom: 126,
-            color: COLORS.text,
+            color: "white",
           }}
         >
           {" "}
@@ -62,7 +62,7 @@ export default function GiftingCard({
             right: -10,
             bottom: 176,
             marginRight: 10,
-            color: COLORS.text,
+            color: "white",
           }}
         >
           {description}
