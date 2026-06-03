@@ -3,20 +3,13 @@ import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
-  Dimensions,
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
 import Modal from "react-native-modal";
 
 import { OccasionEnum } from "@/constants/occasions";
 import { RELATIONSHIPS } from "@/constants/relationships";
 import { RouteParam } from "@/constants/routeNavigationConstants";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "./basic components/hapticButton";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -174,13 +167,6 @@ export default function GiftFinder() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.logoContainer}>
-          <Image
-            source={require("../assets/images/icon.png")}
-            style={{ width: 80, height: 80, borderRadius: 40 }}
-          />
-        </View>
-
         <View style={styles.headerText}>
           <Text style={styles.title}>Not sure what to gift?</Text>
           <Text style={styles.subtitle}>
@@ -293,9 +279,9 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   logoContainer: {
-    paddingTop: 24,
+    paddingTop: 0,
     alignItems: "center",
-    marginBottom: 6,
+    marginBottom: 0,
   },
   headerText: {
     marginBottom: 15,

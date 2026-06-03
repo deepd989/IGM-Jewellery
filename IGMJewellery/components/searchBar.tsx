@@ -17,12 +17,13 @@ export default function searchBar() {
         <View style={{ flexDirection: "row" }}>
           {/* <Ionicons name="search" size={22} color={COLORS.primary} /> */}
           <Image
-            source={require("../assets/images/elanziaPng.png")}
+            source={require("../assets/images/elanziaS.png")}
             style={{
-              height: 150,
-              width: 150,
+              height: 400,
+              width: 250,
               position: "relative",
-              left: -20,
+              left: -42,
+              marginTop: 20,
             }}
           />
         </View>
@@ -59,7 +60,7 @@ const styles = {
   searchRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 0,
+    marginTop: 5,
     height: 50,
     paddingHorizontal: 20,
   },
