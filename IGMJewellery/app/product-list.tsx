@@ -236,7 +236,6 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
         }
       });
     }
-
     setActiveFilters(newFilters);
   }, [
     departmentId,

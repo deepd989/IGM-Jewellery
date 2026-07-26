@@ -273,7 +273,7 @@ export default function ProfileScreen() {
           </HapticButton>
         )}
         <PaymentMethods />
-        <Text style={styles.version}>APP VERSION 1.1.0</Text>
+        <Text style={styles.version}>APP VERSION 1.2.0</Text>
       </ScrollView>
       <BottomNavBar activeTab="Profile" />
     </SafeAreaView>

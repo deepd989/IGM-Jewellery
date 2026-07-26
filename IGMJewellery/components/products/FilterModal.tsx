@@ -45,7 +45,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({
           const sellers = await response.json();
           const options = sellers.map(
             (s: { brandid: string; brandName: string }) => ({
-              id: s.brandName,
+              id: s.brandName.toLowerCase(), 
               label: s.brandName,
             })
           );
@@ -143,7 +143,9 @@ export const FilterModal: React.FC<FilterModalProps> = ({
   }: {
     item: { id: string; label: string };
   }) => {
-    const isSelected = (selections[activeCategoryId] || []).includes(item.id);
+    const isSelected = (selections[activeCategoryId] || [])
+      .map((val) => val.toLowerCase())
+      .includes(item.id.toLowerCase());
     return (
       <HapticButton
         style={styles.gridItemContainer}
@@ -178,7 +180,9 @@ export const FilterModal: React.FC<FilterModalProps> = ({
   }: {
     item: { id: string; label: string };
   }) => {
-    const isSelected = (selections[activeCategoryId] || []).includes(item.id);
+    const isSelected = (selections[activeCategoryId] || [])
+      .map((val) => val.toLowerCase())
+      .includes(item.id.toLowerCase());
     return (
       <HapticButton
         style={styles.listItem}
