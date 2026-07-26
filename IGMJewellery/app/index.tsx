@@ -75,8 +75,8 @@ export default function JewelryLanding() {
           source={require("../assets/splash.mp4")}
           style={StyleSheet.absoluteFill}
           resizeMode={ResizeMode.COVER}
-          shouldPlay
-          rate={2.0}
+          shouldPlay = {true}
+          rate={4.0}
           isLooping={false}
           isMuted={true}
           volume={1.0}

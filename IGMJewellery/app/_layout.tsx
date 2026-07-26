@@ -83,6 +83,7 @@ export default function RootLayout() {
               <Stack.Screen name="gift" options={{ headerShown: false }} />
               <Stack.Screen name="brands" options={{ headerShown: false }} />
               <Stack.Screen name="exploreAi" options={{ headerShown: false }} />
+              <Stack.Screen name="luxury" options={{ headerShown: false }} />
               <Stack.Screen
                 name="immersiveProductList"
                 options={{ headerShown: false }}

@@ -31,21 +31,23 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "../auth/authContext";
-import AnnouncementSection from "../components/announcementSectionHome";
-import CallUsComponent from "../components/basic components/callUsComponent";
-import { HapticButton } from "../components/basic components/hapticButton";
-import BrandsHorizontalScroll from "../components/brandsHorizontalScroll";
-import CategoriesHorizontalScroll from "../components/categoriesHorizontallScroll";
-import HowItLooksWrapper from "../components/homePageCard";
-import { SectionHeader } from "../components/section";
-import BrandCollectionCards from "../components/shopByCollectionsNew";
-import ShopByRegionCards from "../components/shopByRegion";
-import { TrendingProducts } from "../components/TrendingProducts";
-import TrustBar from "../components/trustBarBanner";
-import { COLORS } from "../constants/theme";
-import { useWalletBalance } from "./customHooks/walletBalanceLoader";
-import { Button } from "@react-navigation/elements";
+import { useAuth } from "../../auth/authContext";
+import AnnouncementSection from "../../components/announcementSectionHome";
+import CallUsComponent from "../../components/basic components/callUsComponent";
+import { HapticButton } from "../../components/basic components/hapticButton";
+import BrandsHorizontalScroll from "../../components/brandsHorizontalScroll";
+import CategoriesHorizontalScroll from "../../components/categoriesHorizontallScroll";
+import HowItLooksWrapper from "../../components/homePageCard";
+import { SectionHeader } from "../../components/section";
+import BrandCollectionCards from "../../components/shopByCollectionsNew";
+import ShopByRegionCards from "../../components/shopByRegion";
+import { TrendingProducts } from "../../components/TrendingProducts";
+import TrustBar from "../../components/trustBarBanner";
+import { COLORS } from "../../constants/theme";
+import { useWalletBalance } from "../customHooks/walletBalanceLoader";
+import SearchBarLuxury from "./components/searchBarLuxury";
+import GlossyHorizontalCard from "./components/luxuryHomepageGlossyCard";
+import LuxuryNavBar from "./components/luxuryNavBar";
 
 export default function HomeScreen() {
   const [expanded, setExpanded] = useState(false);
@@ -134,36 +136,24 @@ export default function HomeScreen() {
             {pincode || "Fetching..."}
           </Text>
         </Text>
-        
+        {/* Wallet balance pill hidden for now */}
       </View>
       <SearchBar />
-      <TouchableOpacity 
-        style={{ padding: 10, backgroundColor: COLORS.primary, margin: 10, alignItems: 'center', borderRadius: 8 }}
-        onPress={() => {
-          console.log("luxury mode triggered");
-          router.navigate("/luxury");
-        }}
+        <TouchableOpacity 
+              style={{ padding: 10, backgroundColor: COLORS.primary, margin: 10, alignItems: 'center', borderRadius: 8 }}
+              onPress={() => {
+                console.log("luxury mode triggered");
+                router.navigate("/home");
+              }}
+            >
+              <Text style={{ color: 'white', fontWeight: 'bold' }}>LuxuryBtn</Text>
+            </TouchableOpacity>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
       >
-        <Text style={{ color: 'white', fontWeight: 'bold' }}>LuxuryBtn</Text>
-      </TouchableOpacity>
-    
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.AiContainer}>
-          <View style={(styles.centerBox, styles.viewElanziaIsListening)}>
-            <View style={styles.badgeContainer}>
-              <View style={styles.aiBadge}>
-                <Sparkles size={16} color="#FFF" fill="#FFF" />
-                <Text style={styles.aiBadgeText}>Ai powered</Text>
-              </View>
-            </View>
-
-            {/* 2. Main Title */}
-            <Text style={styles.mainTitle}>
-              Tell us what you are looking for
-            </Text>
-
-            {/* 3. Enhanced Search Bar */}
-            <View style={styles.searchBox}>
+        <View style={styles.searchBox}>
               <View style={{ flex: 1 }}>
                 <TextInput
                   placeholder="Search for ..."
@@ -208,58 +198,23 @@ export default function HomeScreen() {
                 </HapticButton>
               </View>
             </View>
-          </View>
-        </View>
-        <View style={{ marginTop: 40 }}>
-          <CategoriesHorizontalScroll />
-        </View>
-        <TrustBar />
-        <BespokeSection />
-        <HorizontalRuleIGM />
-        <BrandsHorizontalScroll />
-        <HorizontalRuleIGM />
-        <ShopByRegionCards />
-        <HorizontalRuleIGM />
-        <CommunityCarousel />
-        <HorizontalRuleIGM />
-        <AnnouncementSection />
-        <HorizontalRuleIGM />
-        <EventCard />
-        <HorizontalRuleIGM />
-        <BrandCollectionCards />
-        <HorizontalRuleIGM />
-        <TopPicks products={products} />
-        <View style={{ marginTop: 30 }}>
-          <HorizontalRuleIGM />
-        </View>
-        <GiftFinder />
-        <HorizontalRuleIGM />
-        <>
-          <SectionHeader value="Explore AI Try On"></SectionHeader>
-          <HowItLooksWrapper seeHowItLooks={true}></HowItLooksWrapper>
-        </>
-        <HorizontalRuleIGM />
-        <OccasionCardList />
-        <HorizontalRuleIGM />
-        <TrendingProducts products={products} />
-        <HorizontalRuleIGM />
-        <GiftingCard
-          showExploreButton={true}
-          imgUrl="https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Gifting%20Banner%2FGifting_banner-05.webp?alt=media&token=5b1e9a31-d5c7-47ee-bf47-8abcca8b5475"
-        />
+          <GlossyHorizontalCard/>
+  
 
-        <TrustBar />
-        <CallUsComponent></CallUsComponent>
 
         {/* Necklace Section */}
       </ScrollView>
-      <BottomNavBar></BottomNavBar>
+      {/* <BottomNavBar></BottomNavBar> */}
+      <LuxuryNavBar/>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 8, backgroundColor: "white" },
+  container: { flex: 1, padding: 8, backgroundColor: COLORS.luxuryBg },
+  // Lets the carousel below stretch to the leftover height instead of
+  // overflowing, so the page needs no vertical scrolling.
+  contentContainer: { flexGrow: 1, paddingBottom: 8 },
   AiContainer: {
     backgroundColor: COLORS.primary,
     borderRadius: 20,

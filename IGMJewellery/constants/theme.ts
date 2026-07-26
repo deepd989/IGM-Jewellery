@@ -57,6 +57,7 @@ export const COLORS = {
   border: "#E5E5EA",
   error: "#FF3B30",
   success: "#34C759",
+  luxuryBg: "#F0F6F8", // Dark background for luxury mode
 };
 
 export const SPACING = {
