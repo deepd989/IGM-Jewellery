@@ -51,12 +51,21 @@ import LuxuryBestSellers from "./components/luxuryBestSellers";
 import LuxuryBrandsCollection from "./components/luxuryBrandsCollectionComponent";
 import LuxuryBrandsGrid from "./components/luxuryBrandsGridComponent";
 import LuxuryCategories from "./components/luxuryCategoriesComponent";
+import LuxuryCollections from "./components/luxuryCollections";
+import LuxuryCommunityCarousel from "./components/luxuryCommunityCarousel";
+import LuxuryElanziaAllRights from "./components/luxuryElanziaAllRights";
+import LuxuryElanziaSearch from "./components/luxuryElanziaSearch";
 import LuxuryGenderVsProducts from "./components/luxuryGenderVsProducts";
 import LuxuryHorizontalCollectionCarousel from "./components/luxuryHorizontalCollectionCarousel";
 import LuxuryMultibrandCollection from "./components/luxuryMultibrandCollection";
 import LuxuryNavBar, { LUXURY_NAV_BAR_HEIGHT } from "./components/luxuryNavBar";
 import LuxurySeparator from "./components/luxurySeparator";
+import LuxuryNewProducts from "./components/luxuryNewProducts";
+import LuxuryRegionalFavorites from "./components/luxuryRegionalFavorites";
+import LuxurySellingFast from "./components/luxurySellingFast";
+import LuxuryTopPicks from "./components/luxuryTopPicks";
 import LuxuryTryOn from "./components/luxuryTryOn";
+import OutfitTypesCarousel from "./components/outfitTypesCarousel";
 
 /** Hero carousel height: tall enough to lead the page, short enough that the
  *  collection row below it is visible without scrolling. */
@@ -237,6 +246,24 @@ export default function HomeScreen() {
           <LuxuryBestSellers />
           <LuxurySeparator />
           <LuxuryGenderVsProducts />
+          <LuxurySeparator />
+          <OutfitTypesCarousel />
+          <LuxurySeparator />
+          <LuxuryTopPicks />
+          <LuxurySeparator />
+          <LuxuryElanziaSearch style={styles.fullBleedSection} />
+          <LuxurySeparator />
+          <LuxuryRegionalFavorites />
+          <LuxurySeparator />
+          <LuxuryNewProducts />
+          <LuxurySeparator />
+          <LuxuryCollections />
+          <LuxurySeparator />
+          <LuxurySellingFast />
+          <LuxurySeparator />
+          <LuxuryCommunityCarousel />
+          <LuxurySeparator />
+          <LuxuryElanziaAllRights style={styles.fullBleedSection} />
 
         {/* Necklace Section */}
       </ScrollView>

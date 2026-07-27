@@ -1,4 +1,8 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
+import {
+  MultiBrandCollection,
+  useGetMultiBrandCollectionsQuery,
+} from "@/store/apis/multibrandCollectionsApi";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
@@ -20,59 +24,29 @@ const GAP = 12;
 /** Two full cards plus a sliver of the third, so the row reads as scrollable. */
 const CARDS_PER_VIEW = 2.15;
 
-export type LuxuryCollectionCard = {
-  id: string;
-  title: string;
-  image: string;
-  route?: string;
-};
-
-const DEFAULT_DATA: LuxuryCollectionCard[] = [
-  {
-    id: "1",
-    title: "Trending Rings",
-    image:
-      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "2",
-    title: "Latest Collection",
-    image:
-      "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "3",
-    title: "Everyday Gold",
-    image:
-      "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=800&auto=format&fit=crop",
-  },
-  {
-    id: "4",
-    title: "Bridal Edit",
-    image:
-      "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=800&auto=format&fit=crop",
-  },
-];
-
 type LuxuryHorizontalCollectionCarouselProps = {
-  data?: LuxuryCollectionCard[];
+  /** Overrides the collections fetched from the API. */
+  data?: MultiBrandCollection[];
   /** Card width ÷ height. 1 keeps the cards square. */
   aspectRatio?: number;
-  /** Overrides the default navigation to `item.route`. */
-  onPressCard?: (item: LuxuryCollectionCard) => void;
+  /** Overrides navigation to the collection's product list. */
+  onPressCard?: (item: MultiBrandCollection) => void;
   style?: ViewStyle;
 };
 
 export default function LuxuryHorizontalCollectionCarousel({
-  data = DEFAULT_DATA,
+  data,
   aspectRatio = 1,
   onPressCard,
   style,
 }: LuxuryHorizontalCollectionCarouselProps) {
   const router = useRouter();
+  const { data: collections = [] } = useGetMultiBrandCollectionsQuery();
   // Measured so the cards fit the space this component is actually given
   // (parents may add padding), rather than assuming the full screen width.
   const [containerWidth, setContainerWidth] = useState(SCREEN_WIDTH);
+
+  const cards = data ?? collections;
 
   const handleLayout = (event: LayoutChangeEvent) => {
     const width = Math.round(event.nativeEvent.layout.width);
@@ -87,23 +61,27 @@ export default function LuxuryHorizontalCollectionCarousel({
   const cardHeight = Math.round(cardWidth / aspectRatio);
   const snapInterval = cardWidth + GAP;
 
-  const handlePress = (item: LuxuryCollectionCard) => {
+  const handlePress = (item: MultiBrandCollection) => {
     if (onPressCard) {
       onPressCard(item);
       return;
     }
-    if (item.route) {
-      router.navigate(item.route as any);
-    }
+    router.navigate({
+      pathname: "/product-list",
+      params: {
+        subCategoryId: String(item.id),
+        bannerImageUrl: encodeURIComponent(item.collectionBannerUrl),
+      },
+    });
   };
 
-  const renderItem = ({ item }: { item: LuxuryCollectionCard }) => (
+  const renderItem = ({ item }: { item: MultiBrandCollection }) => (
     <HapticButton
       style={[styles.card, { width: cardWidth, height: cardHeight }]}
       onPress={() => handlePress(item)}
     >
       <Image
-        source={{ uri: item.image }}
+        source={{ uri: item.collectionBannerUrl }}
         style={styles.cardImage}
         resizeMode="cover"
       />
@@ -112,7 +90,7 @@ export default function LuxuryHorizontalCollectionCarousel({
       <View style={styles.glassPillWrapper}>
         <BlurView intensity={40} tint="dark" style={styles.glassPillContent}>
           <Text style={styles.titleText} numberOfLines={1}>
-            {item.title}
+            {item.name}
           </Text>
           <View style={styles.arrowButton}>
             <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
@@ -125,7 +103,7 @@ export default function LuxuryHorizontalCollectionCarousel({
   return (
     <View style={[styles.container, style]} onLayout={handleLayout}>
       <FlatList
-        data={data}
+        data={cards}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         extraData={cardWidth}

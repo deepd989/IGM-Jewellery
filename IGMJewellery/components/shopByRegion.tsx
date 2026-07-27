@@ -1,3 +1,8 @@
+import {
+  REGIONS,
+  REGION_ORDER,
+  getRegionRoute,
+} from "@/store/data/regionsData";
 import { useRouter } from "expo-router";
 import React, { useMemo } from "react";
 import {
@@ -13,87 +18,27 @@ import {
 } from "react-native";
 import { SectionHeader } from "./section";
 
-const CUSTOM_ORDER = ["7", "6", "2", "1", "3", "4", "5", "8", "9"];
-// --- Dummy Data Definition ---
-const REGIONS_DUMMY_DATA = {
-  "7": {
-    sellerName: "Tamil Nadu Silks",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FTamil%20Nadu.webp?alt=media&token=4e789072-3553-4552-9e3c-541f0d2b7e9f",
-    collections: [{ title: "Kanchipuram Specials" }],
-    region: "Tamil Nadu",
-  },
-  "6": {
-    sellerName: "Rajasthan Royal Gems",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FRajasthan.webp?alt=media&token=52ed7845-1514-47bb-80af-648441526c57",
-    collections: [{ title: "Jaipur Jewelry" }],
-    region: "Rajasthan",
-  },
-  "2": {
-    sellerName: "Gujarat Gold & Silk",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FGujarat.webp?alt=media&token=0c187c11-3240-4630-9dac-efa1c314b1f0",
-    collections: [{ title: "Patola Collections" }],
-    region: "Gujarat",
-  },
-  "1": {
-    sellerName: "Assam Heritage",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FAssam.webp?alt=media&token=585608eb-b703-4f04-9183-117cbdc179a5",
-    collections: [{ title: "Silk & Tea Crafts" }],
-    region: "Assam",
-  },
-  "3": {
-    sellerName: "Kerala Spices & Arts",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FKerala.webp?alt=media&token=12bef91c-3f2b-4263-9797-ac9570a8e738",
-    collections: [{ title: "Traditional Handloom" }],
-    region: "Kerala",
-  },
-  "4": {
-    sellerName: "Odisha Temple Crafts",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FOdisha.webp?alt=media&token=264f073e-0ca8-4c8e-b316-755a58af3a70",
-    collections: [{ title: "Silver Filigree" }],
-    region: "Odisha",
-  },
-  "5": {
-    sellerName: "Punjab Phulkari House",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FPunjab.webp?alt=media&token=e68e7ad9-d7bf-4318-a4e7-5876867ebb78",
-    collections: [{ title: "Embroidered Heritage" }],
-    region: "Punjab",
-  },
-  "8": {
-    sellerName: "Telangana Pearl Co.",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FTelangana.webp?alt=media&token=fcdc5631-ce8c-47f7-9e66-17a1e7883ee5",
-    collections: [{ title: "Hyderabadi Jewelry" }],
-    region: "Telangana",
-  },
-  "9": {
-    sellerName: "West Bengal Artistry",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FWest%20Bengal.webp?alt=media&token=2a546938-3731-43a2-9b7a-bcbca11ca117",
-    collections: [{ title: "Terracotta & Silk" }],
-    region: "West Bengal",
-  },
+type RegionCard = {
+  id: string;
+  title: string;
+  image: string;
+  sellerName: string;
+  region: string;
 };
 
 /**
  * Individual Card Component
  */
-const Card = ({ item, cardWidth }) => {
+const Card = ({
+  item,
+  cardWidth,
+}: {
+  item: RegionCard;
+  cardWidth: number;
+}) => {
   const router = useRouter();
   const navigateToRegion = () => {
-    router.navigate({
-      pathname: "/product-list",
-      params: {
-        region: item.region.toLowerCase(),
-        bannerImageUrl: encodeURIComponent(item.image),
-      },
-    });
+    router.navigate(getRegionRoute(REGIONS[item.id]));
   };
   return (
     <TouchableOpacity
@@ -118,14 +63,14 @@ export default function ShopByRegionCards() {
   const { width } = useWindowDimensions();
 
   // Mocking the status variables normally provided by a hook like useQuery
-  const regionsData = REGIONS_DUMMY_DATA;
+  const regionsData = REGIONS;
   const isLoading = false;
   const error = null;
 
   /**
    * Data Transformation
    */
-  const formattedData = useMemo(() => {
+  const formattedData = useMemo<RegionCard[]>(() => {
     if (!regionsData) return [];
 
     return Object.keys(regionsData)
@@ -142,7 +87,7 @@ export default function ShopByRegionCards() {
         };
       })
       .sort((a, b) => {
-        return CUSTOM_ORDER.indexOf(a.id) - CUSTOM_ORDER.indexOf(b.id);
+        return REGION_ORDER.indexOf(a.id) - REGION_ORDER.indexOf(b.id);
       });
   }, [regionsData]);
 
