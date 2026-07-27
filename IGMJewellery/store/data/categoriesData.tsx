@@ -1,3 +1,4 @@
+import { ImageSourcePropType } from "react-native";
 import { Department, SubCategory } from "../../interfaces/category.interface";
 
 const menDepartmentImage = require("../../assets/images/men_department.png");
@@ -266,6 +267,103 @@ export const SUB_CATS_BANGLE: SubCategory[] = [
       "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FBangles%2FCategories_Bangles.webp?alt=media&token=01d765a4-5386-4ba9-a6a2-395ef5ac62fc",
   },
 ];
+
+/**
+ * A top-level shop category. This is the single source of truth for the
+ * categories the storefront offers, the artwork that represents them, and the
+ * params /product-list expects — every categories UI reads from SHOP_CATEGORIES
+ * so they can never drift apart.
+ */
+export interface ShopCategory {
+  id: string;
+  /** Label shown to the shopper. */
+  name: string;
+  /** `categoryName` param /product-list filters by. */
+  categoryName: string;
+  /** `productType` param /product-list filters by. */
+  productType: string;
+  /** Icon for compact, icon-led lists. */
+  icon: ImageSourcePropType;
+  /** Banner shown at the top of the product list. */
+  bannerUrl: string;
+  /** Full-bleed artwork for large category cards. */
+  coverImageUrl: string;
+}
+
+export const SHOP_CATEGORIES: ShopCategory[] = [
+  {
+    id: "necklace",
+    name: "Necklace",
+    categoryName: "Necklace",
+    productType: "necklace",
+    icon: require("../../assets/images/categoryIcons/necklace.png"),
+    bannerUrl: SUB_CATS_NECKLACE[0].subCategoryBannerUrl,
+    coverImageUrl:
+      SUB_CATS_NECKLACE[0].imageUrl ?? SUB_CATS_NECKLACE[0].subCategoryBannerUrl,
+  },
+  {
+    id: "bracelet",
+    name: "Bracelets",
+    categoryName: "Bracelet",
+    productType: "bracelet",
+    icon: require("../../assets/images/categoryIcons/bracelet.png"),
+    bannerUrl: SUB_CATS_BRACELET[0].subCategoryBannerUrl,
+    coverImageUrl:
+      SUB_CATS_BRACELET[0].imageUrl ?? SUB_CATS_BRACELET[0].subCategoryBannerUrl,
+  },
+  {
+    id: "earring",
+    name: "Earrings",
+    categoryName: "Earrings",
+    productType: "earring",
+    icon: require("../../assets/images/categoryIcons/earring.png"),
+    bannerUrl: SUB_CATS_EARRING[0].subCategoryBannerUrl,
+    coverImageUrl:
+      SUB_CATS_EARRING[0].imageUrl ?? SUB_CATS_EARRING[0].subCategoryBannerUrl,
+  },
+  {
+    id: "ring",
+    name: "Rings",
+    categoryName: "Rings",
+    productType: "ring",
+    icon: require("../../assets/images/categoryIcons/ring.png"),
+    bannerUrl: SUB_CATS_RINGS[0].subCategoryBannerUrl,
+    coverImageUrl:
+      SUB_CATS_RINGS[0].imageUrl ?? SUB_CATS_RINGS[0].subCategoryBannerUrl,
+  },
+  {
+    id: "bangle",
+    name: "Bangles",
+    categoryName: "Bangles",
+    productType: "bangle",
+    icon: require("../../assets/images/categoryIcons/bangles.png"),
+    bannerUrl: SUB_CATS_BANGLE[0].subCategoryBannerUrl,
+    coverImageUrl:
+      SUB_CATS_BANGLE[0].imageUrl ?? SUB_CATS_BANGLE[0].subCategoryBannerUrl,
+  },
+  {
+    id: "mangalsutra",
+    name: "Mangalsutra",
+    categoryName: "Mangalsutra",
+    productType: "mangalsutra",
+    icon: require("../../assets/images/categoryIcons/mangalsutra.png"),
+    // Mangalsutra has no sub-categories of its own yet, so it borrows the
+    // bangles artwork — swap this once its own imagery exists.
+    bannerUrl: SUB_CATS_BANGLE[0].subCategoryBannerUrl,
+    coverImageUrl:
+      SUB_CATS_BANGLE[0].imageUrl ?? SUB_CATS_BANGLE[0].subCategoryBannerUrl,
+  },
+];
+
+/** The one definition of where tapping a category takes the shopper. */
+export const getCategoryRoute = (category: ShopCategory) => ({
+  pathname: "/product-list" as const,
+  params: {
+    categoryName: category.categoryName,
+    productType: category.productType,
+    bannerImageUrl: encodeURIComponent(category.bannerUrl),
+  },
+});
 
 // Mock departments data
 export const MOCK_DEPARTMENTS: Department[] = [

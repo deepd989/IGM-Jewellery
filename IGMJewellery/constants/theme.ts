@@ -68,6 +68,13 @@ export const SPACING = {
   xl: 32,
 };
 
+/**
+ * The single knob for vertical rhythm on the luxury screens: the gap a
+ * <LuxurySeparator /> puts between sections, and the gap between blocks of
+ * content inside a section. Change this one value to retune the whole page.
+ */
+export const LUXURY_SPACING = 50;
+
 export const SIZES = {
   width,
   cardBorderRadius: 12,

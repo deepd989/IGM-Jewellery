@@ -43,11 +43,27 @@ import BrandCollectionCards from "../../components/shopByCollectionsNew";
 import ShopByRegionCards from "../../components/shopByRegion";
 import { TrendingProducts } from "../../components/TrendingProducts";
 import TrustBar from "../../components/trustBarBanner";
-import { COLORS } from "../../constants/theme";
+import { COLORS, LUXURY_SPACING } from "../../constants/theme";
 import { useWalletBalance } from "../customHooks/walletBalanceLoader";
 import SearchBarLuxury from "./components/searchBarLuxury";
 import GlossyHorizontalCard from "./components/luxuryHomepageGlossyCard";
-import LuxuryNavBar from "./components/luxuryNavBar";
+import LuxuryBestSellers from "./components/luxuryBestSellers";
+import LuxuryBrandsCollection from "./components/luxuryBrandsCollectionComponent";
+import LuxuryBrandsGrid from "./components/luxuryBrandsGridComponent";
+import LuxuryCategories from "./components/luxuryCategoriesComponent";
+import LuxuryGenderVsProducts from "./components/luxuryGenderVsProducts";
+import LuxuryHorizontalCollectionCarousel from "./components/luxuryHorizontalCollectionCarousel";
+import LuxuryMultibrandCollection from "./components/luxuryMultibrandCollection";
+import LuxuryNavBar, { LUXURY_NAV_BAR_HEIGHT } from "./components/luxuryNavBar";
+import LuxurySeparator from "./components/luxurySeparator";
+import LuxuryTryOn from "./components/luxuryTryOn";
+
+/** Hero carousel height: tall enough to lead the page, short enough that the
+ *  collection row below it is visible without scrolling. */
+const HERO_HEIGHT = 360;
+
+/** Gutter the page keeps around its sections. */
+const PAGE_PADDING = 8;
 
 export default function HomeScreen() {
   const [expanded, setExpanded] = useState(false);
@@ -128,7 +144,12 @@ export default function HomeScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView
+      // The nav bar applies the bottom inset itself, so leaving it off here
+      // avoids padding for the home indicator twice.
+      edges={["top", "left", "right"]}
+      style={{ flex: 1, backgroundColor: "white" }}
+    >
       <View style={styles.header}>
         <Text style={styles.deliveryText}>
           Deliver to{" "}
@@ -198,9 +219,24 @@ export default function HomeScreen() {
                 </HapticButton>
               </View>
             </View>
-          <GlossyHorizontalCard/>
-  
-
+          <LuxurySeparator />
+          <GlossyHorizontalCard height={HERO_HEIGHT} />
+          <LuxurySeparator />
+          <LuxuryHorizontalCollectionCarousel />
+          <LuxurySeparator />
+          <LuxuryBrandsCollection />
+          <LuxurySeparator />
+          <LuxuryBrandsGrid style={styles.fullBleedSection} />
+          <LuxurySeparator />
+          <LuxuryCategories />
+          <LuxurySeparator />
+          <LuxuryTryOn style={styles.fullBleedSection} />
+          <LuxurySeparator />
+          <LuxuryMultibrandCollection style={styles.fullBleedSection} />
+          <LuxurySeparator />
+          <LuxuryBestSellers />
+          <LuxurySeparator />
+          <LuxuryGenderVsProducts />
 
         {/* Necklace Section */}
       </ScrollView>
@@ -211,10 +247,18 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 8, backgroundColor: COLORS.luxuryBg },
-  // Lets the carousel below stretch to the leftover height instead of
-  // overflowing, so the page needs no vertical scrolling.
-  contentContainer: { flexGrow: 1, paddingBottom: 8 },
+  container: {
+    flex: 1,
+    padding: PAGE_PADDING,
+    backgroundColor: COLORS.luxuryBg,
+  },
+  // Cancels the page gutter so a section's artwork runs to the screen edges.
+  fullBleedSection: {
+    marginHorizontal: -PAGE_PADDING,
+    borderRadius: 0,
+  },
+  // Clears the floating nav bar so the last section is never hidden behind it.
+  contentContainer: { paddingBottom: LUXURY_NAV_BAR_HEIGHT + LUXURY_SPACING },
   AiContainer: {
     backgroundColor: COLORS.primary,
     borderRadius: 20,
@@ -365,7 +409,6 @@ const styles = StyleSheet.create({
     borderRadius: 15, // More rectangular than before
     alignItems: "center",
     paddingHorizontal: 16,
-    marginBottom: 10,
     // Subtle shadow
     elevation: 2,
     shadowColor: "#000",

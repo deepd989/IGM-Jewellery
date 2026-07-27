@@ -10,6 +10,14 @@ export interface Brand {
   id: string;
   bwThumbnailUri?: string;
   profileImageUri: string;
+  /** Brand's signature colour, used as a backdrop behind its imagery. */
+  brandPrimaryColor?: string;
+  /** Cover art for the brand's feature tile. */
+  mainCoverUri?: string;
+  /** Cover art for the brand's "New In" tile. */
+  newInCoverUri?: string;
+  /** Cover art for the brand's "Collections" tile. */
+  collectionsCoverUri?: string;
   businessNameKey: string; // optional key for internal use
   businessName: string; // shop_title
   tagline: string; // privacy
@@ -32,6 +40,14 @@ export interface ApiBrand {
   description: string | null;
 
   tagline: string | null;
+
+  brandPrimaryColor?: string | null;
+
+  mainCover?: string | null;
+
+  newInCover?: string | null;
+
+  collectionsCover?: string | null;
 }
 
 export const convertApiBrandToBrand = (apiBrand: ApiBrand): Brand => {
@@ -42,6 +58,10 @@ export const convertApiBrandToBrand = (apiBrand: ApiBrand): Brand => {
     id: apiBrand.brandid.toString(),
     bwThumbnailUri: apiBrand.logoPic || undefined,
     profileImageUri: apiBrand.logoPic || "",
+    brandPrimaryColor: apiBrand.brandPrimaryColor || undefined,
+    mainCoverUri: apiBrand.mainCover || undefined,
+    newInCoverUri: apiBrand.newInCover || undefined,
+    collectionsCoverUri: apiBrand.collectionsCover || undefined,
     businessNameKey:
       apiBrand.brandName?.toLowerCase().replace(/\s+/g, "_") || "",
     businessName: apiBrand.brandName,
