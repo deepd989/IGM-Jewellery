@@ -51,8 +51,8 @@ const DEFAULT_ITEMS: LuxuryNavItem[] = [
     ),
   },
   {
-    key: "collections",
-    route: "/brands",
+    key: "categories",
+    route: "/luxury/categories",
     icon: (color) => (
       <LayoutGrid size={ICON_SIZE} color={color} strokeWidth={ICON_STROKE} />
     ),
@@ -138,7 +138,12 @@ export default function LuxuryNavBar({
             <HapticButton
               key={item.key}
               style={styles.navItem}
-              onPress={() => router.navigate(item.route as any)}
+              onPress={() => {
+                // Navigating to the screen already showing only makes it
+                // flicker through a transition and back.
+                if (isActive) return;
+                router.navigate(item.route as any);
+              }}
             >
               {isActive ? (
                 <LinearGradient

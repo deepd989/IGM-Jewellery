@@ -26,7 +26,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { CartBadge } from "../../components/cart/CardBadge";
 import { COLORS, SPACING } from "../../constants/theme";
+import { useLuxury } from "../../context/luxuryContext";
 import { useGetWishlistQuery } from "../../store/apis/wishlist";
+import LuxuryCategoriesScreen from "../luxury/categories";
 
 const { width } = Dimensions.get("window");
 
@@ -114,7 +116,18 @@ const GridItem = ({
 
 /* ================= SCREEN ================= */
 
+/**
+ * Both storefronts share this route, so every existing link to the categories
+ * tab lands on the presentation the shopper is currently browsing in. The
+ * luxury screen also keeps its own route for direct links.
+ */
 export default function CategoriesScreen() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? <LuxuryCategoriesScreen /> : <ClassicCategoriesScreen />;
+}
+
+function ClassicCategoriesScreen() {
   const { data: wishlistData } = useGetWishlistQuery();
   const wishlistCount = wishlistData?.items.length || 0;
   const router = useRouter();
