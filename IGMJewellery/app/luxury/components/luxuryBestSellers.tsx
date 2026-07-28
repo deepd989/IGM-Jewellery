@@ -85,7 +85,7 @@ export default function LuxuryBestSellers({
       return;
     }
     router.navigate({
-      pathname: "/product/[id]",
+      pathname: "/luxury/product/[id]",
       params: { id: product.id },
     });
   };

@@ -44,6 +44,7 @@ import ShopByRegionCards from "../../components/shopByRegion";
 import { TrendingProducts } from "../../components/TrendingProducts";
 import TrustBar from "../../components/trustBarBanner";
 import { COLORS, LUXURY_SPACING } from "../../constants/theme";
+import { useLuxury } from "../../context/luxuryContext";
 import { useWalletBalance } from "../customHooks/walletBalanceLoader";
 import SearchBarLuxury from "./components/searchBarLuxury";
 import GlossyHorizontalCard from "./components/luxuryHomepageGlossyCard";
@@ -90,6 +91,7 @@ export default function HomeScreen() {
   const [textInput, setTextInput] = useState<string>("");
   const [pincode, setPincode] = useState(null);
   const { userId } = useAuth();
+  const { switchMode } = useLuxury();
   const { balance: walletBalance } = useWalletBalance(userId as string);
 
   const revolvingTexts = [
@@ -167,17 +169,18 @@ export default function HomeScreen() {
           </Text>
         </Text>
         {/* Wallet balance pill hidden for now */}
+
+        <TouchableOpacity
+          style={styles.luxuryButton}
+          onPress={() =>
+            // Back to the classic storefront, product screen included.
+            switchMode(false, () => router.navigate("/home"))
+          }
+        >
+          <Text style={styles.luxuryButtonText}>Massy</Text>
+        </TouchableOpacity>
       </View>
       <SearchBar />
-        <TouchableOpacity 
-              style={{ padding: 10, backgroundColor: COLORS.primary, margin: 10, alignItems: 'center', borderRadius: 8 }}
-              onPress={() => {
-                console.log("luxury mode triggered");
-                router.navigate("/home");
-              }}
-            >
-              <Text style={{ color: 'white', fontWeight: 'bold' }}>LuxuryBtn</Text>
-            </TouchableOpacity>
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
@@ -292,10 +295,22 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
     gap: 6,
     paddingHorizontal: 20,
     marginBottom: 5,
+  },
+  luxuryButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 14,
+    backgroundColor: COLORS.primary,
+  },
+  luxuryButtonText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#FFFFFF",
   },
   viewElanziaIsListening: {
     padding: 16,

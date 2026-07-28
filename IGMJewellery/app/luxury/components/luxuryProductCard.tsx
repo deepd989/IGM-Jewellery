@@ -76,7 +76,7 @@ export default function LuxuryProductCard({
       return;
     }
     router.navigate({
-      pathname: "/product/[id]",
+      pathname: "/luxury/product/[id]",
       params: { id: product.id },
     });
   };

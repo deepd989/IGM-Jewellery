@@ -25,6 +25,7 @@ import "react-native-reanimated";
 import { Provider } from "react-redux";
 import { AuthProvider } from "../auth/authContext";
 import AuthGuard from "../auth/authGaurd";
+import { LuxuryProvider } from "../context/luxuryContext";
 
 // Prevent splash screen from auto-hiding until fonts are loaded
 SplashScreen.preventAutoHideAsync();
@@ -63,44 +64,52 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <Provider store={store}>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          {/* <AuthGuard> */}
-          <AuthGuard>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-              }}
-            >
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="login" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="home" options={{ headerShown: false }} />
-              <Stack.Screen name="verifyOtp" options={{ headerShown: false }} />
-              <Stack.Screen name="signUp" options={{ headerShown: false }} />
-              <Stack.Screen name="gift" options={{ headerShown: false }} />
-              <Stack.Screen name="brands" options={{ headerShown: false }} />
-              <Stack.Screen name="exploreAi" options={{ headerShown: false }} />
-              <Stack.Screen name="luxury" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="immersiveProductList"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="product-list"
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="searchPage"
-                options={{ headerShown: false }}
-              />
-            </Stack>
-          </AuthGuard>
-          <StatusBar style="auto" />
-        </ThemeProvider>
-      </Provider>
+      <LuxuryProvider>
+        <Provider store={store}>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            {/* <AuthGuard> */}
+            <AuthGuard>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                }}
+              >
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="login" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="home" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="verifyOtp"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen name="signUp" options={{ headerShown: false }} />
+                <Stack.Screen name="gift" options={{ headerShown: false }} />
+                <Stack.Screen name="brands" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="exploreAi"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen name="luxury" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="immersiveProductList"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="product-list"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="searchPage"
+                  options={{ headerShown: false }}
+                />
+              </Stack>
+            </AuthGuard>
+            <StatusBar style="auto" />
+          </ThemeProvider>
+        </Provider>
+      </LuxuryProvider>
     </AuthProvider>
   );
 }

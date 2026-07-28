@@ -27,9 +27,26 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../auth/authContext";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS, SPACING } from "../../constants/theme";
+import { useLuxury } from "../../context/luxuryContext";
 import { useGetImage } from "../customHooks/tryOnImageLoader";
+import LuxuryProductDetailScreen from "../luxury/product/[id]";
 
+/**
+ * Both storefronts share this route, so every existing link to /product/[id]
+ * lands on the presentation the shopper is currently browsing in. The luxury
+ * screen also keeps its own route for direct links.
+ */
 export default function ProductDetailScreen() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? (
+    <LuxuryProductDetailScreen />
+  ) : (
+    <ClassicProductDetailScreen />
+  );
+}
+
+function ClassicProductDetailScreen() {
   const { id: productId, fromTryOn } = useLocalSearchParams();
   console.log("ProductDetailScreen params:", { productId, fromTryOn });
   const router = useRouter();
