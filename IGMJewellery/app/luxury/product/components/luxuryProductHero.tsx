@@ -27,6 +27,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import LuxuryWishlistButton from "../../components/luxuryWishlistButton";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -89,8 +90,6 @@ export default function LuxuryProductHero({
     (item) => item.product.id === product.id
   );
   const isWishlistBusy = isAddingToWishlist || isRemovingFromWishlist;
-  /** Drives the header heart, exactly as the classic product header does. */
-  const wishlistCount = wishlistData?.items.length || 0;
 
   const reviewCount = product.reviews?.length || FALLBACK_REVIEW_COUNT;
   const thumbnails = images.slice(0, MAX_THUMBNAILS);
@@ -190,24 +189,7 @@ export default function LuxuryProductHero({
             <SearchGlyph />
           </HapticButton>
 
-          <HapticButton
-            style={styles.actionIcon}
-            activeOpacity={0.6}
-            onPress={() => router.navigate("/wishlist")}
-          >
-            <Ionicons
-              name={wishlistCount > 0 ? "heart" : "heart-outline"}
-              size={24}
-              color={COLORS.primary}
-            />
-            {wishlistCount > 0 && (
-              <View style={styles.wishlistBadge}>
-                <Text style={styles.wishlistBadgeText}>
-                  {wishlistCount > 99 ? "99+" : wishlistCount}
-                </Text>
-              </View>
-            )}
-          </HapticButton>
+          <LuxuryWishlistButton size={24} style={styles.actionIcon} />
 
           <View style={styles.actionIcon}>
             <CartBadge iconSize={24} iconColor={COLORS.primary} />
@@ -369,25 +351,6 @@ const styles = StyleSheet.create({
     height: 34,
     alignItems: "center",
     justifyContent: "center",
-  },
-  wishlistBadge: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    minWidth: 16,
-    height: 16,
-    paddingHorizontal: 3,
-    borderRadius: 8,
-    borderWidth: 1.5,
-    borderColor: "#FFFFFF",
-    backgroundColor: COLORS.primary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  wishlistBadgeText: {
-    color: "#FFFFFF",
-    fontSize: 9,
-    fontWeight: "700",
   },
   searchSparkle: {
     position: "absolute",

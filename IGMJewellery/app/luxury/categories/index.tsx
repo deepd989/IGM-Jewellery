@@ -11,7 +11,6 @@ import {
   useGetDepartmentsQuery,
   useGetSubCategoriesQuery,
 } from "@/store/apis/categories";
-import { useGetWishlistQuery } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -28,6 +27,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import LuxuryNavBar, {
   LUXURY_NAV_BAR_HEIGHT,
 } from "../components/luxuryNavBar";
+import LuxuryScreenHeader from "../components/luxuryScreenHeader";
+import LuxuryWishlistButton from "../components/luxuryWishlistButton";
 
 const SIDE_PADDING = 16;
 
@@ -153,9 +154,6 @@ export default function LuxuryCategoriesScreen() {
   /** What the shopper picked; "" means they have not picked in this department. */
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
 
-  const { data: wishlistData } = useGetWishlistQuery();
-  const wishlistCount = wishlistData?.items.length || 0;
-
   const { data: departments = [], isLoading: loadingDepts } =
     useGetDepartmentsQuery();
 
@@ -197,26 +195,23 @@ export default function LuxuryCategoriesScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-        <Text style={styles.headerTitle}>Categories</Text>
-
-        <View style={styles.headerActions}>
-          <HapticButton
-            style={styles.headerIcon}
-            onPress={() => router.navigate("/wishlist")}
-          >
-            <Ionicons
-              name={wishlistCount > 0 ? "heart" : "heart-outline"}
+      <LuxuryScreenHeader
+        title="Categories"
+        right={
+          <>
+            <LuxuryWishlistButton
               size={26}
               color={COLORS.secondary}
+              badgeTextColor="#04333E"
+              style={styles.headerIcon}
             />
-          </HapticButton>
 
-          <View style={styles.headerIcon}>
-            <CartBadge iconSize={26} iconColor={COLORS.secondary} />
-          </View>
-        </View>
-      </View>
+            <View style={styles.headerIcon}>
+              <CartBadge iconSize={26} iconColor={COLORS.secondary} />
+            </View>
+          </>
+        }
+      />
 
       {loadingDepts ? (
         <View style={styles.centerContent}>
@@ -314,24 +309,6 @@ const styles = StyleSheet.create({
   },
 
   // ── Header ──
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingBottom: 16,
-    backgroundColor: "#123B47",
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#FFFFFF",
-  },
-  headerActions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 20,
-  },
   headerIcon: {
     alignItems: "center",
     justifyContent: "center",

@@ -6,7 +6,6 @@ import GiftFinder from "@/components/giftFinder";
 import GiftingCard from "@/components/giftingCard";
 import HorizontalRuleIGM from "@/components/horizontalRuleIGM";
 import OccasionCardList from "@/components/occasionsHome";
-import SearchBar from "@/components/searchBar";
 import { TopPicks } from "@/components/topPicks";
 import { getUserPincode } from "@/scripts/location";
 import { useGetProductsQuery } from "@/store/apis/product";
@@ -23,6 +22,8 @@ import React, {
 import {
   Animated,
   BackHandler,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   ScrollView,
   StyleSheet,
   Text,
@@ -65,6 +66,7 @@ import LuxuryNewProducts from "./components/luxuryNewProducts";
 import LuxuryRegionalFavorites from "./components/luxuryRegionalFavorites";
 import LuxurySellingFast from "./components/luxurySellingFast";
 import LuxuryTopPicks from "./components/luxuryTopPicks";
+import LuxuryTopSearch from "./components/luxuryTopSearch";
 import LuxuryTryOn from "./components/luxuryTryOn";
 import OutfitTypesCarousel from "./components/outfitTypesCarousel";
 
@@ -74,6 +76,9 @@ const HERO_HEIGHT = 360;
 
 /** Gutter the page keeps around its sections. */
 const PAGE_PADDING = 8;
+
+/** How far the page scrolls before the top bar turns into the search field. */
+const SEARCH_COLLAPSE_OFFSET = 40;
 
 export default function HomeScreen() {
   const [expanded, setExpanded] = useState(false);
@@ -90,6 +95,8 @@ export default function HomeScreen() {
   const router = useRouter();
   const [textInput, setTextInput] = useState<string>("");
   const [pincode, setPincode] = useState(null);
+  /** Past this, the top bar gives up the delivery line for the search field. */
+  const [isScrolled, setIsScrolled] = useState(false);
   const { userId } = useAuth();
   const { switchMode } = useLuxury();
   const { balance: walletBalance } = useWalletBalance(userId as string);
@@ -136,6 +143,13 @@ export default function HomeScreen() {
     });
   };
 
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const scrolled = event.nativeEvent.contentOffset.y > SEARCH_COLLAPSE_OFFSET;
+    if (scrolled !== isScrolled) {
+      setIsScrolled(scrolled);
+    }
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => null,
@@ -161,30 +175,27 @@ export default function HomeScreen() {
       edges={["top", "left", "right"]}
       style={{ flex: 1, backgroundColor: "white" }}
     >
-      <View style={styles.header}>
-        <Text style={styles.deliveryText}>
-          Deliver to{" "}
-          <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
-            {pincode || "Fetching..."}
-          </Text>
-        </Text>
-        {/* Wallet balance pill hidden for now */}
-
-        <TouchableOpacity
-          style={styles.luxuryButton}
-          onPress={() =>
-            // Back to the classic storefront, product screen included.
-            switchMode(false, () => router.navigate("/home"))
-          }
-        >
-          <Text style={styles.luxuryButtonText}>Massy</Text>
-        </TouchableOpacity>
-      </View>
-      <SearchBar />
+      <LuxuryTopSearch
+        pincode={pincode}
+        collapsed={isScrolled}
+        deliveryAccessory={
+          <TouchableOpacity
+            style={styles.luxuryButton}
+            onPress={() =>
+              // Back to the Massy storefront, product screen included.
+              switchMode(false, () => router.navigate("/home"))
+            }
+          >
+            <Text style={styles.luxuryButtonText}>Massy</Text>
+          </TouchableOpacity>
+        }
+      />
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
       >
         <View style={styles.searchBox}>
               <View style={{ flex: 1 }}>

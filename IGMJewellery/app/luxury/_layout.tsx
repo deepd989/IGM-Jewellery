@@ -14,6 +14,7 @@ export default function LuxuryLayout() {
       <Stack.Screen name="homePageLuxury" />
       <Stack.Screen name="product/[id]" />
       <Stack.Screen name="categories/index" options={NAV_BAR_SCREEN} />
+      <Stack.Screen name="product-list" />
 
       {/* Add other screens here as you create them */}
       {/* <Stack.Screen name="details" /> */}

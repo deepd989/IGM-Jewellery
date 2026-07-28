@@ -1,3 +1,4 @@
+import { SORT_OPTIONS } from "@/hooks/useProductListing";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
@@ -10,14 +11,6 @@ interface SortModalProps {
   selectedSort: string;
   onSelect: (sort: string) => void;
 }
-
-const SORT_OPTIONS = [
-  "Latest",
-  "Discount",
-  "Price: Low to high",
-  "Price: High to low",
-  "Customer Rating",
-];
 
 export const SortModal: React.FC<SortModalProps> = ({
   visible,
