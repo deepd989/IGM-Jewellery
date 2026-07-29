@@ -37,7 +37,7 @@ interface ProductCardProps {
 
 const { width } = Dimensions.get("window");
 
-export const ProductCard: React.FC<ProductCardProps> = ({
+const ProductCardComponent: React.FC<ProductCardProps> = ({
   product,
   viewMode,
   onPress,
@@ -64,9 +64,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     useRemoveFromWishlistMutation();
 
   useEffect(() => {
+    // Only the AI preview has anything to wait for; flipping this on for every
+    // card cost each one an extra render at mount.
+    if (!loadAiPreview) return;
+
     setIsPreviewLoading(true);
     const handleAiPreview = async () => {
-      if (loadAiPreview && firstImageBase64State === "") {
+      if (firstImageBase64State === "") {
         try {
           await generateJewelleryImage(
             userId as string,
@@ -403,6 +407,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     </HapticButton>
   );
 };
+
+/**
+ * Memoised: the card subscribes to the wishlist and cart, so a list of them
+ * re-rendered with its screen — a keystroke, a fetch resolving — rebuilt every
+ * card on the page.
+ */
+export const ProductCard = React.memo(ProductCardComponent);
 
 const styles = StyleSheet.create({
   addToBagBtn: {

@@ -40,7 +40,7 @@ const OCCASIONS = [
   },
 ];
 
-const CategoryCard = ({ title, image }) => {
+const CategoryCard = React.memo(function CategoryCard({ title, image }) {
   const router = useRouter();
   return (
     <TouchableOpacity
@@ -67,7 +67,11 @@ const CategoryCard = ({ title, image }) => {
       </ImageBackground>
     </TouchableOpacity>
   );
-};
+});
+
+const renderOccasion = ({ item }: { item: (typeof OCCASIONS)[0] }) => (
+  <CategoryCard title={item.title.toUpperCase()} image={item.image} />
+);
 
 export default function OccasionCardList() {
   return (
@@ -77,11 +81,12 @@ export default function OccasionCardList() {
         <FlatList
           data={OCCASIONS}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <CategoryCard title={item.title.toUpperCase()} image={item.image} />
-          )}
+          renderItem={renderOccasion}
           contentContainerStyle={styles.listPadding}
           showsVerticalScrollIndicator={false}
+          // Four banners down the page's own scroll — a second vertical
+          // scroller here only competes with it for the gesture.
+          scrollEnabled={false}
         />
       </View>
     </>

@@ -4,7 +4,7 @@ import {
   getRegionRoute,
 } from "@/store/data/regionsData";
 import { useRouter } from "expo-router";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -29,13 +29,13 @@ type RegionCard = {
 /**
  * Individual Card Component
  */
-const Card = ({
+const Card = React.memo(function Card({
   item,
   cardWidth,
 }: {
   item: RegionCard;
   cardWidth: number;
-}) => {
+}) {
   const router = useRouter();
   const navigateToRegion = () => {
     router.navigate(getRegionRoute(REGIONS[item.id]));
@@ -57,7 +57,7 @@ const Card = ({
       </View>
     </TouchableOpacity>
   );
-};
+});
 
 export default function ShopByRegionCards() {
   const { width } = useWindowDimensions();
@@ -95,6 +95,13 @@ export default function ShopByRegionCards() {
   const numVisibleCards = width > 600 ? 3.5 : 1.2;
   const cardWidth = (width - 32) / numVisibleCards;
 
+  const renderItem = useCallback(
+    ({ item }: { item: RegionCard }) => (
+      <Card item={item} cardWidth={cardWidth} />
+    ),
+    [cardWidth]
+  );
+
   if (isLoading) {
     return (
       <View style={[styles.container, styles.center]}>
@@ -116,7 +123,7 @@ export default function ShopByRegionCards() {
       <SectionHeader value="Regional Wonders" />
       <FlatList
         data={formattedData}
-        renderItem={({ item }) => <Card item={item} cardWidth={cardWidth} />}
+        renderItem={renderItem}
         keyExtractor={(item) => item.id}
         horizontal
         showsHorizontalScrollIndicator={false}

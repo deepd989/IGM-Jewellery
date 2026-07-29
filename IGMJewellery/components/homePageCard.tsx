@@ -3,7 +3,7 @@ import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -13,7 +13,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { useAuth } from "../auth/authContext";
 import { COLORS } from "../constants/theme";
 import {
   useAddToWishlistMutation,
@@ -33,23 +32,20 @@ export default function HowItLooksWrapper({
   seeHowItLooks?: boolean;
   children?: React.ReactNode;
 }) {
-  const { userId } = useAuth();
   const { data: products = [] } = useGetProductsQuery({});
   const [cardTitle, setCardTitle] = React.useState<string>(
     ProductType.Necklace
   );
-  let filteredProduct = products[0];
-  products.forEach((p) => {
-    const filteredProducts = products.filter(
-      (prod) => prod.productType === cardTitle
-    );
-    filteredProduct =
-      filteredProducts[filteredProducts.length - 1] || products[0];
-  });
 
-  useEffect(() => {
-    console.log("cardTitle changed:", cardTitle);
-  }, [cardTitle]);
+  /**
+   * The last product of the chosen type, or the first of any type. This used
+   * to re-filter the whole catalogue once per product — the same answer,
+   * computed n times, on every render of the page.
+   */
+  const filteredProduct = useMemo(() => {
+    const ofType = products.filter((prod) => prod.productType === cardTitle);
+    return ofType[ofType.length - 1] || products[0];
+  }, [products, cardTitle]);
 
   if (!filteredProduct)
     return (
@@ -211,6 +207,9 @@ export default function HowItLooksWrapper({
 
 export const SeeHowItLooksOnYouCard = ({ product }) => {
   const { data: wishlistData } = useGetWishlistQuery();
+  // Declared with the other hooks: it used to sit below the `!product` return,
+  // so the hook order changed the moment a product arrived.
+  const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
 
   const [addToWishlist, { isLoading: isAddingToWishlist }] =
     useAddToWishlistMutation();
@@ -254,8 +253,6 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
   }, []);
 
   if (!product) return null;
-
-  const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
 
   return (
     <View style={necklaceCardStyle.wrapper}>

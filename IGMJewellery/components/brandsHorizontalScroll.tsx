@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   FlatList,
   ImageBackground,
@@ -10,7 +10,7 @@ import {
 import { Brand, useGetBrandsQuery } from "../store/apis/brandsApi";
 import { SectionHeader } from "./section";
 
-export const BrandCard = ({ title, image: item }) => {
+export const BrandCard = React.memo(function BrandCard({ title, image: item }) {
   const router = useRouter();
   return (
     <TouchableOpacity
@@ -37,41 +37,56 @@ export const BrandCard = ({ title, image: item }) => {
       </ImageBackground>
     </TouchableOpacity>
   );
-};
+});
 
 export default function BrandsHorizontalScroll() {
   const router = useRouter();
   const { data: brandsData = [], isLoading } = useGetBrandsQuery({});
-  const brandsDataScroll: unknown[] = brandsData.map((brand: Brand, index) => {
-    let gradient: { gradientStartColor: string; gradientEndColor: string };
 
-    // Determine the gradient based on the index
-    if (index % 3 === 0) {
-      gradient = {
-        gradientStartColor: "#F7FCFB",
-        gradientEndColor: "#EBF5F3",
-      };
-    } else if (index % 3 === 1) {
-      gradient = {
-        gradientStartColor: "#FDF9F3",
-        gradientEndColor: "#F8F1E5",
-      };
-    } else {
-      gradient = {
-        gradientStartColor: "#F3F7FA",
-        gradientEndColor: "#E6EEF4",
-      };
-    }
+  // Rebuilt only when the brands themselves change: every card takes its item
+  // by identity, so a fresh array on each render re-rendered all of them.
+  const brandsDataScroll = useMemo(
+    () =>
+      brandsData.map((brand: Brand, index) => {
+        let gradient: { gradientStartColor: string; gradientEndColor: string };
 
-    return {
-      name: brand.businessName,
-      imgUrl: brand.profileImageUri,
-      gradient: gradient,
-      onpress: () => {
-        router.navigate(`/brandProfile/${brand.businessNameKey}`);
-      },
-    };
-  });
+        // Determine the gradient based on the index
+        if (index % 3 === 0) {
+          gradient = {
+            gradientStartColor: "#F7FCFB",
+            gradientEndColor: "#EBF5F3",
+          };
+        } else if (index % 3 === 1) {
+          gradient = {
+            gradientStartColor: "#FDF9F3",
+            gradientEndColor: "#F8F1E5",
+          };
+        } else {
+          gradient = {
+            gradientStartColor: "#F3F7FA",
+            gradientEndColor: "#E6EEF4",
+          };
+        }
+
+        return {
+          name: brand.businessName,
+          imgUrl: brand.profileImageUri,
+          gradient: gradient,
+          onpress: () => {
+            router.navigate(`/brandProfile/${brand.businessNameKey}`);
+          },
+        };
+      }),
+    [brandsData, router],
+  );
+
+  const renderItem = useCallback(
+    ({ item }: { item: any }) => (
+      <BrandCard title={item.name.toUpperCase()} image={item} />
+    ),
+    [],
+  );
+
   return (
     <>
       <SectionHeader value="House of Brands" />
@@ -85,11 +100,13 @@ export default function BrandsHorizontalScroll() {
         <FlatList
           data={brandsDataScroll}
           keyExtractor={(item: any) => item.name}
-          renderItem={({ item }) => (
-            <BrandCard title={item.name.toUpperCase()} image={item} />
-          )}
+          renderItem={renderItem}
           contentContainerStyle={styles.listPadding}
           showsVerticalScrollIndicator={false}
+          // The banners run down the page's own scroll. Left scrollable, this
+          // list nests a second vertical scroller inside it, which turns off
+          // windowing and takes the gesture away from the page.
+          scrollEnabled={false}
         />
       </View>
     </>

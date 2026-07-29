@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
@@ -62,65 +62,75 @@ export default function EventCard() {
       if (viewableItems.length > 0 && viewableItems[0].index != null) {
         setActiveIndex(viewableItems[0].index);
       }
-    }
+    },
   ).current;
 
   const viewabilityConfig = useRef({
     viewAreaCoveragePercentThreshold: 50,
   }).current;
 
-  const handlePress = (id: number) => {
-    router.navigate({
-      pathname: "/product/[id]",
-      params: { id: id },
-    });
-  };
+  const handlePress = useCallback(
+    (id: number) => {
+      router.navigate({
+        pathname: "/product/[id]",
+        params: { id: id },
+      });
+    },
+    [router],
+  );
 
-  const renderItem = ({
-    item,
-    index,
-  }: {
-    item: (typeof FESTIVE_ITEMS)[0];
-    index: number;
-  }) => {
-    // Distance from the center of the screen
-    const inputRange = [
-      (index - 1) * SNAP_INTERVAL,
-      index * SNAP_INTERVAL,
-      (index + 1) * SNAP_INTERVAL,
-    ];
+  // Stable across the pagination-dot state changes, so moving between cards
+  // does not rebuild the row it is scrolling.
+  const renderItem = useCallback(
+    ({ item, index }: { item: (typeof FESTIVE_ITEMS)[0]; index: number }) => {
+      // Distance from the center of the screen
+      const inputRange = [
+        (index - 1) * SNAP_INTERVAL,
+        index * SNAP_INTERVAL,
+        (index + 1) * SNAP_INTERVAL,
+      ];
 
-    const opacity = scrollX.interpolate({
-      inputRange,
-      outputRange: [0.5, 1, 0.5], // Side cards are 50% transparent
-      extrapolate: "clamp",
-    });
+      const opacity = scrollX.interpolate({
+        inputRange,
+        outputRange: [0.5, 1, 0.5], // Side cards are 50% transparent
+        extrapolate: "clamp",
+      });
 
-    const scale = scrollX.interpolate({
-      inputRange,
-      outputRange: [0.9, 1, 0.9], // Side cards are 10% smaller
-      extrapolate: "clamp",
-    });
+      const scale = scrollX.interpolate({
+        inputRange,
+        outputRange: [0.9, 1, 0.9], // Side cards are 10% smaller
+        extrapolate: "clamp",
+      });
 
-    return (
-      <Animated.View
-        style={[styles.cardContainer, { opacity, transform: [{ scale }] }]}
-      >
-        <HapticButton
-          onPress={() => handlePress(item.id)}
-          style={styles.imageWrapper}
+      return (
+        <Animated.View
+          style={[styles.cardContainer, { opacity, transform: [{ scale }] }]}
         >
-          <Image source={item.image} style={styles.image} resizeMode="cover" />
-          <View style={styles.overlayButton}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={styles.buttonText}>Get this look </Text>
-              <Ionicons name="arrow-forward" size={16} color={COLORS.primary} />
+          <HapticButton
+            onPress={() => handlePress(item.id)}
+            style={styles.imageWrapper}
+          >
+            <Image
+              source={item.image}
+              style={styles.image}
+              resizeMode="cover"
+            />
+            <View style={styles.overlayButton}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={styles.buttonText}>Get this look </Text>
+                <Ionicons
+                  name="arrow-forward"
+                  size={16}
+                  color={COLORS.primary}
+                />
+              </View>
             </View>
-          </View>
-        </HapticButton>
-      </Animated.View>
-    );
-  };
+          </HapticButton>
+        </Animated.View>
+      );
+    },
+    [handlePress, scrollX],
+  );
 
   return (
     <View style={styles.container}>
@@ -129,7 +139,7 @@ export default function EventCard() {
       <Animated.FlatList
         data={FESTIVE_ITEMS}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         horizontal
         showsHorizontalScrollIndicator={false}
         // Physics & Snapping
@@ -144,7 +154,7 @@ export default function EventCard() {
         // Scroll Event mapping to Animated Value
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: true }
+          { useNativeDriver: true },
         )}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}

@@ -20,24 +20,30 @@ const TrustItem = memo(
   ),
 );
 
+/**
+ * Module scope, so the badges keep their identity across renders — rebuilt
+ * inline, every one of them failed the memo check and re-fetched its SVG.
+ */
+const TRUST_ITEMS = [
+  {
+    id: 1,
+    icon: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FTrust%20Badges%2FICONS%20_Infinite%20Designs.svg?alt=media&token=27cf866d-d590-4d26-8d56-d1aeedbb89ac",
+    text: "Infinite Designs",
+  },
+  {
+    id: 2,
+    icon: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FTrust%20Badges%2FICONS%20_Global%20Jewellery%20Standards.svg?alt=media&token=4990b5f0-3124-4c7e-b7c8-1d811f501dfc",
+    text: "Global Jewellery Standards",
+  },
+  {
+    id: 3,
+    icon: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FTrust%20Badges%2FICONS%20_Insured%20Delivery.svg?alt=media&token=3858495a-afe4-4c1c-b4b5-9c24eb59fd3a",
+    text: "Insured Delivery",
+  },
+];
+
 const TrustBar = () => {
-  const trustItems = [
-    {
-      id: 1,
-      icon: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FTrust%20Badges%2FICONS%20_Infinite%20Designs.svg?alt=media&token=27cf866d-d590-4d26-8d56-d1aeedbb89ac",
-      text: "Infinite Designs",
-    },
-    {
-      id: 2,
-      icon: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FTrust%20Badges%2FICONS%20_Global%20Jewellery%20Standards.svg?alt=media&token=4990b5f0-3124-4c7e-b7c8-1d811f501dfc",
-      text: "Global Jewellery Standards",
-    },
-    {
-      id: 3,
-      icon: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FTrust%20Badges%2FICONS%20_Insured%20Delivery.svg?alt=media&token=3858495a-afe4-4c1c-b4b5-9c24eb59fd3a",
-      text: "Insured Delivery",
-    },
-  ];
+  const trustItems = TRUST_ITEMS;
 
   const scrollX = useRef(new Animated.Value(0)).current;
   const [contentWidth, setContentWidth] = useState(0);
@@ -146,4 +152,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TrustBar;
+// The ticker takes no props and animates on its own; nothing a parent does
+// should make it render again.
+export default memo(TrustBar);

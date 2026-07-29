@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useCallback } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -21,13 +21,13 @@ import { SectionHeader } from "./section";
  * Individual Card Component
  * Displays the Seller's Banner and the Title of their first collection
  */
-const Card = ({
+const Card = React.memo(function Card({
   item,
   cardWidth,
 }: {
   item: MultiBrandCollection;
   cardWidth: number;
-}) => {
+}) {
   const router = useRouter();
   const navigateToCollection = () => {
     router.navigate({
@@ -63,7 +63,7 @@ const Card = ({
       </View>
     </TouchableOpacity>
   );
-};
+});
 
 export default function BrandCollectionCards() {
   const {
@@ -76,6 +76,13 @@ export default function BrandCollectionCards() {
   // Layout Calculations
   const numVisibleCards = width > 600 ? 3.5 : 1.2;
   const cardWidth = (width - 32) / numVisibleCards;
+
+  const renderItem = useCallback(
+    ({ item }: { item: MultiBrandCollection }) => (
+      <Card item={item} cardWidth={cardWidth} />
+    ),
+    [cardWidth]
+  );
 
   if (isLoading) {
     return (
@@ -98,8 +105,8 @@ export default function BrandCollectionCards() {
       <SectionHeader value="The Latest Arrivals" />
       <FlatList
         data={multiBrandCollectionsData}
-        renderItem={({ item }) => <Card item={item} cardWidth={cardWidth} />}
-        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        keyExtractor={(item) => String(item.id)}
         horizontal
         showsHorizontalScrollIndicator={false}
         snapToInterval={cardWidth + 16}
