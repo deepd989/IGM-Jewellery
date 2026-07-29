@@ -20,11 +20,12 @@ import LuxuryProfileStats, {
   LuxuryProfileStat,
 } from "./components/luxuryProfileStats";
 import LuxuryRecentOrderCard from "./components/luxuryRecentOrderCard";
+import { assetUrl } from "@/constants/assets";
 
 /** Stand-in artwork until recent orders are served by the backend. */
 const ORDER_IMAGES = [
-  "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FRings%2FRing_Eternity.webp?alt=media&token=195729b9-5863-440c-b8cd-762318f7de62",
-  "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FRings%2FRing_anniversary.webp?alt=media&token=9cad0037-bb91-4334-a586-d5290f309bdb",
+  assetUrl("profile.recentOrder.image1"),
+  assetUrl("profile.recentOrder.image2"),
 ];
 
 const PROFILE_STATS: LuxuryProfileStat[] = [

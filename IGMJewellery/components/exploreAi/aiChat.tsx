@@ -31,6 +31,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../basic components/hapticButton";
 import { CartBadge } from "../cart/CardBadge";
 import VoiceVideoInterface from "./aiVoice";
+import { assetUrl } from "@/constants/assets";
 
 interface IMessage {
   id: string;
@@ -342,7 +343,7 @@ export default function AiChatComponent({
                       params: {
                         ...(item.searchParams as Record<string, string>),
                         bannerImageUrl: encodeURIComponent(
-                          "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Pop%20Up%20Try%20On%20Buttons%2Fmagic%20search-11.webp?alt=media&token=87f0543b-2c86-456d-a1b5-ddb2127e15ca"
+                          assetUrl("exploreAi.magicSearchBanner")
                         ),
                       },
                     });

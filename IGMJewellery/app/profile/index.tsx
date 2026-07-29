@@ -19,6 +19,7 @@ import PaymentMethods from "../../components/paymentMethods";
 import { COLORS } from "../../constants/theme";
 import { useLuxury } from "../../context/luxuryContext";
 import LuxuryProfileScreen from "../luxury/profile";
+import { assetUrl } from "@/constants/assets";
 
 const PROFILE_STATS = [
   {
@@ -126,8 +127,8 @@ export default function ProfileScreen() {
 
 function ClassicProfileScreen() {
   const productImageLinks = [
-    "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FRings%2FRing_Eternity.webp?alt=media&token=195729b9-5863-440c-b8cd-762318f7de62",
-    "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FRings%2FRing_anniversary.webp?alt=media&token=9cad0037-bb91-4334-a586-d5290f309bdb",
+    assetUrl("profile.recentOrder.image1"),
+    assetUrl("profile.recentOrder.image2"),
   ];
 
   const router = useRouter();
@@ -155,7 +156,7 @@ function ClassicProfileScreen() {
         <View style={styles.userSection}>
           <Image
             source={{
-              uri: "https://drive.google.com/uc?export=download&id=19-d6USaW7yMEDIqEEPWx-lfilvBiNBCF",
+              uri: assetUrl("profile.avatarFallback"),
             }}
             style={styles.avatarPlaceholder}
           />
@@ -169,7 +170,7 @@ function ClassicProfileScreen() {
           >
             <Image
               source={{
-                uri: "https://upload.wikimedia.org/wikipedia/en/thumb/4/41/Flag_of_India.svg/255px-Flag_of_India.svg.png",
+                uri: assetUrl("profile.flag.india"),
               }}
               style={styles.flag}
             />

@@ -1,3 +1,4 @@
+import { assetUrl } from "@/constants/assets";
 import { LUXURY_SPACING } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -11,8 +12,7 @@ import {
 } from "react-native";
 
 /** Artwork is placeholder — point this at the final URL when it's hosted. */
-const BACKDROP =
-  "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=1200&auto=format&fit=crop";
+const BACKDROP = assetUrl("luxury.elanziaAllRights.backdrop");
 
 const LOGO_GLYPH = require("@/assets/images/elanziaNav.png");
 const LOGO_WORDMARK = require("@/assets/images/elanziaPng.png");

@@ -19,6 +19,7 @@ import {
 } from "react-native";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS, LUXURY_COLORS } from "../../constants/theme";
+import { assetUrl } from "@/constants/assets";
 
 const { width } = Dimensions.get("window");
 
@@ -114,7 +115,7 @@ const BespokePage1 = ({
         <View style={styles.imgcontainer}>
           <Image
             source={{
-              uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Bespoke%20Banners%2FExplore%20Bespoke%2Fbespoke-01.webp?alt=media&token=5cb0fb49-268e-4953-acc5-92abb0db0249",
+              uri: assetUrl("bespoke.hero.primary"),
             }}
             style={styles.image}
             resizeMode="cover"
@@ -172,7 +173,7 @@ const BespokePage1 = ({
         <View style={(styles.imgcontainer, { paddingBottom: 80 })}>
           <Image
             source={{
-              uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Bespoke%20Banners%2FExplore%20Bespoke%2Fbespoke-02.webp?alt=media&token=9e40b901-d9eb-491c-ac15-5e419466639b",
+              uri: assetUrl("bespoke.hero.secondary"),
             }}
             style={styles.image}
             resizeMode="cover"

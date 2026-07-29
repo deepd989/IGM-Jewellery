@@ -1,4 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
+import { assetUrl } from "@/constants/assets";
 import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -35,32 +36,27 @@ const OUTFIT_TYPES: OutfitTypeCard[] = [
   {
     id: "office",
     label: "Office Wear",
-    image:
-      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=800&auto=format&fit=crop",
+    image: assetUrl("luxury.outfitType.officeWear"),
   },
   {
     id: "party",
     label: "Party Wear",
-    image:
-      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop",
+    image: assetUrl("luxury.outfitType.partyWear"),
   },
   {
     id: "wedding",
     label: "Wedding Wear",
-    image:
-      "https://images.unsplash.com/photo-1583391733956-6c78276477e2?q=80&w=800&auto=format&fit=crop",
+    image: assetUrl("luxury.outfitType.weddingWear"),
   },
   {
     id: "festive",
     label: "Festive Wear",
-    image:
-      "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=800&auto=format&fit=crop",
+    image: assetUrl("luxury.outfitType.festiveWear"),
   },
   {
     id: "daily",
     label: "Daily Wear",
-    image:
-      "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=800&auto=format&fit=crop",
+    image: assetUrl("luxury.outfitType.dailyWear"),
   },
 ];
 

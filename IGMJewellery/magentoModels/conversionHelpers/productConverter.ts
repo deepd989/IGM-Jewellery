@@ -1,3 +1,4 @@
+import { assetUrl } from "@/constants/assets";
 import { Gender } from "@/constants/genderEnum";
 import { OccasionEnum } from "@/constants/occasions";
 import { Brand } from "@/enums/brand.enum";
@@ -6,8 +7,7 @@ import { Product, ProductDetails } from "@/interfaces/product.interface";
 import { CustomAttribute, MagentoProduct } from "@/magentoModels/product.model";
 
 // Default placeholder image when no images available
-const DEFAULT_PRODUCT_IMAGE =
-  "https://via.placeholder.com/300x300?text=No+Image";
+const DEFAULT_PRODUCT_IMAGE = assetUrl("placeholder.product");
 
 // Map of sub_cat resolved labels to ProductType enum
 const PRODUCT_TYPE_MAP: Record<string, ProductType> = {

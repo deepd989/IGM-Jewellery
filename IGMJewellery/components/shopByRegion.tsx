@@ -17,6 +17,7 @@ import {
   View,
 } from "react-native";
 import { SectionHeader } from "./section";
+import { assetUrl } from "@/constants/assets";
 
 type RegionCard = {
   id: string;
@@ -47,7 +48,7 @@ const Card = React.memo(function Card({
       onPress={navigateToRegion}
     >
       <Image
-        source={{ uri: item.image || "https://via.placeholder.com/500" }}
+        source={{ uri: item.image || assetUrl("placeholder.regionCard") }}
         style={styles.image}
         resizeMode="cover"
       />

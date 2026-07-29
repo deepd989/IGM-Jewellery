@@ -3,13 +3,12 @@ import { LUXURY_COLORS } from "@/constants/theme";
 import React from "react";
 import { Image, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import LuxuryProfileCard from "./luxuryProfileCard";
+import { assetUrl } from "@/constants/assets";
 
 /** Stands in until the shopper has an avatar of their own. */
-const AVATAR_FALLBACK =
-  "https://drive.google.com/uc?export=download&id=19-d6USaW7yMEDIqEEPWx-lfilvBiNBCF";
+const AVATAR_FALLBACK = assetUrl("profile.avatarFallback");
 
-const FLAG_INDIA =
-  "https://upload.wikimedia.org/wikipedia/en/thumb/4/41/Flag_of_India.svg/255px-Flag_of_India.svg.png";
+const FLAG_INDIA = assetUrl("profile.flag.india");
 
 type LuxuryProfileHeroProps = {
   name: string;

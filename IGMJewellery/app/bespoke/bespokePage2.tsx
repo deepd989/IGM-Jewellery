@@ -9,42 +9,38 @@ import {
 } from "react-native";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS, LUXURY_COLORS } from "../../constants/theme";
+import { assetUrl } from "@/constants/assets";
 
 const categories = [
   {
     id: "1",
     title: "N E C K L A C E",
     hasIcon: false,
-    imgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Bespoke%20Banners%2Fcategories_Artistian%20Neckalce.webp?alt=media&token=70497e37-d2a8-4ba1-a61e-da46c7b56fd0",
+    imgUrl: assetUrl("bespoke.category.necklace"),
   },
   {
     id: "2",
     title: "R I N G S",
     hasIcon: false,
-    imgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Bespoke%20Banners%2Fcategories_Artistian%20Rings.webp?alt=media&token=551980e1-5ec1-471c-8095-a3905e6461bb",
+    imgUrl: assetUrl("bespoke.category.ring"),
   },
   {
     id: "3",
     title: "B A N G L E S",
     hasIcon: false,
-    imgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Bespoke%20Banners%2Fcategories_Artistian%20Bangels.webp?alt=media&token=ef0a6cc6-6461-4cbc-b1b4-3d5de603c764",
+    imgUrl: assetUrl("bespoke.category.bangle"),
   },
   {
     id: "4",
     title: "M A G A L S U T R A",
     hasIcon: false,
-    imgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Bespoke%20Banners%2Fcategories_Artistian%20Mangalshutra.webp?alt=media&token=5f75ef1d-06af-4128-a42f-5b0b4464fc12",
+    imgUrl: assetUrl("bespoke.category.mangalsutra"),
   },
   {
     id: "5",
     title: "B R A C E L E T S",
     hasIcon: false,
-    imgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Bespoke%20Banners%2Fcategories_Artistian%20Bracelets.webp?alt=media&token=c1e9186d-d990-4fca-b680-8a2576d5f2b9",
+    imgUrl: assetUrl("bespoke.category.bracelet"),
   },
 ];
 

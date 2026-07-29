@@ -1,4 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
+import { assetUrl } from "@/constants/assets";
 import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -33,18 +34,15 @@ export type LuxuryBanner = {
 const BANNERS: LuxuryBanner[] = [
   {
     id: "1",
-    image:
-      "https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=1200&auto=format&fit=crop",
+    image: assetUrl("luxury.newProducts.banner1"),
   },
   {
     id: "2",
-    image:
-      "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=1200&auto=format&fit=crop",
+    image: assetUrl("luxury.newProducts.banner2"),
   },
   {
     id: "3",
-    image:
-      "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=1200&auto=format&fit=crop",
+    image: assetUrl("luxury.newProducts.banner3"),
   },
 ];
 

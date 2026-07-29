@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import { HapticButton } from "./basic components/hapticButton";
+import { assetUrl } from "@/constants/assets";
 
 const { width } = Dimensions.get("window");
 const HORIZONTAL_PADDING = 16;
@@ -23,7 +24,7 @@ const SwipeAndShopComponent = () => {
       >
         <Image
           source={{
-            uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Feature%20Buttons%2FSwipe%26Shop_5.webp?alt=media&token=c0ca8e88-3abe-4c21-96b2-5054dd6e4b50",
+            uri: assetUrl("home.featureButton.swipeAndShop"),
           }}
           style={styles.buttonImage}
           contentFit="cover"
@@ -39,7 +40,7 @@ const SwipeAndShopComponent = () => {
       >
         <Image
           source={{
-            uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Feature%20Buttons%2FBecome_Model_4.webp?alt=media&token=5e3fddfc-e39b-4aac-bf2d-c328a80d6fb1",
+            uri: assetUrl("home.featureButton.becomeModel"),
           }}
           style={styles.buttonImage}
           contentFit="cover"

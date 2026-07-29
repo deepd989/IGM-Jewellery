@@ -1,3 +1,4 @@
+import { assetUrl } from "@/constants/assets";
 import { Brand } from "@/enums/brand.enum";
 import { ProductType } from "@/enums/productType.enum";
 import { Product } from "@/interfaces/product.interface";
@@ -13,7 +14,7 @@ export const dummyProducts: Product[] = [
     discountedPrice: 20000,
     brand: Brand.Kalyan,
     tags: ['new', 'diamond'],
-    thumbnailUrls: ['https://images.unsplash.com/photo-1605100804763-eb2fc645a382?q=80&w=400'],
+    thumbnailUrls: [assetUrl("mock.product.solitaireShine.image1")],
     isNew: true,
     rating: 4,
   },
@@ -27,7 +28,7 @@ export const dummyProducts: Product[] = [
     discountedPrice: 9500,
     brand: Brand.Malabar,
     tags: ['gold', 'sale'],
-    thumbnailUrls: ['https://images.unsplash.com/photo-1626784215021-2e39ccf971cd?q=80&w=400'],
+    thumbnailUrls: [assetUrl("mock.product.dailyWearRing.image1")],
     isNew: true,
     rating: 5,
   },
@@ -41,7 +42,7 @@ export const dummyProducts: Product[] = [
     discountedPrice: 38000,
     brand: Brand.Tanishq,
     tags: ['gemstone'],
-    thumbnailUrls: ['https://images.unsplash.com/photo-1599643477877-530eb83abc8e?q=80&w=400'],
+    thumbnailUrls: [assetUrl("mock.product.emeraldRing.image1")],
     isNew: false,
     rating: 4,
   },
@@ -55,7 +56,7 @@ export const dummyProducts: Product[] = [
     discountedPrice: 28500,
     brand: Brand.CaratLane,
     tags: ['platinum'],
-    thumbnailUrls: ['https://images.unsplash.com/photo-1589674781759-c21c37956a44?q=80&w=400'],
+    thumbnailUrls: [assetUrl("mock.product.platinumBand.image1")],
     isNew: true,
     rating: 3,
   },
@@ -69,7 +70,7 @@ export const dummyProducts: Product[] = [
     discountedPrice: 15000,
     brand: Brand.Bluestone,
     tags: ['rosegold'],
-    thumbnailUrls: ['https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=400'],
+    thumbnailUrls: [assetUrl("mock.product.roseGoldRing.image1")],
     isNew: false,
     rating: 5,
   },
@@ -83,7 +84,7 @@ export const dummyProducts: Product[] = [
     discountedPrice: 4500,
     brand: Brand.CaratLane,
     tags: ['silver'],
-    thumbnailUrls: ['https://images.unsplash.com/photo-1603561591411-07134e71a2a9?q=80&w=400'],
+    thumbnailUrls: [assetUrl("mock.product.silverBand.image1")],
     isNew: false,
     rating: 4,
   },
@@ -100,8 +101,8 @@ export const dummyProducts: Product[] = [
     isNew: true,
     rating: 5,
     thumbnailUrls: [
-      "https://example.com/images/necklace-001-1.jpg",
-      "https://example.com/images/necklace-001-2.jpg",
+      assetUrl("mock.product.prod001GoldNecklace.image1"),
+      assetUrl("mock.product.prod001GoldNecklace.image2"),
     ],
   },
   {
@@ -115,8 +116,8 @@ export const dummyProducts: Product[] = [
     brand: Brand.Tanishq,
     tags: ["diamond", "earrings", "stud", "white-gold"],
     thumbnailUrls: [
-      "https://example.com/images/earrings-002-1.jpg",
-      "https://example.com/images/earrings-002-2.jpg",
+      assetUrl("mock.product.prod002DiamondStuds.image1"),
+      assetUrl("mock.product.prod002DiamondStuds.image2"),
     ],
   },
   {
@@ -130,7 +131,7 @@ export const dummyProducts: Product[] = [
     brand: Brand.KalyanJewellers,
     tags: ["silver", "bracelet", "charms", "sterling"],
     thumbnailUrls: [
-      "https://example.com/images/bracelet-003-1.jpg",
+      assetUrl("mock.product.prod003CharmBracelet.image1"),
     ],
   },
   {
@@ -144,8 +145,8 @@ export const dummyProducts: Product[] = [
     brand: Brand.Tanishq,
     tags: ["ruby", "ring", "gemstone", "statement"],
     thumbnailUrls: [
-      "https://example.com/images/ring-004-1.jpg",
-      "https://example.com/images/ring-004-2.jpg",
+      assetUrl("mock.product.prod004RubyRing.image1"),
+      assetUrl("mock.product.prod004RubyRing.image2"),
     ],
   },
   {
@@ -159,8 +160,8 @@ export const dummyProducts: Product[] = [
     brand: Brand.Tanishq,
     tags: ["ruby", "ring", "gemstone", "statement"],
     thumbnailUrls: [
-      "https://example.com/images/ring-004-1.jpg",
-      "https://example.com/images/ring-004-2.jpg",
+      assetUrl("mock.product.prod005RubyEarring.image1"),
+      assetUrl("mock.product.prod005RubyEarring.image2"),
     ],
   },
   {
@@ -174,8 +175,8 @@ export const dummyProducts: Product[] = [
     brand: Brand.CaratLane,
     tags: ["diamond", "earrings", "stud", "white-gold"],
     thumbnailUrls: [
-      "https://example.com/images/earrings-002-1.jpg",
-      "https://example.com/images/earrings-002-2.jpg",
+      assetUrl("mock.product.prod006DiamondNecklaceGift.image1"),
+      assetUrl("mock.product.prod006DiamondNecklaceGift.image2"),
     ],
   },
 
@@ -190,8 +191,8 @@ export const dummyProducts: Product[] = [
     brand: Brand.CaratLane,
     tags: ["diamond", "earrings", "stud", "white-gold"],
     thumbnailUrls: [
-      "https://example.com/images/earrings-002-1.jpg",
-      "https://example.com/images/earrings-002-2.jpg",
+      assetUrl("mock.product.prod007GoldNecklace.image1"),
+      assetUrl("mock.product.prod007GoldNecklace.image2"),
     ],
   },
 ];

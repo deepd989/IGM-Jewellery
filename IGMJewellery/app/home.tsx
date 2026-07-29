@@ -42,9 +42,9 @@ import ShopByRegionCards from "../components/shopByRegion";
 import { TrendingProducts } from "../components/TrendingProducts";
 import TrustBar from "../components/trustBarBanner";
 import { COLORS } from "../constants/theme";
+import { assetUrl } from "@/constants/assets";
 
-const GIFTING_BANNER_URL =
-  "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Gifting%20Banner%2FGifting_banner-05.webp?alt=media&token=5b1e9a31-d5c7-47ee-bf47-8abcca8b5475";
+const GIFTING_BANNER_URL = assetUrl("gifting.banner");
 
 type HomeSection = { key: string; render: () => React.ReactNode };
 

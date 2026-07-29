@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
+import { assetUrl } from "@/constants/assets";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -29,22 +30,22 @@ const CAROUSEL_DATA = [
     id: '1',
     title: 'Timeless Diamond Collection',
     subtitle: 'TBZ Jewellers',
-    image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=1000&auto=format&fit=crop',
-    logo: 'https://via.placeholder.com/100/3A2D28/FFFFFF?text=tbz',
+    image: assetUrl("luxury.glossyCard.slide1.image"),
+    logo: assetUrl("luxury.glossyCard.slide1.brandLogo"),
   },
   {
     id: '2',
     title: 'Royal Heritage Gold',
     subtitle: 'TBZ Jewellers',
-    image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=1000&auto=format&fit=crop',
-    logo: 'https://via.placeholder.com/100/3A2D28/FFFFFF?text=tbz',
+    image: assetUrl("luxury.glossyCard.slide2.image"),
+    logo: assetUrl("luxury.glossyCard.slide2.brandLogo"),
   },
   {
     id: '3',
     title: 'Modern Solitaire Series',
     subtitle: 'TBZ Jewellers',
-    image: 'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?q=80&w=1000&auto=format&fit=crop',
-    logo: 'https://via.placeholder.com/100/3A2D28/FFFFFF?text=tbz',
+    image: assetUrl("luxury.glossyCard.slide3.image"),
+    logo: assetUrl("luxury.glossyCard.slide3.brandLogo"),
   },
 ];
 

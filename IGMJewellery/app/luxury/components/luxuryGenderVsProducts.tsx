@@ -1,4 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
+import { assetUrl } from "@/constants/assets";
 import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
@@ -37,29 +38,25 @@ const GENDER_TILES: LuxuryGenderTile[] = [
   {
     id: "mens",
     label: "For Men",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop",
+    image: assetUrl("luxury.genderTile.men"),
     params: { departmentId: "mens" },
   },
   {
     id: "womens",
     label: "For Women",
-    image:
-      "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=600&auto=format&fit=crop",
+    image: assetUrl("luxury.genderTile.women"),
     params: { departmentId: "womens" },
   },
   {
     id: "unisex",
     label: "Unisex Jewellery",
-    image:
-      "https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=600&auto=format&fit=crop",
+    image: assetUrl("luxury.genderTile.unisex"),
     params: { gender: "unisex" },
   },
   {
     id: "kids",
     label: "For Kids",
-    image:
-      "https://images.unsplash.com/photo-1519457431-44ccd64a579b?q=80&w=600&auto=format&fit=crop",
+    image: assetUrl("luxury.genderTile.kids"),
     params: { departmentId: "kids" },
   },
 ];

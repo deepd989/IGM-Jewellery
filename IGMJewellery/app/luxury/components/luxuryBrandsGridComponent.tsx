@@ -1,4 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
+import { assetUrl } from "@/constants/assets";
 import { LUXURY_SPACING } from "@/constants/theme";
 import { Brand, useGetBrandsQuery } from "@/store/apis/brandsApi";
 import { Ionicons } from "@expo/vector-icons";
@@ -30,12 +31,9 @@ export type LuxuryBrandTile = "brand" | "newIn" | "collections";
 
 /** Cover art used for any tile the brands API doesn't supply one for. */
 const FALLBACK_COVERS: Record<LuxuryBrandTile, string> = {
-  brand:
-    "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=1000&auto=format&fit=crop",
-  newIn:
-    "https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=800&auto=format&fit=crop",
-  collections:
-    "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?q=80&w=800&auto=format&fit=crop",
+  brand: assetUrl("luxury.brandTile.fallbackCover.brand"),
+  newIn: assetUrl("luxury.brandTile.fallbackCover.newIn"),
+  collections: assetUrl("luxury.brandTile.fallbackCover.collections"),
 };
 
 /** Where each tile's cover art comes from on the Brand model. */

@@ -1,4 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
+import { assetUrl } from "@/constants/assets";
 import { LUXURY_SPACING } from "@/constants/theme";
 import { Brand, useGetBrandsQuery } from "@/store/apis/brandsApi";
 import {
@@ -27,7 +28,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 /** Backdrop shown before any collection artwork has loaded. */
 const FALLBACK_BACKDROP =
-  "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=1000&auto=format&fit=crop";
+  assetUrl("luxury.multibrandCollection.fallbackBackdrop");
 
 const GAP = 12;
 /** One card plus a slice of the next, so the row reads as scrollable. */

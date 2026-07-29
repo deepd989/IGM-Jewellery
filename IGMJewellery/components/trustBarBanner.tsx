@@ -2,6 +2,7 @@ import React, { memo, useEffect, useRef, useState } from "react";
 import { Animated, Easing, StyleSheet, Text, View } from "react-native";
 import { SvgUri } from "react-native-svg";
 import { COLORS } from "../constants/theme";
+import { assetUrl } from "@/constants/assets";
 
 // 1. Move the item renderer outside to prevent re-mounting flicker
 const TrustItem = memo(
@@ -27,17 +28,17 @@ const TrustItem = memo(
 const TRUST_ITEMS = [
   {
     id: 1,
-    icon: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FTrust%20Badges%2FICONS%20_Infinite%20Designs.svg?alt=media&token=27cf866d-d590-4d26-8d56-d1aeedbb89ac",
+    icon: assetUrl("trustBadge.infiniteDesigns"),
     text: "Infinite Designs",
   },
   {
     id: 2,
-    icon: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FTrust%20Badges%2FICONS%20_Global%20Jewellery%20Standards.svg?alt=media&token=4990b5f0-3124-4c7e-b7c8-1d811f501dfc",
+    icon: assetUrl("trustBadge.globalJewelleryStandards"),
     text: "Global Jewellery Standards",
   },
   {
     id: 3,
-    icon: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FTrust%20Badges%2FICONS%20_Insured%20Delivery.svg?alt=media&token=3858495a-afe4-4c1c-b4b5-9c24eb59fd3a",
+    icon: assetUrl("trustBadge.insuredDelivery"),
     text: "Insured Delivery",
   },
 ];

@@ -1,4 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
+import { assetUrl } from "@/constants/assets";
 import { OccasionEnum } from "@/constants/occasions";
 import { RELATIONSHIPS } from "@/constants/relationships";
 import { LUXURY_SPACING } from "@/constants/theme";
@@ -19,8 +20,7 @@ import {
 import Modal from "react-native-modal";
 
 /** Artwork behind the section — swap for the final asset when it's hosted. */
-const BACKGROUND_IMAGE_URL =
-  "https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?q=80&w=1000&auto=format&fit=crop";
+const BACKGROUND_IMAGE_URL = assetUrl("luxury.elanziaSearch.background");
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 

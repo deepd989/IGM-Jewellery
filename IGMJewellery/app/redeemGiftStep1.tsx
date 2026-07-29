@@ -8,6 +8,7 @@ import { useAuth } from "../auth/authContext";
 import { HapticButton } from "../components/basic components/hapticButton";
 import { COLORS } from "../constants/theme";
 import { GiftCardData, useGetAllGiftsQuery } from "../store/apis/giftApi";
+import { assetUrl } from "@/constants/assets";
 
 // Placeholder component for RibbonCard
 const RibbonCard = ({ children }) => <View>{children}</View>;
@@ -122,7 +123,7 @@ const GiftCardRedeemStep1 = () => {
               <RibbonCard key={card.id}>
                 <View style={styles.card}>
                   <GiftingCard
-                    imgUrl="https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Gifting%20Banner%2FGifting_banner-05.webp?alt=media&token=5b1e9a31-d5c7-47ee-bf47-8abcca8b5475"
+                    imgUrl={assetUrl("gifting.banner")}
                     showExploreButton={false}
                     amount={card.amount}
                     description={card.title}

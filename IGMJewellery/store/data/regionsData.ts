@@ -1,3 +1,5 @@
+import { assetUrl } from "@/constants/assets";
+
 /**
  * The regions the storefront sells from, the artwork that represents them, and
  * the params /product-list expects — this is the single source of truth every
@@ -30,136 +32,109 @@ export const REGIONS: Record<string, Region> = {
     id: "7",
     region: "Tamil Nadu",
     sellerName: "Tamil Nadu Silks",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FTamil%20Nadu.webp?alt=media&token=4e789072-3553-4552-9e3c-541f0d2b7e9f",
+    sellerBannerImgUrl: assetUrl("region.banner.tamilNadu"),
     collections: [{ title: "Kanchipuram Specials" }],
     craftName: "Temple Jewellery",
     description:
       "Gold work born in the temples of Tamil Nadu, carrying deity motifs once made for temple dancers.",
-    portraitImageUrl:
-      "https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=800&auto=format&fit=crop",
-    productImageUrl:
-      "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=800&auto=format&fit=crop",
+    portraitImageUrl: assetUrl("region.portrait.tamilNadu"),
+    productImageUrl: assetUrl("region.product.tamilNadu"),
   },
   "6": {
     id: "6",
     region: "Rajasthan",
     sellerName: "Rajasthan Royal Gems",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FRajasthan.webp?alt=media&token=52ed7845-1514-47bb-80af-648441526c57",
+    sellerBannerImgUrl: assetUrl("region.banner.rajasthan"),
     collections: [{ title: "Jaipur Jewelry" }],
     craftName: "Thewa Jewellery",
     description:
       "A 400-year-old art form from Rajasthan, with gold filigree work fused onto brightly colored glass.",
-    portraitImageUrl:
-      "https://images.unsplash.com/photo-1583391733956-6c78276477e2?q=80&w=800&auto=format&fit=crop",
-    productImageUrl:
-      "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=800&auto=format&fit=crop",
+    portraitImageUrl: assetUrl("region.portrait.rajasthan"),
+    productImageUrl: assetUrl("region.product.rajasthan"),
   },
   "2": {
     id: "2",
     region: "Gujarat",
     sellerName: "Gujarat Gold & Silk",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FGujarat.webp?alt=media&token=0c187c11-3240-4630-9dac-efa1c314b1f0",
+    sellerBannerImgUrl: assetUrl("region.banner.gujarat"),
     collections: [{ title: "Patola Collections" }],
     craftName: "Kutch Silver",
     description:
       "Oxidised silver from the Kutch desert, hand-punched with the beadwork motifs the region is known for.",
-    portraitImageUrl:
-      "https://images.unsplash.com/photo-1595535373192-fc8935bacd89?q=80&w=800&auto=format&fit=crop",
-    productImageUrl:
-      "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?q=80&w=800&auto=format&fit=crop",
+    portraitImageUrl: assetUrl("region.portrait.gujarat"),
+    productImageUrl: assetUrl("region.product.gujarat"),
   },
   "1": {
     id: "1",
     region: "Assam",
     sellerName: "Assam Heritage",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FAssam.webp?alt=media&token=585608eb-b703-4f04-9183-117cbdc179a5",
+    sellerBannerImgUrl: assetUrl("region.banner.assam"),
     collections: [{ title: "Silk & Tea Crafts" }],
     craftName: "Assamese Gold",
     description:
       "Enamelled gold pieces such as the Gam Kharu and Jonbiri, shaped after the valley's flowers and birds.",
-    portraitImageUrl:
-      "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=800&auto=format&fit=crop",
-    productImageUrl:
-      "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=800&auto=format&fit=crop",
+    portraitImageUrl: assetUrl("region.portrait.assam"),
+    productImageUrl: assetUrl("region.product.assam"),
   },
   "3": {
     id: "3",
     region: "Kerala",
     sellerName: "Kerala Spices & Arts",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FKerala.webp?alt=media&token=12bef91c-3f2b-4263-9797-ac9570a8e738",
+    sellerBannerImgUrl: assetUrl("region.banner.kerala"),
     collections: [{ title: "Traditional Handloom" }],
     craftName: "Kasu Mala",
     description:
       "Layered coin and Palakka necklaces in warm Kerala gold, worn for weddings and temple festivals.",
-    portraitImageUrl:
-      "https://images.unsplash.com/photo-1602752250015-52934bc45613?q=80&w=800&auto=format&fit=crop",
-    productImageUrl:
-      "https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=800&auto=format&fit=crop",
+    portraitImageUrl: assetUrl("region.portrait.kerala"),
+    productImageUrl: assetUrl("region.product.kerala"),
   },
   "4": {
     id: "4",
     region: "Odisha",
     sellerName: "Odisha Temple Crafts",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FOdisha.webp?alt=media&token=264f073e-0ca8-4c8e-b316-755a58af3a70",
+    sellerBannerImgUrl: assetUrl("region.banner.odisha"),
     collections: [{ title: "Silver Filigree" }],
     craftName: "Tarakasi Filigree",
     description:
       "Cuttack's silver filigree, drawn into threads finer than wire and coiled into lace by hand.",
-    portraitImageUrl:
-      "https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=800&auto=format&fit=crop",
-    productImageUrl:
-      "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?q=80&w=800&auto=format&fit=crop",
+    portraitImageUrl: assetUrl("region.portrait.odisha"),
+    productImageUrl: assetUrl("region.product.odisha"),
   },
   "5": {
     id: "5",
     region: "Punjab",
     sellerName: "Punjab Phulkari House",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FPunjab.webp?alt=media&token=e68e7ad9-d7bf-4318-a4e7-5876867ebb78",
+    sellerBannerImgUrl: assetUrl("region.banner.punjab"),
     collections: [{ title: "Embroidered Heritage" }],
     craftName: "Pippal Patti",
     description:
       "Leaf-shaped gold jhumkas and jadau sets that echo the Phulkari embroidery of Punjab.",
-    portraitImageUrl:
-      "https://images.unsplash.com/photo-1622434641406-a158123450f9?q=80&w=800&auto=format&fit=crop",
-    productImageUrl:
-      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=800&auto=format&fit=crop",
+    portraitImageUrl: assetUrl("region.portrait.punjab"),
+    productImageUrl: assetUrl("region.product.punjab"),
   },
   "8": {
     id: "8",
     region: "Telangana",
     sellerName: "Telangana Pearl Co.",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FTelangana.webp?alt=media&token=fcdc5631-ce8c-47f7-9e66-17a1e7883ee5",
+    sellerBannerImgUrl: assetUrl("region.banner.telangana"),
     collections: [{ title: "Hyderabadi Jewelry" }],
     craftName: "Hyderabadi Pearls",
     description:
       "The pearl strings and Karanphool sets that made Hyderabad the city of pearls.",
-    portraitImageUrl:
-      "https://images.unsplash.com/photo-1600721391689-2564bb8055de?q=80&w=800&auto=format&fit=crop",
-    productImageUrl:
-      "https://images.unsplash.com/photo-1611085583191-a3b181a88401?q=80&w=800&auto=format&fit=crop",
+    portraitImageUrl: assetUrl("region.portrait.telangana"),
+    productImageUrl: assetUrl("region.product.telangana"),
   },
   "9": {
     id: "9",
     region: "West Bengal",
     sellerName: "West Bengal Artistry",
-    sellerBannerImgUrl:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/State%20Banners%2FWest%20Bengal.webp?alt=media&token=2a546938-3731-43a2-9b7a-bcbca11ca117",
+    sellerBannerImgUrl: assetUrl("region.banner.westBengal"),
     collections: [{ title: "Terracotta & Silk" }],
     craftName: "Nakshi Gold",
     description:
       "Bengal's nakshi work — gold beaten thin and chased with patterns, from bala bangles to sita haars.",
-    portraitImageUrl:
-      "https://images.unsplash.com/photo-1596944924616-7b38e7cfac36?q=80&w=800&auto=format&fit=crop",
-    productImageUrl:
-      "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=800&auto=format&fit=crop",
+    portraitImageUrl: assetUrl("region.portrait.westBengal"),
+    productImageUrl: assetUrl("region.product.westBengal"),
   },
 };
 

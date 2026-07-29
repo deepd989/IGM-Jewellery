@@ -1,3 +1,4 @@
+import { assetUrl } from "@/constants/assets";
 import { COLORS, LUXURY_COLORS } from "@/constants/theme";
 import React, { useState } from "react";
 import {
@@ -13,23 +14,23 @@ import {
 const PAYMENT_ICONS = [
   {
     name: "PhonePe",
-    uri: "https://drive.google.com/uc?export=view&id=1sTBoePSN7S_U_PE3s1Ehely4MjOQnI7M",
+    uri: assetUrl("payment.icon.phonePe"),
   },
   {
     name: "GPay",
-    uri: "https://drive.google.com/uc?export=view&id=1dos8DTWR05FAc0nPeVIlNmvIlhy2UowR",
+    uri: assetUrl("payment.icon.gPay"),
   },
   {
     name: "Paytm",
-    uri: "https://drive.google.com/uc?export=view&id=1jCi1WkNc6ck_wA8Kd0gI_Q2tVB_i2JG2",
+    uri: assetUrl("payment.icon.paytm"),
   },
   {
     name: "Amex",
-    uri: "https://drive.google.com/uc?export=view&id=1Jbrdq-W5JhrqDMlfMj-qqDU20Ybxaudi",
+    uri: assetUrl("payment.icon.amex"),
   },
   {
     name: "Mastercard",
-    uri: "https://drive.google.com/uc?export=view&id=1z0ugQX0ewzKCXubMooUS_eGEe4Ug41v2",
+    uri: assetUrl("payment.icon.mastercard"),
   },
 ];
 

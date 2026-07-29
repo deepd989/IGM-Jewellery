@@ -13,6 +13,7 @@ import { useAuth } from "../../auth/authContext";
 import { useSendGiftMutation } from "../../store/apis/giftApi";
 import { HapticButton } from "../basic components/hapticButton";
 import RibbonGiftCard from "./ribbonGiftCard";
+import { assetUrl } from "@/constants/assets";
 
 const { width } = Dimensions.get("window");
 
@@ -84,7 +85,7 @@ export default function EGiftCardScreen({
         showsVerticalScrollIndicator={false}
       >
         <RibbonGiftCard
-          imgUrl="https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Gifting%20Banner%2FGifting_banner-05.webp?alt=media&token=5b1e9a31-d5c7-47ee-bf47-8abcca8b5475"
+          imgUrl={assetUrl("gifting.banner")}
           heading={"Happy " + occasion + "!"}
           cardBackgroundColor="white"
           caption={message}

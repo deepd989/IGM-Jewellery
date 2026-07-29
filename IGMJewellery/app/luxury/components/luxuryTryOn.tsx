@@ -1,4 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
+import { assetUrl } from "@/constants/assets";
 import { LUXURY_SPACING } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -11,14 +12,11 @@ import { Image, StyleSheet, Text, View, ViewStyle } from "react-native";
  */
 const ASSETS = {
   /** Dark backdrop the whole card sits on. */
-  background:
-    "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1000&auto=format&fit=crop",
+  background: assetUrl("luxury.tryOn.background"),
   /** Left tile: the campaign model wearing the jewellery. */
-  modelPhoto:
-    "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=600&auto=format&fit=crop",
+  modelPhoto: assetUrl("luxury.tryOn.modelPhoto"),
   /** Right tile: the same shot with the shopper's face. */
-  userPhoto:
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=600&auto=format&fit=crop",
+  userPhoto: assetUrl("luxury.tryOn.userPhoto"),
 };
 
 type LuxuryTryOnProps = {

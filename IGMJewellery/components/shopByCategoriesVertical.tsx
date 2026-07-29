@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { COLORS } from "../constants/theme";
 import { SectionHeader } from "./section";
+import { assetUrl } from "@/constants/assets";
 
 // Get screen width to calculate responsive item sizes
 const { width } = Dimensions.get("window");
@@ -25,36 +26,31 @@ export default function CategoriesGrid() {
       name: "Necklace",
       img: require("../assets/images/categoryIcons/necklace.png"),
       productType: "necklace",
-      banner:
-        "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FNecklace%2FCategory_Necklace_text.webp?alt=media&token=1d02d70d-2793-441c-accf-bca5b72477e7",
+      banner: assetUrl("category.banner.necklace.withText"),
     },
     {
       name: "Bracelets",
       img: require("../assets/images/categoryIcons/bracelet.png"),
       productType: "bracelet",
-      banner:
-        "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FBracelets%2FCategory_Bracelets_text.webp?alt=media&token=5e5b914d-e746-4bf8-8a6a-f5b84d2d4b52",
+      banner: assetUrl("category.banner.bracelet.withText"),
     },
     {
       name: "Earrings",
       img: require("../assets/images/categoryIcons/earring.png"),
       productType: "earring",
-      banner:
-        "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FEarrings%2FCategory_Earrings_text.webp?alt=media&token=411c118e-eef5-4b17-9374-7a5cf3693b1f",
+      banner: assetUrl("category.banner.earring.withText"),
     },
     {
       name: "Rings",
       img: require("../assets/images/categoryIcons/ring.png"),
       productType: "ring",
-      banner:
-        "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FRings%2FCategory_Rings_text.webp?alt=media&token=8555d1a9-d749-46d8-acb4-f05b7a5bc487",
+      banner: assetUrl("category.banner.ring.withText"),
     },
     {
       name: "Bangles",
       img: require("../assets/images/categoryIcons/bangles.png"),
       productType: "bangle",
-      banner:
-        "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Category%20Horizontal%20Banners%2FBangles%2FCategory_Bangels_Text.webp?alt=media&token=d5401dad-faed-4c80-a833-919238055d75",
+      banner: assetUrl("category.banner.bangle.withText"),
     },
     {
       name: "Mangalsutra",

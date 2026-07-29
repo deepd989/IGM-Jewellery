@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { OCCASIONS } from "../../constants/occasions";
 import { HapticButton } from "../basic components/hapticButton";
 import RibbonGiftCard from "./ribbonGiftCard";
+import { assetUrl } from "@/constants/assets";
 
 interface GiftCardScreenProps {
   onNext: () => void;
@@ -139,7 +140,7 @@ export default function GiftCardScreen({
 
       {/* Gift Card Preview */}
       <RibbonGiftCard
-        imgUrl="https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Gifting%20Banner%2FGifting_banner-05.webp?alt=media&token=5b1e9a31-d5c7-47ee-bf47-8abcca8b5475"
+        imgUrl={assetUrl("gifting.banner")}
         heading={"Happy " + occasion + "!"}
         caption={message}
         amount={selectedAmount}
