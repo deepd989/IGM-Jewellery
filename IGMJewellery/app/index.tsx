@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../components/basic components/hapticButton";
+import { generateUniquePhoneNumber } from "../helpers/generatePhoneNumber";
 
 const { width } = Dimensions.get("window");
 
@@ -42,10 +43,12 @@ const BANNER_IMAGES = [
 
 export default function JewelryLanding() {
   const router = useRouter();
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, userId, login } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [isVideoFinished, setIsVideoFinished] = useState(false);
   const flatListRef = useRef(null);
+
+  useEffect(() => {console.log("userId at home page is",userId)},[userId])
 
   // After video finishes, route based on auth state
   useEffect(() => {
@@ -59,6 +62,16 @@ export default function JewelryLanding() {
     if (status.didJustFinish) {
       setIsVideoFinished(true);
     }
+  };
+
+  // Signs the shopper straight in on a number nobody has used before, so there
+  // is no phone-entry screen and no OTP to clear on the way to /home.
+  const handleGetStarted = async () => {
+    await login({
+      token: "dummy-token",
+      userId: generateUniquePhoneNumber(),
+    });
+    router.replace("/home");
   };
 
   const renderItem = ({ item }) => (
@@ -132,7 +145,7 @@ export default function JewelryLanding() {
         <View style={styles.authContainer}>
           <HapticButton
             style={styles.fullButton}
-            onPress={() => router.navigate("/login")}
+            onPress={handleGetStarted}
           >
             <Text style={styles.buttonText}>Get Started</Text>
           </HapticButton>
