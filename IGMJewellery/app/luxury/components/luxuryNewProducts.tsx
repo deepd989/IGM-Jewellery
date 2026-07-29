@@ -134,6 +134,11 @@ export default function LuxuryNewProducts({
         extraData={bannerWidth}
         horizontal
         showsHorizontalScrollIndicator={false}
+        // Only the cards near the viewport are mounted, so an off-screen
+        // card holds no decoded artwork.
+        initialNumToRender={2}
+        maxToRenderPerBatch={2}
+        windowSize={5}
         snapToInterval={snapInterval}
         snapToAlignment="start"
         disableIntervalMomentum // Never fling past a single banner

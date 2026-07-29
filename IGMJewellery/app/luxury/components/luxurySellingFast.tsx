@@ -247,6 +247,9 @@ export default function LuxurySellingFast({
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
+        intialNumToRender={2}
+        maxToRenderPerBatch={2}
+        windowSize={5}
         contentContainerStyle={styles.chipRow}
         style={styles.chipScroll}
       >

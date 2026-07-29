@@ -7,6 +7,7 @@ import {
   getCommunityVideoSource,
 } from "@/store/data/communityVideosData";
 import { Ionicons } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
 import { ResizeMode, Video } from "expo-av";
 import { useRouter } from "expo-router";
 import { useMemo, useRef, useState } from "react";
@@ -79,6 +80,8 @@ export default function LuxurySeenOnYou({
   const router = useRouter();
   const { data: fetchedProducts = [], isLoading } = useGetProductsQuery({});
   const [activeIndex, setActiveIndex] = useState(0);
+  // Stops decoding while the shopper is off on another screen.
+  const isFocused = useIsFocused();
   // Measured so the cards fit the space this component is actually given.
   const [rowWidth, setRowWidth] = useState(SCREEN_WIDTH);
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -160,7 +163,9 @@ export default function LuxurySeenOnYou({
             source={getCommunityVideoSource(item.sku)}
             style={styles.video}
             resizeMode={ResizeMode.COVER}
-            shouldPlay={Math.abs(index - activeIndex) <= PLAYBACK_WINDOW}
+            shouldPlay={
+              isFocused && Math.abs(index - activeIndex) <= PLAYBACK_WINDOW
+            }
             isLooping
             isMuted
           />
@@ -197,6 +202,11 @@ export default function LuxurySeenOnYou({
           extraData={`${cardWidth}-${activeIndex}`}
           horizontal
           showsHorizontalScrollIndicator={false}
+          // Only the cards near the viewport are mounted, so an off-screen
+          // card holds no decoded artwork.
+          initialNumToRender={2}
+          maxToRenderPerBatch={2}
+          windowSize={5}
           onScroll={Animated.event(
             [{ nativeEvent: { contentOffset: { x: scrollX } } }],
             { useNativeDriver: true, listener: handleScroll }

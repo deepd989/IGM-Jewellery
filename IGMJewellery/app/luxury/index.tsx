@@ -22,9 +22,9 @@ import React, {
 import {
   Animated,
   BackHandler,
+  FlatList,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -79,6 +79,51 @@ const PAGE_PADDING = 8;
 
 /** How far the page scrolls before the top bar turns into the search field. */
 const SEARCH_COLLAPSE_OFFSET = 40;
+
+type StorefrontSection = { key: string; render: () => React.ReactNode };
+
+/**
+ * The storefront in order. Kept as data rather than one long block of JSX so
+ * the list can mount each section as the shopper reaches it — rendering all of
+ * them up front loads every carousel's artwork at once, which is what made the
+ * page crawl and run the device out of memory.
+ */
+const SECTIONS: StorefrontSection[] = [
+  { key: "hero", render: () => <GlossyHorizontalCard height={HERO_HEIGHT} /> },
+  { key: "collectionCarousel", render: () => <LuxuryHorizontalCollectionCarousel /> },
+  { key: "brandsCollection", render: () => <LuxuryBrandsCollection /> },
+  {
+    key: "brandsGrid",
+    render: () => <LuxuryBrandsGrid style={styles.fullBleedSection} />,
+  },
+  { key: "categories", render: () => <LuxuryCategories /> },
+  { key: "tryOn", render: () => <LuxuryTryOn style={styles.fullBleedSection} /> },
+  {
+    key: "multibrand",
+    render: () => <LuxuryMultibrandCollection style={styles.fullBleedSection} />,
+  },
+  { key: "bestSellers", render: () => <LuxuryBestSellers /> },
+  { key: "gender", render: () => <LuxuryGenderVsProducts /> },
+  { key: "outfits", render: () => <OutfitTypesCarousel /> },
+  { key: "topPicks", render: () => <LuxuryTopPicks /> },
+  {
+    key: "elanziaSearch",
+    render: () => <LuxuryElanziaSearch style={styles.fullBleedSection} />,
+  },
+  { key: "regional", render: () => <LuxuryRegionalFavorites /> },
+  { key: "newProducts", render: () => <LuxuryNewProducts /> },
+  { key: "collections", render: () => <LuxuryCollections /> },
+  { key: "sellingFast", render: () => <LuxurySellingFast /> },
+  { key: "community", render: () => <LuxuryCommunityCarousel /> },
+  {
+    key: "allRights",
+    render: () => <LuxuryElanziaAllRights style={styles.fullBleedSection} />,
+  },
+];
+
+const renderSection = ({ item }: { item: StorefrontSection }) => (
+  <>{item.render()}</>
+);
 
 export default function HomeScreen() {
   const [expanded, setExpanded] = useState(false);
@@ -190,14 +235,19 @@ export default function HomeScreen() {
           </TouchableOpacity>
         }
       />
-      <ScrollView
+      <FlatList
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={16}
-      >
-        <View style={styles.searchBox}>
+        data={SECTIONS}
+        keyExtractor={(section) => section.key}
+        renderItem={renderSection}
+        ItemSeparatorComponent={LuxurySeparator}
+        ListHeaderComponent={
+          <>
+            <View style={styles.searchBox}>
               <View style={{ flex: 1 }}>
                 <TextInput
                   placeholder="Search for ..."
@@ -208,26 +258,6 @@ export default function HomeScreen() {
                   onSubmitEditing={handleSubmit}
                   onChangeText={(text) => setTextInput(text)}
                 />
-                {/* {!textInput && (
-                  <Animated.Text
-                    style={[
-                      styles.inputText,
-                      {
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        textAlignVertical: "center",
-                        color: "#FFFFFF",
-                        opacity: fadeAnim,
-                      },
-                    ]}
-                    pointerEvents="none"
-                  >
-                    {revolvingTexts[placeholderIndex]}
-                  </Animated.Text>
-                )} */}
               </View>
               <View style={styles.iconGroup}>
                 <HapticButton
@@ -242,45 +272,15 @@ export default function HomeScreen() {
                 </HapticButton>
               </View>
             </View>
-          <LuxurySeparator />
-          <GlossyHorizontalCard height={HERO_HEIGHT} />
-          <LuxurySeparator />
-          <LuxuryHorizontalCollectionCarousel />
-          <LuxurySeparator />
-          <LuxuryBrandsCollection />
-          <LuxurySeparator />
-          <LuxuryBrandsGrid style={styles.fullBleedSection} />
-          <LuxurySeparator />
-          <LuxuryCategories />
-          <LuxurySeparator />
-          <LuxuryTryOn style={styles.fullBleedSection} />
-          <LuxurySeparator />
-          <LuxuryMultibrandCollection style={styles.fullBleedSection} />
-          <LuxurySeparator />
-          <LuxuryBestSellers />
-          <LuxurySeparator />
-          <LuxuryGenderVsProducts />
-          <LuxurySeparator />
-          <OutfitTypesCarousel />
-          <LuxurySeparator />
-          <LuxuryTopPicks />
-          <LuxurySeparator />
-          <LuxuryElanziaSearch style={styles.fullBleedSection} />
-          <LuxurySeparator />
-          <LuxuryRegionalFavorites />
-          <LuxurySeparator />
-          <LuxuryNewProducts />
-          <LuxurySeparator />
-          <LuxuryCollections />
-          <LuxurySeparator />
-          <LuxurySellingFast />
-          <LuxurySeparator />
-          <LuxuryCommunityCarousel />
-          <LuxurySeparator />
-          <LuxuryElanziaAllRights style={styles.fullBleedSection} />
-
-        {/* Necklace Section */}
-      </ScrollView>
+            <LuxurySeparator />
+          </>
+        }
+        // The storefront is long and every section pulls its own artwork, so
+        // only the ones near the viewport are mounted.
+        initialNumToRender={2}
+        maxToRenderPerBatch={2}
+        windowSize={5}
+      />
       {/* <BottomNavBar></BottomNavBar> */}
       <LuxuryNavBar/>
     </SafeAreaView>

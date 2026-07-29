@@ -1,4 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
+import { useIsFocused } from "@react-navigation/native";
 import { COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
@@ -57,6 +58,10 @@ export default function LuxuryCommunityCarousel({
   const router = useRouter();
   const { data: fetchedProducts = [], isLoading } = useGetProductsQuery({});
   const [activeIndex, setActiveIndex] = useState(0);
+  // Clips keep decoding while the shopper is off on another screen unless the
+  // carousel stops them — two carousels running at once exhausts the device's
+  // video decoders.
+  const isFocused = useIsFocused();
   // Measured so the cards fit the space this component is actually given
   // (parents may add padding), rather than assuming the full screen width.
   const [rowWidth, setRowWidth] = useState(SCREEN_WIDTH);
@@ -107,7 +112,9 @@ export default function LuxuryCommunityCarousel({
         source={getCommunityVideoSource(item.sku)}
         style={styles.video}
         resizeMode={ResizeMode.COVER}
-        shouldPlay={Math.abs(index - activeIndex) <= PLAYBACK_WINDOW}
+        shouldPlay={
+          isFocused && Math.abs(index - activeIndex) <= PLAYBACK_WINDOW
+        }
         isLooping
         isMuted
       />
@@ -171,6 +178,11 @@ export default function LuxuryCommunityCarousel({
           extraData={`${cardWidth}-${activeIndex}`}
           horizontal
           showsHorizontalScrollIndicator={false}
+          // Only the cards near the viewport are mounted, so an off-screen
+          // card holds no decoded artwork.
+          initialNumToRender={2}
+          maxToRenderPerBatch={2}
+          windowSize={5}
           onScroll={handleScroll}
           scrollEventThrottle={16}
           snapToInterval={snapInterval}

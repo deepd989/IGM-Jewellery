@@ -153,6 +153,11 @@ export default function GlassCarousel({ height }: GlassCarouselProps) {
         pagingEnabled // One card per page: card width === list width
         disableIntervalMomentum // Never fling past a single card
         showsHorizontalScrollIndicator={false}
+        // Only the cards near the viewport are mounted, so an off-screen
+        // card holds no decoded artwork.
+        initialNumToRender={2}
+        maxToRenderPerBatch={2}
+        windowSize={5}
         onScroll={handleScroll}
         scrollEventThrottle={16}
         decelerationRate="fast"

@@ -170,6 +170,11 @@ export default function LuxuryBestSellers({
           extraData={cardWidth}
           horizontal
           showsHorizontalScrollIndicator={false}
+          // Only the cards near the viewport are mounted, so an off-screen
+          // card holds no decoded artwork.
+          initialNumToRender={2}
+          maxToRenderPerBatch={2}
+          windowSize={5}
           onScroll={handleScroll}
           scrollEventThrottle={16}
           snapToInterval={snapInterval}
