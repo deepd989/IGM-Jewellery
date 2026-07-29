@@ -12,12 +12,14 @@ import {
 import React from "react";
 import { StyleSheet, View, ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LUXURY_COLORS } from "../../../constants/theme";
 import { HapticButton } from "../../../components/basic components/hapticButton";
 
 const ICON_SIZE = 24;
 const ICON_STROKE = 1.8;
-const ACTIVE_ICON = "#FFFFFF";
-const INACTIVE_ICON = "#0B3B45";
+/** The active pill is white, so its glyph grounds to the storefront. */
+const ACTIVE_ICON = LUXURY_COLORS.primary;
+const INACTIVE_ICON = "#FFFFFF";
 
 /** Height of the pill itself, excluding the safe-area gap below it. */
 export const LUXURY_NAV_BAR_HEIGHT = 68;
@@ -116,16 +118,16 @@ export default function LuxuryNavBar({
       ]}
     >
       <View style={styles.bar}>
-        {/* Glossy stack: frosted base, silver body, then a top sheen */}
-        <BlurView intensity={28} tint="light" style={StyleSheet.absoluteFill} />
+        {/* Glossy stack: frosted base, teal body, then a top sheen */}
+        <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
         <LinearGradient
-          colors={["rgba(255,255,255,0.97)", "rgba(226,235,239,0.88)"]}
+          colors={["rgba(24, 74, 70, 0.92)", "rgba(12, 44, 42, 0.95)"]}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
           style={StyleSheet.absoluteFill}
         />
         <LinearGradient
-          colors={["rgba(255,255,255,0.95)", "rgba(255,255,255,0)"]}
+          colors={["rgba(255,255,255,0.16)", "rgba(255,255,255,0)"]}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
           style={styles.sheen}
@@ -146,14 +148,9 @@ export default function LuxuryNavBar({
               }}
             >
               {isActive ? (
-                <LinearGradient
-                  colors={["#1C7A72", "#04333E"]}
-                  start={{ x: 0.1, y: 0 }}
-                  end={{ x: 0.9, y: 1 }}
-                  style={styles.activePill}
-                >
+                <View style={styles.activePill}>
                   {item.icon(ACTIVE_ICON)}
-                </LinearGradient>
+                </View>
               ) : (
                 item.icon(INACTIVE_ICON)
               )}
@@ -183,7 +180,7 @@ const styles = StyleSheet.create({
     borderRadius: LUXURY_NAV_BAR_HEIGHT / 2,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.9)",
+    borderColor: "rgba(255,255,255,0.25)",
     // Lifts the pill off the page behind it
     shadowColor: "#052A33",
     shadowOffset: { width: 0, height: 8 },
@@ -206,7 +203,8 @@ const styles = StyleSheet.create({
   activePill: {
     width: 48,
     height: 48,
-    borderRadius: 16,
+    borderRadius: 24,
+    backgroundColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#04333E",

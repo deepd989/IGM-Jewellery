@@ -1,4 +1,4 @@
-import { COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { useState } from "react";
@@ -60,6 +60,8 @@ export default function LuxuryTopPicks({
             product={product}
             width={cardWidth}
             onPress={onPressProduct}
+            // The details sit straight on the storefront's dark ground.
+            onDark
           />
         ))}
       </View>
@@ -74,7 +76,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: COLORS.primary,
+    color: LUXURY_COLORS.text,
     textAlign: "center",
     marginBottom: LUXURY_SPACING,
   },

@@ -1,5 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
-import { COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: COLORS.primary,
+    color: LUXURY_COLORS.text,
     textAlign: "center",
     marginBottom: LUXURY_SPACING,
   },

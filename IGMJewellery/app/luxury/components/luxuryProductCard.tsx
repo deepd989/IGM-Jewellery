@@ -1,6 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { TryOnSelectorModal } from "@/components/products/TryOnSelectorModal";
-import { COLORS } from "@/constants/theme";
+import { COLORS, LUXURY_COLORS } from "@/constants/theme";
 import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation } from "@/store/apis/cart";
 import {
@@ -25,6 +25,18 @@ const TILE_RADIUS = 20;
 /** Grey used for the unearned stars and the struck-through price. */
 const MUTED = "#9AA9AF";
 
+/**
+ * The card's details sit on whatever surface the caller gives it: the luxury
+ * storefront's dark ground, or a white tile on the listing. Only the type
+ * colours differ.
+ */
+const ON_DARK = {
+  text: LUXURY_COLORS.text,
+  muted: "rgba(255,255,255,0.65)",
+  starFilled: LUXURY_COLORS.accent,
+  starEmpty: "rgba(255,255,255,0.3)",
+};
+
 type LuxuryProductCardProps = {
   product: Product;
   /** Fixed card width. Omit to fill the space the parent gives the card. */
@@ -35,6 +47,8 @@ type LuxuryProductCardProps = {
   onRemoveFromWishlist?: () => void;
   /** Forces the heart's state instead of reading it from the wishlist. */
   isInWishlist?: boolean;
+  /** Set when the card sits on the storefront's dark ground. */
+  onDark?: boolean;
   style?: ViewStyle;
 };
 
@@ -49,6 +63,7 @@ export default function LuxuryProductCard({
   onPress,
   onRemoveFromWishlist,
   isInWishlist: propIsInWishlist,
+  onDark = false,
   style,
 }: LuxuryProductCardProps) {
   const router = useRouter();
@@ -128,7 +143,15 @@ export default function LuxuryProductCard({
           key={star}
           name="star"
           size={13}
-          color={star <= rating ? "#5B6B72" : "#D3DCE0"}
+          color={
+            star <= rating
+              ? onDark
+                ? ON_DARK.starFilled
+                : "#5B6B72"
+              : onDark
+                ? ON_DARK.starEmpty
+                : "#D3DCE0"
+          }
         />
       ))}
     </View>
@@ -171,22 +194,30 @@ export default function LuxuryProductCard({
       </View>
 
       <View style={styles.priceRow}>
-        <Text style={styles.price}>
+        <Text style={[styles.price, onDark && { color: ON_DARK.text }]}>
           ₹{product.discountedPrice?.toLocaleString()}
         </Text>
         {hasDiscount && (
-          <Text style={styles.originalPrice}>
+          <Text
+            style={[styles.originalPrice, onDark && { color: ON_DARK.muted }]}
+          >
             ₹{product.givenPrice.toLocaleString()}
           </Text>
         )}
       </View>
 
-      <Text style={styles.productName} numberOfLines={1}>
+      <Text
+        style={[styles.productName, onDark && { color: ON_DARK.text }]}
+        numberOfLines={1}
+      >
         {product.name || product.title}
       </Text>
 
       <View style={styles.metaRow}>
-        <Text style={styles.brandName} numberOfLines={1}>
+        <Text
+          style={[styles.brandName, onDark && { color: ON_DARK.muted }]}
+          numberOfLines={1}
+        >
           {product.brand}
         </Text>
         {!!product.rating && renderStars(product.rating)}
@@ -200,8 +231,16 @@ export default function LuxuryProductCard({
             setIsTryOnSelectorVisible(true);
           }}
         >
-          <Ionicons name="sparkles" size={14} color={COLORS.primary} />
-          <Text style={styles.tryNowText}>Try Now</Text>
+          <Ionicons
+            name="sparkles"
+            size={14}
+            color={onDark ? ON_DARK.text : COLORS.primary}
+          />
+          <Text
+            style={[styles.tryNowText, onDark && { color: ON_DARK.text }]}
+          >
+            Try Now
+          </Text>
         </HapticButton>
 
         <HapticButton

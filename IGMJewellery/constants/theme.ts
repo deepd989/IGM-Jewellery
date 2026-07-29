@@ -60,6 +60,25 @@ export const COLORS = {
   luxuryBg: "#F0F6F8", // Dark background for luxury mode
 };
 
+/**
+ * The luxury storefront's own palette. It runs dark, so it cannot borrow
+ * COLORS.primary — everything on those screens grounds on these.
+ */
+export const LUXURY_COLORS = {
+  /** The ground the whole storefront sits on. */
+  primary: "#0E2E2D",
+  /** Cards and bars raised off that ground. */
+  surface: "#123C3A",
+  /** Top bar sweep: deep on the left, lifting to the right. */
+  gradient: ["#123F3B", "#1C5A54"] as readonly [string, string],
+  /** Icons and accents. */
+  accent: "#D8C391",
+  text: "#FFFFFF",
+  textMuted: "rgba(255,255,255,0.7)",
+  /** Hairlines and glass edges. */
+  border: "rgba(255,255,255,0.18)",
+};
+
 export const SPACING = {
   xs: 4,
   s: 8,

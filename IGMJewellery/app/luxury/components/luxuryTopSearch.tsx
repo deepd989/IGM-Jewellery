@@ -1,6 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { CartBadge } from "@/components/cart/CardBadge";
-import { COLORS } from "@/constants/theme";
+import { COLORS, LUXURY_COLORS } from "@/constants/theme";
 import { SidebarCategory } from "@/interfaces/category.interface";
 import { useGetCategoriesByDepartmentQuery } from "@/store/apis/categories";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,6 +17,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import LuxuryWishlistButton from "./luxuryWishlistButton";
 
 /** Quick-shop row: the department whose categories it offers. */
@@ -42,8 +43,8 @@ type LuxuryTopSearchProps = {
    * the resting bar, this is what opens the search.
    */
   collapsed?: boolean;
-  /** Sits at the end of the delivery line — the storefront toggle, say. */
-  deliveryAccessory?: React.ReactNode;
+  /** Tapping "Elanzia" in the store toggle leaves the luxury storefront. */
+  onExitLuxury?: () => void;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -56,10 +57,11 @@ type LuxuryTopSearchProps = {
 export default function LuxuryTopSearch({
   pincode,
   collapsed = false,
-  deliveryAccessory,
+  onExitLuxury,
   style,
 }: LuxuryTopSearchProps) {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const inputRef = useRef<TextInput>(null);
 
   const [isSearching, setIsSearching] = useState(false);
@@ -97,59 +99,74 @@ export default function LuxuryTopSearch({
     });
   };
 
-  const actions = (
+  /** Gold over the dark band, teal over the white search card. */
+  const renderActions = (tint: string) => (
     <View style={styles.actions}>
       <HapticButton
         style={styles.actionIcon}
         activeOpacity={0.6}
         onPress={() => router.navigate("/underDev")}
       >
-        <Ionicons
-          name="notifications-outline"
-          size={24}
-          color={COLORS.primary}
-        />
+        <Ionicons name="notifications-outline" size={24} color={tint} />
       </HapticButton>
 
-      <LuxuryWishlistButton size={24} style={styles.actionIcon} />
+      <LuxuryWishlistButton
+        size={24}
+        color={tint}
+        badgeTextColor={LUXURY_COLORS.primary}
+        style={styles.actionIcon}
+      />
 
       <View style={styles.actionIcon}>
-        <CartBadge iconSize={24} iconColor={COLORS.primary} />
+        <CartBadge iconSize={24} iconColor={tint} />
       </View>
     </View>
   );
 
   if (!isOpen) {
     return (
-      <View style={[styles.resting, style]}>
-        <View style={styles.deliveryRow}>
-          <HapticButton
-            style={styles.deliveryButton}
-            activeOpacity={0.7}
-            onPress={() => router.navigate("/underDev")}
-          >
-            <Text style={styles.deliveryText}>
-              <Text style={styles.deliveryStrong}>Deliver</Text> to{" "}
-              {pincode || "Fetching..."}
-            </Text>
-            <Ionicons name="chevron-down" size={18} color={COLORS.primary} />
-          </HapticButton>
+      <LinearGradient
+        colors={LUXURY_COLORS.gradient}
+        start={{ x: 0, y: 1 }}
+        end={{ x: 1, y: 0 }}
+        style={[styles.resting, { paddingTop: insets.top + 8 }, style]}
+      >
+        <HapticButton
+          style={styles.deliveryButton}
+          activeOpacity={0.7}
+          onPress={() => router.navigate("/underDev")}
+        >
+          <Text style={styles.deliveryText}>
+            <Text style={styles.deliveryStrong}>Deliver</Text> to{" "}
+            {pincode || "Fetching..."}
+          </Text>
+          <Ionicons
+            name="chevron-down"
+            size={18}
+            color={LUXURY_COLORS.text}
+          />
+        </HapticButton>
 
-          {deliveryAccessory}
+        <View style={styles.brandRow}>
+          {/* Which storefront is showing; tapping Elanzia leaves luxury. */}
+          <View style={styles.storeToggle}>
+            <HapticButton
+              style={styles.storeOption}
+              activeOpacity={0.85}
+              onPress={onExitLuxury}
+            >
+              <Ionicons name="flower-outline" size={18} color={COLORS.text} />
+              <Text style={styles.storeOptionText}>Elanzia</Text>
+            </HapticButton>
+
+            <View style={[styles.storeOption, styles.storeOptionActive]}>
+              <Text style={styles.storeOptionTextActive}>LUXE</Text>
+            </View>
+          </View>
+
+          {renderActions(LUXURY_COLORS.accent)}
         </View>
-
-        <View style={styles.pillRow}>
-          <HapticButton
-            style={styles.pill}
-            activeOpacity={0.9}
-            onPress={() => setIsSearching(true)}
-          >
-            <View style={styles.pillFill} />
-          </HapticButton>
-
-          {actions}
-        </View>
-      </View>
+      </LinearGradient>
     );
   }
 
@@ -158,10 +175,9 @@ export default function LuxuryTopSearch({
       {/* Glossy band behind the card: a sweep with the highlight off-centre,
           then a sheen along the top of the quick row. */}
       <LinearGradient
-        colors={["#4E767D", "#6E979E", "#3F686F"]}
-        locations={[0, 0.45, 1]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+        colors={[LUXURY_COLORS.gradient[0], LUXURY_COLORS.gradient[1]]}
+        start={{ x: 0, y: 1 }}
+        end={{ x: 1, y: 0 }}
         style={StyleSheet.absoluteFill}
         pointerEvents="none"
       />
@@ -173,7 +189,10 @@ export default function LuxuryTopSearch({
         pointerEvents="none"
       />
 
-      <View style={styles.searchCard}>
+      {/* The bar paints under the status bar in both states, so the open one
+          has to clear it too — without this the whole header jumps up behind
+          the notch the moment the page scrolls. */}
+      <View style={[styles.searchCard, { paddingTop: insets.top + 12 }]}>
         <HapticButton activeOpacity={0.7} onPress={handleSubmit}>
           <SearchGlyph />
         </HapticButton>
@@ -190,7 +209,7 @@ export default function LuxuryTopSearch({
           style={styles.input}
         />
 
-        {actions}
+        {renderActions(COLORS.primary)}
       </View>
 
       {categories.length > 0 && (
@@ -234,47 +253,57 @@ const styles = StyleSheet.create({
   // ── Resting ──
   resting: {
     paddingHorizontal: 20,
-    paddingBottom: 12,
+    paddingBottom: 16,
     gap: 14,
-    backgroundColor: "#FFFFFF",
-  },
-  deliveryRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 8,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   deliveryButton: {
-    flexShrink: 1,
+    alignSelf: "flex-start",
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
   },
   deliveryText: {
     fontSize: 15,
-    color: COLORS.primary,
+    color: LUXURY_COLORS.text,
   },
   deliveryStrong: {
     fontWeight: "700",
   },
-  pillRow: {
+  brandRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
+    justifyContent: "space-between",
+    gap: 12,
   },
-  pill: {
-    flex: 1,
-    height: 44,
-    borderRadius: 22,
-    overflow: "hidden",
-    justifyContent: "center",
-    backgroundColor: "#C6DBE0",
+  storeToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 4,
+    borderRadius: 24,
+    backgroundColor: "#FFFFFF",
   },
-  pillFill: {
-    width: "56%",
-    height: "100%",
-    borderRadius: 22,
-    backgroundColor: COLORS.primary,
+  storeOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    height: 36,
+    paddingHorizontal: 14,
+    borderRadius: 18,
+  },
+  storeOptionActive: {
+    backgroundColor: LUXURY_COLORS.primary,
+  },
+  storeOptionText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: COLORS.text,
+  },
+  storeOptionTextActive: {
+    fontSize: 16,
+    letterSpacing: 1.5,
+    color: LUXURY_COLORS.text,
   },
 
   // ── Open ──

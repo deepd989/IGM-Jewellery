@@ -44,7 +44,7 @@ import BrandCollectionCards from "../../components/shopByCollectionsNew";
 import ShopByRegionCards from "../../components/shopByRegion";
 import { TrendingProducts } from "../../components/TrendingProducts";
 import TrustBar from "../../components/trustBarBanner";
-import { COLORS, LUXURY_SPACING } from "../../constants/theme";
+import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "../../constants/theme";
 import { useLuxury } from "../../context/luxuryContext";
 import { useWalletBalance } from "../customHooks/walletBalanceLoader";
 import SearchBarLuxury from "./components/searchBarLuxury";
@@ -215,24 +215,17 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView
-      // The nav bar applies the bottom inset itself, so leaving it off here
-      // avoids padding for the home indicator twice.
-      edges={["top", "left", "right"]}
-      style={{ flex: 1, backgroundColor: "white" }}
+      // The top bar paints under the status bar and the nav bar applies the
+      // bottom inset itself, so neither edge is padded here.
+      edges={["left", "right"]}
+      style={{ flex: 1, backgroundColor: LUXURY_COLORS.primary }}
     >
       <LuxuryTopSearch
         pincode={pincode}
         collapsed={isScrolled}
-        deliveryAccessory={
-          <TouchableOpacity
-            style={styles.luxuryButton}
-            onPress={() =>
-              // Back to the Massy storefront, product screen included.
-              switchMode(false, () => router.navigate("/home"))
-            }
-          >
-            <Text style={styles.luxuryButtonText}>Massy</Text>
-          </TouchableOpacity>
+        onExitLuxury={() =>
+          // Back to the Massy storefront, product screen included.
+          switchMode(false, () => router.navigate("/home"))
         }
       />
       <FlatList
@@ -251,7 +244,7 @@ export default function HomeScreen() {
               <View style={{ flex: 1 }}>
                 <TextInput
                   placeholder="Search for ..."
-                  placeholderTextColor="#999"
+                  placeholderTextColor={LUXURY_COLORS.textMuted}
                   style={styles.inputText}
                   value={textInput}
                   returnKeyType="send"
@@ -268,7 +261,7 @@ export default function HomeScreen() {
                     });
                   }}
                 >
-                  <Ionicons name="mic-outline" size={22} color="#003A45" />
+                  <Ionicons name="mic-outline" size={22} color={LUXURY_COLORS.text} />
                 </HapticButton>
               </View>
             </View>
@@ -291,7 +284,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: PAGE_PADDING,
-    backgroundColor: COLORS.luxuryBg,
+    backgroundColor: LUXURY_COLORS.primary,
   },
   // Cancels the page gutter so a section's artwork runs to the screen edges.
   fullBleedSection: {
@@ -457,22 +450,18 @@ const styles = StyleSheet.create({
   },
   searchBox: {
     flexDirection: "row",
-    backgroundColor: "white",
-    height: 50,
-    borderRadius: 15, // More rectangular than before
+    height: 56,
+    borderRadius: 18,
     alignItems: "center",
-    paddingHorizontal: 16,
-    // Subtle shadow
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    paddingHorizontal: 18,
+    backgroundColor: LUXURY_COLORS.surface,
+    borderWidth: 1,
+    borderColor: LUXURY_COLORS.border,
   },
   inputText: {
     flex: 1,
-    fontSize: 18,
-    color: "#1A3B4A",
+    fontSize: 17,
+    color: LUXURY_COLORS.text,
   },
   brandBold: {
     fontWeight: "800",
