@@ -342,11 +342,10 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 8,
   },
-  departmentImage: {
-    ...StyleSheet.absoluteFillObject,
-    width: "100%",
-    height: "100%",
-  },
+  // Just the absolute insets: pairing them with explicit 100% dimensions makes
+  // the image resolve against a stale box when the card resizes between its
+  // active and inactive sizes, and it drops out of view.
+  departmentImage: StyleSheet.absoluteFillObject,
   departmentScrim: {
     position: "absolute",
     left: 0,

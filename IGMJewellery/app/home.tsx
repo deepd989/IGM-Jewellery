@@ -8,6 +8,7 @@ import HorizontalRuleIGM from "@/components/horizontalRuleIGM";
 import OccasionCardList from "@/components/occasionsHome";
 import SearchBar from "@/components/searchBar";
 import { TopPicks } from "@/components/topPicks";
+import HeaderRowClassic from "@/components/headerRowClassic";
 import { getUserPincode } from "@/scripts/location";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
@@ -130,24 +131,17 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <View style={styles.header}>
-        <Text style={styles.deliveryText}>
-          Deliver to{" "}
-          <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
+        <HapticButton style={styles.deliveryButton} activeOpacity={0.7}>
+          <Text style={styles.deliveryText}>
+            <Text style={styles.deliveryStrong}>Deliver</Text> to{" "}
             {pincode || "Fetching..."}
           </Text>
-        </Text>
+          <Ionicons name="chevron-down" size={20} color={COLORS.primary} />
+        </HapticButton>
 
-        <TouchableOpacity
-          style={styles.luxuryButton}
-          onPress={() =>
-            // Every product link renders the luxury screen from here on.
-            switchMode(true, () => router.navigate("/luxury"))
-          }
-        >
-          <Text style={styles.luxuryButtonText}>Luxury</Text>
-        </TouchableOpacity>
+        <HeaderRowClassic />
       </View>
-      <SearchBar />
+      {/* <SearchBar /> */}
 
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.AiContainer}>
@@ -267,23 +261,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   header: {
+    gap: 12,
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+  },
+  deliveryButton: {
+    alignSelf: "flex-start",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     gap: 6,
-    paddingHorizontal: 20,
-    marginBottom: 5,
   },
-  luxuryButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 14,
-    backgroundColor: COLORS.primary,
-  },
-  luxuryButtonText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#FFFFFF",
+  deliveryStrong: {
+    fontWeight: "700",
   },
   viewElanziaIsListening: {
     padding: 16,

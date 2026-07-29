@@ -9,6 +9,7 @@ import {
   Image,
   LayoutAnimation,
   Platform,
+  ScrollView,
   StyleProp,
   StyleSheet,
   Text,
@@ -26,7 +27,8 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } =
+  Dimensions.get("window");
 
 /** The white cap over the section: how far it reaches at the centre… */
 const DOME_HEIGHT = 120;
@@ -36,6 +38,13 @@ const DOME_EDGE = 92;
 const SIDE_PADDING = 16;
 /** The accordions read as one stack, so they sit tighter than the sections. */
 const CARD_GAP = 14;
+
+/**
+ * The panel holds this height whichever tab is showing and whatever is open,
+ * so the page around it never reflows as the shopper opens a section. Anything
+ * taller scrolls within the panel.
+ */
+const PANEL_HEIGHT = Math.round(SCREEN_HEIGHT * 0.58);
 
 const DETAILS_TAB = "Product Details";
 const PRICE_TAB = "Price Breakdown";
@@ -246,14 +255,6 @@ export default function LuxuryKnowYourProduct({
                 activeOpacity={0.8}
                 onPress={() => selectTab(tab)}
               >
-                {isActive && (
-                  <BlurView
-                    intensity={22}
-                    tint="dark"
-                    style={StyleSheet.absoluteFill}
-                    pointerEvents="none"
-                  />
-                )}
                 <Text
                   style={[styles.tabText, isActive && styles.tabTextActive]}
                 >
@@ -264,8 +265,14 @@ export default function LuxuryKnowYourProduct({
           })}
         </View>
 
-        {activeTab === DETAILS_TAB ? (
-          <View style={styles.cards}>
+        <ScrollView
+          style={styles.panel}
+          contentContainerStyle={styles.cards}
+          showsVerticalScrollIndicator={false}
+          nestedScrollEnabled
+        >
+          {activeTab === DETAILS_TAB ? (
+            <>
             <Accordion
               title={DETAILS_SECTION}
               isOpen={openSections.includes(DETAILS_SECTION)}
@@ -330,9 +337,9 @@ export default function LuxuryKnowYourProduct({
                 {product.description || FALLBACK_DESCRIPTION}
               </Text>
             </Accordion>
-          </View>
-        ) : (
-          <View style={styles.cards}>
+            </>
+          ) : (
+            <>
             <GlassCard>
               <View style={styles.accordionBody}>
                 <View style={styles.table}>
@@ -347,8 +354,9 @@ export default function LuxuryKnowYourProduct({
                 <Text style={styles.taxNote}>(tax inclusive)</Text>
               </View>
             </GlassCard>
-          </View>
-        )}
+            </>
+          )}
+        </ScrollView>
       </View>
     </View>
   );
@@ -389,7 +397,7 @@ const styles = StyleSheet.create({
   tabs: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    justifyContent: "space-between",
   },
   tab: {
     height: 56,
@@ -398,9 +406,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
+    // Both tabs carry the border so only its colour changes on switch — sizing
+    // the active one differently reflows the row underneath the animation.
+    borderWidth: 1,
+    borderColor: "transparent",
   },
   tabActive: {
-    borderWidth: 1,
     borderColor: "rgba(255,255,255,0.45)",
     backgroundColor: "rgba(30, 46, 50, 0.35)",
   },
@@ -413,9 +424,13 @@ const styles = StyleSheet.create({
   },
 
   // ── Cards ──
-  cards: {
+  panel: {
+    height: PANEL_HEIGHT,
     marginTop: LUXURY_SPACING / 2,
+  },
+  cards: {
     gap: CARD_GAP,
+    paddingBottom: CARD_GAP,
   },
   glassCard: {
     borderRadius: 20,

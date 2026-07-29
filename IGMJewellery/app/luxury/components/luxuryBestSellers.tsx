@@ -279,23 +279,23 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 22,
     fontWeight: "700",
-    color: COLORS.text,
+    color: LUXURY_COLORS.text,
   },
   originalPrice: {
     fontSize: 18,
-    color: COLORS.textSecondary,
+    color: LUXURY_COLORS.textMuted,
     textDecorationLine: "line-through",
   },
   productName: {
     marginTop: 8,
     fontSize: 17,
     fontWeight: "600",
-    color: COLORS.text,
+    color: LUXURY_COLORS.text,
   },
   brandName: {
     marginTop: 6,
     fontSize: 15,
-    color: COLORS.textSecondary,
+    color: LUXURY_COLORS.textMuted,
   },
   pagination: {
     flexDirection: "row",

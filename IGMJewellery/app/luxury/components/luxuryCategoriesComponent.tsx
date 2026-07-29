@@ -112,7 +112,10 @@ export default function LuxuryCategories({
   const [activeIndex, setActiveIndex] = useState(0);
   // Measured so a page fits the space this component is actually given
   // (parents may add padding), rather than assuming the full screen width.
-  const [pageWidth, setPageWidth] = useState(SCREEN_WIDTH);
+  // Null until measured: laying the pages out against a guessed width and then
+  // re-measuring leaves getItemLayout's offsets disagreeing with the real ones,
+  // which parks a paged list between two pages — tiles half off screen.
+  const [pageWidth, setPageWidth] = useState<number | null>(null);
 
   const handleLayout = (event: LayoutChangeEvent) => {
     const width = Math.round(event.nativeEvent.layout.width);
@@ -120,6 +123,8 @@ export default function LuxuryCategories({
       setPageWidth(width);
     }
   };
+
+  const measuredWidth = pageWidth ?? SCREEN_WIDTH;
 
   // Split into pages of four, padding the last one so its tiles keep their
   // positions instead of stretching to fill the gaps.
@@ -132,7 +137,7 @@ export default function LuxuryCategories({
   }
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const index = Math.round(event.nativeEvent.contentOffset.x / pageWidth);
+    const index = Math.round(event.nativeEvent.contentOffset.x / measuredWidth);
     if (index !== activeIndex && index >= 0 && index < pages.length) {
       setActiveIndex(index);
     }
@@ -140,7 +145,7 @@ export default function LuxuryCategories({
 
   // Tile heights derive from the page width, so the grid keeps its
   // proportions on any screen size.
-  const gridHeight = pageWidth;
+  const gridHeight = measuredWidth;
   const stackHeight = Math.round((gridHeight - GAP * 2) / 3);
   // The last tile absorbs the rounding so the column ends flush with the
   // feature tile beside it.
@@ -159,7 +164,7 @@ export default function LuxuryCategories({
   };
 
   const renderPage = ({ item }: { item: (ShopCategory | undefined)[] }) => (
-    <View style={[styles.page, { width: pageWidth, height: gridHeight }]}>
+    <View style={[styles.page, { width: measuredWidth, height: gridHeight }]}>
       <CategoryTile
         category={item[0]}
         badgeLabel={featureBadgeLabel || undefined}
@@ -190,11 +195,13 @@ export default function LuxuryCategories({
     <View style={[styles.container, style]} onLayout={handleLayout}>
       <Text style={styles.title}>{title}</Text>
 
+      {/* Held back until the width is known, so the list lays out once. */}
+      {pageWidth !== null && (
       <FlatList
         data={pages}
         renderItem={renderPage}
         keyExtractor={(page, index) => page[0]?.id ?? `page-${index}`}
-        extraData={pageWidth}
+        extraData={measuredWidth}
         horizontal
         pagingEnabled // Four categories per page: page width === list width
         disableIntervalMomentum // Never fling past a single page
@@ -204,11 +211,12 @@ export default function LuxuryCategories({
         decelerationRate="fast"
         bounces={false}
         getItemLayout={(_, index) => ({
-          length: pageWidth,
-          offset: pageWidth * index,
+          length: measuredWidth,
+          offset: measuredWidth * index,
           index,
         })}
       />
+      )}
 
       {pages.length > 1 && (
         <View style={styles.pagination}>
@@ -251,11 +259,10 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     backgroundColor: "#E2EAEE",
   },
-  tileImage: {
-    ...StyleSheet.absoluteFillObject,
-    width: "100%",
-    height: "100%",
-  },
+  // Just the absolute insets: pairing them with explicit 100% dimensions makes
+  // the image resolve against a stale box when the tile resizes, and it drops
+  // out of view.
+  tileImage: StyleSheet.absoluteFillObject,
   scrim: {
     position: "absolute",
     left: 0,

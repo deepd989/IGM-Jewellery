@@ -65,6 +65,7 @@ import LuxurySeparator from "./components/luxurySeparator";
 import LuxuryNewProducts from "./components/luxuryNewProducts";
 import LuxuryRegionalFavorites from "./components/luxuryRegionalFavorites";
 import LuxurySellingFast from "./components/luxurySellingFast";
+import LuxurySwipeAndShop from "./components/luxurySwipeAndShop";
 import LuxuryTopPicks from "./components/luxuryTopPicks";
 import LuxuryTopSearch from "./components/luxuryTopSearch";
 import LuxuryTryOn from "./components/luxuryTryOn";
@@ -103,6 +104,10 @@ const SECTIONS: StorefrontSection[] = [
     render: () => <LuxuryMultibrandCollection style={styles.fullBleedSection} />,
   },
   { key: "bestSellers", render: () => <LuxuryBestSellers /> },
+  {
+    key: "swipeAndShop",
+    render: () => <LuxurySwipeAndShop style={styles.fullBleedSection} />,
+  },
   { key: "gender", render: () => <LuxuryGenderVsProducts /> },
   { key: "outfits", render: () => <OutfitTypesCarousel /> },
   { key: "topPicks", render: () => <LuxuryTopPicks /> },

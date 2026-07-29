@@ -120,21 +120,6 @@ export default function GlassCarousel({ height }: GlassCarouselProps) {
           </BlurView>
         </TouchableOpacity>
 
-        {/* Pagination Indicators */}
-        <View style={styles.paginationContainer}>
-          {CAROUSEL_DATA.map((_, index) => {
-            const isSelected = activeIndex === index;
-            return (
-              <View
-                key={index}
-                style={[
-                  styles.dot,
-                  isSelected ? styles.activeDot : styles.inactiveDot,
-                ]}
-              />
-            );
-          })}
-        </View>
       </View>
     );
   };
@@ -168,6 +153,19 @@ export default function GlassCarousel({ height }: GlassCarouselProps) {
           index,
         })}
       />
+
+      {/* Sits over the list rather than inside a card, so it holds still. */}
+      <View style={styles.paginationContainer} pointerEvents="none">
+        {CAROUSEL_DATA.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.dot,
+              activeIndex === index ? styles.activeDot : styles.inactiveDot,
+            ]}
+          />
+        ))}
+      </View>
     </View>
   );
 }

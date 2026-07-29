@@ -1,143 +1,208 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
+import { usePathname, useRouter } from "expo-router";
+import {
+  AudioLines,
+  CircleUserRound,
+  Gift,
+  House,
+  LayoutGrid,
+  Sparkle,
+} from "lucide-react-native";
 import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View, ViewStyle } from "react-native";
 import { COLORS } from "../constants/theme";
 import { HapticButton } from "./basic components/hapticButton";
 
+const ICON_SIZE = 24;
+const ICON_STROKE = 1.8;
+const ACTIVE_ICON = "#FFFFFF";
+const INACTIVE_ICON = COLORS.primary;
+
+/** Height of the pill itself. */
+export const BOTTOM_NAV_BAR_HEIGHT = 68;
+
+/** Waveform + sparkle glyph — lucide has no single icon for this. */
+const AiGlyph = (color: string) => (
+  <View>
+    <AudioLines size={ICON_SIZE} color={color} strokeWidth={ICON_STROKE} />
+    <Sparkle size={11} color={color} fill={color} style={styles.aiSparkle} />
+  </View>
+);
+
+type NavItem = {
+  /** Also the value callers pass as activeTab. */
+  key: string;
+  route: string;
+  /** Receives the resolved icon colour for the item's current state. */
+  icon: (color: string) => React.ReactNode;
+};
+
+const NAV_ITEMS: NavItem[] = [
+  {
+    key: "Home",
+    route: "/home",
+    icon: (color) => (
+      <House
+        size={ICON_SIZE}
+        color={color}
+        fill={color === ACTIVE_ICON ? color : "none"}
+        strokeWidth={ICON_STROKE}
+      />
+    ),
+  },
+  {
+    key: "Categories",
+    route: "/categories",
+    icon: (color) => (
+      <LayoutGrid size={ICON_SIZE} color={color} strokeWidth={ICON_STROKE} />
+    ),
+  },
+  { key: "AiDiscover", route: "/exploreAi", icon: AiGlyph },
+  {
+    key: "Bespoke",
+    route: "/bespoke",
+    icon: (color) => (
+      <Gift size={ICON_SIZE} color={color} strokeWidth={ICON_STROKE} />
+    ),
+  },
+  {
+    key: "Profile",
+    route: "/profile",
+    icon: (color) => (
+      <CircleUserRound
+        size={ICON_SIZE}
+        color={color}
+        strokeWidth={ICON_STROKE}
+      />
+    ),
+  },
+];
+
 interface BottomNavBarProps {
+  /** Key of the highlighted item. Falls back to matching the current route. */
   activeTab?: string;
+  style?: ViewStyle;
 }
 
-const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab }) => {
-  if (!activeTab) {
-    activeTab = "Home";
-  }
+/**
+ * The classic storefront's navigation: a glossy pill carrying the five places
+ * a shopper moves between. Kept separate from the luxury bar so the two
+ * storefronts can be restyled without disturbing each other.
+ */
+const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab, style }) => {
   const router = useRouter();
+  const pathname = usePathname();
 
-  interface NavItemProps {
-    iconName: string;
-    label: string;
-    isCenter?: boolean;
-    route: string;
-  }
-
-  const NavItem: React.FC<NavItemProps> = ({
-    iconName,
-    label,
-    isCenter,
-    route,
-  }) => {
-    const isActive = activeTab === label;
-    const iconStyle = isActive ? iconName : iconName + "-outline";
-
-    const handlePress = () => {
-      router.navigate(route as any);
-    };
-
-    if (isCenter) {
-      return (
-        <HapticButton style={[styles.centerButton]} onPress={handlePress}>
-          <Image
-            source={require("../assets/images/elanziaNav.png")}
-            style={{
-              height: 60,
-              width: 60,
-              position: "relative",
-              left: 0,
-            }}
-          />
-        </HapticButton>
-      );
-    }
-
-    return (
-      <HapticButton style={styles.navItem} onPress={handlePress}>
-        <Ionicons name={iconStyle} size={24} color={COLORS.primary} />
-        <Text style={[styles.label, isActive && styles.activeLabel]}>
-          {label}
-        </Text>
-      </HapticButton>
-    );
-  };
+  const resolvedActiveKey =
+    activeTab ??
+    NAV_ITEMS.find((item) => item.route === pathname)?.key ??
+    NAV_ITEMS.find(
+      (item) => item.route !== "/" && pathname.startsWith(item.route)
+    )?.key;
 
   return (
-    <View style={styles.navBar}>
-      <NavItem iconName="home" label="Home" route="/home" />
-      <NavItem iconName="grid" label="Categories" route="/categories" />
-      <NavItem
-        iconName="sparkles"
-        label="AiDiscover"
-        isCenter
-        route="/exploreAi"
-      />
-      <NavItem iconName="diamond" label="Bespoke" route="/bespoke" />
-      <NavItem iconName="person" label="Profile" route="/profile" />
+    <View style={[styles.wrapper, style]}>
+      <View style={styles.bar}>
+        {/* Glossy stack: frosted base, silver body, then a top sheen */}
+        <BlurView intensity={28} tint="light" style={StyleSheet.absoluteFill} />
+        <LinearGradient
+          colors={["rgba(255,255,255,0.97)", "rgba(226,235,239,0.88)"]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+        <LinearGradient
+          colors={["rgba(255,255,255,0.95)", "rgba(255,255,255,0)"]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={styles.sheen}
+          pointerEvents="none"
+        />
+
+        {NAV_ITEMS.map((item) => {
+          const isActive = item.key === resolvedActiveKey;
+
+          return (
+            <HapticButton
+              key={item.key}
+              style={styles.navItem}
+              onPress={() => {
+                // Navigating to the screen already showing only makes it
+                // flicker through a transition and back.
+                if (isActive) return;
+                router.navigate(item.route as any);
+              }}
+            >
+              {isActive ? (
+                <LinearGradient
+                  colors={["#1C7A72", COLORS.primary]}
+                  start={{ x: 0.1, y: 0 }}
+                  end={{ x: 0.9, y: 1 }}
+                  style={styles.activePill}
+                >
+                  {item.icon(ACTIVE_ICON)}
+                </LinearGradient>
+              ) : (
+                item.icon(INACTIVE_ICON)
+              )}
+            </HapticButton>
+          );
+        })}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  navBar: {
+  wrapper: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+  bar: {
     flexDirection: "row",
-    backgroundColor: "#fff",
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#e0e0e0",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 10,
+    alignItems: "center",
+    height: BOTTOM_NAV_BAR_HEIGHT,
+    paddingHorizontal: 10,
+    borderRadius: BOTTOM_NAV_BAR_HEIGHT / 2,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.9)",
+    // Lifts the pill off the page behind it
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.16,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  sheen: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "55%",
   },
   navItem: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 4,
   },
-  centerButton: {
-    backgroundColor: COLORS.primary,
-    width: 70, // Width and Height must be equal
-    height: 70,
-    borderRadius: 35, // Should be exactly half of the width/height
+  activePill: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 0,
-    elevation: 8,
-
-    // Shadow for iOS
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-  },
-  centerIconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: "#c0c0c0",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
+    shadowColor: COLORS.primary,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.35,
     shadowRadius: 8,
-    elevation: 8,
+    elevation: 6,
   },
-  label: {
-    fontSize: 12,
-    color: COLORS.primary,
-    marginTop: 4,
-    fontWeight: "300",
-  },
-  activeLabel: {
-    color: COLORS.primary,
-    fontWeight: "600",
+  aiSparkle: {
+    position: "absolute",
+    top: -3,
+    right: -5,
   },
 });
 
