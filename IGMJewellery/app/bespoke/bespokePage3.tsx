@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useState , useMemo } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -10,9 +10,18 @@ import {
   View,
 } from "react-native";
 import { HapticButton } from "../../components/basic components/hapticButton";
-import { COLORS } from "../../constants/theme";
+import { COLORS, LUXURY_COLORS } from "../../constants/theme";
 
-const BespokePage3 = ({ nextStepFn }: { nextStepFn: () => void }) => {
+const BespokePage3 = ({
+  nextStepFn,
+  isLuxury = false,
+}: {
+  nextStepFn: () => void;
+  /** Dresses the step for the luxury storefront. */
+  isLuxury?: boolean;
+}) => {
+  const styles = useMemo(() => createStyles(isLuxury), [isLuxury]);
+
   const [description, setDescription] = useState("");
   const [recipient, setRecipient] = useState("");
   const [metal, setMetal] = useState("");
@@ -103,10 +112,12 @@ const BespokePage3 = ({ nextStepFn }: { nextStepFn: () => void }) => {
   );
 };
 
-const styles = StyleSheet.create({
+/** One set of steps, two surfaces: the tone lives here, not in a copy. */
+const createStyles = (isLuxury: boolean) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: isLuxury ? LUXURY_COLORS.surface : "#FFFFFF",
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -121,12 +132,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
     textAlign: "center",
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 14,
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
     textAlign: "center",
     paddingHorizontal: 20,
     lineHeight: 20,
@@ -153,7 +164,7 @@ const styles = StyleSheet.create({
   uploadText: {
     marginTop: 10,
     fontSize: 16,
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
   },
   form: {
     gap: 20,
@@ -165,7 +176,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     marginBottom: 10,
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
   },
   input: {
     borderWidth: 1,
@@ -174,7 +185,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: Platform.OS === "ios" ? 12 : 8,
     fontSize: 14,
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
   },
   textArea: {
     height: 80,
@@ -185,7 +196,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#FFF",
+    backgroundColor: isLuxury ? LUXURY_COLORS.surface : "#FFF",
     paddingHorizontal: 20,
     paddingVertical: 20,
     borderTopWidth: 0,

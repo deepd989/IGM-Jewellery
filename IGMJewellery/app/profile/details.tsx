@@ -8,6 +8,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as z from "zod";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS } from "../../constants/theme";
+import { useLuxury } from "../../context/luxuryContext";
+import LuxuryProfileDetailsScreen from "../luxury/profile/details";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -17,7 +19,21 @@ const profileSchema = z.object({
 
 type ProfileData = z.infer<typeof profileSchema>;
 
+/**
+ * Both storefronts share this route, so every existing link to the account
+ * form lands on the presentation the shopper is currently browsing in.
+ */
 export default function ProfileDetailsScreen() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? (
+    <LuxuryProfileDetailsScreen />
+  ) : (
+    <ClassicProfileDetailsScreen />
+  );
+}
+
+function ClassicProfileDetailsScreen() {
   const router = useRouter();
   const {
     control,

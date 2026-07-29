@@ -1,4 +1,4 @@
-import { COLORS } from "@/constants/theme";
+import { COLORS, LUXURY_COLORS } from "@/constants/theme";
 import {
   loadChatHistory,
   saveChatHistory,
@@ -9,7 +9,13 @@ import { useGetWishlistQuery } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { ResizeMode, Video } from "expo-av";
 import { useRouter } from "expo-router";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   FlatList,
   Image,
@@ -72,12 +78,18 @@ export default function AiChatComponent({
   initialMessage = "",
   mode,
   userId = null,
+  isLuxury = false,
 }: {
   initialMessage: string;
   mode?: "voice" | "video";
   userId?: string | null;
+  /** Dresses the chat for the luxury storefront. */
+  isLuxury?: boolean;
 }) {
   const router = useRouter();
+  const styles = useMemo(() => createStyles(isLuxury), [isLuxury]);
+  /** Header glyphs read against the screen's own ground. */
+  const headerTint = isLuxury ? LUXURY_COLORS.text : COLORS.text;
   const { data: wishlistData } = useGetWishlistQuery();
   const wishlistCount = wishlistData?.items.length || 0;
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -388,11 +400,7 @@ export default function AiChatComponent({
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.headerRow}>
           <HapticButton onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons
-              name="chevron-back"
-              size={24}
-              color={COLORS.text || "#053844"}
-            />
+            <Ionicons name="chevron-back" size={24} color={headerTint} />
           </HapticButton>
           <Image
             source={require("../../assets/images/elanzia_ai.png")}
@@ -411,7 +419,9 @@ export default function AiChatComponent({
               <Ionicons
                 name={wishlistCount > 0 ? "heart" : "heart-outline"}
                 size={24}
-                color={wishlistCount > 0 ? COLORS.primary : COLORS.text}
+                color={
+                  wishlistCount > 0 && !isLuxury ? COLORS.primary : headerTint
+                }
               />
               {wishlistCount > 0 && (
                 <View style={styles.headerBadge}>
@@ -420,7 +430,7 @@ export default function AiChatComponent({
               )}
             </HapticButton>
             <View style={styles.headerIconBtn}>
-              <CartBadge iconSize={24} iconColor={COLORS.text} />
+              <CartBadge iconSize={24} iconColor={headerTint} />
             </View>
           </View>
         </View>
@@ -522,8 +532,17 @@ export default function AiChatComponent({
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "white" },
+/**
+ * One chat, two surfaces. The classic storefront reads dark-on-white, the
+ * luxury one white-on-teal; everything else about the screen is identical, so
+ * the tone lives here rather than in a second copy of the component.
+ */
+const createStyles = (isLuxury: boolean) =>
+  StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: isLuxury ? LUXURY_COLORS.primary : "white",
+  },
   container: { flex: 1 },
   messagesList: { padding: 16 },
   messageContainer: {
@@ -545,22 +564,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   userBubble: {
-    backgroundColor: "#053844",
+    backgroundColor: isLuxury ? LUXURY_COLORS.gradient[1] : "#053844",
     marginLeft: "auto",
     borderBottomRightRadius: 4,
   },
   aiBubble: {
-    backgroundColor: "#F5F5F5",
+    backgroundColor: isLuxury ? LUXURY_COLORS.surface : "#F5F5F5",
     borderBottomLeftRadius: 4,
   },
   messageText: { fontSize: 15, lineHeight: 20 },
   userText: { color: "#fff" },
-  aiText: { color: "#053844" },
+  aiText: { color: isLuxury ? LUXURY_COLORS.text : "#053844" },
   aiAvatar: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#053844",
+    backgroundColor: isLuxury ? LUXURY_COLORS.gradient[1] : "#053844",
     marginRight: 8,
     justifyContent: "center",
     alignItems: "center",
@@ -579,12 +598,13 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     padding: 12,
     borderTopWidth: 1,
-    borderTopColor: "#EEE",
-    backgroundColor: "#fff",
+    borderTopColor: isLuxury ? LUXURY_COLORS.border : "#EEE",
+    backgroundColor: isLuxury ? LUXURY_COLORS.primary : "#fff",
   },
   input: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.text,
+    backgroundColor: isLuxury ? LUXURY_COLORS.surface : "#F5F5F5",
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 8,
@@ -602,12 +622,17 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#053844",
+    backgroundColor: isLuxury ? LUXURY_COLORS.gradient[1] : "#053844",
     justifyContent: "center",
     alignItems: "center",
     marginLeft: 4,
   },
-  backButton: { padding: 10 },
+  backButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -619,7 +644,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
     fontStyle: "italic",
   },
   headerIcons: {
@@ -634,7 +659,7 @@ const styles = StyleSheet.create({
     position: "absolute" as const,
     top: -4,
     right: -6,
-    backgroundColor: "white",
+    backgroundColor: isLuxury ? LUXURY_COLORS.primary : "white",
     borderRadius: 8,
     minWidth: 16,
     height: 16,
@@ -642,10 +667,10 @@ const styles = StyleSheet.create({
     alignItems: "center" as const,
     paddingHorizontal: 4,
     borderWidth: 2,
-    borderColor: COLORS.primary,
+    borderColor: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
   },
   headerBadgeText: {
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
     fontSize: 10,
     fontWeight: "700" as const,
   },
@@ -654,16 +679,19 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: "#666",
+    backgroundColor: isLuxury ? LUXURY_COLORS.textMuted : "#666",
     opacity: 0.4,
   },
-  modalContainer: { flex: 1, backgroundColor: "#f5f5f5" },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: isLuxury ? LUXURY_COLORS.primary : "#f5f5f5",
+  },
   closeButton: { position: "absolute", top: 50, right: 20, zIndex: 10 },
   recordingButton: { backgroundColor: "#FFE0E0", borderRadius: 20 },
   visitSearchButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#053844",
+    backgroundColor: isLuxury ? LUXURY_COLORS.gradient[1] : "#053844",
     borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 10,
@@ -679,6 +707,6 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: "#E0E0E0",
+    borderTopColor: isLuxury ? LUXURY_COLORS.border : "#E0E0E0",
   },
-});
+  });

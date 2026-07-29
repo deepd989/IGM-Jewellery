@@ -1,5 +1,5 @@
 import { Diamond } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useState , useMemo } from "react";
 import {
   ImageBackground,
   ScrollView,
@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { HapticButton } from "../../components/basic components/hapticButton";
-import { COLORS } from "../../constants/theme";
+import { COLORS, LUXURY_COLORS } from "../../constants/theme";
 
 const categories = [
   {
@@ -50,9 +50,13 @@ const categories = [
 
 export default function BespokePage2({
   nextStepFn,
+  isLuxury = false,
 }: {
   nextStepFn: () => void;
+  /** Dresses the step for the luxury storefront. */
+  isLuxury?: boolean;
 }) {
+  const styles = useMemo(() => createStyles(isLuxury), [isLuxury]);
   const [selected, setSelected] = useState("1");
 
   return (
@@ -109,10 +113,12 @@ export default function BespokePage2({
   );
 }
 
-const styles = StyleSheet.create({
+/** One set of steps, two surfaces: the tone lives here, not in a copy. */
+const createStyles = (isLuxury: boolean) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: isLuxury ? LUXURY_COLORS.surface : "#FFFFFF",
   },
   header: {
     marginTop: 20,
@@ -122,12 +128,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#053844",
+    color: isLuxury ? LUXURY_COLORS.text : "#053844",
     letterSpacing: 0.5,
   },
   subtitle: {
     fontSize: 16,
-    color: "#888",
+    color: isLuxury ? LUXURY_COLORS.textMuted : "#888",
     marginTop: 8,
   },
   listContent: {

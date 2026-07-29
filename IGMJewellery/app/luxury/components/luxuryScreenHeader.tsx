@@ -27,6 +27,8 @@ type LuxuryScreenHeaderProps = {
   title: string;
   /** Adds the back chevron to the left of the title. */
   showBack?: boolean;
+  /** Overrides the chevron's behaviour — a stepper steps back, say. */
+  onBack?: () => void;
   /**
    * "solid" paints the teal band the categories screen uses; "glass" leaves it
    * transparent so the screen's own artwork shows through.
@@ -40,6 +42,7 @@ type LuxuryScreenHeaderProps = {
 export default function LuxuryScreenHeader({
   title,
   showBack = false,
+  onBack,
   variant = "solid",
   right,
   style,
@@ -62,7 +65,7 @@ export default function LuxuryScreenHeader({
             <HapticButton
               style={styles.backButton}
               activeOpacity={0.8}
-              onPress={() => router.back()}
+              onPress={onBack ?? (() => router.back())}
             >
               <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
             </HapticButton>

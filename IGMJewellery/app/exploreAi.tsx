@@ -21,8 +21,21 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../auth/authContext";
 import { HapticButton } from "../components/basic components/hapticButton";
 import AiChatComponent from "../components/exploreAi/aiChat";
+import { useLuxury } from "../context/luxuryContext";
+import LuxuryExploreAi from "./luxury/exploreAi";
 
+/**
+ * Both storefronts share this route, so every existing link to the assistant
+ * lands on the presentation the shopper is currently browsing in. The luxury
+ * screen also keeps its own route for direct links.
+ */
 export default function ExploreAi() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? <LuxuryExploreAi /> : <ClassicExploreAi />;
+}
+
+function ClassicExploreAi() {
   const params = useLocalSearchParams();
   const router = useRouter();
   const { userId } = useAuth();

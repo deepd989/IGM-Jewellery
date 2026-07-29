@@ -17,6 +17,8 @@ import { useAuth } from "../../auth/authContext";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import PaymentMethods from "../../components/paymentMethods";
 import { COLORS } from "../../constants/theme";
+import { useLuxury } from "../../context/luxuryContext";
+import LuxuryProfileScreen from "../luxury/profile";
 
 const PROFILE_STATS = [
   {
@@ -111,7 +113,18 @@ const MENU_ITEMS = [
   },
 ];
 
+/**
+ * Both storefronts share this route, so every existing link to the account
+ * screen lands on the presentation the shopper is currently browsing in. The
+ * luxury screen also keeps its own route for direct links.
+ */
 export default function ProfileScreen() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? <LuxuryProfileScreen /> : <ClassicProfileScreen />;
+}
+
+function ClassicProfileScreen() {
   const productImageLinks = [
     "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FRings%2FRing_Eternity.webp?alt=media&token=195729b9-5863-440c-b8cd-762318f7de62",
     "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FRings%2FRing_anniversary.webp?alt=media&token=9cad0037-bb91-4334-a586-d5290f309bdb",

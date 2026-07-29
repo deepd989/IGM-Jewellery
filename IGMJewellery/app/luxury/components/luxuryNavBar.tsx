@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "expo-router";
 import {
   AudioLines,
   CircleUserRound,
-  Gift,
+  Diamond,
   House,
   LayoutGrid,
   Sparkle,
@@ -61,10 +61,10 @@ const DEFAULT_ITEMS: LuxuryNavItem[] = [
   },
   { key: "ai", route: "/exploreAi", icon: AiGlyph },
   {
-    key: "gifting",
-    route: "/gift",
+    key: "bespoke",
+    route: "/bespoke",
     icon: (color) => (
-      <Gift size={ICON_SIZE} color={color} strokeWidth={ICON_STROKE} />
+      <Diamond size={ICON_SIZE} color={color} strokeWidth={ICON_STROKE} />
     ),
   },
   {

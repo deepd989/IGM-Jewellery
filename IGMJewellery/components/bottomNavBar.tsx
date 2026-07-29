@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "expo-router";
 import {
   AudioLines,
   CircleUserRound,
-  Gift,
+  Diamond,
   House,
   LayoutGrid,
   Sparkle,
@@ -63,7 +63,7 @@ const NAV_ITEMS: NavItem[] = [
     key: "Bespoke",
     route: "/bespoke",
     icon: (color) => (
-      <Gift size={ICON_SIZE} color={color} strokeWidth={ICON_STROKE} />
+      <Diamond size={ICON_SIZE} color={color} strokeWidth={ICON_STROKE} />
     ),
   },
   {

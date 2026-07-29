@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../constants/theme";
 
 export default function PaymentMethods() {
+  /** Providers whose logo failed to load; they fall back to their name. */
+  const [failed, setFailed] = useState<Record<string, boolean>>({});
+
   const paymentIcons = [
     {
       name: "PhonePe",
@@ -33,7 +36,21 @@ export default function PaymentMethods() {
       <View style={styles.logoRow}>
         {paymentIcons.map((item, index) => (
           <View key={index} style={styles.logoBox}>
-            <Image source={{ uri: item.uri }} style={styles.icon} />
+            {failed[item.name] ? (
+              // A blank tile reads as a broken screen; the name still tells
+              // the shopper the rail is accepted.
+              <Text style={styles.fallback} numberOfLines={1}>
+                {item.name}
+              </Text>
+            ) : (
+              <Image
+                source={{ uri: item.uri }}
+                style={styles.icon}
+                onError={() =>
+                  setFailed((current) => ({ ...current, [item.name]: true }))
+                }
+              />
+            )}
           </View>
         ))}
       </View>
@@ -74,5 +91,11 @@ const styles = StyleSheet.create({
     width: "80%",
     height: "80%",
     resizeMode: "contain",
+  },
+  fallback: {
+    paddingHorizontal: 4,
+    fontSize: 9,
+    fontWeight: "600",
+    color: COLORS.primary,
   },
 });
