@@ -3,14 +3,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
-    Dimensions,
-    FlatList,
-    Image,
-    NativeScrollEvent,
-    NativeSyntheticEvent,
-    StyleSheet,
-    Text,
-    View,
+  Dimensions,
+  FlatList,
+  Image,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../../components/basic components/hapticButton";
@@ -106,7 +106,9 @@ export default function ConfirmationScreen() {
                   </View>
                 </>
               ) : (
-                <View style={[styles.checkCircle, styles.checkCircleStandalone]}>
+                <View
+                  style={[styles.checkCircle, styles.checkCircleStandalone]}
+                >
                   <Ionicons name="checkmark" size={22} color="#FFF" />
                 </View>
               )}
@@ -221,7 +223,7 @@ export default function ConfirmationScreen() {
 
           <HapticButton
             style={styles.secondaryBtn}
-            onPress={() => router.push("/orders")}
+            onPress={() => router.navigate("/orders")}
           >
             <Text style={styles.secondaryBtnText}>Review your order</Text>
           </HapticButton>

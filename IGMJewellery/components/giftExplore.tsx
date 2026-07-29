@@ -104,7 +104,7 @@ export default function GiftExplore() {
       });
     }
 
-    router.push({
+    router.navigate({
       pathname: "/product-list",
       params: queryParams,
     });
@@ -187,7 +187,7 @@ export default function GiftExplore() {
       <HapticButton
         style={styles.exploreButton}
         activeOpacity={0.8}
-        onPress={() => router.push("/product-list")}
+        onPress={() => router.navigate("/product-list")}
       >
         <Text style={styles.exploreText}>Explore all</Text>
       </HapticButton>

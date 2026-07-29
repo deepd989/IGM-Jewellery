@@ -1,47 +1,27 @@
+import { useIsFocused } from "@react-navigation/native";
 import { ResizeMode, Video } from "expo-av";
-import { useVideoPlayer } from "expo-video";
-import React, { useEffect } from "react";
+import React from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 
 const { width } = Dimensions.get("window");
 
+const videoSource = require("../assets/bespokeVideo.mp4");
+
 const BespokeVideoComponent = () => {
-  // Direct Google Drive link (UC format)
-  const videoSource =
-    "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Bespoke%20Banners%2FExplore%20Bespoke%2FbespokeVideo.mp4?alt=media&token=566bcacd-2d8b-49e3-940b-70880ee0d85c";
-
-  const player = useVideoPlayer(videoSource, (playerInstance) => {
-    playerInstance.loop = true;
-    playerInstance.muted = true; // Required for most OS to allow autoplay
-    playerInstance.play();
-  });
-
-  // Extra insurance: trigger play if the instance changes
-  useEffect(() => {
-    if (player) {
-      player.play();
-    }
-  }, [player]);
+  // Stops decoding while the shopper is off on another screen.
+  const isFocused = useIsFocused();
 
   return (
     <View style={styles.container}>
       <View style={styles.videoWrapper}>
         <Video
-          source={{ uri: videoSource }}
+          source={videoSource}
           style={styles.video}
           resizeMode={ResizeMode.COVER}
-          shouldPlay
+          shouldPlay={isFocused}
           isLooping
           isMuted
         />
-        {/* <VideoView
-          style={styles.video}
-          player={player}
-          nativeControls={false} // Hides play/pause/timeline icons
-          allowsFullscreen={false}
-          allowsPictureInPicture={false}
-          contentFit="cover"
-        /> */}
       </View>
     </View>
   );

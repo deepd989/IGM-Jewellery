@@ -114,9 +114,8 @@ function parseProductType(product: MagentoProduct): ProductType {
   //     return type;
   //   }
   // }
-
-  // Default to Ring if nothing matches
-  return ProductType.Ring;
+  //if type not found show this
+  return "Unknown" as ProductType;
 }
 
 function parseSubCategories(product: MagentoProduct): string[] {

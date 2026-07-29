@@ -49,7 +49,7 @@ export default function LatestCollections() {
   );
 
   const handleRedirect = (collection: BrandCollection) => {
-    router.push({
+    router.navigate({
       pathname: "/product-list",
       params: {
         brand: activeBrandName,

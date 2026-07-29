@@ -75,8 +75,8 @@ export default function JewelryLanding() {
           source={require("../assets/splash.mp4")}
           style={StyleSheet.absoluteFill}
           resizeMode={ResizeMode.COVER}
-          shouldPlay
-          rate={2.0}
+          shouldPlay = {true}
+          rate={4.0}
           isLooping={false}
           isMuted={true}
           volume={1.0}
@@ -132,14 +132,14 @@ export default function JewelryLanding() {
         <View style={styles.authContainer}>
           <HapticButton
             style={styles.fullButton}
-            onPress={() => router.push("/login")}
+            onPress={() => router.navigate("/login")}
           >
             <Text style={styles.buttonText}>Get Started</Text>
           </HapticButton>
 
           <HapticButton
             style={[styles.fullButton, styles.secondaryButton]}
-            onPress={() => router.push("/home")}
+            onPress={() => router.navigate("/home")}
           >
             <Text style={[styles.buttonText, { color: COLORS.primary }]}>
               Explore as Guest
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     flex: 1,
     justifyContent: "flex-start",
-    paddingTop: 10,
+    paddingTop: 20,
   },
   safeArea: {
     flex: 1,
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     alignItems: "center",
-    // paddingTop: 10,
+    paddingVertical: 10,
     paddingHorizontal: 30,
   },
   subtitle: {

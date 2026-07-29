@@ -42,7 +42,7 @@ export default function BrandGridTileView() {
     <Pressable
       onPress={() => {
         setSelected(id);
-        router.push(`/brandProfile/${brandSlug}`);
+        router.navigate(`/brandProfile/${brandSlug}`);
       }}
       style={[
         styles.tile,

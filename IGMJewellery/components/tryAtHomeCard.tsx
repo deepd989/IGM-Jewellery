@@ -1,15 +1,9 @@
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Dimensions,
-} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import React from "react";
+import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import EarringIcon from "./ui/earingsComponentSvg";
-import { router } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -18,9 +12,7 @@ export default function TryAtHomeCard() {
     <View style={styles.container}>
       {/* Header */}
       <Text style={styles.title}>Try at home</Text>
-      <Text style={styles.subtitle}>
-        Shopping with comfort & convenience
-      </Text>
+      <Text style={styles.subtitle}>Shopping with comfort & convenience</Text>
 
       {/* Card */}
       <View style={styles.card}>
@@ -35,7 +27,15 @@ export default function TryAtHomeCard() {
             </Text>
           </View>
 
-          <Pressable style={styles.arrowButton} onPress={() => {router.push({pathname:'/underDev',params:{featureName:'Try at Home Feature'}});}}>
+          <Pressable
+            style={styles.arrowButton}
+            onPress={() => {
+              router.navigate({
+                pathname: "/underDev",
+                params: { featureName: "Try at Home Feature" },
+              });
+            }}
+          >
             <Ionicons name="arrow-forward" size={22} color="#053844" />
           </Pressable>
         </View>
@@ -56,14 +56,18 @@ export default function TryAtHomeCard() {
           ))}
         </View> */}
 
-         <View style={styles.iconRow}>
-                    <MaterialCommunityIcons name="necklace" size={32} color="#053844" />
-                    <MaterialCommunityIcons name="ring" size={32} color="#053844" />
-                    <MaterialCommunityIcons name="diamond-stone" size={32} color="#053844" />
-                    <MaterialCommunityIcons name="gold" size={32} color="#053844" />
-                    <MaterialCommunityIcons name="gift" size={32} color="#053844" />
-                    <EarringIcon width={40} height={40} />
-                  </View>
+        <View style={styles.iconRow}>
+          <MaterialCommunityIcons name="necklace" size={32} color="#053844" />
+          <MaterialCommunityIcons name="ring" size={32} color="#053844" />
+          <MaterialCommunityIcons
+            name="diamond-stone"
+            size={32}
+            color="#053844"
+          />
+          <MaterialCommunityIcons name="gold" size={32} color="#053844" />
+          <MaterialCommunityIcons name="gift" size={32} color="#053844" />
+          <EarringIcon width={40} height={40} />
+        </View>
 
         {/* Video placeholder */}
         <View style={styles.videoBox}>

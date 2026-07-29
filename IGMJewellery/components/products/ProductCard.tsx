@@ -132,7 +132,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             text: "View Trial List",
             onPress: () => {
               console.log("Navigating to trial tab");
-              router.push("/cart?tab=trial");
+              router.navigate("/cart?tab=trial");
             },
           },
         ]
@@ -148,7 +148,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             { text: "OK", style: "cancel" },
             {
               text: "View Trial List",
-              onPress: () => router.push("/cart?tab=trial"),
+              onPress: () => router.navigate("/cart?tab=trial"),
             },
           ]
         );
@@ -213,7 +213,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <HapticButton
-      style={[styles.card, { width: cardWidth }, isGrid && { height: 300 }]}
+      style={[styles.card, { width: cardWidth }, isGrid && { height: 320 }]}
       onPress={() => onPress(product)}
       activeOpacity={0.9}
     >
@@ -221,7 +221,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       <View
         style={[
           styles.imageWrapper,
-          !isGrid && styles.listImageWrapper && { height: 300 },
+          !isGrid && styles.listImageWrapper && { height: 320 },
           ,
         ]}
       >
@@ -257,11 +257,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* New Badge */}
-        {product.isNew && (
+        {/* {product.isNew && (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>New</Text>
           </View>
-        )}
+        )} */}
 
         {/* Favorite Icon */}
         <HapticButton
@@ -383,7 +383,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         visible={isTryOnSelectorVisible}
         onClose={() => setIsTryOnSelectorVisible(false)}
         onSelectVR={() => {
-          router.push({
+          router.navigate({
             pathname: "/virtualTryOn2",
             params: {
               productId: product.id,
@@ -392,7 +392,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           });
         }}
         onSelectAI={() => {
-          router.push({
+          router.navigate({
             pathname: "/tryOn",
             params: {
               productId: product.id,

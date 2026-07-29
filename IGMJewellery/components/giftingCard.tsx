@@ -45,7 +45,7 @@ export default function GiftingCard({
             position: "absolute",
             right: 0,
             bottom: 126,
-            color: COLORS.text,
+            color: "white",
           }}
         >
           {" "}
@@ -62,7 +62,7 @@ export default function GiftingCard({
             right: -10,
             bottom: 176,
             marginRight: 10,
-            color: COLORS.text,
+            color: "white",
           }}
         >
           {description}
@@ -71,7 +71,10 @@ export default function GiftingCard({
 
       {/* CTA Button */}
       {showExploreButton && (
-        <Pressable style={styles.button} onPress={() => router.push("/gift")}>
+        <Pressable
+          style={styles.button}
+          onPress={() => router.navigate("/gift")}
+        >
           <Text style={styles.buttonText}>Explore gifting</Text>
           <View style={styles.iconCircle}>
             <Ionicons name="arrow-forward" size={18} color="#053844" />
@@ -82,7 +85,7 @@ export default function GiftingCard({
       {sendAGiftButton && (
         <Pressable
           style={styles.button}
-          onPress={() => router.push("/giftStepperPage")}
+          onPress={() => router.navigate("/giftStepperPage")}
         >
           <Text style={styles.buttonText}>Send A Gift</Text>
           <View style={styles.iconCircle}>

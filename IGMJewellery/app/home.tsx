@@ -8,6 +8,7 @@ import HorizontalRuleIGM from "@/components/horizontalRuleIGM";
 import OccasionCardList from "@/components/occasionsHome";
 import SearchBar from "@/components/searchBar";
 import { TopPicks } from "@/components/topPicks";
+import HeaderRowClassic from "@/components/headerRowClassic";
 import { getUserPincode } from "@/scripts/location";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
@@ -27,6 +28,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -37,14 +39,15 @@ import { HapticButton } from "../components/basic components/hapticButton";
 import BrandsHorizontalScroll from "../components/brandsHorizontalScroll";
 import CategoriesHorizontalScroll from "../components/categoriesHorizontallScroll";
 import HowItLooksWrapper from "../components/homePageCard";
-import LatestCollections from "../components/latestCollections";
 import { SectionHeader } from "../components/section";
 import BrandCollectionCards from "../components/shopByCollectionsNew";
 import ShopByRegionCards from "../components/shopByRegion";
 import { TrendingProducts } from "../components/TrendingProducts";
 import TrustBar from "../components/trustBarBanner";
 import { COLORS } from "../constants/theme";
+import { useLuxury } from "../context/luxuryContext";
 import { useWalletBalance } from "./customHooks/walletBalanceLoader";
+import { Button } from "@react-navigation/elements";
 
 export default function HomeScreen() {
   const [expanded, setExpanded] = useState(false);
@@ -62,6 +65,7 @@ export default function HomeScreen() {
   const [textInput, setTextInput] = useState<string>("");
   const [pincode, setPincode] = useState(null);
   const { userId } = useAuth();
+  const { switchMode } = useLuxury();
   const { balance: walletBalance } = useWalletBalance(userId as string);
 
   const revolvingTexts = [
@@ -100,7 +104,7 @@ export default function HomeScreen() {
     })();
   }, []);
   const handleSubmit = () => {
-    router.push({
+    router.navigate({
       pathname: "/exploreAi",
       params: { value: textInput },
     });
@@ -118,24 +122,27 @@ export default function HomeScreen() {
     useCallback(() => {
       const backHandler = BackHandler.addEventListener(
         "hardwareBackPress",
-        () => true,
+        () => true
       );
       return () => backHandler.remove();
-    }, []),
+    }, [])
   );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <View style={styles.header}>
-        <Text style={styles.deliveryText}>
-          Deliver to{" "}
-          <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
+        <HapticButton style={styles.deliveryButton} activeOpacity={0.7}>
+          <Text style={styles.deliveryText}>
+            <Text style={styles.deliveryStrong}>Deliver</Text> to{" "}
             {pincode || "Fetching..."}
           </Text>
-        </Text>
-        {/* Wallet balance pill hidden for now */}
+          <Ionicons name="chevron-down" size={20} color={COLORS.primary} />
+        </HapticButton>
+
+        <HeaderRowClassic />
       </View>
-      <SearchBar />
+      {/* <SearchBar /> */}
+
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.AiContainer}>
           <View style={(styles.centerBox, styles.viewElanziaIsListening)}>
@@ -187,7 +194,7 @@ export default function HomeScreen() {
               <View style={styles.iconGroup}>
                 <HapticButton
                   onPress={() => {
-                    router.push({
+                    router.navigate({
                       pathname: "/exploreAi",
                       params: { mode: "voice" },
                     });
@@ -199,51 +206,44 @@ export default function HomeScreen() {
             </View>
           </View>
         </View>
-        <AnnouncementSection />
+        <View style={{ marginTop: 40 }}>
+          <CategoriesHorizontalScroll />
+        </View>
+        <TrustBar />
+        <BespokeSection />
+        <HorizontalRuleIGM />
+        <BrandsHorizontalScroll />
         <HorizontalRuleIGM />
         <ShopByRegionCards />
         <HorizontalRuleIGM />
+        <CommunityCarousel />
+        <HorizontalRuleIGM />
+        <AnnouncementSection />
+        <HorizontalRuleIGM />
+        <EventCard />
+        <HorizontalRuleIGM />
         <BrandCollectionCards />
         <HorizontalRuleIGM />
-        <CategoriesHorizontalScroll />
-        <TrustBar />
-        <BrandsHorizontalScroll />
-        <HorizontalRuleIGM />
         <TopPicks products={products} />
+        <View style={{ marginTop: 30 }}>
+          <HorizontalRuleIGM />
+        </View>
+        <GiftFinder />
         <HorizontalRuleIGM />
         <>
           <SectionHeader value="Explore AI Try On"></SectionHeader>
           <HowItLooksWrapper seeHowItLooks={true}></HowItLooksWrapper>
         </>
-        {/* <HorizontalRuleIGM /> */}
-        <GiftFinder />
-
+        <HorizontalRuleIGM />
         <OccasionCardList />
         <HorizontalRuleIGM />
         <TrendingProducts products={products} />
         <HorizontalRuleIGM />
-        <LatestCollections />
-        {/* <HorizontalRuleIGM /> */}
-
-        {/* <HorizontalRuleIGM /> */}
-        {/* <TryAtHomeCard /> */}
         <GiftingCard
           showExploreButton={true}
           imgUrl="https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Gifting%20Banner%2FGifting_banner-05.webp?alt=media&token=5b1e9a31-d5c7-47ee-bf47-8abcca8b5475"
         />
-        <HorizontalRuleIGM />
-        <>
-          <SectionHeader value="Trending Products"></SectionHeader>
-          <HowItLooksWrapper seeHowItLooks={false}></HowItLooksWrapper>
-        </>
-        <HorizontalRuleIGM />
-        <CommunityCarousel />
 
-        {/* <BestSellersSection /> */}
-        <HorizontalRuleIGM />
-        <BespokeSection />
-        <HorizontalRuleIGM />
-        <EventCard />
         <TrustBar />
         <CallUsComponent></CallUsComponent>
 
@@ -261,11 +261,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 6,
+    gap: 12,
     paddingHorizontal: 20,
-    marginBottom: 5,
+    paddingBottom: 12,
+  },
+  deliveryButton: {
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  deliveryStrong: {
+    fontWeight: "700",
   },
   viewElanziaIsListening: {
     padding: 16,

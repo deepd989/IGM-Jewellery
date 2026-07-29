@@ -18,11 +18,13 @@ const SwipeAndShopComponent = () => {
       {/* Swipe & Shop Button */}
       <HapticButton
         activeOpacity={0.9}
-        onPress={() => router.push("/immersiveProductList")}
+        onPress={() => router.navigate("/immersiveProductList")}
         style={styles.buttonWrapper}
       >
         <Image
-          source={require("../assets/images/featureButtons/swipeAndShop.jpg")}
+          source={{
+            uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Feature%20Buttons%2FSwipe%26Shop_5.webp?alt=media&token=c0ca8e88-3abe-4c21-96b2-5054dd6e4b50",
+          }}
           style={styles.buttonImage}
           contentFit="cover"
           transition={200}
@@ -32,7 +34,7 @@ const SwipeAndShopComponent = () => {
       {/* Become Model Button */}
       <HapticButton
         activeOpacity={0.9}
-        onPress={() => router.push("/tryOn")}
+        onPress={() => router.navigate("/tryOn")}
         style={styles.buttonWrapper}
       >
         <Image

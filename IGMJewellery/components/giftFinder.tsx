@@ -3,20 +3,13 @@ import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import {
-  Dimensions,
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
 import Modal from "react-native-modal";
 
 import { OccasionEnum } from "@/constants/occasions";
 import { RELATIONSHIPS } from "@/constants/relationships";
 import { RouteParam } from "@/constants/routeNavigationConstants";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "./basic components/hapticButton";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -78,13 +71,13 @@ export default function GiftFinder() {
 
     if (
       maleRelationships.some((rel) =>
-        relationship.toLowerCase().includes(rel.toLowerCase()),
+        relationship.toLowerCase().includes(rel.toLowerCase())
       )
     )
       return "Male";
     if (
       femaleRelationships.some((rel) =>
-        relationship.toLowerCase().includes(rel.toLowerCase()),
+        relationship.toLowerCase().includes(rel.toLowerCase())
       )
     )
       return "Female";
@@ -93,7 +86,7 @@ export default function GiftFinder() {
 
   const handleStartLooking = () => {
     const gender = getGenderFromRelationship(selectedRelationship);
-    router.push({
+    router.navigate({
       pathname: "/exploreAi",
       params: {
         value: `I'm looking for a piece of ${selectedCategory} for ${selectedRelationship}. It's to celebrate ${selectedOccasion}, and my budget is around ${priceRange}. Could you show me some options that would be a good fit?`,
@@ -105,7 +98,7 @@ export default function GiftFinder() {
   const renderDropdownTrigger = (
     label: string,
     value: string,
-    type: "category" | "relationship" | "occasion" | "price",
+    type: "category" | "relationship" | "occasion" | "price"
   ) => (
     <View style={styles.dropdownContainer}>
       <Text style={styles.label}>{label}</Text>
@@ -128,7 +121,7 @@ export default function GiftFinder() {
     type: "category" | "relationship" | "occasion",
     data: string[],
     currentValue: string,
-    setter: (val: string) => void,
+    setter: (val: string) => void
   ) => (
     <Modal
       isVisible={openDropdown === type}
@@ -174,13 +167,6 @@ export default function GiftFinder() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.logoContainer}>
-          <Image
-            source={require("../assets/images/icon.png")}
-            style={{ width: 80, height: 80, borderRadius: 40 }}
-          />
-        </View>
-
         <View style={styles.headerText}>
           <Text style={styles.title}>Not sure what to gift?</Text>
           <Text style={styles.subtitle}>
@@ -193,25 +179,25 @@ export default function GiftFinder() {
           {renderDropdownTrigger(
             "I am looking for...",
             selectedCategory,
-            "category",
+            "category"
           )}
 
           {renderDropdownTrigger(
             "within",
             `₹${priceRange[0]} - ₹${priceRange[1]}`,
-            "price",
+            "price"
           )}
 
           {renderDropdownTrigger(
             "for my",
             selectedRelationship,
-            "relationship",
+            "relationship"
           )}
 
           {renderDropdownTrigger(
             "on the occasion of",
             selectedOccasion,
-            "occasion",
+            "occasion"
           )}
 
           <HapticButton
@@ -229,19 +215,19 @@ export default function GiftFinder() {
         "category",
         categories,
         selectedCategory,
-        setSelectedCategory,
+        setSelectedCategory
       )}
       {renderListModal(
         "relationship",
         relationships,
         selectedRelationship,
-        setSelectedRelationship,
+        setSelectedRelationship
       )}
       {renderListModal(
         "occasion",
         occasions,
         selectedOccasion,
-        setSelectedOccasion,
+        setSelectedOccasion
       )}
 
       {/* PRICE RANGE MODAL */}
@@ -293,9 +279,9 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   logoContainer: {
-    paddingTop: 24,
+    paddingTop: 0,
     alignItems: "center",
-    marginBottom: 6,
+    marginBottom: 0,
   },
   headerText: {
     marginBottom: 15,

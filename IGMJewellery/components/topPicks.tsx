@@ -13,7 +13,7 @@ export function TopPicks({ products }: TopPicksProps) {
   const router = useRouter();
   const topPicksProducts = products.slice(5, 9); // Get the first 8 products for top picks
   const handleProductPress = (product: Product) => {
-    router.push({
+    router.navigate({
       pathname: "/product/[id]",
       params: { id: product.id },
     });
@@ -37,7 +37,7 @@ export function TopPicks({ products }: TopPicksProps) {
       />
       <ViewAllButton
         onPress={() => {
-          router.push("/product-list");
+          router.navigate("/product-list");
         }}
       ></ViewAllButton>
     </>

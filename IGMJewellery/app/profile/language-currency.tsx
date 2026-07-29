@@ -9,8 +9,24 @@ import { useDispatch, useSelector } from "react-redux";
 import CallUsComponent from "../../components/basic components/callUsComponent";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS } from "../../constants/theme";
+import { useLuxury } from "../../context/luxuryContext";
+import LuxuryLanguageCurrencyScreen from "../luxury/profile/language-currency";
 
+/**
+ * Both storefronts share this route, so every existing link to the locale
+ * preferences lands on the presentation the shopper is browsing in.
+ */
 export default function LanguageCurrencyScreen() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? (
+    <LuxuryLanguageCurrencyScreen />
+  ) : (
+    <ClassicLanguageCurrencyScreen />
+  );
+}
+
+function ClassicLanguageCurrencyScreen() {
   const router = useRouter();
   const dispatch = useDispatch();
   const prefs = useSelector((state: RootState) => state.user.preferences);

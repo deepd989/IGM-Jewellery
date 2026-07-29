@@ -23,9 +23,25 @@ import { useGetProductsQuery } from "../store/apis/product";
 
 const { height } = Dimensions.get("window");
 
+const swipeNShopDummyData = [
+  "EA1594",
+  "GER-24",
+  "GER-030",
+  "GER-012023",
+  "GNK-026",
+  "GNK-89-12",
+  "GNK-NK-29",
+  "KAM-NK-04",
+  "Kana1",
+  "Moonlight1",
+  "Parampara1",
+  "Shri1",
+  "Swarna1",
+];
+
 const ImmersiveProductList = () => {
   const { data: products = [], isLoading, isError } = useGetProductsQuery({});
-  const [showHint, setShowHint] = useState(true);
+  const [showHint, setShowHint] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const onViewableItemsChanged = useCallback(
@@ -34,7 +50,7 @@ const ImmersiveProductList = () => {
         setActiveIndex(viewableItems[0].index);
       }
     },
-    [],
+    []
   );
 
   const viewabilityConfig = useRef({
@@ -82,7 +98,7 @@ const ImmersiveProductList = () => {
           }),
         ]),
         Animated.delay(300),
-      ]),
+      ])
     );
 
     // Card nudge: slight lift up and back
@@ -125,7 +141,9 @@ const ImmersiveProductList = () => {
 
   const immersiveProducts = useMemo(() => {
     return products.filter((product) => {
-      return product.immersiveVideoUrl;
+      return (
+        product.immersiveVideoUrl && swipeNShopDummyData.includes(product.sku)
+      );
     });
   }, [products]);
 

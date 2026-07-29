@@ -105,7 +105,9 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({ product }) => {
 
       {/* Summary Banner */}
       <View style={styles.summaryBanner}>
-        <Text style={styles.bigRating}>{product.rating}/5</Text>
+        <Text style={styles.bigRating}>
+          {(Number(product.rating) || 3.2).toFixed(2)}/5
+        </Text>
         <View style={styles.starRowBig}>
           {[1, 2, 3, 4, 5].map((i) => (
             <Ionicons

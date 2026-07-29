@@ -1,4 +1,4 @@
-import { COLORS } from "@/constants/theme";
+import { COLORS, LUXURY_COLORS } from "@/constants/theme";
 import {
   loadChatHistory,
   saveChatHistory,
@@ -7,10 +7,18 @@ import {
 import { useSearchJewelryMutation } from "@/store/apis/textSearchApi";
 import { useGetWishlistQuery } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
+import { ResizeMode, Video } from "expo-av";
 import { useRouter } from "expo-router";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   FlatList,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -70,12 +78,18 @@ export default function AiChatComponent({
   initialMessage = "",
   mode,
   userId = null,
+  isLuxury = false,
 }: {
   initialMessage: string;
   mode?: "voice" | "video";
   userId?: string | null;
+  /** Dresses the chat for the luxury storefront. */
+  isLuxury?: boolean;
 }) {
   const router = useRouter();
+  const styles = useMemo(() => createStyles(isLuxury), [isLuxury]);
+  /** Header glyphs read against the screen's own ground. */
+  const headerTint = isLuxury ? LUXURY_COLORS.text : COLORS.text;
   const { data: wishlistData } = useGetWishlistQuery();
   const wishlistCount = wishlistData?.items.length || 0;
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -83,10 +97,14 @@ export default function AiChatComponent({
   const [isRecording, setIsRecording] = useState(false);
   const [redirection, setRedirection] = useState(false);
   const [historyLoaded, setHistoryLoaded] = useState(false);
-  const [showVoiceVideoInterface, setShowVoiceVideoInterface] =
-    useState(!!mode);
+  const [showVoiceVideoInterface, setShowVoiceVideoInterface] = useState(
+    !!mode
+  );
+
+  const [showVideo, setShowVideo] = useState(false);
+
   const [interfaceMode, setInterfaceMode] = useState<"voice" | "video">(
-    mode || "voice",
+    mode || "voice"
   );
   const flatListRef = useRef<FlatList>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -139,7 +157,7 @@ export default function AiChatComponent({
           female: "Female",
         };
         const mappedGender = query.whoFor
-          ? (whoForToGender[query.whoFor.toLowerCase()] ?? query.whoFor)
+          ? whoForToGender[query.whoFor.toLowerCase()] ?? query.whoFor
           : undefined;
 
         const searchParams = {
@@ -156,8 +174,8 @@ export default function AiChatComponent({
             (query.studded === true
               ? "Natural Diamond"
               : query.studded === false
-                ? undefined
-                : undefined),
+              ? undefined
+              : undefined),
           brand: query.brand,
           searchQuery: query.name || query.searchQuery,
         };
@@ -280,12 +298,12 @@ export default function AiChatComponent({
         parts.push(
           `${fmt(params.minPrice)}–${fmt(params.maxPrice)}`
             .replace(/^–/, "")
-            .replace(/–$/, ""),
+            .replace(/–$/, "")
         );
       }
       return parts.join(" • ") || "View Results";
     },
-    [],
+    []
   );
 
   const renderMessage = ({ item }: { item: IMessage }) => {
@@ -315,12 +333,21 @@ export default function AiChatComponent({
             <View style={styles.readyCardContainer}>
               <HapticButton
                 style={styles.visitSearchButton}
-                onPress={() =>
-                  router.push({
-                    pathname: "/product-list",
-                    params: item.searchParams as Record<string, string>,
-                  })
-                }
+                onPress={async () => {
+                  setShowVideo(true);
+                  setTimeout(() => {
+                    setShowVideo(false);
+                    router.navigate({
+                      pathname: "/product-list",
+                      params: {
+                        ...(item.searchParams as Record<string, string>),
+                        bannerImageUrl: encodeURIComponent(
+                          "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Pop%20Up%20Try%20On%20Buttons%2Fmagic%20search-11.webp?alt=media&token=87f0543b-2c86-456d-a1b5-ddb2127e15ca"
+                        ),
+                      },
+                    });
+                  }, 4000); // this should match the duration of the video.
+                }}
               >
                 <Ionicons
                   name="search"
@@ -373,22 +400,28 @@ export default function AiChatComponent({
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.headerRow}>
           <HapticButton onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons
-              name="chevron-back"
-              size={24}
-              color={COLORS.text || "#053844"}
-            />
+            <Ionicons name="chevron-back" size={24} color={headerTint} />
           </HapticButton>
-          <Text style={styles.headerTitle}>elanzia ai</Text>
+          <Image
+            source={require("../../assets/images/elanzia_ai.png")}
+            style={{
+              height: 50,
+              width: 150,
+              paddingLeft: 20,
+              alignSelf: "center",
+            }}
+          />
           <View style={styles.headerIcons}>
             <HapticButton
               style={styles.headerIconBtn}
-              onPress={() => router.push("/wishlist")}
+              onPress={() => router.navigate("/wishlist")}
             >
               <Ionicons
                 name={wishlistCount > 0 ? "heart" : "heart-outline"}
                 size={24}
-                color={wishlistCount > 0 ? COLORS.primary : COLORS.text}
+                color={
+                  wishlistCount > 0 && !isLuxury ? COLORS.primary : headerTint
+                }
               />
               {wishlistCount > 0 && (
                 <View style={styles.headerBadge}>
@@ -397,7 +430,7 @@ export default function AiChatComponent({
               )}
             </HapticButton>
             <View style={styles.headerIconBtn}>
-              <CartBadge iconSize={24} iconColor={COLORS.text} />
+              <CartBadge iconSize={24} iconColor={headerTint} />
             </View>
           </View>
         </View>
@@ -469,19 +502,60 @@ export default function AiChatComponent({
             />
           </SafeAreaView>
         </Modal>
+        {showVideo && (
+          <View
+            style={[
+              styles.videoOverlay,
+              {
+                flex: 1,
+                backgroundColor: "black",
+                height: "120%",
+                width: "100%",
+                zIndex: 999,
+              },
+            ]}
+          >
+            <Video
+              source={require("../../assets/loaderVideo.mp4")}
+              style={StyleSheet.absoluteFill}
+              resizeMode={ResizeMode.COVER}
+              shouldPlay
+              rate={1.25}
+              isLooping={false}
+              isMuted={true}
+              volume={1.0}
+            />
+          </View>
+        )}
       </SafeAreaView>
     </KeyboardAvoidingView>
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#fff" },
+/**
+ * One chat, two surfaces. The classic storefront reads dark-on-white, the
+ * luxury one white-on-teal; everything else about the screen is identical, so
+ * the tone lives here rather than in a second copy of the component.
+ */
+const createStyles = (isLuxury: boolean) =>
+  StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: isLuxury ? LUXURY_COLORS.primary : "white",
+  },
   container: { flex: 1 },
   messagesList: { padding: 16 },
   messageContainer: {
     flexDirection: "row",
     marginBottom: 16,
     alignItems: "flex-end",
+  },
+  videoOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "black",
+    zIndex: 999, // Ensure it sits above the header and list
+    justifyContent: "center",
+    alignItems: "center",
   },
   messageBubble: {
     maxWidth: "80%",
@@ -490,22 +564,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   userBubble: {
-    backgroundColor: "#053844",
+    backgroundColor: isLuxury ? LUXURY_COLORS.gradient[1] : "#053844",
     marginLeft: "auto",
     borderBottomRightRadius: 4,
   },
   aiBubble: {
-    backgroundColor: "#F5F5F5",
+    backgroundColor: isLuxury ? LUXURY_COLORS.surface : "#F5F5F5",
     borderBottomLeftRadius: 4,
   },
   messageText: { fontSize: 15, lineHeight: 20 },
   userText: { color: "#fff" },
-  aiText: { color: "#053844" },
+  aiText: { color: isLuxury ? LUXURY_COLORS.text : "#053844" },
   aiAvatar: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#053844",
+    backgroundColor: isLuxury ? LUXURY_COLORS.gradient[1] : "#053844",
     marginRight: 8,
     justifyContent: "center",
     alignItems: "center",
@@ -524,12 +598,13 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     padding: 12,
     borderTopWidth: 1,
-    borderTopColor: "#EEE",
-    backgroundColor: "#fff",
+    borderTopColor: isLuxury ? LUXURY_COLORS.border : "#EEE",
+    backgroundColor: isLuxury ? LUXURY_COLORS.primary : "#fff",
   },
   input: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.text,
+    backgroundColor: isLuxury ? LUXURY_COLORS.surface : "#F5F5F5",
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 8,
@@ -547,23 +622,29 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#053844",
+    backgroundColor: isLuxury ? LUXURY_COLORS.gradient[1] : "#053844",
     justifyContent: "center",
     alignItems: "center",
     marginLeft: 4,
   },
-  backButton: { padding: 10 },
+  backButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 4,
+    paddingRight: 20,
+    paddingLeft: 10,
     paddingVertical: 4,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
     fontStyle: "italic",
   },
   headerIcons: {
@@ -578,7 +659,7 @@ const styles = StyleSheet.create({
     position: "absolute" as const,
     top: -4,
     right: -6,
-    backgroundColor: "white",
+    backgroundColor: isLuxury ? LUXURY_COLORS.primary : "white",
     borderRadius: 8,
     minWidth: 16,
     height: 16,
@@ -586,10 +667,10 @@ const styles = StyleSheet.create({
     alignItems: "center" as const,
     paddingHorizontal: 4,
     borderWidth: 2,
-    borderColor: COLORS.primary,
+    borderColor: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
   },
   headerBadgeText: {
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
     fontSize: 10,
     fontWeight: "700" as const,
   },
@@ -598,16 +679,19 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: "#666",
+    backgroundColor: isLuxury ? LUXURY_COLORS.textMuted : "#666",
     opacity: 0.4,
   },
-  modalContainer: { flex: 1, backgroundColor: "#f5f5f5" },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: isLuxury ? LUXURY_COLORS.primary : "#f5f5f5",
+  },
   closeButton: { position: "absolute", top: 50, right: 20, zIndex: 10 },
   recordingButton: { backgroundColor: "#FFE0E0", borderRadius: 20 },
   visitSearchButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#053844",
+    backgroundColor: isLuxury ? LUXURY_COLORS.gradient[1] : "#053844",
     borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 10,
@@ -623,6 +707,6 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: "#E0E0E0",
+    borderTopColor: isLuxury ? LUXURY_COLORS.border : "#E0E0E0",
   },
-});
+  });

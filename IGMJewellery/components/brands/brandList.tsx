@@ -31,7 +31,7 @@ const BrandCard = ({ brand }: { brand: Brand }) => {
     <HapticButton
       style={styles.cardContainer}
       onPress={() => {
-        router.push(`/brandProfile/${brand.businessNameKey}`);
+        router.navigate(`/brandProfile/${brand.businessNameKey}`);
       }}
     >
       <Image

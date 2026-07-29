@@ -8,8 +8,20 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS } from "../../constants/theme";
+import { useLuxury } from "../../context/luxuryContext";
+import LuxuryBankDetailsScreen from "../luxury/profile/bank-details";
 
+/**
+ * Both storefronts share this route, so every existing link to the saved
+ * payment methods lands on the presentation the shopper is browsing in.
+ */
 export default function BankDetailsScreen() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? <LuxuryBankDetailsScreen /> : <ClassicBankDetailsScreen />;
+}
+
+function ClassicBankDetailsScreen() {
   const router = useRouter();
   const dispatch = useDispatch();
   const methods = useSelector((state: RootState) => state.user.paymentMethods);

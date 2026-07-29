@@ -70,7 +70,7 @@ export default function EventCard() {
   }).current;
 
   const handlePress = (id: number) => {
-    router.push({
+    router.navigate({
       pathname: "/product/[id]",
       params: { id: id },
     });

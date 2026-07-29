@@ -32,7 +32,7 @@ const GiftStepA = ({ nextStepFn }: { nextStepFn: () => void }) => {
       <View style={styles.content}>
         {/* Header Image Placeholder */}
         {/* <View style={styles.imageContainer} /> */}
-        <RibbonGiftCard />
+        <RibbonGiftCard imgUrl="https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Gifting%20Banner%2FGifting_banner-05.webp?alt=media&token=5b1e9a31-d5c7-47ee-bf47-8abcca8b5475" />
 
         {/* Title Section */}
         <Text style={styles.title}>Send a Gift Card!</Text>

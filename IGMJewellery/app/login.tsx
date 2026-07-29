@@ -22,7 +22,7 @@ export default function PhoneLoginScreen() {
     }
     setError(null);
     const digits = phone.replace(/\D/g, "");
-    router.push({
+    router.navigate({
       pathname: "/verifyOtp",
       params: { phoneNumber: `${digits}` },
     });

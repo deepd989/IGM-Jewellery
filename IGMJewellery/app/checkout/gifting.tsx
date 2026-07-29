@@ -1,8 +1,8 @@
 import { GIFT_WRAPS, RECIPIENT_TAGS } from "@/dummyData/gifting";
 import { useGetCartQuery } from "@/store/apis/cart";
 import {
-    useGetCheckoutSessionQuery,
-    useUpdateGiftingOptionsMutation,
+  useGetCheckoutSessionQuery,
+  useUpdateGiftingOptionsMutation,
 } from "@/store/apis/checkout";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,16 +10,16 @@ import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-    ActivityIndicator,
-    Alert,
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as z from "zod";
@@ -73,7 +73,7 @@ export default function GiftingScreen() {
   const onSubmit = async (data: GiftingFormData) => {
     try {
       await updateGiftingOptions(data).unwrap();
-      router.push("/checkout/payment");
+      router.navigate("/checkout/payment");
     } catch (error: any) {
       Alert.alert("Error", error?.data || "Failed to save gifting options");
     }

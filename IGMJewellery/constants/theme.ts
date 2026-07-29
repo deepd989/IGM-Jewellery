@@ -57,6 +57,26 @@ export const COLORS = {
   border: "#E5E5EA",
   error: "#FF3B30",
   success: "#34C759",
+  luxuryBg: "#F0F6F8", // Dark background for luxury mode
+};
+
+/**
+ * The luxury storefront's own palette. It runs dark, so it cannot borrow
+ * COLORS.primary — everything on those screens grounds on these.
+ */
+export const LUXURY_COLORS = {
+  /** The ground the whole storefront sits on. */
+  primary: "#0E2E2D",
+  /** Cards and bars raised off that ground. */
+  surface: "#123C3A",
+  /** Top bar sweep: deep on the left, lifting to the right. */
+  gradient: ["#123F3B", "#1C5A54"] as readonly [string, string],
+  /** Icons and accents. */
+  accent: "#D8C391",
+  text: "#FFFFFF",
+  textMuted: "rgba(255,255,255,0.7)",
+  /** Hairlines and glass edges. */
+  border: "rgba(255,255,255,0.18)",
 };
 
 export const SPACING = {
@@ -66,6 +86,13 @@ export const SPACING = {
   l: 24,
   xl: 32,
 };
+
+/**
+ * The single knob for vertical rhythm on the luxury screens: the gap a
+ * <LuxurySeparator /> puts between sections, and the gap between blocks of
+ * content inside a section. Change this one value to retune the whole page.
+ */
+export const LUXURY_SPACING = 50;
 
 export const SIZES = {
   width,

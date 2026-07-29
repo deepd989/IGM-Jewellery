@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 export function SectionHeader({ value }: { value: string }) {
   return (
-    <View style={{ alignItems: "center", marginBottom: 40 }}>
+    <View style={{ alignItems: "center", marginBottom: 30 }}>
       <Text style={styles.hey}>{value}</Text>
     </View>
   );

@@ -29,6 +29,22 @@ import { TryOnSelectorModal } from "./products/TryOnSelectorModal";
 
 const { width, height } = Dimensions.get("window");
 
+const ImmersiveVideoLocalPath: Record<string, any> = {
+  EA1594: require("../assets/EA1594.mp4"),
+  "GER-24": require("../assets/GER-24.mp4"),
+  "GER-030": require("../assets/GER-030.mp4"),
+  "GER-012023": require("../assets/GER-012023.mp4"),
+  "GNK-026": require("../assets/GNK-026.mp4"),
+  "GNK-89-12": require("../assets/GNK-89-12.mp4"),
+  "GNK-NK-29": require("../assets/GNK-NK-29.mp4"),
+  "KAM-NK-04": require("../assets/KAM-NK-04.mp4"),
+  Kana1: require("../assets/Kana1.mp4"),
+  Moonlight1: require("../assets/Moonlight1.mp4"),
+  Parampara1: require("../assets/Parampara1.mp4"),
+  Shri1: require("../assets/Shri1.mp4"),
+  Swarna1: require("../assets/Swarna1.mp4"),
+};
+
 export const ImmersiveProductCard = ({
   item: product,
   isActive = true,
@@ -53,7 +69,7 @@ export const ImmersiveProductCard = ({
 
   const discountedPrice = product.discountedPrice;
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.product.id === product.id,
+    (item) => item.product.id === product.id
   );
 
   const handleAddToCart = async (e: any) => {
@@ -125,7 +141,7 @@ export const ImmersiveProductCard = ({
             <Video
               ref={videoRef}
               style={styles.videoFill}
-              source={{ uri: product.immersiveVideoUrl }}
+              source={ImmersiveVideoLocalPath[product.sku as string]}
               resizeMode={ResizeMode.COVER}
               shouldPlay
               isLooping
@@ -217,7 +233,7 @@ export const ImmersiveProductCard = ({
                 ₹{product.givenPrice.toLocaleString()}
               </Text>
               <HapticButton
-                onPress={() => router.push(`/product/${product.id}`)}
+                onPress={() => router.navigate(`/product/${product.id}`)}
               >
                 <Text style={styles.viewLink}>View Product</Text>
               </HapticButton>
@@ -275,13 +291,16 @@ export const ImmersiveProductCard = ({
         visible={isTryOnSelectorVisible}
         onClose={() => setIsTryOnSelectorVisible(false)}
         onSelectVR={() =>
-          router.push({
+          router.navigate({
             pathname: "/virtualTryOn2",
             params: { productId: product.id, productTitle: product.title },
           })
         }
         onSelectAI={() =>
-          router.push({ pathname: "/tryOn", params: { productId: product.id } })
+          router.navigate({
+            pathname: "/tryOn",
+            params: { productId: product.id },
+          })
         }
       />
     </View>

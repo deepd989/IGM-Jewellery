@@ -1,8 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   ImageBackground,
   Pressable,
@@ -16,13 +15,14 @@ import { CartBadge } from "@/components/cart/CardBadge";
 import { FilterModal } from "@/components/products/FilterModal";
 import { ProductCard } from "@/components/products/ProductCard";
 import { SortModal } from "@/components/products/SortModal";
+import { useProductListing } from "@/hooks/useProductListing";
 import { Product } from "@/interfaces/product.interface";
-import { useGetCategoryHierarchyQuery } from "@/store/apis/categories";
-import { useGetProductsQuery } from "@/store/apis/product";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../components/basic components/hapticButton";
 import { COLORS, SPACING } from "../constants/theme";
+import { useLuxury } from "../context/luxuryContext";
 import { useGetWishlistQuery } from "../store/apis/wishlist";
+import LuxuryProductListScreen from "./luxury/product-list";
 
 type ListingScreenProps = {
   filters?: Record<string, string[]>;
@@ -62,237 +62,52 @@ const CATEGORY_ICON_MAP: Record<string, string> = {
   diamond: "diamond-outline",
 };
 
+/**
+ * Both storefronts share this route, so every existing link to the listing
+ * lands on the presentation the shopper is currently browsing in. The luxury
+ * listing also keeps its own route for direct links.
+ */
 export default function ListingScreen({ filters }: ListingScreenProps) {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? (
+    <LuxuryProductListScreen />
+  ) : (
+    <ClassicListingScreen filters={filters} />
+  );
+}
+
+function ClassicListingScreen({ filters }: ListingScreenProps) {
   const router = useRouter();
-  const params = useLocalSearchParams();
-
-  // Extract all possible filter params from navigation
-  const departmentId = params.departmentId as string | undefined;
-  const categoryId = params.categoryId as string | undefined;
-  const subCategoryId = params.subCategoryId as string | undefined;
-  const categoryName = params.categoryName as string | undefined;
-  const subCategoryName = params.subCategoryName as string | undefined;
-
-  // Additional filter parameters
-  const gender = params.gender as string | undefined;
-  const occasion = params.occasion as string | undefined;
-  const productType = params.productType as string | undefined;
-  const brand = params.brand as string | undefined;
-  const collection = params.collection as string | undefined;
-  const region = params.region as string | undefined;
-  const minPrice = params.minPrice as string | undefined;
-  const maxPrice = params.maxPrice as string | undefined;
-  const metal = params.metal as string | undefined;
-  const gemstone = params.gemstone as string | undefined;
-  const searchQuery = params.searchQuery as string | undefined;
-  const bannerImageUrl = params.bannerImageUrl;
-  console.log(params.bannerImageUrl);
-  const BANNER_IMAGE = bannerImageUrl;
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [selectedFilter, setSelectedFilter] = useState("All");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  // Sorting State
   const [isSortVisible, setIsSortVisible] = useState(false);
-  const [selectedSort, setSelectedSort] = useState("Customer Rating");
-
-  // Filtering State
   const [isFilterVisible, setIsFilterVisible] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(
-    {}
-  );
 
-  // Get category hierarchy for breadcrumbs
-  const { data: hierarchy } = useGetCategoryHierarchyQuery(
-    { departmentId, categoryId, subCategoryId },
-    { skip: !departmentId && !categoryId }
-  );
+  // Params, filters, sorting and the product query all live in the shared hook,
+  // so this screen and the luxury one can never read a link differently.
+  const {
+    products,
+    isLoading: areProductsLoading,
+    isError,
+    error,
+    refetch,
+    activeFilters,
+    activeFilterCount,
+    activeFilterTags,
+    removeFilterValue,
+    applyFilters,
+    clearFilters,
+    selectedSort,
+    setSelectedSort,
+    selectedChip: selectedFilter,
+    bannerImageUrl: BANNER_IMAGE,
+  } = useProductListing(filters);
 
   // Get wishlist data for header heart icon
   const { data: wishlistData } = useGetWishlistQuery();
   const wishlistCount = wishlistData?.items.length || 0;
-
-  // Helper to parse comma-separated filter values
-  const parseFilterParam = (param: string | string[] | undefined): string[] => {
-    if (!param) return [];
-    if (Array.isArray(param)) return param;
-    return param
-      .split(",")
-      .map((v) => v.trim())
-      .filter(Boolean);
-  };
-
-  // Initialize filters from navigation params, props, and chip selection
-  useEffect(() => {
-    const newFilters: Record<string, string[]> = {};
-
-    // Handle category-based filters
-    if (categoryId) {
-      const categoryProductType = getCategoryProductType(categoryId);
-      if (categoryProductType) {
-        newFilters.productType = [categoryProductType];
-      }
-    }
-
-    // Handle direct productType param (overrides category mapping)
-    const productTypeValues = parseFilterParam(productType);
-    if (productTypeValues.length > 0) {
-      newFilters.productType = productTypeValues;
-    }
-
-    // Handle occasion filter
-    const occasionValues = parseFilterParam(occasion);
-    if (occasionValues.length > 0) {
-      newFilters.occasion = occasionValues;
-    }
-
-    const subCategoriesValues = parseFilterParam(subCategoryId);
-    if (subCategoriesValues.length > 0 && subCategoryId !== "all") {
-      newFilters.subCategoryId = subCategoriesValues;
-    }
-
-    // Handle brand filter
-    const brandValues = parseFilterParam(brand);
-    if (brandValues.length > 0) {
-      newFilters.brand = brandValues;
-    }
-
-    // Handle collection filter
-    const collectionValues = parseFilterParam(collection);
-    if (collectionValues.length > 0) {
-      newFilters.collection = collectionValues;
-    }
-
-    const regionValues = parseFilterParam(region);
-    if (regionValues.length > 0) {
-      newFilters.region = regionValues;
-    }
-
-    // Handle gender filter from departmentId (categories page sends departmentId)
-    if (departmentId) {
-      const deptGenderMap: Record<string, string> = {
-        mens: "male",
-        womens: "female",
-        kids: "kids",
-      };
-      const mappedGender = deptGenderMap[departmentId];
-      if (mappedGender) {
-        newFilters.gender = [mappedGender];
-      }
-    }
-
-    // Handle direct gender param (overrides department mapping)
-    const genderValues = parseFilterParam(gender);
-    if (genderValues.length > 0) {
-      newFilters.gender = genderValues;
-    }
-
-    // Handle priceRange filter (from gift categories)
-    const priceRangeParam = params.priceRange as string | undefined;
-    const priceRangeValues = parseFilterParam(priceRangeParam);
-    if (priceRangeValues.length > 0) {
-      newFilters.priceRange = priceRangeValues;
-    }
-
-    // Handle minPrice / maxPrice (from AI chat)
-    if (minPrice) {
-      newFilters.minPrice = [minPrice];
-    }
-    if (maxPrice) {
-      newFilters.maxPrice = [maxPrice];
-    }
-
-    // Handle metal filter (from AI chat)
-    const metalValues = parseFilterParam(metal);
-    if (metalValues.length > 0) {
-      newFilters.metal = metalValues;
-    }
-
-    // Handle gemstone filter (from AI chat)
-    const gemstoneValues = parseFilterParam(gemstone);
-    if (gemstoneValues.length > 0) {
-      newFilters.gemstone = gemstoneValues;
-    }
-
-    // Handle searchQuery filter (from AI chat — name search)
-    if (searchQuery) {
-      newFilters.searchQuery = [searchQuery];
-    }
-
-    // Merge with filters passed as props
-    if (filters && Object.keys(filters).length > 0) {
-      Object.keys(filters).forEach((key) => {
-        if (filters[key] && filters[key].length > 0) {
-          newFilters[key] = [...(newFilters[key] || []), ...filters[key]];
-          // Remove duplicates
-          newFilters[key] = [...new Set(newFilters[key])];
-        }
-      });
-    }
-
-    setActiveFilters(newFilters);
-  }, [
-    departmentId,
-    categoryId,
-    subCategoryId,
-    productType,
-    occasion,
-    brand,
-    collection,
-    region,
-    gender,
-    minPrice,
-    maxPrice,
-    metal,
-    gemstone,
-    searchQuery,
-    params.priceRange,
-    filters,
-  ]);
-
-  // Helper to map category to product type
-  const getCategoryProductType = (catId: string): string | null => {
-    const lowerCatId = catId.toLowerCase();
-    if (lowerCatId.includes("rings")) return "ring";
-    if (lowerCatId.includes("necklace") || lowerCatId.includes("chains"))
-      return "necklace";
-    if (lowerCatId.includes("earring")) return "earring";
-    if (lowerCatId.includes("bracelet")) return "bracelet";
-    if (lowerCatId.includes("pendant")) return "pendant";
-    if (lowerCatId.includes("bangle")) return "bangles";
-    if (lowerCatId.includes("anklet")) return "anklet";
-    if (lowerCatId.includes("mangalsutra")) return "mangalsutra";
-    if (lowerCatId.includes("nose-pin")) return "nose-pin";
-    return null;
-  };
-
-  // Fetch products from Redux API with filters and sorting
-  const {
-    data: products = [],
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useGetProductsQuery({
-    sortBy: selectedSort,
-    filters: activeFilters,
-  });
-
-  // Count active filters (excluding chip-based filters)
-  const activeFilterCount = Object.entries(activeFilters).reduce(
-    (total, [key, options]) => {
-      // Don't count chip-based collection filters
-      if (
-        key === "collection" &&
-        options.some((o) => ["new-arrival", "bestseller"].includes(o))
-      ) {
-        return total;
-      }
-      return total + options.length;
-    },
-    0
-  );
 
   const toggleViewMode = () => {
     setViewMode((prev) => (prev === "grid" ? "list" : "grid"));
@@ -303,109 +118,12 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
   };
 
   const handleProductPress = (product: Product) => {
-    router.push({
+    router.navigate({
       pathname: "/product/[id]",
       params: { id: product.id },
     });
   };
 
-  const handleApplyFilters = (filters: Record<string, string[]>) => {
-    setActiveFilters(filters);
-    // Reset chip selection if manual filters are applied
-    setSelectedFilter("All");
-  };
-
-  const handleClearFilters = () => {
-    setActiveFilters({});
-    setSelectedFilter("All");
-  };
-
-  const handleSortSelect = (sort: string) => {
-    setSelectedSort(sort);
-  };
-
-  const handleChipPress = (chip: string) => {
-    setSelectedFilter(chip);
-    // Map chips to sort order since collection filter isn't supported
-    switch (chip) {
-      case "Latest":
-        setSelectedSort("Latest");
-        break;
-      case "Best Sellers":
-        setSelectedSort("Popularity");
-        break;
-      case "All":
-      default:
-        setSelectedSort("Latest");
-        break;
-    }
-  };
-
-  // Generate page title based on navigation context
-  const getPageTitle = () => {
-    // Priority order for title
-    if (subCategoryName) return subCategoryName;
-    if (categoryName) return categoryName;
-    if (occasion)
-      return `${
-        occasion.charAt(0).toUpperCase() + occasion.slice(1)
-      } Collection`;
-    if (brand) return brand;
-    if (collection) return `${collection} Collection`;
-    if (region) return `From ${region} Region`;
-    if (gender)
-      return `${gender.charAt(0).toUpperCase() + gender.slice(1)}'s Jewellery`;
-    if (hierarchy?.category) return hierarchy.category.name;
-    if (productType)
-      return `${productType.charAt(0).toUpperCase() + productType.slice(1)}s`;
-    return "Products";
-  };
-
-  // Generate breadcrumb
-  const getBreadcrumb = () => {
-    const parts = [];
-
-    if (hierarchy?.department) parts.push(hierarchy.department.name);
-    if (hierarchy?.category && !categoryName)
-      parts.push(hierarchy.category.name);
-    if (categoryName) parts.push(categoryName);
-    if (subCategoryName) parts.push(subCategoryName);
-
-    // Add filter-based breadcrumbs if no category hierarchy
-    if (parts.length === 0) {
-      if (gender) parts.push(gender.charAt(0).toUpperCase() + gender.slice(1));
-      if (occasion)
-        parts.push(occasion.charAt(0).toUpperCase() + occasion.slice(1));
-      if (brand) parts.push(brand);
-      if (collection) parts.push(collection);
-      if (region) parts.push(`${region}`);
-    }
-
-    return parts.join(" / ");
-  };
-
-  // Get active filter tags for display (excluding chip-based filters)
-  const getActiveFilterTags = () => {
-    const tags: string[] = [];
-
-    Object.entries(activeFilters).forEach(([key, values]) => {
-      // Skip chip-based collection filters
-      if (key === "collection") {
-        const nonChipValues = values.filter(
-          (v) => !["new-arrival", "bestseller"].includes(v)
-        );
-        nonChipValues.forEach((value) => {
-          tags.push(` ${value}`);
-        });
-      } else {
-        values.forEach((value) => {
-          tags.push(`${value}`);
-        });
-      }
-    });
-
-    return tags;
-  };
 
   const renderHeader = () => (
     <View>
@@ -421,14 +139,14 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
         <View style={styles.headerActions}>
           <HapticButton
             style={styles.iconBtn}
-            onPress={() => router.push("/searchPage")}
+            onPress={() => router.navigate("/searchPage")}
           >
             <Ionicons name="search-outline" size={24} color={COLORS.text} />
           </HapticButton>
 
           <HapticButton
             style={styles.iconBtn}
-            onPress={() => router.push("/wishlist")}
+            onPress={() => router.navigate("/wishlist")}
           >
             <Ionicons
               name={wishlistCount > 0 ? "heart" : "heart-outline"}
@@ -473,42 +191,22 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
       {activeFilterCount > 0 && (
         <View style={styles.activeFiltersContainer}>
           {/* <View style={styles.activeFiltersBar}>
-            <HapticButton onPress={handleClearFilters}>
+            <HapticButton onPress={clearFilters}>
               <Text style={styles.clearFiltersText}>Clear All</Text>
             </HapticButton>
           </View> */}
 
-          {/* FILTER CHIPS THIS SHOULD BE VISIBLE */}
-          {/* <ScrollView
+          {/* FILTER CHIPS THIS SHOULD BE INVISIBLE FOR DEMO*/}
+          <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.filterTagsContainer}
           >
-            {getActiveFilterTags().map((tag, index) => (
+            {activeFilterTags.map((tag, index) => (
               <View key={index} style={styles.filterTag}>
                 <Text style={styles.filterTagText}>{tag}</Text>
                 <HapticButton
-                  onPress={() => {
-                    const filterValue = tag;
-
-                    // 1. Create a fresh object to avoid mutating state directly
-                    const newFilters = {};
-
-                    // 2. Iterate over existing keys
-                    Object.keys(activeFilters).forEach((key) => {
-                      // Filter out the specific value from the current array
-                      const updatedArray = activeFilters[key].filter(
-                        (v) => v !== filterValue
-                      );
-
-                      // 3. Only add the key back to the new object if the array isn't empty
-                      if (updatedArray.length > 0) {
-                        newFilters[key] = updatedArray;
-                      }
-                    });
-
-                    setActiveFilters(newFilters);
-                  }}
+                  onPress={() => removeFilterValue(tag)}
                   style={styles.filterTagClose}
                 >
                   <Ionicons
@@ -519,24 +217,43 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
                 </HapticButton>
               </View>
             ))}
-          </ScrollView> */}
+          </ScrollView>
         </View>
       )}
     </View>
   );
 
-  // Loading state
-  if (isLoading) {
+  //intially isLoadingFInished false
+  // if (!isLoadingVideoFinished || areProductsLoading) {
+  //   return (
+  //     <View style={[styles.container, { flex: 1, backgroundColor: "#000" }]}>
+  //       <Video
+  //         source={require("../assets/loaderVideo.mp4")}
+  //         style={StyleSheet.absoluteFill}
+  //         resizeMode={ResizeMode.COVER}
+  //         shouldPlay
+  //         rate={2.0}
+  //         isLooping={true}
+  //         isMuted={true}
+  //         volume={1.0}
+  //         onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+  //       />
+  //     </View>
+  //   );
+  // }
+
+  if (areProductsLoading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView
+        style={[styles.container, { flex: 1, backgroundColor: "white" }]}
+      >
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Ionicons name="hourglass-outline" size={48} color={COLORS.primary} />
           <Text style={styles.loadingText}>Loading products...</Text>
         </View>
       </SafeAreaView>
     );
   }
-
   // Error state
   if (isError) {
     return (
@@ -575,7 +292,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
           {(activeFilterCount > 0 || selectedFilter !== "All") && (
             <HapticButton
               style={styles.clearButton}
-              onPress={handleClearFilters}
+              onPress={clearFilters}
             >
               <Text style={styles.clearButtonText}>Clear Filters</Text>
             </HapticButton>
@@ -648,7 +365,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
               style={styles.menuItem}
               onPress={() => {
                 setIsMenuOpen(false);
-                router.push(item.path as string);
+                router.navigate(item.path as string);
               }}
             >
               <Text style={styles.menuItemText}>{item.key}</Text>
@@ -720,12 +437,12 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
         visible={isSortVisible}
         onClose={() => setIsSortVisible(false)}
         selectedSort={selectedSort}
-        onSelect={handleSortSelect}
+        onSelect={setSelectedSort}
       />
       <FilterModal
         visible={isFilterVisible}
         onClose={() => setIsFilterVisible(false)}
-        onApply={handleApplyFilters}
+        onApply={applyFilters}
         initialFilters={activeFilters}
       />
     </SafeAreaView>
@@ -735,7 +452,7 @@ export default function ListingScreen({ filters }: ListingScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "white",
     paddingTop: 0,
   },
   centerContent: {
@@ -824,16 +541,15 @@ const styles = StyleSheet.create({
 
   // Banner & category icon
   bannerBackground: {
-    width: "110%",
+    width: "100%",
     height: 180,
     justifyContent: "flex-end",
     alignItems: "center",
     marginBottom: 10, // half of icon circle overflows below
-    position: "relative",
-    left: "-10%",
   },
   bannerImage: {
-    borderRadius: 0,
+    borderRadius: 20,
+    paddingTop: 15,
   },
   // bannerOverlay: {
   //   ...StyleSheet.absoluteFillObject,

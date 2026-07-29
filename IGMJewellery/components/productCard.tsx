@@ -65,7 +65,7 @@ const ProductCard2: React.FC<ProductCardProps> = ({
             text: "View Trial List",
             onPress: () => {
               console.log("Navigating to trial tab");
-              router.push("/cart?tab=trial");
+              router.navigate("/cart?tab=trial");
             },
           },
         ]
@@ -82,7 +82,7 @@ const ProductCard2: React.FC<ProductCardProps> = ({
             { text: "OK", style: "cancel" },
             {
               text: "View Trial List",
-              onPress: () => router.push("/cart?tab=trial"),
+              onPress: () => router.navigate("/cart?tab=trial"),
             },
           ]
         );
@@ -184,7 +184,7 @@ const ProductCard2: React.FC<ProductCardProps> = ({
         <HapticButton
           style={[styles.button, styles.tryNow]}
           onPress={(e) => {
-            router.push({
+            router.navigate({
               pathname: "/virtualTryOn2",
               params: {
                 tryOnUrl: `https://jeweltry.plushvie.in/igmindia/118305`,

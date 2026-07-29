@@ -36,12 +36,12 @@ export default function HowItLooksWrapper({
   const { userId } = useAuth();
   const { data: products = [] } = useGetProductsQuery({});
   const [cardTitle, setCardTitle] = React.useState<string>(
-    ProductType.Necklace,
+    ProductType.Necklace
   );
   let filteredProduct = products[0];
   products.forEach((p) => {
     const filteredProducts = products.filter(
-      (prod) => prod.productType === cardTitle,
+      (prod) => prod.productType === cardTitle
     );
     filteredProduct =
       filteredProducts[filteredProducts.length - 1] || products[0];
@@ -122,9 +122,12 @@ export default function HowItLooksWrapper({
             }}
           >
             <Image
-              source={require("../assets/images/categoryIcons/bracelet-icon.png")}
-              style={{ width: 28, height: 28, tintColor: "#053844" }}
-            />
+              source={{
+                uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FHomepage%2FCategory-02.png?alt=media&token=4dae78eb-5fa6-4b30-9091-56bebbf8e2f2",
+              }}
+              style={{ width: 28, height: 28 }}
+              contentFit="contain"
+            ></Image>
             <Text
               style={{
                 marginTop: 5,
@@ -148,9 +151,12 @@ export default function HowItLooksWrapper({
             }}
           >
             <Image
-              source={require("../assets/images/categoryIcons/bangles-icon.png")}
-              style={{ width: 28, height: 28, tintColor: "#053844" }}
-            />
+              source={{
+                uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Icons%2FHomepage%2FCategory-01.png?alt=media&token=5d8465ef-9c5c-4dc1-bdd9-df692b769403",
+              }}
+              style={{ width: 28, height: 28 }}
+              contentFit="contain"
+            ></Image>
             <Text
               style={{
                 marginTop: 5,
@@ -212,7 +218,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
     useRemoveFromWishlistMutation();
 
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.product?.id === product?.id,
+    (item) => item.product?.id === product?.id
   );
   const handleToggleWishlist = async (e: any) => {
     e.stopPropagation();
@@ -230,7 +236,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
         if (error?.data === "Item already in wishlist") {
           Alert.alert(
             "Already in Wishlist",
-            "This item is already wishlisted.",
+            "This item is already wishlisted."
           );
         } else {
           Alert.alert("Error", "Failed to add to wishlist");
@@ -256,7 +262,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
       <HapticButton
         style={necklaceCardStyle.card}
         onPress={() =>
-          router.push({
+          router.navigate({
             pathname: "/product-list",
             params: { categoryName: product.productType },
           })
@@ -341,7 +347,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
         visible={isTryOnSelectorVisible}
         onClose={() => setIsTryOnSelectorVisible(false)}
         onSelectVR={() => {
-          router.push({
+          router.navigate({
             pathname: "/virtualTryOn2",
             params: {
               productId: product.id,
@@ -350,7 +356,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
           });
         }}
         onSelectAI={() => {
-          router.push({
+          router.navigate({
             pathname: "/tryOn",
             params: {
               productId: product.id,
@@ -366,6 +372,7 @@ const styles = StyleSheet.create({
   outerContainer: {
     backgroundColor: "white", // Light blue background from image
     padding: 16,
+    paddingBottom: 0,
     borderRadius: 12,
     marginTop: 0,
     marginBottom: 0,
@@ -382,7 +389,7 @@ const styles = StyleSheet.create({
 const necklaceCardStyle = StyleSheet.create({
   wrapper: {
     alignItems: "center",
-    paddingBottom: 12, // Space for the button to hang off the bottom
+    height: 430,
   },
   card: {
     backgroundColor: "#EBF2F5",

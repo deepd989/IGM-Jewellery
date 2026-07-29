@@ -75,9 +75,21 @@ const RibbonGiftCard: React.FC<RibbonGiftCardProps> = ({
 
         {/* Centered heading and caption */}
         <View style={styles.textOverlay}>
-          {heading ? <Text style={styles.heading}>{heading}</Text> : null}
-          {caption ? <Text style={styles.caption}>{caption}</Text> : null}
-          {amount ? <Text style={styles.amount}>{"₹" + amount}</Text> : null}
+          {heading ? (
+            <Text style={[styles.heading, { color: cardBackgroundColor }]}>
+              {heading}
+            </Text>
+          ) : null}
+          {caption ? (
+            <Text style={[styles.caption, { color: cardBackgroundColor }]}>
+              {caption}
+            </Text>
+          ) : null}
+          {amount ? (
+            <Text style={[styles.amount, { color: cardBackgroundColor }]}>
+              {"₹" + amount}
+            </Text>
+          ) : null}
         </View>
       </ImageBackground>
     </View>

@@ -43,15 +43,15 @@ const ProfileHeader = ({
     <Image
       source={{ uri: profileImageUri }}
       style={styles.profileImage}
-      resizeMode="contain"
+      resizeMode="cover"
     />
-    <Text style={styles.businessName}>{businessName}</Text>
-    <Text style={styles.tagline}>{tagline}</Text>
-    <View style={styles.actionRow}>
+    {/* <Text style={styles.businessName}>{businessName}</Text> */}
+    {/* <Text style={styles.tagline}>{tagline}</Text> */}
+    {/* <View style={styles.actionRow}>
       <View style={styles.ratingBadge}>
         <Text style={styles.ratingText}>{ratingText}</Text>
       </View>
-    </View>
+    </View> */}
   </View>
 );
 
@@ -124,7 +124,7 @@ export default function BrandProfile({
   const [selectedSort, setSelectedSort] = useState("Featured");
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(
-    {},
+    {}
   );
 
   // Use API with filters and sorting - same approach as product-list.tsx
@@ -143,7 +143,7 @@ export default function BrandProfile({
   // Count active filters
   const activeFilterCount = Object.values(activeFilters).reduce(
     (total, options) => total + options.length,
-    0,
+    0
   );
 
   const toggleViewMode = () => {
@@ -175,187 +175,116 @@ export default function BrandProfile({
   });
 
   return (
-    <>
-      <Animated.View
-        style={{
-          transform: [{ translateY: headerTranslateY }],
-          zIndex: 1,
-        }}
-      >
-        <Animated.View style={{ opacity: headerOpacity }}>
-          <ProfileHeader {...header} />
-        </Animated.View>
-        <TabNavigation
-          tabs={tabs}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
-      </Animated.View>
+    <ScrollView>
+      <ProfileHeader {...header} />
+      <TabNavigation
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
+      {activeTab === "About" && (
+        <ScrollView
+          style={styles.container}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.contentContainer}>
+            {aboutSections.map((section, idx) => (
+              <HeritageSection
+                key={`${section.title}-${idx}`}
+                title={section.title}
+                paragraphs={section.paragraphs}
+              />
+            ))}
+          </View>
+        </ScrollView>
+      )}
 
-      <Animated.View
-        style={{
-          flex: 1,
-          transform: [{ translateY: headerTranslateY }],
-          marginBottom: scrollY.interpolate({
-            inputRange: [0, HEADER_MAX_HEIGHT],
-            outputRange: [0, -HEADER_MAX_HEIGHT],
-            extrapolate: "clamp",
-          }),
-        }}
-      >
-        {activeTab === "About" && (
-          <ScrollView
-            style={styles.container}
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={styles.contentContainer}>
-              {aboutSections.map((section, idx) => (
-                <HeritageSection
-                  key={`${section.title}-${idx}`}
-                  title={section.title}
-                  paragraphs={section.paragraphs}
-                />
-              ))}
+      {activeTab === "Products" && (
+        <SafeAreaView style={styles.container} edges={["bottom"]}>
+          <View style={{ flex: 1 }}>
+            {/* Products Count */}
+            <View style={styles.productsHeader}>
+              <Text style={styles.productsCount}>
+                {products.length}{" "}
+                {products.length === 1 ? "Product" : "Products"}
+              </Text>
+              {activeFilterCount > 0 && (
+                <HapticButton onPress={handleClearFilters}>
+                  <Text style={styles.clearFiltersText}>Clear filters</Text>
+                </HapticButton>
+              )}
             </View>
-          </ScrollView>
-        )}
 
-        {activeTab === "Products" && (
-          <SafeAreaView style={styles.container} edges={["bottom"]}>
-            <View style={{ flex: 1 }}>
-              {/* Products Count */}
-              <View style={styles.productsHeader}>
-                <Text style={styles.productsCount}>
-                  {products.length}{" "}
-                  {products.length === 1 ? "Product" : "Products"}
-                </Text>
+            {isLoading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={COLORS.primary} />
+                <Text style={styles.loadingText}>Loading products...</Text>
+              </View>
+            ) : products.length === 0 ? (
+              <View style={styles.emptyContainer}>
+                <Ionicons
+                  name="search-outline"
+                  size={48}
+                  color={COLORS.textSecondary}
+                />
+                <Text style={styles.emptyText}>No products found</Text>
                 {activeFilterCount > 0 && (
-                  <HapticButton onPress={handleClearFilters}>
-                    <Text style={styles.clearFiltersText}>Clear filters</Text>
+                  <HapticButton
+                    style={styles.clearButton}
+                    onPress={handleClearFilters}
+                  >
+                    <Text style={styles.clearButtonText}>Clear Filters</Text>
                   </HapticButton>
                 )}
               </View>
-
-              {isLoading ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color={COLORS.primary} />
-                  <Text style={styles.loadingText}>Loading products...</Text>
-                </View>
-              ) : products.length === 0 ? (
-                <View style={styles.emptyContainer}>
-                  <Ionicons
-                    name="search-outline"
-                    size={48}
-                    color={COLORS.textSecondary}
+            ) : (
+              <FlatList
+                key={viewMode}
+                data={products}
+                keyExtractor={(item) => item.id}
+                numColumns={viewMode === "grid" ? 2 : 1}
+                renderItem={({ item }) => (
+                  <ProductCard
+                    product={item}
+                    viewMode={viewMode}
+                    onPress={() =>
+                      router.navigate({
+                        pathname: "/product/[id]",
+                        params: { id: item.id },
+                      })
+                    }
                   />
-                  <Text style={styles.emptyText}>No products found</Text>
-                  {activeFilterCount > 0 && (
-                    <HapticButton
-                      style={styles.clearButton}
-                      onPress={handleClearFilters}
-                    >
-                      <Text style={styles.clearButtonText}>Clear Filters</Text>
-                    </HapticButton>
-                  )}
-                </View>
-              ) : (
-                <FlatList
-                  key={viewMode}
-                  data={products}
-                  keyExtractor={(item) => item.id}
-                  numColumns={viewMode === "grid" ? 2 : 1}
-                  renderItem={({ item }) => (
-                    <ProductCard
-                      product={item}
-                      viewMode={viewMode}
-                      onPress={() =>
-                        router.push({
-                          pathname: "/product/[id]",
-                          params: { id: item.id },
-                        })
-                      }
-                    />
-                  )}
-                  columnWrapperStyle={
-                    viewMode === "grid" ? styles.columnWrapper : undefined
-                  }
-                  contentContainerStyle={styles.listContent}
-                  showsVerticalScrollIndicator={false}
-                  onScroll={Animated.event(
-                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                    { useNativeDriver: false },
-                  )}
-                  scrollEventThrottle={16}
-                />
-              )}
-
-              {/* Left: View Toggle */}
-              {/* <HapticButton style={styles.leftFab} onPress={toggleViewMode}>
-              <Ionicons
-                name={viewMode === "grid" ? "list" : "grid"}
-                size={22}
-                color="#053844"
-              />
-            </HapticButton> */}
-
-              {/* Filter and sort bar Bar */}
-              {/* <View style={styles.bottomBar}>
-              <HapticButton
-                style={styles.bottomBarItem}
-                onPress={() => setIsSortVisible(true)}
-              >
-                <Ionicons
-                  name="swap-vertical"
-                  size={18}
-                  color="#FFF"
-                  style={{ marginRight: 8 }}
-                />
-                <Text style={styles.bottomBarText}>SORT</Text>
-                {selectedSort !== "Featured" && (
-                  <View style={styles.activeDot} />
                 )}
-              </HapticButton>
-
-              <View style={styles.bottomBarDivider} />
-
-              <HapticButton
-                style={styles.bottomBarItem}
-                onPress={() => setIsFilterVisible(true)}
-              >
-                <Ionicons
-                  name="options-outline"
-                  size={18}
-                  color="#FFF"
-                  style={{ marginRight: 8 }}
-                />
-                <Text style={styles.bottomBarText}>FILTER</Text>
-                {activeFilterCount > 0 && (
-                  <View style={styles.filterBadge}>
-                    <Text style={styles.filterBadgeText}>
-                      {activeFilterCount}
-                    </Text>
-                  </View>
+                columnWrapperStyle={
+                  viewMode === "grid" ? styles.columnWrapper : undefined
+                }
+                contentContainerStyle={styles.listContent}
+                showsVerticalScrollIndicator={false}
+                onScroll={Animated.event(
+                  [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                  { useNativeDriver: false }
                 )}
-              </HapticButton>
-            </View> */}
+                scrollEventThrottle={16}
+              />
+            )}
 
-              <SortModal
-                visible={isSortVisible}
-                onClose={() => setIsSortVisible(false)}
-                selectedSort={selectedSort}
-                onSelect={handleSortSelect}
-              />
-              <FilterModal
-                visible={isFilterVisible}
-                onClose={() => setIsFilterVisible(false)}
-                onApply={handleApplyFilters}
-                initialFilters={activeFilters}
-              />
-            </View>
-          </SafeAreaView>
-        )}
-      </Animated.View>
-    </>
+            <SortModal
+              visible={isSortVisible}
+              onClose={() => setIsSortVisible(false)}
+              selectedSort={selectedSort}
+              onSelect={handleSortSelect}
+            />
+            <FilterModal
+              visible={isFilterVisible}
+              onClose={() => setIsFilterVisible(false)}
+              onApply={handleApplyFilters}
+              initialFilters={activeFilters}
+            />
+          </View>
+        </SafeAreaView>
+      )}
+      {/* </Animated.View> */}
+    </ScrollView>
   );
 }
 
@@ -366,7 +295,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     alignItems: "center",
-    paddingTop: 40,
+    paddingTop: 10,
     paddingHorizontal: 20,
     backgroundColor: "#fff",
   },
@@ -394,12 +323,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   profileImage: {
-    width: 120,
+    width: "100%",
     height: 120,
-    // borderRadius: 60,
-    padding: 10,
     backgroundColor: "#d3d3d3",
-    marginTop: 20,
+    marginTop: 0,
     borderRadius: 12,
     marginBottom: 20,
   },
@@ -471,7 +398,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#053844",
   },
   contentContainer: {
-    padding: 20,
+    paddingHorizontal: 20,
+    height: 500,
   },
   imagePlaceholder: {
     width: "100%",
