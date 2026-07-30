@@ -50,6 +50,11 @@ type LuxuryProductCardProps = {
   /** Set when the card sits on the storefront's dark ground. */
   onDark?: boolean;
   /**
+   * Tightens the type and the actions for cards that sit in a narrow cell —
+   * a microsite's grid, where the listing's sizes crowd the tile.
+   */
+  compact?: boolean;
+  /**
    * The palette the card's actions are painted in. Defaults to the
    * storefront's own; a brand's microsite passes its colours instead.
    */
@@ -70,6 +75,7 @@ export default function LuxuryProductCard({
   onRemoveFromWishlist,
   isInWishlist: propIsInWishlist,
   onDark = false,
+  compact = false,
   primaryColor = COLORS.primary,
   secondaryColor = COLORS.secondary,
   style,
@@ -150,7 +156,7 @@ export default function LuxuryProductCard({
         <Ionicons
           key={star}
           name="star"
-          size={13}
+          size={compact ? 11 : 13}
           color={
             star <= rating
               ? onDark
@@ -194,20 +200,30 @@ export default function LuxuryProductCard({
           ) : (
             <Ionicons
               name={isInWishlist ? "heart" : "heart-outline"}
-              size={26}
+              size={compact ? 22 : 26}
               color={primaryColor}
             />
           )}
         </HapticButton>
       </View>
 
-      <View style={styles.priceRow}>
-        <Text style={[styles.price, onDark && { color: ON_DARK.text }]}>
+      <View style={[styles.priceRow, compact && compactStyles.priceRow]}>
+        <Text
+          style={[
+            styles.price,
+            compact && compactStyles.price,
+            onDark && { color: ON_DARK.text },
+          ]}
+        >
           ₹{product.discountedPrice?.toLocaleString()}
         </Text>
         {hasDiscount && (
           <Text
-            style={[styles.originalPrice, onDark && { color: ON_DARK.muted }]}
+            style={[
+              styles.originalPrice,
+              compact && compactStyles.originalPrice,
+              onDark && { color: ON_DARK.muted },
+            ]}
           >
             ₹{product.givenPrice.toLocaleString()}
           </Text>
@@ -215,15 +231,23 @@ export default function LuxuryProductCard({
       </View>
 
       <Text
-        style={[styles.productName, onDark && { color: ON_DARK.text }]}
+        style={[
+          styles.productName,
+          compact && compactStyles.productName,
+          onDark && { color: ON_DARK.text },
+        ]}
         numberOfLines={1}
       >
         {product.name || product.title}
       </Text>
 
-      <View style={styles.metaRow}>
+      <View style={[styles.metaRow, compact && compactStyles.metaRow]}>
         <Text
-          style={[styles.brandName, onDark && { color: ON_DARK.muted }]}
+          style={[
+            styles.brandName,
+            compact && compactStyles.brandName,
+            onDark && { color: ON_DARK.muted },
+          ]}
           numberOfLines={1}
         >
           {product.brand}
@@ -231,7 +255,7 @@ export default function LuxuryProductCard({
         {!!product.rating && renderStars(product.rating)}
       </View>
 
-      <View style={styles.actionRow}>
+      <View style={[styles.actionRow, compact && compactStyles.actionRow]}>
         <HapticButton
           style={styles.tryNowButton}
           onPress={(e) => {
@@ -241,14 +265,16 @@ export default function LuxuryProductCard({
         >
           <Ionicons
             name="sparkles"
-            size={14}
+            size={compact ? 12 : 14}
             color={onDark ? ON_DARK.text : primaryColor}
           />
           <Text
             style={[
               styles.tryNowText,
+              compact && compactStyles.tryNowText,
               { color: onDark ? ON_DARK.text : primaryColor },
             ]}
+            numberOfLines={1}
           >
             Try Now
           </Text>
@@ -257,6 +283,7 @@ export default function LuxuryProductCard({
         <HapticButton
           style={[
             styles.addToBagButton,
+            compact && compactStyles.addToBagButton,
             { backgroundColor: primaryColor },
             isAddingToCart && styles.addToBagButtonDisabled,
           ]}
@@ -268,7 +295,15 @@ export default function LuxuryProductCard({
           ) : showSuccess ? (
             <Ionicons name="checkmark" size={16} color="#FFFFFF" />
           ) : (
-            <Text style={styles.addToBagText}>Add To Bag</Text>
+            <Text
+              style={[
+                styles.addToBagText,
+                compact && compactStyles.addToBagText,
+              ]}
+              numberOfLines={1}
+            >
+              Add To Bag
+            </Text>
           )}
         </HapticButton>
       </View>
@@ -375,25 +410,35 @@ const styles = StyleSheet.create({
   stars: {
     flexDirection: "row",
   },
+  // Both actions sit on one line where there is room and stack where there is
+  // not — half a phone's width leaves the two of them nothing to share.
   actionRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    flexWrap: "wrap",
     gap: 6,
+    rowGap: 8,
     marginTop: 14,
   },
   tryNowButton: {
     flexDirection: "row",
     alignItems: "center",
+    flexShrink: 1,
     gap: 5,
     paddingVertical: 8,
   },
   tryNowText: {
+    flexShrink: 1,
     fontSize: 13,
     fontWeight: "600",
     color: COLORS.primary,
   },
   addToBagButton: {
+    // Grows into the line it wraps onto rather than sitting stranded at one
+    // button's width.
+    flexGrow: 1,
+    flexShrink: 0,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 12,
@@ -408,5 +453,47 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 13,
     fontWeight: "600",
+  },
+});
+
+/**
+ * The same card with everything below the tile brought in a size. Only the
+ * details change: the artwork keeps its square, so a compact card still reads
+ * as the same object as the listing's.
+ */
+const compactStyles = StyleSheet.create({
+  priceRow: {
+    gap: 6,
+    marginTop: 10,
+  },
+  price: {
+    fontSize: 16,
+  },
+  originalPrice: {
+    fontSize: 12,
+  },
+  productName: {
+    marginTop: 4,
+    fontSize: 13,
+  },
+  metaRow: {
+    marginTop: 5,
+  },
+  brandName: {
+    fontSize: 11,
+  },
+  actionRow: {
+    marginTop: 10,
+  },
+  tryNowText: {
+    fontSize: 11,
+  },
+  addToBagButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 13,
+  },
+  addToBagText: {
+    fontSize: 11,
   },
 });

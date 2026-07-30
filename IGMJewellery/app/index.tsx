@@ -66,7 +66,7 @@ export default function JewelryLanding() {
 
   // Signs the shopper straight in on a number nobody has used before, so there
   // is no phone-entry screen and no OTP to clear on the way to /home.
-  const handleGetStarted = async () => {
+  const handleExploreAsGuest = async () => {
     await login({
       token: "dummy-token",
       userId: generateUniquePhoneNumber(),
@@ -145,14 +145,14 @@ export default function JewelryLanding() {
         <View style={styles.authContainer}>
           <HapticButton
             style={styles.fullButton}
-            onPress={handleGetStarted}
+            onPress={() => router.navigate("/login")}
           >
             <Text style={styles.buttonText}>Get Started</Text>
           </HapticButton>
 
           <HapticButton
             style={[styles.fullButton, styles.secondaryButton]}
-            onPress={() => router.navigate("/home")}
+            onPress={handleExploreAsGuest}
           >
             <Text style={[styles.buttonText, { color: COLORS.primary }]}>
               Explore as Guest

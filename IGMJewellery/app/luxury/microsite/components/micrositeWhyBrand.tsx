@@ -1,6 +1,14 @@
 import { ChevronRight } from "lucide-react-native";
-import React from "react";
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
+import React, { useMemo } from "react";
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+  ViewStyle,
+} from "react-native";
+import { chunk } from "./micrositeLayout";
 import MicrositeSectionHeader from "./micrositeSectionHeader";
 import {
   MICROSITE_MUTED,
@@ -81,9 +89,21 @@ export default function MicrositeWhyBrand({
   onSelectFeatured,
   style,
 }: MicrositeWhyBrandProps) {
+  const { width } = useWindowDimensions();
+
+  /**
+   * Three to a row on a phone, four on a tablet, and two on the narrowest
+   * devices, where a third leaves each label a word per line.
+   */
+  const columns =
+    width >= WIDE_BREAKPOINT ? 4 : width >= NARROW_BREAKPOINT ? 3 : 2;
+
+  // The first badge leads on its own row, so the grid holds the rest.
+  const rows = useMemo(() => chunk(badges.slice(1), columns), [badges, columns]);
+
   if (!badges.length) return null;
 
-  const [featured, ...rest] = badges;
+  const featured = badges[0];
 
   return (
     <View style={style}>
@@ -115,33 +135,40 @@ export default function MicrositeWhyBrand({
       </View>
 
       <View style={styles.grid}>
-        {rest.map((badge) => (
-          <View
-            key={badge.header}
-            style={[
-              styles.tile,
-              { backgroundColor: withAlpha(secondaryColor, 0.25) },
-            ]}
-          >
-            <View
-              style={[styles.tileIcon, { backgroundColor: primaryColor }]}
-            >
-              <MicrositeValueIcon
-                tag={badge.iconTag}
-                color="#FFFFFF"
-                size={15}
-              />
-            </View>
+        {rows.map((row, rowIndex) => (
+          <View key={row[0]?.header ?? rowIndex} style={styles.row}>
+            {row.map((badge) => (
+              <View
+                key={badge.header}
+                style={[
+                  styles.tile,
+                  { backgroundColor: withAlpha(secondaryColor, 0.25) },
+                ]}
+              >
+                <View style={[styles.tileIcon, { backgroundColor: primaryColor }]}>
+                  <MicrositeValueIcon
+                    tag={badge.iconTag}
+                    color="#FFFFFF"
+                    size={15}
+                  />
+                </View>
 
-            <Text
-              style={[styles.tileHeader, { color: primaryColor }]}
-              numberOfLines={2}
-            >
-              {badge.header}
-            </Text>
-            <Text style={styles.description} numberOfLines={3}>
-              {badge.description}
-            </Text>
+                <Text
+                  style={[styles.tileHeader, { color: primaryColor }]}
+                  numberOfLines={2}
+                >
+                  {badge.header}
+                </Text>
+                <Text style={styles.description} numberOfLines={3}>
+                  {badge.description}
+                </Text>
+              </View>
+            ))}
+
+            {/* Keeps a short last row the same width as the rows above it. */}
+            {Array.from({ length: columns - row.length }).map((_, index) => (
+              <View key={`filler-${index}`} style={styles.filler} />
+            ))}
           </View>
         ))}
       </View>
@@ -151,6 +178,10 @@ export default function MicrositeWhyBrand({
 
 const SIDE_PADDING = 16;
 const GRID_GAP = 10;
+
+/** Above this the row carries a fourth tile; below the narrow one, only two. */
+const WIDE_BREAKPOINT = 700;
+const NARROW_BREAKPOINT = 360;
 
 const styles = StyleSheet.create({
   featured: {
@@ -177,17 +208,25 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
   grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: GRID_GAP,
     marginTop: GRID_GAP,
     paddingHorizontal: SIDE_PADDING,
   },
-  // Three to a row, with the two gaps between them taken off each third.
+  row: {
+    flexDirection: "row",
+    gap: GRID_GAP,
+    marginBottom: GRID_GAP,
+    // Tiles in a row stand the same height whatever their label runs to.
+    alignItems: "stretch",
+  },
+  // Width comes from the row: an equal share of whatever is left after the
+  // gaps, on any screen.
   tile: {
-    width: `${(100 - 6) / 3}%`,
+    flex: 1,
     padding: 12,
     borderRadius: 14,
+  },
+  filler: {
+    flex: 1,
   },
   tileIcon: {
     width: 30,

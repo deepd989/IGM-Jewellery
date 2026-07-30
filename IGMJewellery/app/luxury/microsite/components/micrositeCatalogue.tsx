@@ -2,15 +2,16 @@ import { HapticButton } from "@/components/basic components/hapticButton";
 import { Product } from "@/interfaces/product.interface";
 import React, { useMemo, useState } from "react";
 import {
-  LayoutChangeEvent,
   ScrollView,
   StyleProp,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
   ViewStyle,
 } from "react-native";
 import LuxuryProductCard from "../../components/luxuryProductCard";
+import { chunk } from "./micrositeLayout";
 import MicrositeSectionHeader from "./micrositeSectionHeader";
 import {
   MICROSITE_CARD_BORDER,
@@ -20,6 +21,9 @@ import {
 
 const SIDE_PADDING = 16;
 const GRID_GAP = 12;
+
+/** Above this, the row carries a third card rather than two wide ones. */
+const WIDE_BREAKPOINT = 700;
 
 /** Kept short: the grid is a taste of the catalogue, not the catalogue. */
 const MAX_PRODUCTS = 6;
@@ -47,19 +51,14 @@ export default function MicrositeCatalogue({
   style,
 }: MicrositeCatalogueProps) {
   const [activeType, setActiveType] = useState(ALL);
+  const { width: windowWidth } = useWindowDimensions();
+
   /**
-   * Measured rather than taken from the window: the section sits inside the
-   * page's own gutter, so a width worked out from the screen makes cards too
-   * wide for the row they land in and the grid breaks apart.
+   * Cards take their width from the row they sit in rather than a figure
+   * worked out from the screen, so the grid holds whatever gutter the page
+   * puts around it and re-lays itself when the device turns.
    */
-  const [rowWidth, setRowWidth] = useState(0);
-
-  const handleGridLayout = (event: LayoutChangeEvent) => {
-    const measured = event.nativeEvent.layout.width;
-    if (measured > 0 && measured !== rowWidth) setRowWidth(measured);
-  };
-
-  const cardWidth = rowWidth ? (rowWidth - GRID_GAP) / 2 : undefined;
+  const columns = windowWidth >= WIDE_BREAKPOINT ? 3 : 2;
 
   const types = useMemo(() => {
     const present = new Set<string>();
@@ -77,6 +76,8 @@ export default function MicrositeCatalogue({
 
     return matching.slice(0, MAX_PRODUCTS);
   }, [products, activeType]);
+
+  const rows = useMemo(() => chunk(shown, columns), [shown, columns]);
 
   if (!products.length) return null;
 
@@ -121,20 +122,26 @@ export default function MicrositeCatalogue({
       )}
 
       <View style={styles.gridWrapper}>
-        <View style={styles.grid} onLayout={handleGridLayout}>
-          {/* Cards are held back until the row has been measured, so none is
-              ever laid out at the wrong width and then jumps. */}
-          {!!cardWidth &&
-            shown.map((product) => (
-              <LuxuryProductCard
-                key={product.id}
-                product={product}
-                width={cardWidth}
-                primaryColor={primaryColor}
-                secondaryColor={secondaryColor}
-              />
+        {rows.map((row, rowIndex) => (
+          <View key={row[0]?.id ?? rowIndex} style={styles.row}>
+            {row.map((product) => (
+              <View key={product.id} style={styles.cell}>
+                <LuxuryProductCard
+                  product={product}
+                  compact
+                  primaryColor={primaryColor}
+                  secondaryColor={secondaryColor}
+                />
+              </View>
             ))}
-        </View>
+
+            {/* Holds the last row's cards to the same width as the rows above
+                when the products do not divide evenly. */}
+            {Array.from({ length: columns - row.length }).map((_, index) => (
+              <View key={`filler-${index}`} style={styles.cell} />
+            ))}
+          </View>
+        ))}
       </View>
     </View>
   );
@@ -168,13 +175,15 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingHorizontal: SIDE_PADDING,
   },
-  // Padding lives on the wrapper so onLayout measures the row itself.
-  grid: {
+  row: {
     flexDirection: "row",
-    flexWrap: "wrap",
     gap: GRID_GAP,
-    // Rows of two, aligned at the top so a two-line name in one card does not
-    // push the card beside it down.
+    marginBottom: GRID_GAP,
+    // Cards start at the top of the row, so a two-line name in one does not
+    // drag the card beside it down.
     alignItems: "flex-start",
+  },
+  cell: {
+    flex: 1,
   },
 });

@@ -287,7 +287,7 @@ function ClassicProfileScreen() {
           </HapticButton>
         )}
         <PaymentMethods />
-        <Text style={styles.version}>APP VERSION 1.2.0</Text>
+        <Text style={styles.version}>APP VERSION 2.0.0</Text>
       </ScrollView>
       <BottomNavBar activeTab="Profile" />
     </SafeAreaView>
