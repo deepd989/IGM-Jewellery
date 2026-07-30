@@ -1,16 +1,50 @@
 import BrandProfile from "@/components/brands/brandSite";
 import { CartBadge } from "@/components/cart/CardBadge";
-import { COLORS, SPACING } from "@/constants/theme";
+import { COLORS, LUXURY_COLORS, SPACING } from "@/constants/theme";
 import { useGetBrandByNameQuery } from "@/store/apis/brandsApi";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import BottomNavBar from "../../components/bottomNavBar";
+import { useLuxury } from "../../context/luxuryContext";
 import { useGetWishlistQuery } from "../../store/apis/wishlist";
+import MicrositeScreen from "../luxury/microsite";
 
+/**
+ * Both storefronts share this route, so every existing link to a brand — the
+ * grids, the carousels, a product's brand story — lands on the presentation
+ * the shopper is currently browsing in. In luxury that is the brand's own
+ * microsite.
+ */
 export default function BrandDetailPage() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? <LuxuryBrandDetailPage /> : <ClassicBrandDetailPage />;
+}
+
+/**
+ * Brand links carry the brand's name key, while the microsite is keyed by its
+ * id, so the name is resolved here rather than at each of the links.
+ */
+function LuxuryBrandDetailPage() {
+  const { brandName } = useLocalSearchParams<{ brandName: string }>();
+  const { data: brand, isLoading } = useGetBrandByNameQuery(brandName);
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.luxuryLoading}>
+        <ActivityIndicator size="large" color={LUXURY_COLORS.accent} />
+      </SafeAreaView>
+    );
+  }
+
+  // No brand for that name: the microsite says so itself.
+  return <MicrositeScreen brandId={brand?.id} />;
+}
+
+function ClassicBrandDetailPage() {
   const router = useRouter();
   const { brandName } = useLocalSearchParams<{ brandName: string }>();
   console.log("BrandDetailPage rendered", brandName);
@@ -69,6 +103,12 @@ export default function BrandDetailPage() {
 }
 
 const styles = StyleSheet.create({
+  luxuryLoading: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: LUXURY_COLORS.primary,
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",

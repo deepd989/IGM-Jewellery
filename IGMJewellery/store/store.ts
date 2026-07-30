@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { brandMicrositeApi } from "./apis/brandMicrositeApi";
 import { brandsApiService } from "./apis/brandsApi";
 import { cartApiService } from "./apis/cart";
 import { categoryApiService } from "./apis/categories";
@@ -28,6 +29,7 @@ export const store = configureStore({
     [textSearchApi.reducerPath]: textSearchApi.reducer,
     [collectionsApi.reducerPath]: collectionsApi.reducer,
     [multiBrandCollectionsApi.reducerPath]: multiBrandCollectionsApi.reducer,
+    [brandMicrositeApi.reducerPath]: brandMicrositeApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -42,7 +44,8 @@ export const store = configureStore({
       magentoApiService.middleware,
       textSearchApi.middleware,
       collectionsApi.middleware,
-      multiBrandCollectionsApi.middleware
+      multiBrandCollectionsApi.middleware,
+      brandMicrositeApi.middleware
     ),
 });
 

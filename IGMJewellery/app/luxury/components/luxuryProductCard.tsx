@@ -49,6 +49,12 @@ type LuxuryProductCardProps = {
   isInWishlist?: boolean;
   /** Set when the card sits on the storefront's dark ground. */
   onDark?: boolean;
+  /**
+   * The palette the card's actions are painted in. Defaults to the
+   * storefront's own; a brand's microsite passes its colours instead.
+   */
+  primaryColor?: string;
+  secondaryColor?: string;
   style?: ViewStyle;
 };
 
@@ -64,6 +70,8 @@ export default function LuxuryProductCard({
   onRemoveFromWishlist,
   isInWishlist: propIsInWishlist,
   onDark = false,
+  primaryColor = COLORS.primary,
+  secondaryColor = COLORS.secondary,
   style,
 }: LuxuryProductCardProps) {
   const router = useRouter();
@@ -147,7 +155,7 @@ export default function LuxuryProductCard({
             star <= rating
               ? onDark
                 ? ON_DARK.starFilled
-                : "#5B6B72"
+                : primaryColor
               : onDark
                 ? ON_DARK.starEmpty
                 : "#D3DCE0"
@@ -171,7 +179,7 @@ export default function LuxuryProductCard({
         />
 
         {product.isNew && (
-          <View style={styles.newBadge}>
+          <View style={[styles.newBadge, { backgroundColor: secondaryColor }]}>
             <Text style={styles.newBadgeText}>New</Text>
           </View>
         )}
@@ -182,12 +190,12 @@ export default function LuxuryProductCard({
           disabled={isWishlistBusy}
         >
           {isWishlistBusy ? (
-            <ActivityIndicator size="small" color={COLORS.primary} />
+            <ActivityIndicator size="small" color={primaryColor} />
           ) : (
             <Ionicons
               name={isInWishlist ? "heart" : "heart-outline"}
               size={26}
-              color={COLORS.primary}
+              color={primaryColor}
             />
           )}
         </HapticButton>
@@ -234,10 +242,13 @@ export default function LuxuryProductCard({
           <Ionicons
             name="sparkles"
             size={14}
-            color={onDark ? ON_DARK.text : COLORS.primary}
+            color={onDark ? ON_DARK.text : primaryColor}
           />
           <Text
-            style={[styles.tryNowText, onDark && { color: ON_DARK.text }]}
+            style={[
+              styles.tryNowText,
+              { color: onDark ? ON_DARK.text : primaryColor },
+            ]}
           >
             Try Now
           </Text>
@@ -246,6 +257,7 @@ export default function LuxuryProductCard({
         <HapticButton
           style={[
             styles.addToBagButton,
+            { backgroundColor: primaryColor },
             isAddingToCart && styles.addToBagButtonDisabled,
           ]}
           onPress={handleAddToCart}
