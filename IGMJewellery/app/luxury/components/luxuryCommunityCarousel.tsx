@@ -1,6 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { useIsFocused } from "@react-navigation/native";
-import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { COLORS, LUXURY_INK, LUXURY_SPACING } from "@/constants/theme";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
 import {
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: LUXURY_COLORS.text,
+    color: LUXURY_INK.text,
     textAlign: "center",
     marginBottom: LUXURY_SPACING ,
   },

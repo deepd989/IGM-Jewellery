@@ -1,5 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
-import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { COLORS, LUXURY_INK, LUXURY_SPACING } from "@/constants/theme";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
@@ -130,7 +130,7 @@ export default function LuxuryBestSellers({
             activeOpacity={0.85}
             onPress={() => handlePressTryOn(item)}
           >
-            <BlurView intensity={35} tint="dark" style={styles.tryOn}>
+            <BlurView intensity={75} tint="dark" style={styles.tryOn}>
               <Ionicons name="sparkles" size={16} color="#FFFFFF" />
               <Text style={styles.tryOnText}>Try Now</Text>
             </BlurView>
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: LUXURY_COLORS.text,
+    color: LUXURY_INK.text,
     textAlign: "center",
     marginBottom: LUXURY_SPACING,
   },
@@ -253,8 +253,9 @@ const styles = StyleSheet.create({
     bottom: 12,
     borderRadius: 14,
     overflow: "hidden",
+    // The lit edge that separates the glass from what it sits on.
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.5)",
+    borderColor: "rgba(255,255,255,0.6)",
   },
   tryOn: {
     flexDirection: "row",
@@ -262,8 +263,10 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: 18,
     paddingVertical: 12,
-    // Opaque enough to keep the white label readable over pale product shots.
-    backgroundColor: "rgba(10, 24, 30, 0.55)",
+    // Lighter than it was: the heavier blur now does most of the work of
+    // holding the artwork back, and a thinner tint lets the glass read as
+    // glass. Still dark enough to carry the white label over a pale shot.
+    backgroundColor: "rgba(10, 24, 30, 0.42)",
   },
   tryOnText: {
     color: "#FFFFFF",
@@ -279,23 +282,23 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 22,
     fontWeight: "700",
-    color: LUXURY_COLORS.text,
+    color: LUXURY_INK.text,
   },
   originalPrice: {
     fontSize: 18,
-    color: LUXURY_COLORS.textMuted,
+    color: LUXURY_INK.textMuted,
     textDecorationLine: "line-through",
   },
   productName: {
     marginTop: 8,
     fontSize: 17,
     fontWeight: "600",
-    color: LUXURY_COLORS.text,
+    color: LUXURY_INK.text,
   },
   brandName: {
     marginTop: 6,
     fontSize: 15,
-    color: LUXURY_COLORS.textMuted,
+    color: LUXURY_INK.textMuted,
   },
   pagination: {
     flexDirection: "row",

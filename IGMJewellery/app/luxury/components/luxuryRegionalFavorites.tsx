@@ -1,5 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
-import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { COLORS, LUXURY_INK, LUXURY_SPACING } from "@/constants/theme";
 import { Region, REGION_LIST, getRegionRoute } from "@/store/data/regionsData";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -21,8 +21,25 @@ import {
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-const GAP = 8;
-const TILE_RADIUS = 24;
+const GAP = 10;
+const TILE_RADIUS = 30;
+/**
+ * How far below the middle the portrait's two halves meet. The right column
+ * seams at H / 2, so the notch deliberately sits lower than the channel
+ * between those tiles rather than running level with it.
+ */
+const PORTRAIT_SEAM_OFFSET = 20;
+/**
+ * The bite out of the portrait's right edge where its halves meet. The halves
+ * touch, so the two arcs meet at a point and the scoop opens across
+ * 2 * NOTCH_RADIUS.
+ */
+const NOTCH_RADIUS = TILE_RADIUS + GAP+5
+/**
+ * The portrait's foot. Kept well under TILE_RADIUS so the picture is let run
+ * almost to the corner, with just enough turn to take the hard edge off it.
+ */
+const PORTRAIT_FOOT_RADIUS = 12;
 /** Slide width ÷ height. 1 keeps each region's collage square. */
 const SLIDE_ASPECT_RATIO = 1;
 /** The section never shows more than this many regions. */
@@ -61,6 +78,8 @@ export default function LuxuryRegionalFavorites({
   const slideWidth = containerWidth;
   const slideHeight = Math.round(slideWidth / SLIDE_ASPECT_RATIO);
   const snapInterval = slideWidth + GAP;
+  // Where the portrait's halves meet, and so where its notch sits.
+  const portraitTopHeight = Math.round(slideHeight / 2) + PORTRAIT_SEAM_OFFSET;
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const index = Math.round(event.nativeEvent.contentOffset.x / snapInterval);
@@ -79,26 +98,52 @@ export default function LuxuryRegionalFavorites({
 
   const renderSlide = ({ item }: { item: Region }) => (
     <View style={[styles.slide, { width: slideWidth, height: slideHeight }]}>
-      {/* Left: the region's editorial portrait */}
-      <HapticButton
-        style={styles.portraitTile}
-        activeOpacity={0.9}
-        onPress={() => handlePressRegion(item)}
-      >
-        <Image
-          source={{ uri: item.portraitImageUrl ?? item.sellerBannerImgUrl }}
-          style={styles.image}
-          resizeMode="cover"
-        />
+      {/* Left: the region's editorial portrait.
 
-        <View style={styles.craftPillWrapper}>
-          <BlurView intensity={35} tint="light" style={styles.craftPill}>
-            <Text style={styles.craftPillText} numberOfLines={1}>
-              {item.craftName}
-            </Text>
-          </BlurView>
-        </View>
-      </HapticButton>
+          Drawn as two halves that meet with no gap, so the picture reads as
+          one, while each rounds the corner it turns toward the notch. The bite
+          is left empty rather than painted, so whatever ground the section is
+          placed on shows through it. */}
+      <View style={styles.portraitColumn}>
+        <HapticButton
+          style={[styles.portraitTop, { height: portraitTopHeight }]}
+          activeOpacity={0.9}
+          onPress={() => handlePressRegion(item)}
+        >
+          <Image
+            source={{ uri: item.portraitImageUrl ?? item.sellerBannerImgUrl }}
+            // Sized to the whole portrait and pinned to its top, so the two
+            // halves crop one continuous picture rather than two.
+            style={[styles.portraitImage, { height: slideHeight, top: 0 }]}
+            resizeMode="cover"
+          />
+        </HapticButton>
+
+        <HapticButton
+          style={styles.portraitBottom}
+          activeOpacity={0.9}
+          onPress={() => handlePressRegion(item)}
+        >
+          <Image
+            source={{ uri: item.portraitImageUrl ?? item.sellerBannerImgUrl }}
+            // Pulled up by exactly what the top half showed, so the picture
+            // carries on across the seam.
+            style={[
+              styles.portraitImage,
+              { height: slideHeight, top: -portraitTopHeight },
+            ]}
+            resizeMode="cover"
+          />
+
+          <View style={styles.craftPillWrapper}>
+            <BlurView intensity={35} tint="light" style={styles.craftPill}>
+              <Text style={styles.craftPillText} numberOfLines={1}>
+                {item.craftName}
+              </Text>
+            </BlurView>
+          </View>
+        </HapticButton>
+      </View>
 
       <View style={styles.rightColumn}>
         {/* Top right: the story behind the craft */}
@@ -189,7 +234,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: LUXURY_COLORS.text,
+    color: LUXURY_INK.text,
     textAlign: "center",
     marginBottom: LUXURY_SPACING,
   },
@@ -200,11 +245,30 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: GAP,
   },
-  portraitTile: {
+  portraitColumn: {
     flex: 1,
-    borderRadius: TILE_RADIUS,
+  },
+  // The halves touch, so the portrait reads as one picture. The top is given
+  // its height outright; the bottom takes whatever is left.
+  portraitTop: {
     overflow: "hidden",
     backgroundColor: "#E2EAEE",
+    borderTopLeftRadius: TILE_RADIUS,
+    borderTopRightRadius: TILE_RADIUS,
+    borderBottomRightRadius: NOTCH_RADIUS,
+  },
+  portraitBottom: {
+    flex: 1,
+    overflow: "hidden",
+    backgroundColor: "#E2EAEE",
+    borderBottomLeftRadius: PORTRAIT_FOOT_RADIUS,
+    borderBottomRightRadius: PORTRAIT_FOOT_RADIUS,
+    borderTopRightRadius: NOTCH_RADIUS,
+  },
+  portraitImage: {
+    position: "absolute",
+    left: 0,
+    right: 0,
   },
   rightColumn: {
     flex: 1,

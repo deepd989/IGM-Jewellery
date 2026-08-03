@@ -82,7 +82,18 @@ export function useProductListing(propFilters?: ListingFilters) {
   const priceRange = params.priceRange as string | undefined;
   const bannerImageUrl = params.bannerImageUrl as string | undefined;
 
-  const [selectedSort, setSelectedSort] = useState("Customer Rating");
+  /**
+   * A link may open the listing in a particular order — the offers section
+   * asks for the biggest discounts first. Anything not on the sheet's own list
+   * is ignored rather than sent to the API as a value it cannot honour.
+   */
+  const sortParam = params.sort as string | undefined;
+  const initialSort =
+    sortParam && SORT_OPTIONS.includes(sortParam)
+      ? sortParam
+      : "Customer Rating";
+
+  const [selectedSort, setSelectedSort] = useState(initialSort);
   const [selectedChip, setSelectedChip] = useState("All");
   const [activeFilters, setActiveFilters] = useState<ListingFilters>({});
 

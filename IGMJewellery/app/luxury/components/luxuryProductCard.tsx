@@ -60,6 +60,11 @@ type LuxuryProductCardProps = {
    */
   primaryColor?: string;
   secondaryColor?: string;
+  /**
+   * Ink for the price the shopper pays. The struck price and the brand stay
+   * muted grey whatever this is set to, so the two never compete.
+   */
+  priceColor?: string;
   style?: ViewStyle;
 };
 
@@ -78,6 +83,7 @@ export default function LuxuryProductCard({
   compact = false,
   primaryColor = COLORS.primary,
   secondaryColor = COLORS.secondary,
+  priceColor = COLORS.text,
   style,
 }: LuxuryProductCardProps) {
   const router = useRouter();
@@ -212,6 +218,8 @@ export default function LuxuryProductCard({
           style={[
             styles.price,
             compact && compactStyles.price,
+            { color: priceColor },
+            // The dark ground overrides any ink a caller asked for.
             onDark && { color: ON_DARK.text },
           ]}
         >

@@ -79,6 +79,29 @@ export const LUXURY_COLORS = {
   border: "rgba(255,255,255,0.18)",
 };
 
+/**
+ * The grounds the storefront alternates between as the page is scrolled. Held
+ * apart from LUXURY_COLORS because a section is assigned one of these by the
+ * design, rather than deriving it from the page's own palette.
+ */
+export const LUXURY_SECTION_BACKGROUNDS = {
+  green: "#0C4552",
+  darkGreen: "#002F33",
+  /** The off-white the page opens up to between the darker bands. */
+  offWhite: "#f0f6f8",
+  /** Sits under the full-bleed artwork sections, and shows while it loads. */
+  imagePlaceholder: "#0A1518",
+};
+
+/**
+ * Type and icons for the off-white sections. LUXURY_COLORS.text is white, so
+ * anything grounded on offWhite has to reach for these instead.
+ */
+export const LUXURY_INK = {
+  text: "#002F33",
+  textMuted: "rgba(0,47,51,0.66)",
+};
+
 export const SPACING = {
   xs: 4,
   s: 8,

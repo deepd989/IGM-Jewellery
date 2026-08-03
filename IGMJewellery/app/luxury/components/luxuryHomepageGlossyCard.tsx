@@ -20,8 +20,8 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 // The card sizes itself to the box this component is given, so it always fits
 // the screen without scrolling. This floor only applies when the parent gives
 // no definite height of its own.
-const MIN_CARD_HEIGHT = Math.round(SCREEN_HEIGHT * 0.35);
-const MAX_CARD_HEIGHT = Math.round(SCREEN_HEIGHT * 0.50);
+const MIN_CARD_HEIGHT = Math.round(SCREEN_HEIGHT * 0.35) + 30;
+const MAX_CARD_HEIGHT = Math.round(SCREEN_HEIGHT * 0.50) + 30;
 
 
 // Sample Carousel Data

@@ -44,7 +44,12 @@ import BrandCollectionCards from "../../components/shopByCollectionsNew";
 import ShopByRegionCards from "../../components/shopByRegion";
 import { TrendingProducts } from "../../components/TrendingProducts";
 import TrustBar from "../../components/trustBarBanner";
-import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "../../constants/theme";
+import {
+  COLORS,
+  LUXURY_COLORS,
+  LUXURY_SECTION_BACKGROUNDS,
+  LUXURY_SPACING,
+} from "../../constants/theme";
 import { useLuxury } from "../../context/luxuryContext";
 import { useWalletBalance } from "../customHooks/walletBalanceLoader";
 import SearchBarLuxury from "./components/searchBarLuxury";
@@ -69,11 +74,12 @@ import LuxurySwipeAndShop from "./components/luxurySwipeAndShop";
 import LuxuryTopPicks from "./components/luxuryTopPicks";
 import LuxuryTopSearch from "./components/luxuryTopSearch";
 import LuxuryTryOn from "./components/luxuryTryOn";
+import LuxuryLatestOffers from "./components/luxuryLatestOffers";
 import OutfitTypesCarousel from "./components/outfitTypesCarousel";
 
 /** Hero carousel height: tall enough to lead the page, short enough that the
  *  collection row below it is visible without scrolling. */
-const HERO_HEIGHT = 360;
+const HERO_HEIGHT = 390;
 
 /** Gutter the page keeps around its sections. */
 const PAGE_PADDING = 8;
@@ -81,7 +87,14 @@ const PAGE_PADDING = 8;
 /** How far the page scrolls before the top bar turns into the search field. */
 const SEARCH_COLLAPSE_OFFSET = 40;
 
-type StorefrontSection = { key: string; render: () => React.ReactNode };
+type StorefrontSection = {
+  key: string;
+  /** The ground this section paints, edge to edge, behind its content. */
+  background: string;
+  render: () => React.ReactNode;
+};
+
+const BG = LUXURY_SECTION_BACKGROUNDS;
 
 /**
  * The storefront in order. Kept as data rather than one long block of JSX so
@@ -90,44 +103,132 @@ type StorefrontSection = { key: string; render: () => React.ReactNode };
  * page crawl and run the device out of memory.
  */
 const SECTIONS: StorefrontSection[] = [
-  { key: "hero", render: () => <GlossyHorizontalCard height={HERO_HEIGHT} /> },
-  { key: "collectionCarousel", render: () => <LuxuryHorizontalCollectionCarousel /> },
-  { key: "brandsCollection", render: () => <LuxuryBrandsCollection /> },
+  // 1. Hero
+  {
+    key: "hero",
+    background: BG.green,
+    render: () => <GlossyHorizontalCard height={HERO_HEIGHT} />,
+  },
+  // 2. House of Elanzia Luxe
+  {
+    key: "collectionCarousel",
+    background: BG.offWhite,
+    render: () => <LuxuryHorizontalCollectionCarousel />,
+  },
+  // Not in the design's running order; grounded with the section above it.
+  {
+    key: "brandsCollection",
+    background: BG.offWhite,
+    render: () => <LuxuryBrandsCollection />,
+  },
+  // 3. Brands on Elanzia
   {
     key: "brandsGrid",
+    background: BG.green,
     render: () => <LuxuryBrandsGrid style={styles.fullBleedSection} />,
   },
-  { key: "categories", render: () => <LuxuryCategories /> },
-  { key: "tryOn", render: () => <LuxuryTryOn style={styles.fullBleedSection} /> },
+  // 4. Shop by Categories
+  {
+    key: "categories",
+    background: BG.offWhite,
+    render: () => <LuxuryCategories />,
+  },
+  // Not in the design's running order; artwork-led, so it takes the placeholder.
+  {
+    key: "tryOn",
+    background: BG.imagePlaceholder,
+    render: () => <LuxuryTryOn style={styles.fullBleedSection} />,
+  },
+  // 5. Latest Offers and Discounts
+  {
+    key: "latestOffers",
+    background: BG.offWhite,
+    render: () => <LuxuryLatestOffers style={styles.fullBleedSection} />,
+  },
+  // 6. Latest Collections
   {
     key: "multibrand",
+    background: BG.imagePlaceholder,
     render: () => <LuxuryMultibrandCollection style={styles.fullBleedSection} />,
   },
-  { key: "bestSellers", render: () => <LuxuryBestSellers /> },
+  // 7. Our Best Sellers
+  {
+    key: "bestSellers",
+    background: BG.offWhite,
+    render: () => <LuxuryBestSellers />,
+  },
+  // 8. Try Swipe and Shop
   {
     key: "swipeAndShop",
+    background: BG.imagePlaceholder,
     render: () => <LuxurySwipeAndShop style={styles.fullBleedSection} />,
   },
-  { key: "gender", render: () => <LuxuryGenderVsProducts /> },
-  { key: "outfits", render: () => <OutfitTypesCarousel /> },
-  { key: "topPicks", render: () => <LuxuryTopPicks /> },
+  // 9. Find Something for All
+  {
+    key: "gender",
+    background: BG.offWhite,
+    render: () => <LuxuryGenderVsProducts />,
+  },
+  // 10. Shop for Every You
+  {
+    key: "outfits",
+    background: BG.offWhite,
+    render: () => <OutfitTypesCarousel />,
+  },
+  // 11. Top Picks for You
+  {
+    key: "topPicks",
+    background: BG.offWhite,
+    render: () => <LuxuryTopPicks />,
+  },
+  // 12. Not Sure What to Gift
   {
     key: "elanziaSearch",
+    background: BG.darkGreen,
     render: () => <LuxuryElanziaSearch style={styles.fullBleedSection} />,
   },
-  { key: "regional", render: () => <LuxuryRegionalFavorites /> },
-  { key: "newProducts", render: () => <LuxuryNewProducts /> },
-  { key: "collections", render: () => <LuxuryCollections /> },
-  { key: "sellingFast", render: () => <LuxurySellingFast /> },
-  { key: "community", render: () => <LuxuryCommunityCarousel /> },
+  // 13. Regional Favourites
+  {
+    key: "regional",
+    background: BG.offWhite,
+    render: () => <LuxuryRegionalFavorites />,
+  },
+  // 14. New In for You
+  {
+    key: "newProducts",
+    background: BG.offWhite,
+    render: () => <LuxuryNewProducts />,
+  },
+  // 15. Collections You May Like
+  {
+    key: "collections",
+    background: BG.offWhite,
+    render: () => <LuxuryCollections />,
+  },
+  // 16. Selling Fast
+  {
+    key: "sellingFast",
+    background: BG.offWhite,
+    render: () => <LuxurySellingFast />,
+  },
+  // 17. As Seen on You
+  {
+    key: "community",
+    background: BG.offWhite,
+    render: () => <LuxuryCommunityCarousel />,
+  },
+  // 18. Footer
   {
     key: "allRights",
+    background: BG.imagePlaceholder,
     render: () => <LuxuryElanziaAllRights style={styles.fullBleedSection} />,
   },
 ];
 
 const renderSection = ({ item }: { item: StorefrontSection }) => (
-  <>{item.render()}</>
+  <View style={[styles.sectionBand, { backgroundColor: item.background }]}>
+    {item.render()}
+  </View>
 );
 
 export default function HomeScreen() {
@@ -223,7 +324,7 @@ export default function HomeScreen() {
       // The top bar paints under the status bar and the nav bar applies the
       // bottom inset itself, so neither edge is padded here.
       edges={["left", "right"]}
-      style={{ flex: 1, backgroundColor: LUXURY_COLORS.primary }}
+      style={{ flex: 1, backgroundColor: LUXURY_SECTION_BACKGROUNDS.green }}
     >
       <LuxuryTopSearch
         pincode={pincode}
@@ -242,7 +343,6 @@ export default function HomeScreen() {
         data={SECTIONS}
         keyExtractor={(section) => section.key}
         renderItem={renderSection}
-        ItemSeparatorComponent={LuxurySeparator}
         ListHeaderComponent={
           <>
             <View style={styles.searchBox}>
@@ -270,7 +370,8 @@ export default function HomeScreen() {
                 </HapticButton>
               </View>
             </View>
-            <LuxurySeparator />
+            {/* Halved: the first band brings the other half of the gap. */}
+            <LuxurySeparator size={0.5} />
           </>
         }
         // The storefront is long and every section pulls its own artwork, so
@@ -289,12 +390,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: PAGE_PADDING,
-    backgroundColor: LUXURY_COLORS.primary,
+    backgroundColor: LUXURY_SECTION_BACKGROUNDS.green,
   },
   // Cancels the page gutter so a section's artwork runs to the screen edges.
   fullBleedSection: {
     marginHorizontal: -PAGE_PADDING,
     borderRadius: 0,
+  },
+  /**
+   * A section's own ground. The page gutter is given back and then re-applied
+   * inside, so the colour runs to the screen edges while the content it holds
+   * stays inset — and a fullBleedSection child cancels that padding again to
+   * put its artwork back on the edges.
+   *
+   * The vertical rhythm lives here rather than in a separator between rows, so
+   * that two neighbouring bands meet with no strip of page showing through.
+   */
+  sectionBand: {
+    marginHorizontal: -PAGE_PADDING,
+    paddingHorizontal: PAGE_PADDING,
+    paddingVertical: LUXURY_SPACING / 2,
   },
   // Clears the floating nav bar so the last section is never hidden behind it.
   contentContainer: { paddingBottom: LUXURY_NAV_BAR_HEIGHT + LUXURY_SPACING },

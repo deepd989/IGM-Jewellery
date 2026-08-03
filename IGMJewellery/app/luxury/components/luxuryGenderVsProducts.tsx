@@ -1,6 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { assetUrl } from "@/constants/assets";
-import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { COLORS, LUXURY_INK, LUXURY_SPACING } from "@/constants/theme";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -16,9 +16,12 @@ import {
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-const GAP = 8;
+const GAP = 10;
 const GRID_RADIUS = 28;
+/** Curve on the corner each tile turns toward the middle of the grid. */
+const CENTER_RADIUS = 28;
 const SIDE_PADDING = 16;
+const COLUMNS = 2;
 
 export type LuxuryGenderTile = {
   id: string;
@@ -91,6 +94,24 @@ export default function LuxuryGenderVsProducts({
   // proportions on any screen.
   const tileWidth = Math.floor((gridWidth - GAP) / 2);
 
+  const rowCount = Math.ceil(tiles.length / COLUMNS);
+
+  /**
+   * The corner a tile turns toward the middle of the grid — bottom-inner on
+   * the first row, top-inner on the last — so the four of them meet as a
+   * rounded cross. Rows in between have no corner facing the middle.
+   */
+  const centerCorner = (index: number) => {
+    const row = Math.floor(index / COLUMNS);
+    const isLeftColumn = index % COLUMNS === 0;
+
+    const inner = isLeftColumn ? "Right" : "Left";
+    const side =
+      row === 0 ? "Bottom" : row === rowCount - 1 ? "Top" : null;
+
+    return side ? { [`border${side}${inner}Radius`]: CENTER_RADIUS } : null;
+  };
+
   const handlePress = (tile: LuxuryGenderTile) => {
     if (onPressTile) {
       onPressTile(tile);
@@ -106,13 +127,18 @@ export default function LuxuryGenderVsProducts({
     <View style={[styles.container, style]}>
       <Text style={styles.title}>{title}</Text>
 
-      {/* Rounding lives on the grid, so only its outer corners curve and the
-          seams between tiles stay square. */}
+      {/* The grid carries the outer rounding, so the block's four corners
+          curve and the seams along its edges stay square. Each tile adds the
+          one corner that faces the middle. */}
       <View style={styles.grid} onLayout={handleLayout}>
-        {tiles.map((tile) => (
+        {tiles.map((tile, index) => (
           <HapticButton
             key={tile.id}
-            style={[styles.tile, { width: tileWidth, height: tileWidth }]}
+            style={[
+              styles.tile,
+              { width: tileWidth, height: tileWidth },
+              centerCorner(index),
+            ]}
             activeOpacity={0.85}
             onPress={() => handlePress(tile)}
           >
@@ -143,7 +169,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: LUXURY_COLORS.text,
+    color: LUXURY_INK.text,
     textAlign: "center",
     marginBottom: LUXURY_SPACING,
   },

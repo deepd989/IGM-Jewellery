@@ -1,4 +1,4 @@
-import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { COLORS, LUXURY_INK, LUXURY_SPACING } from "@/constants/theme";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { useState } from "react";
@@ -17,6 +17,8 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 /** Two cards per row, so the count is kept even. */
 const MAX_PRODUCTS = 4;
 const COLUMN_GAP = 14;
+/** The price the shopper pays, set in black against the off-white ground. */
+const PRICE_INK = "#000000";
 
 type LuxuryTopPicksProps = {
   title?: string;
@@ -60,8 +62,10 @@ export default function LuxuryTopPicks({
             product={product}
             width={cardWidth}
             onPress={onPressProduct}
-            // The details sit straight on the storefront's dark ground.
-            onDark
+            // The section sits on an off-white ground, so the card keeps its
+            // light-ground ink: the price in black, the struck price and the
+            // brand in the card's muted grey.
+            priceColor={PRICE_INK}
           />
         ))}
       </View>
@@ -76,7 +80,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: LUXURY_COLORS.text,
+    color: LUXURY_INK.text,
     textAlign: "center",
     marginBottom: LUXURY_SPACING,
   },
