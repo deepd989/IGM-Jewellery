@@ -1,6 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { assetUrl } from "@/constants/assets";
-import { COLORS, LUXURY_INK, LUXURY_SPACING } from "@/constants/theme";
+import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: LUXURY_INK.text,
+    color: LUXURY_COLORS.text,
     textAlign: "center",
     marginBottom: LUXURY_SPACING,
   },
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
   },
   tile: {
     overflow: "hidden",
-    backgroundColor: "#E2EAEE",
+    backgroundColor: LUXURY_COLORS.surface,
   },
   tileImage: {
     ...StyleSheet.absoluteFillObject,

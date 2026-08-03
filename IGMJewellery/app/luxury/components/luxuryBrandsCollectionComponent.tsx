@@ -1,5 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
-import { COLORS, LUXURY_COLORS, LUXURY_INK, LUXURY_SPACING } from "@/constants/theme";
+import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { Brand } from "@/store/apis/brandsApi";
 import { useStorefrontBrands } from "@/hooks/useStorefrontBrands";
 import { Ionicons } from "@expo/vector-icons";
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: LUXURY_INK.text,
+    color: LUXURY_COLORS.text,
     textAlign: "center",
     marginBottom: LUXURY_SPACING,
   },
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   tile: {
     borderRadius: TILE_RADIUS,
     overflow: "hidden",
-    backgroundColor: "#E2EAEE",
+    backgroundColor: LUXURY_COLORS.surface,
   },
   tileImage: {
     width: "100%",

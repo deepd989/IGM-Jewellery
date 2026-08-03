@@ -44,12 +44,7 @@ import BrandCollectionCards from "../../components/shopByCollectionsNew";
 import ShopByRegionCards from "../../components/shopByRegion";
 import { TrendingProducts } from "../../components/TrendingProducts";
 import TrustBar from "../../components/trustBarBanner";
-import {
-  COLORS,
-  LUXURY_COLORS,
-  LUXURY_SECTION_BACKGROUNDS,
-  LUXURY_SPACING,
-} from "../../constants/theme";
+import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "../../constants/theme";
 import { useLuxury } from "../../context/luxuryContext";
 import { useWalletBalance } from "../customHooks/walletBalanceLoader";
 import SearchBarLuxury from "./components/searchBarLuxury";
@@ -86,10 +81,16 @@ const PAGE_PADDING = 8;
 /** How far the page scrolls before the top bar turns into the search field. */
 const SEARCH_COLLAPSE_OFFSET = 40;
 
+/**
+ * The one ground the whole storefront sits on. The page used to alternate
+ * bands of green, dark green and off-white; it is a single dark ground now, so
+ * every section's type is set in LUXURY_COLORS' light ink rather than each
+ * section reaching for the ink its own band called for.
+ */
+const PAGE_BACKGROUND = LUXURY_COLORS.primary;
+
 type StorefrontSection = {
   key: string;
-  /** The ground this section paints, edge to edge, behind its content. */
-  background: string;
   /**
    * Ends the page on this section's own artwork: no band padding beneath it,
    * and the list adds none after it either. Set on the last section so the
@@ -98,8 +99,6 @@ type StorefrontSection = {
   flush?: boolean;
   render: () => React.ReactNode;
 };
-
-const BG = LUXURY_SECTION_BACKGROUNDS;
 
 /**
  * The storefront in order. Kept as data rather than one long block of JSX so
@@ -111,128 +110,103 @@ const SECTIONS: StorefrontSection[] = [
   // 1. Hero
   {
     key: "hero",
-    background: BG.green,
     render: () => <GlossyHorizontalCard height={HERO_HEIGHT} />,
   },
   // 2. House of Elanzia Luxe
   {
     key: "collectionCarousel",
-    background: BG.offWhite,
     render: () => <LuxuryHorizontalCollectionCarousel />,
   },
   // Not in the design's running order; grounded with the section above it.
   {
     key: "brandsCollection",
-    background: BG.offWhite,
     render: () => <LuxuryBrandsCollection />,
   },
   // 3. Brands on Elanzia
   {
     key: "brandsGrid",
-    background: BG.green,
     render: () => <LuxuryBrandsGrid style={styles.fullBleedSection} />,
   },
   // 4. Shop by Categories
   {
     key: "categories",
-    background: BG.offWhite,
     render: () => <LuxuryCategories />,
   },
-  // Not in the design's running order; artwork-led, so it takes the placeholder.
+  // Not in the design's running order.
   {
     key: "tryOn",
-    background: BG.imagePlaceholder,
     render: () => <LuxuryTryOn style={styles.fullBleedSection} />,
   },
   // 6. Latest Collections
   {
     key: "multibrand",
-    background: BG.imagePlaceholder,
     render: () => <LuxuryMultibrandCollection style={styles.fullBleedSection} />,
   },
   // 7. Our Best Sellers
   {
     key: "bestSellers",
-    background: BG.offWhite,
     render: () => <LuxuryBestSellers />,
   },
   // 8. Try Swipe and Shop
   {
     key: "swipeAndShop",
-    background: BG.imagePlaceholder,
     render: () => <LuxurySwipeAndShop style={styles.fullBleedSection} />,
   },
   // 9. Find Something for All
   {
     key: "gender",
-    background: BG.offWhite,
     render: () => <LuxuryGenderVsProducts />,
   },
   // 10. Shop for Every You
   {
     key: "outfits",
-    background: BG.offWhite,
     render: () => <OutfitTypesCarousel />,
   },
   // 11. Top Picks for You
   {
     key: "topPicks",
-    background: BG.offWhite,
     render: () => <LuxuryTopPicks />,
   },
   // 12. Not Sure What to Gift
   {
     key: "elanziaSearch",
-    background: BG.darkGreen,
     render: () => <LuxuryElanziaSearch style={styles.fullBleedSection} />,
   },
   // 13. Regional Favourites
   {
     key: "regional",
-    background: BG.offWhite,
     render: () => <LuxuryRegionalFavorites />,
   },
   // 14. New In for You
   {
     key: "newProducts",
-    background: BG.offWhite,
     render: () => <LuxuryNewProducts />,
   },
   // 15. Collections You May Like
   {
     key: "collections",
-    background: BG.offWhite,
     render: () => <LuxuryCollections />,
   },
   // 16. Selling Fast
   {
     key: "sellingFast",
-    background: BG.offWhite,
     render: () => <LuxurySellingFast />,
   },
   // 17. As Seen on You
   {
     key: "community",
-    background: BG.offWhite,
     render: () => <LuxuryCommunityCarousel />,
   },
   // 18. Footer
   {
     key: "allRights",
-    background: BG.imagePlaceholder,
     flush: true,
     render: () => <LuxuryElanziaAllRights style={styles.fullBleedSection} />,
   },
 ];
 
 const renderSection = ({ item }: { item: StorefrontSection }) => (
-  <View
-    style={[
-      styles.sectionBand,
-      { backgroundColor: item.background },
-      item.flush && styles.sectionBandFlush,
-    ]}
-  >
+  <View style={[styles.sectionBand, item.flush && styles.sectionBandFlush]}>
     {item.render()}
   </View>
 );
@@ -330,7 +304,7 @@ export default function HomeScreen() {
       // The top bar paints under the status bar and the nav bar applies the
       // bottom inset itself, so neither edge is padded here.
       edges={["left", "right"]}
-      style={{ flex: 1, backgroundColor: LUXURY_SECTION_BACKGROUNDS.green }}
+      style={{ flex: 1, backgroundColor: PAGE_BACKGROUND }}
     >
       <LuxuryTopSearch
         pincode={pincode}
@@ -398,7 +372,7 @@ const styles = StyleSheet.create({
     paddingTop: PAGE_PADDING,
     // No bottom gutter: it insets the scroller's frame, so it showed as a
     // strip of page under the closing section however far the shopper scrolled.
-    backgroundColor: LUXURY_SECTION_BACKGROUNDS.green,
+    backgroundColor: PAGE_BACKGROUND,
   },
   // Cancels the page gutter so a section's artwork runs to the screen edges.
   fullBleedSection: {
@@ -406,13 +380,13 @@ const styles = StyleSheet.create({
     borderRadius: 0,
   },
   /**
-   * A section's own ground. The page gutter is given back and then re-applied
-   * inside, so the colour runs to the screen edges while the content it holds
-   * stays inset — and a fullBleedSection child cancels that padding again to
-   * put its artwork back on the edges.
+   * A section's slot on the page. The page gutter is given back and then
+   * re-applied inside, so a fullBleedSection child can cancel that padding
+   * again and put its artwork on the screen edges, while everything else
+   * stays inset.
    *
-   * The vertical rhythm lives here rather than in a separator between rows, so
-   * that two neighbouring bands meet with no strip of page showing through.
+   * The band paints no ground of its own — the page's runs through it — so the
+   * vertical rhythm lives here rather than in a separator between rows.
    */
   sectionBand: {
     marginHorizontal: -PAGE_PADDING,

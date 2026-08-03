@@ -1,5 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
-import { COLORS, LUXURY_INK, LUXURY_SPACING } from "@/constants/theme";
+import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: LUXURY_INK.text,
+    color: LUXURY_COLORS.text,
     textAlign: "center",
     marginBottom: LUXURY_SPACING,
   },
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   imageWrapper: {
     borderRadius: 16,
     overflow: "hidden",
-    backgroundColor: "#E2EAEE",
+    backgroundColor: LUXURY_COLORS.surface,
   },
   image: {
     ...StyleSheet.absoluteFillObject,
@@ -277,18 +277,18 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 22,
     fontWeight: "700",
-    color: LUXURY_INK.text,
+    color: LUXURY_COLORS.text,
   },
   productName: {
     marginTop: 8,
     fontSize: 17,
     fontWeight: "600",
-    color: LUXURY_INK.text,
+    color: LUXURY_COLORS.text,
   },
   brandName: {
     marginTop: 6,
     fontSize: 15,
-    color: LUXURY_INK.textMuted,
+    color: LUXURY_COLORS.textMuted,
   },
   pagination: {
     flexDirection: "row",
@@ -303,11 +303,11 @@ const styles = StyleSheet.create({
   },
   activeDot: {
     width: 24,
-    backgroundColor: COLORS.primary,
+    backgroundColor: LUXURY_COLORS.text,
   },
   inactiveDot: {
     width: 8,
-    backgroundColor: "#C3D0D5",
+    backgroundColor: "rgba(255,255,255,0.5)",
   },
   viewAllWrapper: {
     alignSelf: "center",

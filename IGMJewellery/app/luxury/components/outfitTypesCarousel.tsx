@@ -1,6 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { assetUrl } from "@/constants/assets";
-import { COLORS, LUXURY_INK, LUXURY_SPACING } from "@/constants/theme";
+import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: LUXURY_INK.text,
+    color: LUXURY_COLORS.text,
     textAlign: "center",
     marginBottom: LUXURY_SPACING,
   },
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: CARD_RADIUS,
     overflow: "hidden",
-    backgroundColor: "#E2EAEE",
+    backgroundColor: LUXURY_COLORS.surface,
   },
   cardImage: {
     ...StyleSheet.absoluteFillObject,
@@ -264,11 +264,11 @@ const styles = StyleSheet.create({
   },
   activeDot: {
     width: 26,
-    backgroundColor: COLORS.primary,
+    backgroundColor: LUXURY_COLORS.text,
   },
   inactiveDot: {
     width: 8,
-    backgroundColor: "rgba(5, 56, 68, 0.25)",
+    backgroundColor: "rgba(255,255,255,0.5)",
   },
   viewAllWrapper: {
     alignSelf: "center",

@@ -61,7 +61,9 @@ export default function BrandGridTileView() {
     </Pressable>
   );
 
-  if (!brandsData)
+  // Length, not just presence: the first tile reads brandsData[0] directly, and
+  // a storefront can legitimately come back with no brands at all.
+  if (!brandsData?.length)
     return (
       <>
         <ActivityIndicator size="small"></ActivityIndicator>
@@ -74,11 +76,14 @@ export default function BrandGridTileView() {
       <View style={styles.container}>
         {/* ROW 1 */}
         <View style={styles.row}>
+          {/* The only tile drawn from the catalogue; the rest are the bundled
+              black-and-white marks. A brand's logo is a URL, so it needs
+              wrapping where a bundled asset does not. */}
           <Tile
             id="large1"
             w={W * 0.58}
             h={W * 0.38}
-            src={brandsData[0].}
+            src={{ uri: brandsData[0].profileImageUri }}
             brandSlug={brandsData[0].businessNameKey}
           />
 

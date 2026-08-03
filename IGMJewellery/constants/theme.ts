@@ -80,9 +80,12 @@ export const LUXURY_COLORS = {
 };
 
 /**
- * The grounds the storefront alternates between as the page is scrolled. Held
- * apart from LUXURY_COLORS because a section is assigned one of these by the
- * design, rather than deriving it from the page's own palette.
+ * Grounds a screen can assign to a section outright, rather than deriving one
+ * from the page's own palette.
+ *
+ * The home storefront no longer alternates between them — it runs on a single
+ * LUXURY_COLORS.primary ground — so these are only for the screens that still
+ * paint a section their own colour.
  */
 export const LUXURY_SECTION_BACKGROUNDS = {
   green: "#0C4552",

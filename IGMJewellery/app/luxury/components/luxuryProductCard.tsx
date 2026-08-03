@@ -37,6 +37,14 @@ const ON_DARK = {
   muted: "rgba(255,255,255,0.65)",
   starFilled: LUXURY_COLORS.accent,
   starEmpty: "rgba(255,255,255,0.3)",
+  /** Holds the artwork's place while it loads, without flashing pale. */
+  tile: LUXURY_COLORS.surface,
+  /**
+   * The bag button's fill. COLORS.primary is all but the storefront's own
+   * ground, so on dark the button is painted in the lifted teal the page's
+   * other calls to action use instead of disappearing into the page.
+   */
+  action: "#175E63",
 };
 
 type LuxuryProductCardProps = {
@@ -192,7 +200,7 @@ export default function LuxuryProductCard({
       activeOpacity={0.9}
       onPress={handlePress}
     >
-      <View style={styles.tile}>
+      <View style={[styles.tile, onDark && { backgroundColor: ON_DARK.tile }]}>
         <Image
           source={{ uri: product.thumbnailUrls?.[0] }}
           style={styles.image}
@@ -291,7 +299,7 @@ export default function LuxuryProductCard({
           style={[
             styles.addToBagButton,
             compact && compactStyles.addToBagButton,
-            { backgroundColor: primaryColor },
+            { backgroundColor: onDark ? ON_DARK.action : primaryColor },
             isAddingToCart && styles.addToBagButtonDisabled,
           ]}
           onPress={handleBagPress}

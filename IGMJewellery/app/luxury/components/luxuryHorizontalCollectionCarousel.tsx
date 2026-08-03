@@ -1,4 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
+import { LUXURY_COLORS } from "@/constants/theme";
 import {
   MultiBrandCollection,
   useGetMultiBrandCollectionsQuery,
@@ -139,7 +140,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 20,
     overflow: "hidden",
-    backgroundColor: "#E7EDF0",
+    backgroundColor: LUXURY_COLORS.surface,
   },
   cardImage: {
     ...StyleSheet.absoluteFillObject,

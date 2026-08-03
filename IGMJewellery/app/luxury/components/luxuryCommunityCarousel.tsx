@@ -1,6 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { useIsFocused } from "@react-navigation/native";
-import { COLORS, LUXURY_INK, LUXURY_SPACING } from "@/constants/theme";
+import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
@@ -202,7 +202,7 @@ export default function LuxuryCommunityCarousel({
         // page doesn't jump once the clips arrive.
         <View style={[styles.emptyCard, { height: cardHeight }]}>
           {isLoading && (
-            <ActivityIndicator size="large" color={COLORS.primary} />
+            <ActivityIndicator size="large" color={LUXURY_COLORS.text} />
           )}
         </View>
       )}
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: LUXURY_INK.text,
+    color: LUXURY_COLORS.text,
     textAlign: "center",
     marginBottom: LUXURY_SPACING ,
   },
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
   },
   emptyCard: {
     borderRadius: CARD_RADIUS,
-    backgroundColor: "#E2EAEE",
+    backgroundColor: LUXURY_COLORS.surface,
     alignItems: "center",
     justifyContent: "center",
   },

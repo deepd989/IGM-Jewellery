@@ -1,6 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { TryOnSelectorModal } from "@/components/products/TryOnSelectorModal";
-import { COLORS, LUXURY_INK, LUXURY_SPACING } from "@/constants/theme";
+import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { ProductType } from "@/enums/productType.enum";
 import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
@@ -305,7 +305,9 @@ export default function LuxurySellingFast({
         // Holds the section's height steady while the catalogue loads or a
         // category comes back empty, so the page doesn't jump.
         <View style={[styles.emptyCard, { height: cardHeight }]}>
-          {isLoading && <ActivityIndicator size="large" color={COLORS.primary} />}
+          {isLoading && (
+            <ActivityIndicator size="large" color={LUXURY_COLORS.text} />
+          )}
         </View>
       )}
 
@@ -356,7 +358,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: LUXURY_INK.text,
+    color: LUXURY_COLORS.text,
     textAlign: "center",
     marginBottom: LUXURY_SPACING,
   },
@@ -378,22 +380,26 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 16,
   },
+  // Glass rather than the pale mint it used to be: on the dark ground a light
+  // chip outshouts the teal wash on the selected one, which inverts the pair.
   inactiveChip: {
-    backgroundColor: "#C0E7E5",
+    backgroundColor: "rgba(255,255,255,0.10)",
+    borderWidth: 1,
+    borderColor: LUXURY_COLORS.border,
   },
   chipText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#306069",
+    color: LUXURY_COLORS.textMuted,
   },
   activeChipText: {
-    color: "#FFFFFF",
+    color: LUXURY_COLORS.text,
     fontWeight: "700",
   },
   card: {
     borderRadius: CARD_RADIUS,
     overflow: "hidden",
-    backgroundColor: "#E2EAEE",
+    backgroundColor: LUXURY_COLORS.surface,
   },
   cardImage: {
     ...StyleSheet.absoluteFillObject,
@@ -402,7 +408,7 @@ const styles = StyleSheet.create({
   },
   emptyCard: {
     borderRadius: CARD_RADIUS,
-    backgroundColor: "#E2EAEE",
+    backgroundColor: LUXURY_COLORS.surface,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -496,10 +502,10 @@ const styles = StyleSheet.create({
   },
   activeDot: {
     width: 24,
-    backgroundColor: COLORS.primary,
+    backgroundColor: LUXURY_COLORS.text,
   },
   inactiveDot: {
     width: 8,
-    backgroundColor: "#C3D0D5",
+    backgroundColor: "rgba(255,255,255,0.5)",
   },
 });
