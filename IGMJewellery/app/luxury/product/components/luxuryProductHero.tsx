@@ -1,6 +1,7 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { CartBadge } from "@/components/cart/CardBadge";
 import { COLORS } from "@/constants/theme";
+import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
 import { useGetBrandByNameQuery } from "@/store/apis/brandsApi";
 import {
@@ -140,7 +141,7 @@ export default function LuxuryProductHero({
         title: product.title,
         message: `${product.name || product.title} by ${
           product.brand
-        } — ₹${product.discountedPrice?.toLocaleString()}`,
+        } — ₹${luxuryPrice(product)?.toLocaleString()}`,
       });
     } catch {
       // The sheet was dismissed; there is nothing to recover from.

@@ -1,5 +1,5 @@
 import { COLORS } from "@/constants/theme";
-import { useGetBrandsQuery } from "@/store/apis/brandsApi";
+import { useStorefrontBrands } from "@/hooks/useStorefrontBrands";
 import { useRouter } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -20,7 +20,7 @@ const { width } = Dimensions.get("window");
 
 export default function LatestCollections() {
   const router = useRouter();
-  const { data: brandsData = [] } = useGetBrandsQuery({});
+  const { data: brandsData = [] } = useStorefrontBrands({});
   const { data: collectionData } = useGetCollectionsQuery();
 
   const [activeBrandName, setActiveBrand] = useState<string | null>(

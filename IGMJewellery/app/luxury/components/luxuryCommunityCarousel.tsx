@@ -1,6 +1,7 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { useIsFocused } from "@react-navigation/native";
 import { COLORS, LUXURY_INK, LUXURY_SPACING } from "@/constants/theme";
+import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
 import {
@@ -148,7 +149,7 @@ export default function LuxuryCommunityCarousel({
             {item.brand}
           </Text>
           <Text style={styles.price}>
-            ₹{item.discountedPrice?.toLocaleString()}
+            ₹{luxuryPrice(item)?.toLocaleString()}
           </Text>
         </View>
 

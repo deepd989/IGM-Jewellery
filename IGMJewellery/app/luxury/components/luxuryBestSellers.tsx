@@ -1,5 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { COLORS, LUXURY_INK, LUXURY_SPACING } from "@/constants/theme";
+import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
@@ -110,8 +111,6 @@ export default function LuxuryBestSellers({
   };
 
   const renderCard = ({ item }: { item: Product }) => {
-    const hasDiscount = item.givenPrice > item.discountedPrice;
-
     return (
       <HapticButton
         style={{ width: cardWidth }}
@@ -137,15 +136,11 @@ export default function LuxuryBestSellers({
           </HapticButton>
         </View>
 
+        {/* LUXE lists at full price, so there is no struck price beside it. */}
         <View style={styles.priceRow}>
           <Text style={styles.price}>
-            ₹{item.discountedPrice?.toLocaleString()}
+            ₹{luxuryPrice(item)?.toLocaleString()}
           </Text>
-          {hasDiscount && (
-            <Text style={styles.originalPrice}>
-              ₹{item.givenPrice.toLocaleString()}
-            </Text>
-          )}
         </View>
 
         <Text style={styles.productName} numberOfLines={1}>
@@ -283,11 +278,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "700",
     color: LUXURY_INK.text,
-  },
-  originalPrice: {
-    fontSize: 18,
-    color: LUXURY_INK.textMuted,
-    textDecorationLine: "line-through",
   },
   productName: {
     marginTop: 8,

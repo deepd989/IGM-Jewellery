@@ -15,7 +15,7 @@ import pcjLogo from "../assets/images/bwBrandlogo/pcjlogo.png";
 import tanishqLogo from "../assets/images/bwBrandlogo/Tanishq_Logo.png";
 import tbzLogo from "../assets/images/bwBrandlogo/tbzlogo.png";
 import { COLORS } from "../constants/theme";
-import { useGetBrandsQuery } from "../store/apis/brandsApi";
+import { useStorefrontBrands } from "../hooks/useStorefrontBrands";
 import { SectionHeader } from "./section";
 
 const W = Dimensions.get("window").width;
@@ -23,7 +23,7 @@ const GAP = 12;
 
 export default function BrandGridTileView() {
   const [selected, setSelected] = useState("");
-  const { data: brandsData, isLoading } = useGetBrandsQuery({});
+  const { data: brandsData, isLoading } = useStorefrontBrands({});
   const router = useRouter();
 
   const Tile = ({

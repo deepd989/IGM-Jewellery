@@ -15,7 +15,7 @@ import {
 const BACKDROP = assetUrl("luxury.elanziaAllRights.backdrop");
 
 const LOGO_GLYPH = require("@/assets/images/elanziaNav.png");
-const LOGO_WORDMARK = require("@/assets/images/elanziaPng.png");
+const LOGO_WORDMARK = require("@/assets/images/elanziaSCroppedPng.png");
 
 /**
  * Both logo files are a small mark centred on a large transparent canvas, so
@@ -23,8 +23,8 @@ const LOGO_WORDMARK = require("@/assets/images/elanziaPng.png");
  * clipped back to the mark's own box. These are the mark's share of its canvas,
  * measured from the artwork.
  */
-const GLYPH_FILL = 0.57;
-const WORDMARK_FILL = { width: 0.7, height: 0.2 };
+const GLYPH_FILL = 0.67;
+const WORDMARK_FILL = { width: 0.6, height: 0.7 };
 
 /** How wide the mark itself reads, and the canvas that has to be drawn for it. */
 const GLYPH_SIZE = 72;
@@ -39,9 +39,9 @@ export type TrustBadge = {
 };
 
 const TRUST_BADGES: TrustBadge[] = [
-  { label: "100% Trusted", icon: "shield-checkmark" },
-  { label: "100% Trusted", icon: "star" },
-  { label: "30 Days Return", icon: "download" },
+  { label: "100% Trusted", icon: "shield" },
+  { label: "100% Curated", icon: "star" },
+  { label: "100% Certified", icon: "checkbox" },
 ];
 
 type LuxuryElanziaAllRightsProps = {
@@ -56,9 +56,6 @@ export default function LuxuryElanziaAllRights({
   backdrop,
   style,
 }: LuxuryElanziaAllRightsProps) {
-  // Read at render so the notice never goes stale.
-  const year = new Date().getFullYear();
-
   return (
     <View style={[styles.container, style]}>
       <Image
@@ -85,6 +82,9 @@ export default function LuxuryElanziaAllRights({
           ))}
         </View>
 
+        {/* Both marks are centred in their own clip, so the row's own
+            centring is what puts them on one line — nothing else may sit in
+            here, or it lifts the wordmark off the glyph again. */}
         <View style={styles.logoRow}>
           <View style={styles.glyphClip}>
             <Image
@@ -94,17 +94,12 @@ export default function LuxuryElanziaAllRights({
             />
           </View>
 
-          <View style={styles.wordmarkBlock}>
-            <View style={styles.wordmarkClip}>
-              <Image
-                source={LOGO_WORDMARK}
-                style={styles.wordmark}
-                resizeMode="contain"
-              />
-            </View>
-            <Text style={styles.copyright}>
-              {year} Elanzia. All Rights Reserved
-            </Text>
+          <View style={styles.wordmarkClip}>
+            <Image
+              source={LOGO_WORDMARK}
+              style={styles.wordmark}
+              resizeMode="contain"
+            />
           </View>
         </View>
       </View>
@@ -185,9 +180,6 @@ const styles = StyleSheet.create({
     width: GLYPH_CANVAS,
     height: GLYPH_CANVAS,
   },
-  wordmarkBlock: {
-    alignItems: "center",
-  },
   wordmarkClip: {
     width: WORDMARK_WIDTH,
     height: WORDMARK_HEIGHT,
@@ -196,15 +188,9 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   wordmark: {
-    width: WORDMARK_CANVAS,
-    height: WORDMARK_CANVAS,
+    width: WORDMARK_CANVAS-130,
+    height: WORDMARK_CANVAS-110,
     // The mark ships black; the footer needs it white.
     tintColor: "#FFFFFF",
-  },
-  copyright: {
-    marginTop: 12,
-    fontSize: 14,
-    color: "#FFFFFF",
-    textAlign: "center",
   },
 });

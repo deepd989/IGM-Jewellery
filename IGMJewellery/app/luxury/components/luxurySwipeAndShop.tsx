@@ -1,5 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { LUXURY_SPACING } from "@/constants/theme";
+import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
@@ -54,8 +55,7 @@ export default function LuxurySwipeAndShop({
 
   const featured = product ?? products[0];
   const artwork = imageUri ?? featured?.thumbnailUrls?.[0];
-  const hasDiscount =
-    !!featured && featured.givenPrice > featured.discountedPrice;
+  const featuredPrice = featured ? luxuryPrice(featured) : undefined;
 
   const handlePress = () => {
     if (onPress) {
@@ -166,14 +166,10 @@ export default function LuxurySwipeAndShop({
                   </View>
 
                   <View style={styles.infoRight}>
+                    {/* LUXE lists at full price — no struck price beside it. */}
                     <Text style={styles.price}>
-                      ₹{featured?.discountedPrice?.toLocaleString() || "20,000"}
+                      ₹{featuredPrice?.toLocaleString() || "20,000"}
                     </Text>
-                    {hasDiscount && (
-                      <Text style={styles.originalPrice}>
-                        ₹{featured?.givenPrice.toLocaleString()}
-                      </Text>
-                    )}
                     <Text style={styles.viewProduct}>View Product</Text>
                   </View>
                 </View>
@@ -394,12 +390,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "700",
     color: "#FFFFFF",
-  },
-  originalPrice: {
-    marginTop: 2,
-    fontSize: 10,
-    color: "rgba(255,255,255,0.6)",
-    textDecorationLine: "line-through",
   },
   viewProduct: {
     marginTop: 4,

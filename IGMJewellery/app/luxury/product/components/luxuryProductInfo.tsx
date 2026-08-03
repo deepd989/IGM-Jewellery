@@ -1,5 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { COLORS } from "@/constants/theme";
+import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
 import { getEstimatedDeliveryDate } from "@/utils/deliveryDate";
 import { Ionicons } from "@expo/vector-icons";
@@ -8,7 +9,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 /** The greener teal the brand line and the delivery pill are set in. */
 const BRAND_TEAL = "#2F7266";
-/** Struck-through price and the tax note. */
+/** The tax note under the price. */
 const MUTED = "#8FA1A8";
 
 /** Shown when the catalogue has no resolved attributes for this product. */
@@ -52,7 +53,6 @@ export default function LuxuryProductInfo({
   ].filter(Boolean) as string[];
 
   const chips = specChips.length > 0 ? specChips : FALLBACK_CHIPS;
-  const hasDiscount = product.givenPrice > product.discountedPrice;
 
   return (
     <View style={styles.container}>
@@ -69,15 +69,11 @@ export default function LuxuryProductInfo({
           </View>
         </View>
 
+        {/* LUXE lists at full price, so there is no struck price under it. */}
         <View style={styles.priceCol}>
           <Text style={styles.price}>
-            ₹{product.discountedPrice?.toLocaleString()}
+            ₹{luxuryPrice(product)?.toLocaleString()}
           </Text>
-          {hasDiscount && (
-            <Text style={styles.originalPrice}>
-              ₹{product.givenPrice.toLocaleString()}
-            </Text>
-          )}
           <Text style={styles.taxNote}>(tax inclusive)</Text>
         </View>
       </View>
@@ -146,12 +142,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "700",
     color: COLORS.primary,
-  },
-  originalPrice: {
-    marginTop: 8,
-    fontSize: 17,
-    color: MUTED,
-    textDecorationLine: "line-through",
   },
   taxNote: {
     marginTop: 8,

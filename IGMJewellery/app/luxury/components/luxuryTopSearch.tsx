@@ -23,6 +23,13 @@ import LuxuryWishlistButton from "./luxuryWishlistButton";
 /** Quick-shop row: the department whose categories it offers. */
 const QUICK_DEPARTMENT = "womens";
 
+/**
+ * The Elanzia mark, as the classic header's toggle sets it. It carries its own
+ * teal ground rather than an alpha channel, so it is set as a rounded chip and
+ * never tinted.
+ */
+const ELANZIA_LOGO = require("@/assets/images/Elanzia_logo1.png");
+
 /** Magnifier with a sparkle — the app's mark for AI-assisted search. */
 const SearchGlyph = () => (
   <View>
@@ -99,8 +106,14 @@ export default function LuxuryTopSearch({
     });
   };
 
-  /** Gold over the dark band, teal over the white search card. */
-  const renderActions = (tint: string) => (
+  /**
+   * Gold over the dark band, teal over the white search card.
+   *
+   * The wishlist count rides on a badge filled with that same tint, so its ink
+   * has to follow it: dark over the gold, white over the teal. Painting it dark
+   * in both states left the count unreadable once the bar opened.
+   */
+  const renderActions = (tint: string, badgeTextColor: string) => (
     <View style={styles.actions}>
       <HapticButton
         style={styles.actionIcon}
@@ -113,7 +126,7 @@ export default function LuxuryTopSearch({
       <LuxuryWishlistButton
         size={24}
         color={tint}
-        badgeTextColor={LUXURY_COLORS.primary}
+        badgeTextColor={badgeTextColor}
         style={styles.actionIcon}
       />
 
@@ -155,7 +168,9 @@ export default function LuxuryTopSearch({
               activeOpacity={0.85}
               onPress={onExitLuxury}
             >
-              <Ionicons name="flower-outline" size={18} color={COLORS.text} />
+              {/* The same mark, at the same size, that the classic header's
+                  toggle sets Elanzia in — see components/storeToggle. */}
+              <Image source={ELANZIA_LOGO} style={styles.storeLogo} />
               <Text style={styles.storeOptionText}>Elanzia</Text>
             </HapticButton>
 
@@ -164,7 +179,7 @@ export default function LuxuryTopSearch({
             </View>
           </View>
 
-          {renderActions(LUXURY_COLORS.accent)}
+          {renderActions(LUXURY_COLORS.accent, LUXURY_COLORS.primary)}
         </View>
       </LinearGradient>
     );
@@ -209,7 +224,7 @@ export default function LuxuryTopSearch({
           style={styles.input}
         />
 
-        {renderActions(COLORS.primary)}
+        {renderActions(COLORS.primary, "#FFFFFF")}
       </View>
 
       {categories.length > 0 && (
@@ -294,6 +309,11 @@ const styles = StyleSheet.create({
   },
   storeOptionActive: {
     backgroundColor: LUXURY_COLORS.primary,
+  },
+  storeLogo: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
   },
   storeOptionText: {
     fontSize: 16,

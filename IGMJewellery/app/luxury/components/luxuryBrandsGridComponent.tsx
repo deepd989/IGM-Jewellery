@@ -1,7 +1,8 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { assetUrl } from "@/constants/assets";
 import { LUXURY_SPACING } from "@/constants/theme";
-import { Brand, useGetBrandsQuery } from "@/store/apis/brandsApi";
+import { Brand } from "@/store/apis/brandsApi";
+import { useStorefrontBrands } from "@/hooks/useStorefrontBrands";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -134,7 +135,7 @@ export default function LuxuryBrandsGrid({
   style,
 }: LuxuryBrandsGridProps) {
   const router = useRouter();
-  const { data: brands = [] } = useGetBrandsQuery({});
+  const { data: brands = [] } = useStorefrontBrands({});
   const [activeIndex, setActiveIndex] = useState(0);
   // Measured so a page fits the space this component is actually given
   // (parents may add padding), rather than assuming the full screen width.

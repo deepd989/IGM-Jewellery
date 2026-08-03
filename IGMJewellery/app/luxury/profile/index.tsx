@@ -228,7 +228,7 @@ export default function LuxuryProfileScreen() {
 
         <LuxuryPaymentMethods style={styles.block} />
 
-        <Text style={styles.version}>APP VERSION 2.0.0</Text>
+        <Text style={styles.version}>APP VERSION 2.0.2</Text>
       </ScrollView>
 
       <LuxuryNavBar activeKey="profile" />

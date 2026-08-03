@@ -52,11 +52,11 @@ export default function JewelryLanding() {
 
   // After video finishes, route based on auth state
   useEffect(() => {
-    if (!isVideoFinished || authLoading) return;
     if (isAuthenticated) {
       router.replace("/home");
     }
-  }, [isVideoFinished, authLoading, isAuthenticated]);
+    if (!isVideoFinished) return;
+  }, [ authLoading, isAuthenticated]);
 
   const handlePlaybackStatusUpdate = (status) => {
     if (status.didJustFinish) {
@@ -89,7 +89,7 @@ export default function JewelryLanding() {
           style={StyleSheet.absoluteFill}
           resizeMode={ResizeMode.COVER}
           shouldPlay = {true}
-          rate={4.0}
+          rate={2.0}
           isLooping={false}
           isMuted={true}
           volume={1.0}
@@ -117,8 +117,8 @@ export default function JewelryLanding() {
             delayLongPress={800}
           >
             <Image
-              source={require("../assets/images/elanziaIndex.png")}
-              style={{ height: 80, width: 260 }}
+              source={require("../assets/images/elanziaSCroppedPng.png")}
+              style={{ height: 60, width: 300, marginTop: 30, resizeMode: "contain" }}
             />
           </HapticButton>
           <Text style={styles.subtitle}>

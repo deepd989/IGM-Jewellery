@@ -1,7 +1,8 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { assetUrl } from "@/constants/assets";
 import { LUXURY_SPACING } from "@/constants/theme";
-import { Brand, useGetBrandsQuery } from "@/store/apis/brandsApi";
+import { Brand } from "@/store/apis/brandsApi";
+import { useStorefrontBrands } from "@/hooks/useStorefrontBrands";
 import {
   MultiBrandCollection,
   useGetMultiBrandCollectionsQuery,
@@ -54,7 +55,7 @@ export default function LuxuryMultibrandCollection({
 }: LuxuryMultibrandCollectionProps) {
   const router = useRouter();
   const { data: collections = [] } = useGetMultiBrandCollectionsQuery();
-  const { data: brands = [] } = useGetBrandsQuery({});
+  const { data: brands = [] } = useStorefrontBrands({});
   const [selectedBrandId, setSelectedBrandId] = useState<string>();
   const [activeIndex, setActiveIndex] = useState(0);
   // Measured so the cards fit the space this component is actually given

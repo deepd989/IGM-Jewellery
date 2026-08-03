@@ -1,7 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { Flower } from "lucide-react-native";
 import React from "react";
 import {
+  Image,
   StyleProp,
   StyleSheet,
   Text,
@@ -22,6 +22,13 @@ export type { Storefront };
 
 /** The track the unselected half sits on. */
 const TRACK = "#E4F0EE";
+
+/**
+ * The Elanzia mark. It carries its own teal ground rather than an alpha
+ * channel, so it is set as a rounded chip and never tinted — it reads the same
+ * whichever half of the toggle is lit.
+ */
+const ELANZIA_LOGO = require("@/assets/images/Elanzia_logo1.png");
 
 type StoreToggleProps = {
   active: Storefront;
@@ -55,11 +62,7 @@ export default function StoreToggle({
             style={StyleSheet.absoluteFill}
           />
         )}
-        <Flower
-          size={18}
-          color={isLuxe ? COLORS.primary : "#FFFFFF"}
-          strokeWidth={1.8}
-        />
+        <Image source={ELANZIA_LOGO} style={styles.logo} />
         <Text
           style={[
             styles.label,
@@ -112,6 +115,11 @@ const styles = StyleSheet.create({
   },
   luxeFill: {
     backgroundColor: COLORS.primary,
+  },
+  logo: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
   },
   label: {
     fontSize: 16,

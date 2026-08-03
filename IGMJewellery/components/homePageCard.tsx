@@ -195,7 +195,16 @@ export default function HowItLooksWrapper({
         <FlatList
           data={[filteredProduct]}
           renderItem={({ item }) => (
-            <ProductCard product={item} viewMode="list" onPress={() => {}} />
+            <ProductCard
+              product={item}
+              viewMode="list"
+              onPress={() =>
+                router.navigate({
+                  pathname: "/product/[id]",
+                  params: { id: item.id },
+                })
+              }
+            />
           )}
           numColumns={1}
           keyExtractor={(item) => item?.id}
@@ -259,10 +268,12 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
     <View style={necklaceCardStyle.wrapper}>
       <HapticButton
         style={necklaceCardStyle.card}
+        // The card shows one piece, so it opens that piece rather than the
+        // listing for its category.
         onPress={() =>
           router.navigate({
-            pathname: "/product-list",
-            params: { categoryName: product.productType },
+            pathname: "/product/[id]",
+            params: { id: product.id },
           })
         }
       >

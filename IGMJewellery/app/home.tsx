@@ -43,6 +43,7 @@ import { TrendingProducts } from "../components/TrendingProducts";
 import TrustBar from "../components/trustBarBanner";
 import { COLORS } from "../constants/theme";
 import { assetUrl } from "@/constants/assets";
+import LatestOffers from "../components/latestOffers";
 
 const GIFTING_BANNER_URL = assetUrl("gifting.banner");
 
@@ -218,6 +219,15 @@ const buildSections = (products: Product[]): HomeSection[] => [
     ),
   },
   {
+    key: "latestOffers",
+    render: () => (
+      <>
+        <LatestOffers style={styles.fullBleedSection} />
+        <HorizontalRuleIGM />
+      </>
+    ),
+  },
+  {
     key: "occasions",
     render: () => (
       <>
@@ -314,6 +324,8 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 8, backgroundColor: "white" },
+  // Cancels the page gutter so a section's artwork runs to the screen edges.
+  fullBleedSection: { marginHorizontal: -8, borderRadius: 0 },
   AiContainer: {
     backgroundColor: COLORS.primary,
     borderRadius: 20,

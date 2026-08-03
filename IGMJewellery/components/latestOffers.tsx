@@ -43,7 +43,7 @@ type Offer = {
   discount: number;
 };
 
-type LuxuryLatestOffersProps = {
+type LatestOffersProps = {
   style?: StyleProp<ViewStyle>;
 };
 
@@ -111,7 +111,7 @@ const OfferCard = ({
  * three. Every tile opens the listing in the same order the section promises —
  * biggest discount first — narrowed to whatever that tile named.
  */
-export default function LuxuryLatestOffers({ style }: LuxuryLatestOffersProps) {
+export default function LatestOffers({ style }: LatestOffersProps) {
   const router = useRouter();
   const { data: products = [] } = useGetProductsQuery({});
 

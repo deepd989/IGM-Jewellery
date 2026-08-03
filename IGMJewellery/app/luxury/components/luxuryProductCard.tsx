@@ -1,6 +1,7 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { TryOnSelectorModal } from "@/components/products/TryOnSelectorModal";
 import { COLORS, LUXURY_COLORS } from "@/constants/theme";
+import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { useCartStatus } from "@/hooks/useCartStatus";
 import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation } from "@/store/apis/cart";
@@ -23,7 +24,7 @@ import {
 } from "react-native";
 
 const TILE_RADIUS = 20;
-/** Grey used for the unearned stars and the struck-through price. */
+/** Grey used for the unearned stars and the brand line. */
 const MUTED = "#9AA9AF";
 
 /**
@@ -62,8 +63,8 @@ type LuxuryProductCardProps = {
   primaryColor?: string;
   secondaryColor?: string;
   /**
-   * Ink for the price the shopper pays. The struck price and the brand stay
-   * muted grey whatever this is set to, so the two never compete.
+   * Ink for the price. The brand line stays muted grey whatever this is set
+   * to, so the two never compete.
    */
   priceColor?: string;
   style?: ViewStyle;
@@ -105,7 +106,6 @@ export default function LuxuryProductCard({
       : wishlistData?.items.some((item) => item.product.id === product.id);
 
   const isWishlistBusy = isAddingToWishlist || isRemovingFromWishlist;
-  const hasDiscount = product.givenPrice > product.discountedPrice;
 
   const handlePress = () => {
     if (onPress) {
@@ -222,6 +222,7 @@ export default function LuxuryProductCard({
         </HapticButton>
       </View>
 
+      {/* LUXE lists at full price, so there is no struck price beside it. */}
       <View style={[styles.priceRow, compact && compactStyles.priceRow]}>
         <Text
           style={[
@@ -232,19 +233,8 @@ export default function LuxuryProductCard({
             onDark && { color: ON_DARK.text },
           ]}
         >
-          ₹{product.discountedPrice?.toLocaleString()}
+          ₹{luxuryPrice(product)?.toLocaleString()}
         </Text>
-        {hasDiscount && (
-          <Text
-            style={[
-              styles.originalPrice,
-              compact && compactStyles.originalPrice,
-              onDark && { color: ON_DARK.muted },
-            ]}
-          >
-            ₹{product.givenPrice.toLocaleString()}
-          </Text>
-        )}
       </View>
 
       <Text
@@ -401,11 +391,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: COLORS.text,
   },
-  originalPrice: {
-    fontSize: 15,
-    color: MUTED,
-    textDecorationLine: "line-through",
-  },
   productName: {
     marginTop: 8,
     fontSize: 16,
@@ -485,9 +470,6 @@ const compactStyles = StyleSheet.create({
   },
   price: {
     fontSize: 16,
-  },
-  originalPrice: {
-    fontSize: 12,
   },
   productName: {
     marginTop: 4,

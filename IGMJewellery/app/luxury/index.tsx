@@ -65,7 +65,7 @@ import LuxuryElanziaSearch from "./components/luxuryElanziaSearch";
 import LuxuryGenderVsProducts from "./components/luxuryGenderVsProducts";
 import LuxuryHorizontalCollectionCarousel from "./components/luxuryHorizontalCollectionCarousel";
 import LuxuryMultibrandCollection from "./components/luxuryMultibrandCollection";
-import LuxuryNavBar, { LUXURY_NAV_BAR_HEIGHT } from "./components/luxuryNavBar";
+import LuxuryNavBar from "./components/luxuryNavBar";
 import LuxurySeparator from "./components/luxurySeparator";
 import LuxuryNewProducts from "./components/luxuryNewProducts";
 import LuxuryRegionalFavorites from "./components/luxuryRegionalFavorites";
@@ -74,7 +74,6 @@ import LuxurySwipeAndShop from "./components/luxurySwipeAndShop";
 import LuxuryTopPicks from "./components/luxuryTopPicks";
 import LuxuryTopSearch from "./components/luxuryTopSearch";
 import LuxuryTryOn from "./components/luxuryTryOn";
-import LuxuryLatestOffers from "./components/luxuryLatestOffers";
 import OutfitTypesCarousel from "./components/outfitTypesCarousel";
 
 /** Hero carousel height: tall enough to lead the page, short enough that the
@@ -91,6 +90,12 @@ type StorefrontSection = {
   key: string;
   /** The ground this section paints, edge to edge, behind its content. */
   background: string;
+  /**
+   * Ends the page on this section's own artwork: no band padding beneath it,
+   * and the list adds none after it either. Set on the last section so the
+   * storefront finishes exactly where it does.
+   */
+  flush?: boolean;
   render: () => React.ReactNode;
 };
 
@@ -138,12 +143,6 @@ const SECTIONS: StorefrontSection[] = [
     key: "tryOn",
     background: BG.imagePlaceholder,
     render: () => <LuxuryTryOn style={styles.fullBleedSection} />,
-  },
-  // 5. Latest Offers and Discounts
-  {
-    key: "latestOffers",
-    background: BG.offWhite,
-    render: () => <LuxuryLatestOffers style={styles.fullBleedSection} />,
   },
   // 6. Latest Collections
   {
@@ -221,12 +220,19 @@ const SECTIONS: StorefrontSection[] = [
   {
     key: "allRights",
     background: BG.imagePlaceholder,
+    flush: true,
     render: () => <LuxuryElanziaAllRights style={styles.fullBleedSection} />,
   },
 ];
 
 const renderSection = ({ item }: { item: StorefrontSection }) => (
-  <View style={[styles.sectionBand, { backgroundColor: item.background }]}>
+  <View
+    style={[
+      styles.sectionBand,
+      { backgroundColor: item.background },
+      item.flush && styles.sectionBandFlush,
+    ]}
+  >
     {item.render()}
   </View>
 );
@@ -336,7 +342,6 @@ export default function HomeScreen() {
       />
       <FlatList
         style={styles.container}
-        contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={16}
@@ -389,7 +394,10 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: PAGE_PADDING,
+    paddingHorizontal: PAGE_PADDING,
+    paddingTop: PAGE_PADDING,
+    // No bottom gutter: it insets the scroller's frame, so it showed as a
+    // strip of page under the closing section however far the shopper scrolled.
     backgroundColor: LUXURY_SECTION_BACKGROUNDS.green,
   },
   // Cancels the page gutter so a section's artwork runs to the screen edges.
@@ -411,8 +419,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: PAGE_PADDING,
     paddingVertical: LUXURY_SPACING / 2,
   },
-  // Clears the floating nav bar so the last section is never hidden behind it.
-  contentContainer: { paddingBottom: LUXURY_NAV_BAR_HEIGHT + LUXURY_SPACING },
+  /**
+   * The closing band keeps its top gap but gives up its bottom one, so the page
+   * ends on the section's artwork.
+   *
+   * The list used to reserve LUXURY_NAV_BAR_HEIGHT + LUXURY_SPACING under it to
+   * clear the floating nav pill; that reserve is what the closing section's own
+   * trailing artwork now provides, so the pill rides over the artwork rather
+   * than over a strip of page.
+   */
+  sectionBandFlush: {
+    paddingBottom: 0,
+  },
   AiContainer: {
     backgroundColor: COLORS.primary,
     borderRadius: 20,

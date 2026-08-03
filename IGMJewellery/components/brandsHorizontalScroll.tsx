@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Brand, useGetBrandsQuery } from "../store/apis/brandsApi";
+import { Brand } from "../store/apis/brandsApi";
+import { useStorefrontBrands } from "../hooks/useStorefrontBrands";
+import ViewAllButton from "./basic components/viewAllButton";
 import { SectionHeader } from "./section";
 
 /** The section is a taste of the house, not the whole of it. */
@@ -44,7 +46,7 @@ export const BrandCard = React.memo(function BrandCard({ title, image: item }) {
 
 export default function BrandsVerticalScroll() {
   const router = useRouter();
-  const { data: brandsData = [], isLoading } = useGetBrandsQuery({});
+  const { data: brandsData = [], isLoading } = useStorefrontBrands({});
 
   // Rebuilt only when the brands themselves change: every card takes its item
   // by identity, so a fresh array on each render re-rendered all of them.
@@ -90,6 +92,11 @@ export default function BrandsVerticalScroll() {
     [],
   );
 
+  /** The section shows a taste of the house; this opens the whole of it. */
+  const handleViewAll = useCallback(() => {
+    router.navigate("/brands");
+  }, [router]);
+
   return (
     <>
       <SectionHeader value="House of Brands" />
@@ -105,6 +112,8 @@ export default function BrandsVerticalScroll() {
           keyExtractor={(item: any) => item.name}
           renderItem={renderItem}
           contentContainerStyle={styles.listPadding}
+          // Sits under the last banner, inside the list's own padding.
+          ListFooterComponent={<ViewAllButton onPress={handleViewAll} />}
           showsVerticalScrollIndicator={false}
           // The banners run down the page's own scroll. Left scrollable, this
           // list nests a second vertical scroller inside it, which turns off

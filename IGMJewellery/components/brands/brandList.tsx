@@ -1,11 +1,12 @@
-import { Brand, useGetBrandsQuery } from "@/store/apis/brandsApi";
+import { Brand } from "@/store/apis/brandsApi";
+import { useStorefrontBrands } from "@/hooks/useStorefrontBrands";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import {
-  Dimensions,
+  LayoutChangeEvent,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,21 +16,22 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../basic components/hapticButton";
 
-// --- Dynamic Responsiveness Logic ---
-const { width } = Dimensions.get("window");
 const SPACING = 16;
 const GRID_GAP = 12;
 
-const NUM_COLUMNS = width < 380 ? 2 : 3;
-const TOTAL_GAP_SPACE = (NUM_COLUMNS - 1) * GRID_GAP;
-const AVAILABLE_WIDTH = width - SPACING * 2 - TOTAL_GAP_SPACE;
-const ITEM_WIDTH = AVAILABLE_WIDTH / NUM_COLUMNS;
+/** Three across on every device; the tile shrinks to fit rather than the row. */
+const NUM_COLUMNS = 3;
+/** Tile height as a share of its width. */
+const TILE_RATIO = 0.85;
 
-const BrandCard = ({ brand }: { brand: Brand }) => {
+const BrandCard = ({ brand, width }: { brand: Brand; width: number }) => {
   const router = useRouter();
   return (
     <HapticButton
-      style={styles.cardContainer}
+      style={[
+        styles.cardContainer,
+        { width, height: Math.round(width * TILE_RATIO) },
+      ]}
       onPress={() => {
         router.navigate(`/brandProfile/${brand.businessNameKey}`);
       }}
@@ -46,11 +48,39 @@ const BrandCard = ({ brand }: { brand: Brand }) => {
 };
 
 export const BrandGrid = ({ data }: { data: Brand[] }) => {
+  const [gridWidth, setGridWidth] = useState(0);
+
+  /**
+   * Measured from the row itself rather than from `Dimensions.get("window")`.
+   * The window and the row disagree on split screen, on foldables and after a
+   * rotation, and a tile sized for the window overflowed the row by a hair —
+   * the third card wrapped onto the next line and left the grid hugging the
+   * left with a hole beside it.
+   *
+   * Rounding down guarantees three tiles plus their gaps never exceed the row;
+   * `justifyContent: "center"` spreads the few leftover pixels evenly.
+   */
+  const itemWidth = useMemo(() => {
+    if (!gridWidth) return 0;
+    const available = gridWidth - GRID_GAP * (NUM_COLUMNS - 1);
+    return Math.floor(available / NUM_COLUMNS);
+  }, [gridWidth]);
+
+  const handleLayout = (event: LayoutChangeEvent) => {
+    const { width } = event.nativeEvent.layout;
+    setGridWidth((current) => (current === width ? current : width));
+  };
+
   return (
-    <View style={styles.gridContainer}>
-      {data.map((item) => (
-        <BrandCard key={item.id || item.businessName} brand={item} />
-      ))}
+    <View style={styles.gridContainer} onLayout={handleLayout}>
+      {itemWidth > 0 &&
+        data.map((item) => (
+          <BrandCard
+            key={item.id || item.businessName}
+            brand={item}
+            width={itemWidth}
+          />
+        ))}
     </View>
   );
 };
@@ -80,7 +110,7 @@ export const BrandSection = ({
 
 export default function BrandList() {
   const router = useRouter();
-  const { data: brandsData = [], isLoading } = useGetBrandsQuery({});
+  const { data: brandsData = [], isLoading } = useStorefrontBrands({});
 
   // State for search
   const [searchQuery, setSearchQuery] = useState("");
@@ -135,7 +165,7 @@ export default function BrandList() {
         <ScrollView showsVerticalScrollIndicator={false}>
           {filteredBrands.length > 0 ? (
             <>
-              <BrandSection title="Top Brands" data={filteredBrands} />
+              <BrandSection title="All Brands" data={filteredBrands} />
               <BrandSection
                 title="Ethnic Jewellery Brands"
                 data={filteredBrands}
@@ -236,10 +266,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: GRID_GAP,
+    // Keeps the rounded-down remainder even on both sides, so the grid stays
+    // centred and a short last row sits under the middle of the one above.
+    justifyContent: "center",
   },
   cardContainer: {
-    width: ITEM_WIDTH,
-    height: ITEM_WIDTH * 0.85,
     backgroundColor: "#f5f5f5",
     borderRadius: 8,
     overflow: "hidden",

@@ -26,8 +26,21 @@ export interface Brand {
   aboutSections: BrandAboutSection[];
 }
 
-interface BrandsQueryParams {
+/**
+ * The house LUXE carries. Everything else in the catalogue is withheld while
+ * the luxury storefront is showing; Massy still sees the whole list.
+ */
+export const LUXE_BRAND_IDS = ["4","10","12", "13", "15", "18", "25"];
+
+export interface BrandsQueryParams {
   searchQuery?: string;
+  /**
+   * Narrows the list to {@link LUXE_BRAND_IDS}. Passed as an argument rather
+   * than read from a module flag so the two storefronts cache separately —
+   * `transformResponse` only runs on a fetch, so a flag flipped after one
+   * would leave the other's list in place.
+   */
+  luxeOnly?: boolean;
 }
 
 export interface ApiBrand {
@@ -86,6 +99,12 @@ export const brandsApiService = createApi({
       transformResponse: (response: ApiBrand[], meta, arg) => {
         // Map the API response to your UI model
         let brands = response.map(convertApiBrandToBrand);
+
+        if (arg?.luxeOnly) {
+          brands = brands.filter((b) => LUXE_BRAND_IDS.includes(b.id));
+        }else{
+          brands = brands.filter((b) => !LUXE_BRAND_IDS.includes(b.id));
+        }
 
         // Client-side filtering
         if (arg?.searchQuery) {

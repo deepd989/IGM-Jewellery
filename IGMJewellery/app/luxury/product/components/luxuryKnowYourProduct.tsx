@@ -1,5 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -201,16 +202,12 @@ export default function LuxuryKnowYourProduct({
         ]
   ).filter((row) => !!row.value) as InfoRow[];
 
-  const discount = product.givenPrice - product.discountedPrice;
+  // LUXE doesn't discount, so the breakdown carries no discount row and the
+  // total is the price itself.
+  const price = luxuryPrice(product);
   const priceRows: InfoRow[] = [
-    { label: "Product Price", value: `₹${product.givenPrice.toLocaleString()}` },
-    ...(discount > 0
-      ? [{ label: "Discount", value: `− ₹${discount.toLocaleString()}` }]
-      : []),
-    {
-      label: "Grand Total",
-      value: `₹${product.discountedPrice.toLocaleString()}`,
-    },
+    { label: "Product Price", value: `₹${price.toLocaleString()}` },
+    { label: "Grand Total", value: `₹${price.toLocaleString()}` },
   ];
 
   return (

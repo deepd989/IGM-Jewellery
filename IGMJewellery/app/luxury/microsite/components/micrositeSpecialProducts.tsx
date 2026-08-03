@@ -1,4 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
+import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { BrandMicrositeSpecialProduct } from "@/interfaces/brandMicrosite.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { Image } from "expo-image";
@@ -101,14 +102,10 @@ export default function MicrositeSpecialProducts({
             <Text style={styles.title} numberOfLines={1}>
               {details?.title ?? "View piece"}
             </Text>
+            {/* LUXE lists at full price — no struck price beside it. */}
             {!!details && (
               <Text style={styles.price} numberOfLines={1}>
-                ₹{details.discountedPrice.toLocaleString("en-IN")}
-                {!!details.givenPrice && details.givenPrice > details.discountedPrice && (
-                  <Text style={styles.strikePrice}>
-                    {"  "}₹{details.givenPrice.toLocaleString("en-IN")}
-                  </Text>
-                )}
+                ₹{luxuryPrice(details).toLocaleString("en-IN")}
               </Text>
             )}
           </View>
@@ -179,11 +176,5 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     color: "rgba(255,255,255,0.9)",
-  },
-  strikePrice: {
-    fontSize: 11,
-    fontWeight: "400",
-    textDecorationLine: "line-through",
-    color: "rgba(255,255,255,0.6)",
   },
 });

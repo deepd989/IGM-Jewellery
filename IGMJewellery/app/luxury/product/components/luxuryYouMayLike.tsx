@@ -1,5 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
@@ -171,7 +172,7 @@ export default function LuxuryYouMayLike({
 
           <View style={styles.caption}>
             <Text style={styles.price}>
-              ₹{item.discountedPrice?.toLocaleString()}
+              ₹{luxuryPrice(item)?.toLocaleString()}
             </Text>
             <Text style={styles.productName} numberOfLines={1}>
               {item.name || item.title}
