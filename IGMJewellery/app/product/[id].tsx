@@ -7,6 +7,7 @@ import { ReviewSection } from "@/components/products/ReviewSection";
 import { TryOnSelectorModal } from "@/components/products/TryOnSelectorModal";
 
 import { CartBadge } from "@/components/cart/CardBadge";
+import { useCartStatus } from "@/hooks/useCartStatus";
 import { useGetProductByIdQuery } from "@/store/apis/product";
 import { useGetWishlistQuery } from "@/store/apis/wishlist";
 // Import Cart Mutations
@@ -57,6 +58,7 @@ function ClassicProductDetailScreen() {
   // Cart & Trial Logic
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
+  const { isInCart, goToCart } = useCartStatus(productId as string);
   const [showSuccess, setShowSuccess] = useState(false);
   const { base64String: tryOnImage, isLoading: isTryOnImageLoading } =
     useGetImage(`${productId}_${userId}`);
@@ -73,8 +75,15 @@ function ClassicProductDetailScreen() {
   const { data: wishlistData } = useGetWishlistQuery();
   const wishlistCount = wishlistData?.items.length || 0;
 
-  const handleAddToCart = async () => {
+  /** Adds the piece, or opens the cart once it is already in there. */
+  const handleCartPress = async () => {
     if (!product) return;
+
+    if (isInCart) {
+      goToCart();
+      return;
+    }
+
     try {
       console.log("Adding to cart:", product.title);
       await addToCart({ product, quantity: 1 }).unwrap();
@@ -248,7 +257,7 @@ function ClassicProductDetailScreen() {
             styles.stickyAddBtn,
             showSuccess && styles.stickyAddBtnSuccess,
           ]}
-          onPress={handleAddToCart}
+          onPress={handleCartPress}
           disabled={isAddingToCart}
         >
           {isAddingToCart ? (
@@ -257,6 +266,11 @@ function ClassicProductDetailScreen() {
             <>
               <Ionicons name="checkmark-circle" size={18} color="#FFFFFF" />
               <Text style={styles.stickyAddText}>Added!</Text>
+            </>
+          ) : isInCart ? (
+            <>
+              <Ionicons name="bag-handle-outline" size={18} color="#FFFFFF" />
+              <Text style={styles.stickyAddText}>Go to Cart</Text>
             </>
           ) : (
             <>

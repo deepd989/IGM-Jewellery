@@ -1,6 +1,7 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { TryOnSelectorModal } from "@/components/products/TryOnSelectorModal";
 import { COLORS, LUXURY_COLORS } from "@/constants/theme";
+import { useCartStatus } from "@/hooks/useCartStatus";
 import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation } from "@/store/apis/cart";
 import {
@@ -88,6 +89,7 @@ export default function LuxuryProductCard({
 }: LuxuryProductCardProps) {
   const router = useRouter();
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const { isInCart, goToCart } = useCartStatus(product.id);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
 
@@ -116,8 +118,15 @@ export default function LuxuryProductCard({
     });
   };
 
-  const handleAddToCart = async (e: any) => {
+  /** Adds the piece, or opens the bag once it is already in there. */
+  const handleBagPress = async (e: any) => {
     e.stopPropagation();
+
+    if (isInCart) {
+      goToCart();
+      return;
+    }
+
     try {
       await addToCart({ product, quantity: 1 }).unwrap();
       setShowSuccess(true);
@@ -295,7 +304,7 @@ export default function LuxuryProductCard({
             { backgroundColor: primaryColor },
             isAddingToCart && styles.addToBagButtonDisabled,
           ]}
-          onPress={handleAddToCart}
+          onPress={handleBagPress}
           disabled={isAddingToCart}
         >
           {isAddingToCart ? (
@@ -310,7 +319,7 @@ export default function LuxuryProductCard({
               ]}
               numberOfLines={1}
             >
-              Add To Bag
+              {isInCart ? "Go To Bag" : "Add To Bag"}
             </Text>
           )}
         </HapticButton>

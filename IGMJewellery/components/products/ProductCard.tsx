@@ -1,4 +1,5 @@
 import { TryOnSelectorModal } from "@/components/products/TryOnSelectorModal";
+import { useCartStatus } from "@/hooks/useCartStatus";
 import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import {
@@ -51,6 +52,7 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
   const router = useRouter();
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
+  const { isInCart, goToCart } = useCartStatus(product.id);
   const [showSuccess, setShowSuccess] = useState(false);
   const [firstImageBase64State, setFirstImageBase64State] = useState("");
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
@@ -102,8 +104,15 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
     ? (width - SPACING.m * 2 - GRID_GAP) / 2
     : width - SPACING.m * 2;
 
-  const handleAddToCart = async (e: any) => {
+  /** Adds the piece, or opens the bag once it is already in there. */
+  const handleBagPress = async (e: any) => {
     e.stopPropagation();
+
+    if (isInCart) {
+      goToCart();
+      return;
+    }
+
     try {
       console.log("Adding to cart:", product.title);
       await addToCart({ product, quantity: 1 }).unwrap();
@@ -369,7 +378,7 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
               styles.addToBagBtn,
               isAddingToCart && styles.addToBagBtnDisabled,
             ]}
-            onPress={handleAddToCart}
+            onPress={handleBagPress}
             disabled={isAddingToCart}
           >
             {isAddingToCart ? (
@@ -377,7 +386,9 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
             ) : showSuccess ? (
               <Ionicons name="checkmark" size={16} color="#FFFFFF" />
             ) : (
-              <Text style={styles.addToBagText}>Add to Bag</Text>
+              <Text style={styles.addToBagText}>
+                {isInCart ? "Go to Bag" : "Add to Bag"}
+              </Text>
             )}
           </HapticButton>
         </View>

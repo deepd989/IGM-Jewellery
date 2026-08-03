@@ -33,7 +33,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AnnouncementSection from "../components/announcementSectionHome";
 import CallUsComponent from "../components/basic components/callUsComponent";
 import { HapticButton } from "../components/basic components/hapticButton";
-import BrandsHorizontalScroll from "../components/brandsHorizontalScroll";
+import BrandsVerticalScroll from "../components/brandsHorizontalScroll";
 import CategoriesHorizontalScroll from "../components/categoriesHorizontallScroll";
 import HowItLooksWrapper from "../components/homePageCard";
 import { SectionHeader } from "../components/section";
@@ -137,7 +137,7 @@ const buildSections = (products: Product[]): HomeSection[] => [
     key: "brands",
     render: () => (
       <>
-        <BrandsHorizontalScroll />
+        <BrandsVerticalScroll />
         <HorizontalRuleIGM />
       </>
     ),
@@ -292,7 +292,7 @@ export default function HomeScreen() {
           <Ionicons name="chevron-down" size={20} color={COLORS.primary} />
         </HapticButton>
 
-        <HeaderRowClassic />
+        < HeaderRowClassic />
       </View>
 
       <FlatList

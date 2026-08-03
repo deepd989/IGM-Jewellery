@@ -36,7 +36,7 @@ import { useAuth } from "../../auth/authContext";
 import AnnouncementSection from "../../components/announcementSectionHome";
 import CallUsComponent from "../../components/basic components/callUsComponent";
 import { HapticButton } from "../../components/basic components/hapticButton";
-import BrandsHorizontalScroll from "../../components/brandsHorizontalScroll";
+import BrandsVerticalScroll from "../../components/brandsHorizontalScroll";
 import CategoriesHorizontalScroll from "../../components/categoriesHorizontallScroll";
 import HowItLooksWrapper from "../../components/homePageCard";
 import { SectionHeader } from "../../components/section";

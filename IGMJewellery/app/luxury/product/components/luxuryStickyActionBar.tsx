@@ -15,6 +15,8 @@ type LuxuryStickyActionBarProps = {
   isAddingToBag?: boolean;
   /** Swaps the label for a tick right after the item lands in the bag. */
   showSuccess?: boolean;
+  /** Turns the bag action into the jump to the cart. */
+  isInBag?: boolean;
 };
 
 /**
@@ -26,6 +28,7 @@ export default function LuxuryStickyActionBar({
   onAddToBag,
   isAddingToBag = false,
   showSuccess = false,
+  isInBag = false,
 }: LuxuryStickyActionBarProps) {
   const insets = useSafeAreaInsets();
 
@@ -78,6 +81,11 @@ export default function LuxuryStickyActionBar({
               <>
                 <Ionicons name="checkmark-circle" size={18} color="#FFFFFF" />
                 <Text style={styles.addToBagText}>ADDED</Text>
+              </>
+            ) : isInBag ? (
+              <>
+                <Ionicons name="bag-handle" size={18} color="#FFFFFF" />
+                <Text style={styles.addToBagText}>GO TO BAG</Text>
               </>
             ) : (
               <Text style={styles.addToBagText}>ADD TO BAG</Text>

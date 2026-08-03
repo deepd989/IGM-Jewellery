@@ -10,6 +10,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { STOREFRONT, type Storefront } from "../constants/storefront";
 import { COLORS } from "../constants/theme";
 import { HapticButton } from "./basic components/hapticButton";
 import { CartBadge } from "./cart/CardBadge";
@@ -36,9 +37,9 @@ export default function HeaderRowClassic({
   const { data: wishlistData } = useGetWishlistQuery();
   const wishlistCount = wishlistData?.items.length || 0;
 
-  const handleSelectStore = (store: "massy" | "luxe") => {
+  const handleSelectStore = (store: Storefront) => {
     // Already here; only the other side navigates.
-    if (store === "massy") return;
+    if (store === STOREFRONT.massy) return;
 
     if (onSwitchToLuxury) {
       onSwitchToLuxury();
@@ -50,7 +51,7 @@ export default function HeaderRowClassic({
 
   return (
     <View style={[styles.row, style]}>
-      <StoreToggle active="massy" onSelect={handleSelectStore} />
+      <StoreToggle active={STOREFRONT.massy} onSelect={handleSelectStore} />
 
       <View style={styles.actions}>
         <HapticButton

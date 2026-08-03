@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"; // Critical 
 
 import { ImageBackground } from "expo-image";
 import { COLORS } from "../constants/theme";
+import { useCartStatus } from "../hooks/useCartStatus";
 import { Product } from "../interfaces/product.interface";
 import { useAddToCartMutation } from "../store/apis/cart";
 import {
@@ -61,6 +62,7 @@ export const ImmersiveProductCard = ({
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const { isInCart, goToCart } = useCartStatus(product.id);
   const { data: wishlistData } = useGetWishlistQuery();
   const [addToWishlist, { isLoading: isAddingToWishlist }] =
     useAddToWishlistMutation();
@@ -72,8 +74,15 @@ export const ImmersiveProductCard = ({
     (item) => item.product.id === product.id
   );
 
-  const handleAddToCart = async (e: any) => {
+  /** Adds the piece, or opens the bag once it is already in there. */
+  const handleBagPress = async (e: any) => {
     e.stopPropagation();
+
+    if (isInCart) {
+      goToCart();
+      return;
+    }
+
     try {
       await addToCart({ product, quantity: 1 }).unwrap();
       Animated.timing(fadeAnim, {
@@ -256,7 +265,7 @@ export const ImmersiveProductCard = ({
                 isAddingToCart && styles.addBagBtnDisabled,
                 showSuccess && styles.addBagBtnSuccess,
               ]}
-              onPress={handleAddToCart}
+              onPress={handleBagPress}
               disabled={isAddingToCart || showSuccess}
             >
               <Animated.View
@@ -279,7 +288,9 @@ export const ImmersiveProductCard = ({
                     </Text>
                   </>
                 ) : (
-                  <Text style={styles.addBagText}>Add to Bag</Text>
+                  <Text style={styles.addBagText}>
+                    {isInCart ? "Go to Bag" : "Add to Bag"}
+                  </Text>
                 )}
               </Animated.View>
             </HapticButton>

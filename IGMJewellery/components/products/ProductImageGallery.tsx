@@ -1,3 +1,4 @@
+import { useCartStatus } from "@/hooks/useCartStatus";
 import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation } from "@/store/apis/cart";
 import { useGetProductsQuery } from "@/store/apis/product";
@@ -249,6 +250,7 @@ const SimilarProductCard = ({
   const [addToWishlist] = useAddToWishlistMutation();
   const [removeFromWishlist] = useRemoveFromWishlistMutation();
   const [addToCart] = useAddToCartMutation();
+  const { isInCart, goToCart } = useCartStatus(product.id);
 
   const isInWishlist = wishlistData?.items.some(
     (item) => item.product.id === product.id
@@ -267,8 +269,15 @@ const SimilarProductCard = ({
     }
   };
 
-  const handleAddToCart = async (e: any) => {
+  /** Adds the piece, or opens the cart once it is already in there. */
+  const handleCartPress = async (e: any) => {
     e.stopPropagation();
+
+    if (isInCart) {
+      goToCart();
+      return;
+    }
+
     try {
       await addToCart({ product, quantity: 1 }).unwrap();
       Alert.alert("Success", "Added to cart");
@@ -339,9 +348,11 @@ const SimilarProductCard = ({
         </HapticButton>
         <HapticButton
           style={styles.addToCartBtnSmall}
-          onPress={handleAddToCart}
+          onPress={handleCartPress}
         >
-          <Text style={styles.addToCartBtnText}>Add to cart</Text>
+          <Text style={styles.addToCartBtnText}>
+            {isInCart ? "Go to cart" : "Add to cart"}
+          </Text>
         </HapticButton>
       </View>
     </HapticButton>

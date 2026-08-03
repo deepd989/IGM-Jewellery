@@ -8,10 +8,17 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import {
+  STOREFRONT,
+  STOREFRONT_LABEL,
+  type Storefront,
+} from "../constants/storefront";
 import { COLORS } from "../constants/theme";
 import { HapticButton } from "./basic components/hapticButton";
 
-export type Storefront = "massy" | "luxe";
+// Re-exported so the existing imports of this type keep working; the
+// definition itself now lives with the storefront constants.
+export type { Storefront };
 
 /** The track the unselected half sits on. */
 const TRACK = "#E4F0EE";
@@ -31,14 +38,14 @@ export default function StoreToggle({
   onSelect,
   style,
 }: StoreToggleProps) {
-  const isLuxe = active === "luxe";
+  const isLuxe = active === STOREFRONT.luxe;
 
   return (
     <View style={[styles.container, style]}>
       <HapticButton
         style={styles.segment}
         activeOpacity={0.85}
-        onPress={() => onSelect("massy")}
+        onPress={() => onSelect(STOREFRONT.massy)}
       >
         {!isLuxe && (
           <LinearGradient
@@ -60,14 +67,14 @@ export default function StoreToggle({
             { color: isLuxe ? COLORS.primary : "#FFFFFF" },
           ]}
         >
-          Elanzia
+          {STOREFRONT_LABEL[STOREFRONT.massy]}
         </Text>
       </HapticButton>
 
       <HapticButton
         style={styles.segment}
         activeOpacity={0.85}
-        onPress={() => onSelect("luxe")}
+        onPress={() => onSelect(STOREFRONT.luxe)}
       >
         {isLuxe && <View style={[StyleSheet.absoluteFill, styles.luxeFill]} />}
         <Text
@@ -77,7 +84,7 @@ export default function StoreToggle({
             { color: isLuxe ? "#FFFFFF" : COLORS.primary },
           ]}
         >
-          LUXE
+          {STOREFRONT_LABEL[STOREFRONT.luxe]}
         </Text>
       </HapticButton>
     </View>

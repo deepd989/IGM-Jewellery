@@ -2,6 +2,7 @@ import { HapticButton } from "@/components/basic components/hapticButton";
 import { CustomizationModal } from "@/components/products/CustomizationModal";
 import { TryOnSelectorModal } from "@/components/products/TryOnSelectorModal";
 import { COLORS } from "@/constants/theme";
+import { useCartStatus } from "@/hooks/useCartStatus";
 import { useAddToCartMutation } from "@/store/apis/cart";
 import { useGetProductByIdQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
@@ -51,6 +52,7 @@ export default function LuxuryProductDetailScreen() {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const { isInCart, goToCart } = useCartStatus(productId as string);
   const { base64String: tryOnImage } = useGetImage(`${productId}_${userId}`);
 
   const {
@@ -75,8 +77,15 @@ export default function LuxuryProductDetailScreen() {
     return product.thumbnailUrls || [];
   };
 
-  const handleAddToBag = async () => {
+  /** Adds the piece, or opens the bag once it is already in there. */
+  const handleBagPress = async () => {
     if (!product) return;
+
+    if (isInCart) {
+      goToCart();
+      return;
+    }
+
     try {
       await addToCart({ product, quantity: 1 }).unwrap();
       setShowSuccess(true);
@@ -194,9 +203,10 @@ export default function LuxuryProductDetailScreen() {
 
       <LuxuryStickyActionBar
         onTryNow={() => setIsTryOnSelectorVisible(true)}
-        onAddToBag={handleAddToBag}
+        onAddToBag={handleBagPress}
         isAddingToBag={isAddingToCart}
         showSuccess={showSuccess}
+        isInBag={isInCart}
       />
 
       <CustomizationModal

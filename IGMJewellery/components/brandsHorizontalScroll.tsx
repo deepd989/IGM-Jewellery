@@ -10,6 +10,9 @@ import {
 import { Brand, useGetBrandsQuery } from "../store/apis/brandsApi";
 import { SectionHeader } from "./section";
 
+/** The section is a taste of the house, not the whole of it. */
+const MAX_BRANDS = 5;
+
 export const BrandCard = React.memo(function BrandCard({ title, image: item }) {
   const router = useRouter();
   return (
@@ -39,7 +42,7 @@ export const BrandCard = React.memo(function BrandCard({ title, image: item }) {
   );
 });
 
-export default function BrandsHorizontalScroll() {
+export default function BrandsVerticalScroll() {
   const router = useRouter();
   const { data: brandsData = [], isLoading } = useGetBrandsQuery({});
 
@@ -47,7 +50,7 @@ export default function BrandsHorizontalScroll() {
   // by identity, so a fresh array on each render re-rendered all of them.
   const brandsDataScroll = useMemo(
     () =>
-      brandsData.map((brand: Brand, index) => {
+      brandsData.slice(0, MAX_BRANDS).map((brand: Brand, index) => {
         let gradient: { gradientStartColor: string; gradientEndColor: string };
 
         // Determine the gradient based on the index

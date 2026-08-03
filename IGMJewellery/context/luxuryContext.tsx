@@ -1,3 +1,7 @@
+import {
+  STOREFRONT_SWITCH_LABEL,
+  storefrontOf,
+} from "@/constants/storefront";
 import { LinearGradient } from "expo-linear-gradient";
 import React, {
   createContext,
@@ -63,7 +67,7 @@ export function LuxuryProvider({ children }: { children: React.ReactNode }) {
       if (isSwitching) return;
 
       setIsSwitching(true);
-      setPendingLabel(value ? "Luxury" : "Massy");
+      setPendingLabel(STOREFRONT_SWITCH_LABEL[storefrontOf(value)]);
 
       Animated.timing(coverOpacity, {
         toValue: 1,
