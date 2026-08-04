@@ -1,6 +1,7 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { AssetKey, assetUrl } from "@/constants/assets";
 import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { useStorefrontBrands } from "@/hooks/useStorefrontBrands";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -21,7 +22,11 @@ const TILE_RADIUS = 18;
 export type BrandTileEntry = {
   /** Manifest key for this tile's cover artwork. */
   assetKey: AssetKey;
-  /** The brand the tile opens — the key /brandProfile/[brandName] takes. */
+  /**
+   * Whose microsite the tile opens. Matched against the storefront's brands by
+   * name key, by display name, or by brand id — the slots were curated by name,
+   * and the microsite is keyed by id, so either identifies the brand here.
+   */
   businessNameKey: string;
 };
 
@@ -37,7 +42,7 @@ export type BrandTileEntry = {
  * slot's manifest key; the layout does not move.
  */
 const BRAND_TILES: BrandTileEntry[] = [
-  { assetKey: "luxury.brandTile.cover1", businessNameKey: "roma_design" },
+  { assetKey: "luxury.brandTile.cover1", businessNameKey: "18" },
   { assetKey: "luxury.brandTile.cover2", businessNameKey: "belrosa_atelier" },
   { assetKey: "luxury.brandTile.cover3", businessNameKey: "zaiwarya" },
   { assetKey: "luxury.brandTile.cover4", businessNameKey: "rang_auraa" },
@@ -80,7 +85,7 @@ type LuxuryBrandsCollectionProps = {
   title?: string;
   /** The six slots of the mosaic. Defaults to the curated set above. */
   tiles?: BrandTileEntry[];
-  /** Overrides navigation to the brand's profile screen. */
+  /** Overrides navigation to the brand's microsite. */
   onPressBrand?: (tile: BrandTileEntry) => void;
   style?: ViewStyle;
 };
@@ -92,6 +97,10 @@ export default function LuxuryBrandsCollection({
   style,
 }: LuxuryBrandsCollectionProps) {
   const router = useRouter();
+  // The microsite is addressed by brand id while the slots are curated by
+  // name, so the brands are read here to resolve one to the other. The
+  // storefront's other brand rows run this same query, so it costs no fetch.
+  const { data: brands = [] } = useStorefrontBrands({});
   // Measured so the mosaic fits the space this component is actually given
   // (parents may add padding), rather than assuming the full screen width.
   const [containerWidth, setContainerWidth] = useState(SCREEN_WIDTH);
@@ -119,6 +128,25 @@ export default function LuxuryBrandsCollection({
       onPressBrand(tile);
       return;
     }
+
+    const key = tile.businessNameKey.toLowerCase();
+    const brand = brands.find(
+      (candidate) =>
+        candidate.id === tile.businessNameKey ||
+        candidate.businessNameKey.toLowerCase() === key ||
+        candidate.businessName.toLowerCase() === key
+    );
+
+    if (brand) {
+      router.navigate({
+        pathname: "/luxury/microsite",
+        params: { brandId: brand.id },
+      });
+      return;
+    }
+
+    // The brands have not arrived yet: the brand route resolves the name
+    // itself and lands on the same microsite, so the tap is never dead.
     router.navigate(`/brandProfile/${tile.businessNameKey}` as any);
   };
 

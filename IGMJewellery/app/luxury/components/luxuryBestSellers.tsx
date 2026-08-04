@@ -53,31 +53,40 @@ const PLAYER_WINDOW = 2;
  */
 const PLAYBACK_WINDOW = 1;
 
+type ReelEntry = {
+  /** The manifest key the clip is served under, resolved to a backend URL. */
+  videoKey: AssetKey;
+  /**
+   * The piece being worn. Matched against the catalogue by product id, or by
+   * SKU for the entries still written that way — the two identify the same
+   * piece, so either may be used here.
+   */
+  productId: string;
+};
+
 /**
  * The reel this section plays, in order.
  *
- * Each entry pairs the manifest key its clip is served under with the SKU of
- * the piece being worn. The SKU is what the card resolves against the
- * catalogue — it supplies the price, the name and the brand under the clip,
- * and it is where a tap on the card lands.
+ * Each entry pairs a clip with the piece it shows. The product id is what the
+ * card resolves against the catalogue — it supplies the price, the name and
+ * the brand under the clip, and it is the product page a tap on the card
+ * opens.
  *
- * A SKU the catalogue does not carry drops out of the reel rather than
+ * A product the catalogue does not carry drops out of the reel rather than
  * rendering a clip that goes nowhere.
  */
-const BEST_SELLER_REEL: { videoKey: AssetKey; skuId: string }[] = [
-  { videoKey: "luxury.bestSellers.video1", skuId: "EA1594" },
-  { videoKey: "luxury.bestSellers.video2", skuId: "GER-24" },
-  { videoKey: "luxury.bestSellers.video3", skuId: "GER-030" },
-  { videoKey: "luxury.bestSellers.video4", skuId: "GNK-026" },
-  { videoKey: "luxury.bestSellers.video5", skuId: "GNK-NK-29" },
-  { videoKey: "luxury.bestSellers.video6", skuId: "KAM-NK-04" },
-  { videoKey: "luxury.bestSellers.video7", skuId: "KAM-NK-04" },
-  { videoKey: "luxury.bestSellers.video8", skuId: "KAM-NK-04" },
+const BEST_SELLER_REEL: ReelEntry[] = [
+  { videoKey: "luxury.bestSellers.video1", productId: "25" },
+  { videoKey: "luxury.bestSellers.video2", productId: "26" },
+  { videoKey: "luxury.bestSellers.video3", productId: "144" },
+  { videoKey: "luxury.bestSellers.video4", productId: "61" },
+  { videoKey: "luxury.bestSellers.video5", productId: "120" },
+  { videoKey: "luxury.bestSellers.video6", productId: "42" },
+  { videoKey: "luxury.bestSellers.video7", productId: "34" },
+  { videoKey: "luxury.bestSellers.video8", productId: "58" },
 ];
 
-type ReelSlide = {
-  videoKey: AssetKey;
-  skuId: string;
+type ReelSlide = ReelEntry & {
   /** The clip's URL, resolved through the asset manifest. */
   video: string;
   /** Shown until the clip has a frame, and for cards holding no player. */
@@ -213,13 +222,15 @@ export default function LuxuryBestSellers({
 
   // The reel is a fixed list, so this only runs again when the catalogue does.
   const slides = useMemo<ReelSlide[]>(() => {
-    const bySku = new Map<string, Product>();
+    // Keyed by both, so a reel entry may name either without a code change.
+    const byId = new Map<string, Product>();
     for (const product of catalogue) {
-      if (product.sku) bySku.set(product.sku, product);
+      if (product.id) byId.set(product.id, product);
+      if (product.sku) byId.set(product.sku, product);
     }
 
     return BEST_SELLER_REEL.flatMap((entry) => {
-      const product = bySku.get(entry.skuId);
+      const product = byId.get(entry.productId);
       if (!product) return [];
       return [
         {
@@ -323,7 +334,9 @@ export default function LuxuryBestSellers({
           <FlatList
             data={slides}
             renderItem={renderCard}
-            keyExtractor={(slide) => slide.skuId}
+            // Keyed by clip, not by product: the same piece may appear in the
+            // reel more than once, so its id is not unique across the row.
+            keyExtractor={(slide) => slide.videoKey}
             // Which cards hold a player and which run is derived from the
             // active index, so a row has to re-render when it moves.
             extraData={`${cardWidth}-${activeIndex}-${isFocused}`}
@@ -363,7 +376,7 @@ export default function LuxuryBestSellers({
         <View style={styles.pagination}>
           {slides.map((slide, index) => (
             <View
-              key={slide.skuId}
+              key={slide.videoKey}
               style={[
                 styles.dot,
                 index === activeIndex ? styles.activeDot : styles.inactiveDot,
