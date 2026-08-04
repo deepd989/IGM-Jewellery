@@ -25,11 +25,24 @@ import {
 } from "react-native-safe-area-context";
 import { HapticButton } from "../components/basic components/hapticButton";
 import { COLORS, SPACING } from "../constants/theme";
+import { useLuxury } from "../context/luxuryContext";
+import LuxuryWishlistScreen from "./luxury/wishlist";
 
 /** Room the floating compare bar needs above the last row of cards. */
 const COMPARE_BAR_CLEARANCE = 84;
 
+/**
+ * Both storefronts share this route, so every existing link to /wishlist lands
+ * on the presentation the shopper is currently browsing in. The luxury screen
+ * also keeps its own route for direct links.
+ */
 export default function WishlistScreen() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? <LuxuryWishlistScreen /> : <ClassicWishlistScreen />;
+}
+
+function ClassicWishlistScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");

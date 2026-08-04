@@ -1,9 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import React from "react";
 import {
   ActivityIndicator,
-  Alert,
   Platform,
   StyleSheet,
   Text,
@@ -13,161 +12,49 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SPACING } from "../constants/theme";
 
 import { TrialTabContent } from "@/components/trial/TrailTabContent";
-import { Product } from "@/interfaces/product.interface";
-import {
-  useGetCartQuery,
-  useMoveToWishlistMutation,
-  useRemoveFromCartMutation,
-  useRemoveFromTrialMutation,
-  useToggleGiftAddonMutation,
-  useUpdateQuantityMutation,
-} from "@/store/apis/cart";
-import { useInitializeCheckoutMutation } from "@/store/apis/checkout";
+import { useCartScreen } from "@/hooks/useCartScreen";
 import { HapticButton } from "../components/basic components/hapticButton";
 import { BagTabContent } from "../components/cart/BagTabContent";
 import { RemoveConfirmationModal } from "../components/cart/RemoveConfirmationModal";
+import { useLuxury } from "../context/luxuryContext";
+import LuxuryCartScreen from "./luxury/cart";
 
+/**
+ * Both storefronts share this route, so every existing link to /cart lands on
+ * the presentation the shopper is currently browsing in. The luxury screen also
+ * keeps its own route for direct links.
+ */
 export default function CartScreen() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? <LuxuryCartScreen /> : <ClassicCartScreen />;
+}
+
+function ClassicCartScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams();
 
-  // Check if tab param is passed from navigation
-  const initialTab = params.tab === "trial" ? "trial" : "bag";
-  const [activeTab, setActiveTab] = useState<"bag" | "trial">(initialTab);
-  const [removingItem, setRemovingItem] = useState<Product | null>(null);
-
-  // Fetch cart data from Redux
-  const { data: cartData, isLoading } = useGetCartQuery();
-
-  // Mutations
-  const [updateQuantity] = useUpdateQuantityMutation();
-  const [removeFromCart] = useRemoveFromCartMutation();
-  const [removeFromTrial] = useRemoveFromTrialMutation();
-  const [toggleGiftAddon] = useToggleGiftAddonMutation();
-  const [moveToWishlist] = useMoveToWishlistMutation();
-  const [initializeCheckout, { isLoading: isInitializingCheckout }] =
-    useInitializeCheckoutMutation();
-
-  const cart = cartData?.items || [];
-  const trialList = cartData?.trialItems || [];
-  const giftAddons = cartData?.giftAddons || [];
-  const freebie = cartData?.freebie || null;
-
-  // Update tab based on URL params
-  useEffect(() => {
-    if (params.tab === "trial") {
-      setActiveTab("trial");
-    }
-  }, [params.tab]);
-
-  const handleUpdateQuantity = (id: string, delta: number) => {
-    const item = cart.find((i) => i.product.id === id);
-    if (item) {
-      const newQuantity = item.quantity + delta;
-      if (newQuantity < 1) {
-        setRemovingItem(item.product);
-        return;
-      }
-      updateQuantity({
-        productId: id,
-        quantity: newQuantity,
-      });
-    }
-  };
-
-  const handleToggleGiftAddon = (id: string) => {
-    toggleGiftAddon(id);
-  };
-
-  const calculateTotals = () => {
-    const subtotal = cart.reduce(
-      (acc, item) => acc + item.product.discountedPrice * item.quantity,
-      0
-    );
-    const savings = cart.reduce(
-      (acc, item) =>
-        acc +
-        (item.product.givenPrice! - item.product.discountedPrice) *
-          item.quantity,
-      0
-    );
-    const addons = giftAddons.reduce(
-      (acc, item) => (item.isChecked ? acc + item.price : acc),
-      0
-    );
-    return { subtotal, savings, addons };
-  };
-
-  const handleRemove = () => {
-    if (removingItem) {
-      if (activeTab === "bag") {
-        removeFromCart(removingItem.id);
-      } else {
-        removeFromTrial(removingItem.id);
-      }
-      setRemovingItem(null);
-    }
-  };
-
-  const handleMoveToWishlist = () => {
-    if (removingItem) {
-      moveToWishlist(removingItem.id);
-      setRemovingItem(null);
-    }
-  };
-
-  const handleCheckout = async () => {
-    if (cart.length === 0) {
-      Alert.alert(
-        "Empty Cart",
-        "Please add items to your cart before checkout"
-      );
-      return;
-    }
-
-    try {
-      await initializeCheckout().unwrap();
-      router.navigate("/checkout/address");
-    } catch (error: any) {
-      Alert.alert(
-        "Error",
-        error?.data || "Failed to start checkout. Please try again.",
-        [{ text: "OK" }]
-      );
-    }
-  };
-
-  const handleScheduleTrial = () => {
-    if (trialList.length === 0) {
-      Alert.alert("No Items", "Please add items to trial list");
-      return;
-    }
-
-    // Check if user has more than 5 items or items from multiple brands
-    if (trialList.length > 5) {
-      console.log("Trial list exceeds maximum limit:", trialList.length);
-      Alert.alert(
-        "Maximum Limit Exceeded",
-        "You can select maximum 5 items for home trial"
-      );
-      return;
-    }
-
-    // Check if all items are from the same brand
-    const brands = new Set(trialList.map((item) => item.product.brand));
-    if (brands.size > 1) {
-      console.log("Trial list exceeds maximum limit:", trialList.length);
-      Alert.alert(
-        "Multiple Brands",
-        "Home trial is available for items from 1 brand only. Please select items from the same brand."
-      );
-      return;
-    }
-
-    router.navigate("/trial/schedule");
-  };
-
-  const isBag = activeTab === "bag";
+  // Everything that is not presentation lives in the hook, so this screen and
+  // the luxury one can never drift in what checkout or the tabs do.
+  const {
+    isBag,
+    setActiveTab,
+    removingItem,
+    setRemovingItem,
+    cart,
+    trialList,
+    giftAddons,
+    freebie,
+    isLoading,
+    isInitializingCheckout,
+    handleUpdateQuantity,
+    handleToggleGiftAddon,
+    calculateTotals,
+    footerTotal,
+    handleRemove,
+    handleMoveToWishlist,
+    handleCheckout,
+    handleScheduleTrial,
+  } = useCartScreen();
 
   // Loading state
   if (isLoading) {
@@ -313,12 +200,7 @@ export default function CartScreen() {
             {isBag ? (
               <>
                 <Text style={styles.footerPrice}>
-                  ₹
-                  {(
-                    calculateTotals().subtotal +
-                    calculateTotals().addons +
-                    220
-                  ).toLocaleString()}
+                  ₹{footerTotal().toLocaleString()}
                 </Text>
                 <Text style={styles.footerLink}>View details</Text>
               </>

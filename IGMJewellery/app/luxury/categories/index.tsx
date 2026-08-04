@@ -275,7 +275,7 @@ export default function LuxuryCategoriesScreen() {
         </>
       )}
 
-      <HapticButton
+      {/* <HapticButton
         style={[
           styles.searchBar,
           // Clears the floating nav bar — which applies its own bottom inset —
@@ -290,7 +290,7 @@ export default function LuxuryCategoriesScreen() {
       >
         <SearchGlyph />
         <Text style={styles.searchPlaceholder}>Search</Text>
-      </HapticButton>
+      </HapticButton> */}
 
       <LuxuryNavBar activeKey="categories" />
     </View>

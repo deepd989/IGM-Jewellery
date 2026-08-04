@@ -96,14 +96,6 @@ export default function LuxuryProductDetailScreen() {
     }
   };
 
-  const handleViewSimilar = () => {
-    if (!product) return;
-    router.navigate({
-      pathname: "/product-list",
-      params: { productType: product.productType },
-    });
-  };
-
   if (isLoading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -142,11 +134,7 @@ export default function LuxuryProductDetailScreen() {
           },
         ]}
       >
-        <LuxuryProductHero
-          product={product}
-          images={getImageUrls()}
-          onViewSimilar={handleViewSimilar}
-        />
+        <LuxuryProductHero product={product} images={getImageUrls()} />
 
         <LuxuryProductInfo
           product={product}
@@ -166,7 +154,7 @@ export default function LuxuryProductDetailScreen() {
 
         <LuxurySeparator />
 
-        <LuxuryDiscounts imageUri={product.thumbnailUrls?.[0]} />
+        {/* <LuxuryDiscounts imageUri={product.thumbnailUrls?.[0]} /> */}
 
         {/* The section opens on a white cap, so the gap above it reads as one
             surface with the dark offers rail behind. */}

@@ -68,6 +68,7 @@ import LuxurySellingFast from "./components/luxurySellingFast";
 import LuxurySwipeAndShop from "./components/luxurySwipeAndShop";
 import LuxuryTopPicks from "./components/luxuryTopPicks";
 import LuxuryTopSearch from "./components/luxuryTopSearch";
+import LuxuryTrustBadges from "./components/luxuryTrustBadges";
 import LuxuryTryOn from "./components/luxuryTryOn";
 import OutfitTypesCarousel from "./components/outfitTypesCarousel";
 
@@ -113,20 +114,26 @@ const SECTIONS: StorefrontSection[] = [
     render: () => <GlossyHorizontalCard height={HERO_HEIGHT} />,
   },
   // 2. House of Elanzia Luxe
+  // {
+  //   key: "collectionCarousel",
+  //   render: () => <LuxuryHorizontalCollectionCarousel />,
+  // },
+
   {
-    key: "collectionCarousel",
-    render: () => <LuxuryHorizontalCollectionCarousel />,
+    key: "multibrand",
+    render: () => <LuxuryMultibrandCollection style={styles.fullBleedSection} />,
   },
+
   // Not in the design's running order; grounded with the section above it.
   {
     key: "brandsCollection",
     render: () => <LuxuryBrandsCollection />,
   },
   // 3. Brands on Elanzia
-  {
-    key: "brandsGrid",
-    render: () => <LuxuryBrandsGrid style={styles.fullBleedSection} />,
-  },
+  // {
+  //   key: "brandsGrid",
+  //   render: () => <LuxuryBrandsGrid style={styles.fullBleedSection} />,
+  // },
   // 4. Shop by Categories
   {
     key: "categories",
@@ -137,10 +144,9 @@ const SECTIONS: StorefrontSection[] = [
     key: "tryOn",
     render: () => <LuxuryTryOn style={styles.fullBleedSection} />,
   },
-  // 6. Latest Collections
   {
-    key: "multibrand",
-    render: () => <LuxuryMultibrandCollection style={styles.fullBleedSection} />,
+    key: "regional",
+    render: () => <LuxuryRegionalFavorites />,
   },
   // 7. Our Best Sellers
   {
@@ -160,42 +166,46 @@ const SECTIONS: StorefrontSection[] = [
   // 10. Shop for Every You
   {
     key: "outfits",
-    render: () => <OutfitTypesCarousel />,
+    // Full bleed: the peeking cards on either side have to run to the screen
+    // edges, so the section gives back the page gutter.
+    render: () => <OutfitTypesCarousel style={styles.fullBleedSection} />,
   },
   // 11. Top Picks for You
-  {
-    key: "topPicks",
-    render: () => <LuxuryTopPicks />,
-  },
+  // {
+  //   key: "topPicks",
+  //   render: () => <LuxuryTopPicks />,
+  // },
   // 12. Not Sure What to Gift
   {
     key: "elanziaSearch",
     render: () => <LuxuryElanziaSearch style={styles.fullBleedSection} />,
   },
   // 13. Regional Favourites
-  {
-    key: "regional",
-    render: () => <LuxuryRegionalFavorites />,
-  },
   // 14. New In for You
-  {
-    key: "newProducts",
-    render: () => <LuxuryNewProducts />,
-  },
+  // {
+  //   key: "newProducts",
+  //   render: () => <LuxuryNewProducts />,
+  // },
   // 15. Collections You May Like
-  {
-    key: "collections",
-    render: () => <LuxuryCollections />,
-  },
+  // {
+  //   key: "collections",
+  //   render: () => <LuxuryCollections />,
+  // },
   // 16. Selling Fast
-  {
-    key: "sellingFast",
-    render: () => <LuxurySellingFast />,
-  },
+  // {
+  //   key: "sellingFast",
+  //   render: () => <LuxurySellingFast />,
+  // },
   // 17. As Seen on You
   {
     key: "community",
     render: () => <LuxuryCommunityCarousel />,
+  },
+  // The assurances, on the page's own ground rather than over the footer's
+  // artwork below them.
+  {
+    key: "trustBadges",
+    render: () => <LuxuryTrustBadges />,
   },
   // 18. Footer
   {

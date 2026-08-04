@@ -73,7 +73,7 @@ type OutfitTypesCarouselProps = {
 };
 
 export default function OutfitTypesCarousel({
-  title = "Shop For Every You",
+  title = "For Every You",
   data = OUTFIT_TYPES,
   aspectRatio = 0.75,
   onPressCard,
@@ -212,7 +212,9 @@ export default function OutfitTypesCarousel({
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    // Deliberately no width: stretching to the parent lets a caller widen the
+    // section with negative margins. A fixed 100% would only shift it.
+    alignSelf: "stretch",
   },
   title: {
     fontSize: 22,

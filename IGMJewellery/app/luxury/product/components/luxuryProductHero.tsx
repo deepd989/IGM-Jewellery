@@ -3,7 +3,6 @@ import { CartBadge } from "@/components/cart/CardBadge";
 import { COLORS } from "@/constants/theme";
 import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
-import { useGetBrandByNameQuery } from "@/store/apis/brandsApi";
 import {
   useAddToWishlistMutation,
   useGetWishlistQuery,
@@ -61,25 +60,20 @@ type LuxuryProductHeroProps = {
   product: Product;
   /** Gallery images, already ordered by the screen (try-on shot included). */
   images: string[];
-  /** Opens the similar-products view. */
-  onViewSimilar?: () => void;
 };
 
 /**
  * The luxury product screen's opening frame: a full-bleed gallery with the
- * navigation, brand mark and a frosted meta card floating over the artwork.
+ * navigation and a frosted meta card floating over the artwork.
  */
 export default function LuxuryProductHero({
   product,
   images,
-  onViewSimilar,
 }: LuxuryProductHeroProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<string>>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-
-  const { data: brandData } = useGetBrandByNameQuery(product.brand);
 
   const { data: wishlistData } = useGetWishlistQuery();
   const [addToWishlist, { isLoading: isAddingToWishlist }] =
@@ -198,16 +192,6 @@ export default function LuxuryProductHero({
         </View>
       </View>
 
-      {!!brandData?.profileImageUri && (
-        <View style={[styles.brandBadge, { top: insets.top + 68 }]}>
-          <Image
-            source={{ uri: brandData.profileImageUri }}
-            style={styles.brandLogo}
-            resizeMode="contain"
-          />
-        </View>
-      )}
-
       <View style={styles.bottomStack} pointerEvents="box-none">
         {images.length > 1 && (
           <View style={styles.pagination}>
@@ -258,14 +242,6 @@ export default function LuxuryProductHero({
             </View>
 
             <View style={styles.metaIcons}>
-              <HapticButton
-                style={styles.metaIcon}
-                activeOpacity={0.6}
-                onPress={onViewSimilar}
-              >
-                <Ionicons name="copy-outline" size={24} color="#FFFFFF" />
-              </HapticButton>
-
               <HapticButton
                 style={styles.metaIcon}
                 activeOpacity={0.6}
@@ -357,26 +333,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -2,
     right: -4,
-  },
-  brandBadge: {
-    position: "absolute",
-    left: 16,
-    width: 76,
-    height: 76,
-    borderRadius: 18,
-    padding: 8,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#052A33",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  brandLogo: {
-    width: "100%",
-    height: "100%",
   },
   bottomStack: {
     position: "absolute",

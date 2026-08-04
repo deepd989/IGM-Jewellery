@@ -14,7 +14,6 @@ import {
   Image,
   LayoutChangeEvent,
   StyleSheet,
-  Text,
   View,
   ViewStyle,
 } from "react-native";
@@ -24,6 +23,9 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const GAP = 12;
 /** Two full cards plus a sliver of the third, so the row reads as scrollable. */
 const CARDS_PER_VIEW = 2.15;
+
+/** Diameter of the glass arrow in the card's corner. */
+const ARROW_SIZE = 38;
 
 type LuxuryHorizontalCollectionCarouselProps = {
   /** Overrides the collections fetched from the API. */
@@ -87,15 +89,11 @@ export default function LuxuryHorizontalCollectionCarousel({
         resizeMode="cover"
       />
 
-      {/* Glassmorphic caption pill */}
-      <View style={styles.glassPillWrapper}>
-        <BlurView intensity={40} tint="dark" style={styles.glassPillContent}>
-          <Text style={styles.titleText} numberOfLines={1}>
-            {item.name}
-          </Text>
-          <View style={styles.arrowButton}>
-            <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
-          </View>
+      {/* Glassmorphic arrow, on its own in the corner. The radius and the clip
+          live on the wrapper: a BlurView does not round its own blur. */}
+      <View style={styles.arrowWrapper}>
+        <BlurView intensity={40} tint="dark" style={styles.arrowGlass}>
+          <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
         </BlurView>
       </View>
     </HapticButton>
@@ -147,41 +145,22 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  glassPillWrapper: {
+  arrowWrapper: {
     position: "absolute",
-    left: 10,
     right: 10,
     bottom: 10,
-    borderRadius: 26,
+    width: ARROW_SIZE,
+    height: ARROW_SIZE,
+    borderRadius: ARROW_SIZE / 2,
     overflow: "hidden",
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.3)",
   },
-  glassPillContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingLeft: 14,
-    paddingRight: 6,
-    paddingVertical: 6,
-    backgroundColor: "rgba(30, 30, 30, 0.3)",
-  },
-  titleText: {
+  arrowGlass: {
     flex: 1,
-    marginRight: 8,
-    color: "#FFFFFF",
-    fontSize: 15,
-    fontWeight: "600",
-    letterSpacing: 0.2,
-  },
-  arrowButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.25)",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.3)",
+    // The lit face over the blur, so the glass reads as raised off the artwork.
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
   },
 });

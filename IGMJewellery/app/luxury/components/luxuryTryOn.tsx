@@ -22,6 +22,8 @@ const ASSETS = {
 type LuxuryTryOnProps = {
   badgeLabel?: string;
   title?: string;
+  /** The line under the title. Pass "" to run the title on its own. */
+  subtitle?: string;
   modelLabel?: string;
   userLabel?: string;
   ctaLabel?: string;
@@ -33,8 +35,9 @@ type LuxuryTryOnProps = {
 };
 
 export default function LuxuryTryOn({
-  badgeLabel = "Elanzia Ai",
-  title = "Replace Model's face\nwith yours using Ai",
+  badgeLabel = "Ai Try On",
+  title = "Become the model of Elanzia",
+  subtitle = "See everything on you",
   modelLabel = "Model",
   userLabel = "You",
   ctaLabel = "Try Now",
@@ -69,7 +72,10 @@ export default function LuxuryTryOn({
           <Text style={styles.badgeText}>{badgeLabel}</Text>
         </View>
 
-        <Text style={styles.title}>{title}</Text>
+        <Text style={[styles.title, !subtitle && styles.titleAlone]}>
+          {title}
+        </Text>
+        {!!subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
 
         <View style={styles.comparison}>
           <View style={styles.photoTile}>
@@ -164,6 +170,20 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "700",
     lineHeight: 30,
+    textAlign: "center",
+    // Tight to the subtitle, so the two read as one block. The subtitle then
+    // carries the block's gap down to the tiles.
+    marginBottom: 8,
+  },
+  /** Gives the title the block's trailing gap when it runs without a subtitle. */
+  titleAlone: {
+    marginBottom: LUXURY_SPACING,
+  },
+  subtitle: {
+    color: "rgba(255,255,255,0.8)",
+    fontSize: 15,
+    fontWeight: "400",
+    lineHeight: 22,
     textAlign: "center",
     marginBottom: LUXURY_SPACING,
   },

@@ -1,9 +1,12 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
+import { assetUrl } from "@/constants/assets";
 import { LUXURY_SPACING } from "@/constants/theme";
 import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
+import { ResizeMode, Video } from "expo-av";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -14,6 +17,9 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+
+/** The clip that plays inside the mock, shot portrait to fill the screen. */
+const SCREEN_VIDEO = assetUrl("luxury.swipeAndShop.video");
 
 /** Phone width ÷ height, so the mock keeps a device's proportions. */
 const PHONE_ASPECT_RATIO = 0.5;
@@ -30,8 +36,13 @@ type LuxurySwipeAndShopProps = {
   ctaLabel?: string;
   /** The piece shown on the mock screen; defaults to the catalogue's first. */
   product?: Product;
-  /** Blurred backdrop; defaults to the product's own artwork. */
+  /**
+   * Blurred backdrop behind the section, and the still the mock's screen holds
+   * until its clip has a frame. Defaults to the product's own artwork.
+   */
   imageUri?: string;
+  /** The clip playing inside the mock. Defaults to the section's own. */
+  videoUri?: string;
   /** Overrides navigation to the Swipe & Shop screen. */
   onPress?: () => void;
   style?: ViewStyle;
@@ -47,11 +58,15 @@ export default function LuxurySwipeAndShop({
   ctaLabel = "Try Now",
   product,
   imageUri,
+  videoUri = SCREEN_VIDEO,
   onPress,
   style,
 }: LuxurySwipeAndShopProps) {
   const router = useRouter();
   const { data: products = [] } = useGetProductsQuery({});
+  // The clip keeps decoding while the shopper is off on another screen unless
+  // the section stops it — the storefront's video rows want the decoders.
+  const isFocused = useIsFocused();
 
   const featured = product ?? products[0];
   const artwork = imageUri ?? featured?.thumbnailUrls?.[0];
@@ -86,13 +101,19 @@ export default function LuxurySwipeAndShop({
       >
         <View style={styles.phone}>
           <View style={styles.screen}>
-            {!!artwork && (
-              <Image
-                source={{ uri: artwork }}
-                style={styles.screenImage}
-                resizeMode="cover"
-              />
-            )}
+            {/* The frame is portrait, so the clip fills it on its own crop.
+                The artwork stands in until it has a frame to show. */}
+            <Video
+              source={{ uri: videoUri }}
+              style={styles.screenMedia}
+              resizeMode={ResizeMode.COVER}
+              shouldPlay={isFocused}
+              isLooping
+              isMuted
+              usePoster={!!artwork}
+              posterSource={artwork ? { uri: artwork } : undefined}
+              posterStyle={styles.screenPoster}
+            />
 
             {/* A picture of the feature, not a working copy of it. */}
             <View style={StyleSheet.absoluteFill} pointerEvents="none">
@@ -247,7 +268,13 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: "#2F6BD8",
   },
-  screenImage: StyleSheet.absoluteFillObject,
+  screenMedia: StyleSheet.absoluteFillObject,
+  // expo-av letterboxes its poster with `contain` by default, which would show
+  // the black screen around the still the clip is about to fill.
+  screenPoster: {
+    ...StyleSheet.absoluteFillObject,
+    resizeMode: "cover" as const,
+  },
   topScrim: {
     position: "absolute",
     top: 0,

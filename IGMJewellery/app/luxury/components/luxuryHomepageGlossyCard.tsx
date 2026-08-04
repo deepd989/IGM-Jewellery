@@ -3,7 +3,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
   FlatList,
   Dimensions,
   TouchableOpacity,
@@ -11,6 +10,8 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
+import { ResizeMode, Video } from 'expo-av';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { assetUrl } from "@/constants/assets";
@@ -23,28 +24,27 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const MIN_CARD_HEIGHT = Math.round(SCREEN_HEIGHT * 0.35) + 30;
 const MAX_CARD_HEIGHT = Math.round(SCREEN_HEIGHT * 0.50) + 30;
 
-
 // Sample Carousel Data
 const CAROUSEL_DATA = [
   {
     id: '1',
     title: 'Timeless Diamond Collection',
     subtitle: 'TBZ Jewellers',
-    image: assetUrl("luxury.glossyCard.slide1.image"),
+    video: assetUrl("luxury.glossyCard.slide1.video"),
     logo: assetUrl("luxury.glossyCard.slide1.brandLogo"),
   },
   {
     id: '2',
     title: 'Royal Heritage Gold',
     subtitle: 'TBZ Jewellers',
-    image: assetUrl("luxury.glossyCard.slide2.image"),
+    video: assetUrl("luxury.glossyCard.slide2.video"),
     logo: assetUrl("luxury.glossyCard.slide2.brandLogo"),
   },
   {
     id: '3',
     title: 'Modern Solitaire Series',
     subtitle: 'TBZ Jewellers',
-    image: assetUrl("luxury.glossyCard.slide3.image"),
+    video: assetUrl("luxury.glossyCard.slide3.video"),
     logo: assetUrl("luxury.glossyCard.slide3.brandLogo"),
   },
 ];
@@ -58,6 +58,9 @@ type GlassCarouselProps = {
 
 export default function GlassCarousel({ height }: GlassCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  // Clips keep decoding while the shopper is off on another screen unless the
+  // carousel stops them — the storefront's other video rows want the decoders.
+  const isFocused = useIsFocused();
   // Box actually available to the carousel, measured on layout.
   const [size, setSize] = useState({
     width: SCREEN_WIDTH,
@@ -85,14 +88,24 @@ export default function GlassCarousel({ height }: GlassCarouselProps) {
     }
   };
 
-  const renderItem = ({ item }: { item: CarouselItem }) => {
+  const renderItem = ({ item, index }: { item: CarouselItem; index: number }) => {
+    // Only the slide actually in view runs; the rest hold a player but stay
+    // paused on their first frame.
+    const isPlaying = isFocused && index === activeIndex;
+
     return (
       <View style={[styles.cardContainer, { width: cardWidth, height: cardHeight }]}>
-        {/* Main Background Image - Full Card Size */}
-        <Image
-          source={{ uri: item.image }}
-          style={styles.cardImage}
-          resizeMode="cover"
+        {/* The clip paints the slide on its own — no still stands in for it,
+            neither as a poster nor for the slides out of view. Every mounted
+            slide therefore holds a video decoder, which is affordable at three
+            slides; a longer carousel would want that budget back. */}
+        <Video
+          source={{ uri: item.video }}
+          style={styles.cardMedia}
+          resizeMode={ResizeMode.COVER}
+          shouldPlay={isPlaying}
+          isLooping
+          isMuted
         />
 
         {/* Top Right Brand Logo */}
@@ -134,7 +147,9 @@ export default function GlassCarousel({ height }: GlassCarouselProps) {
         data={CAROUSEL_DATA}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        extraData={cardWidth}
+        // The active index decides which slides hold a player, so a row has to
+        // re-render when it moves — without this the clips never hand off.
+        extraData={`${cardWidth}-${activeIndex}`}
         horizontal
         pagingEnabled // One card per page: card width === list width
         disableIntervalMomentum // Never fling past a single card
@@ -186,7 +201,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'relative',
   },
-  cardImage: {
+  cardMedia: {
     ...StyleSheet.absoluteFillObject,
     width: '100%',
     height: '100%',

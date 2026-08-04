@@ -1,13 +1,16 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
+import { AssetKey, assetUrl } from "@/constants/assets";
 import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
+import { ResizeMode, Video } from "expo-av";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -23,17 +26,161 @@ import {
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-/** The section never shows more than this many products. */
-const MAX_PRODUCTS = 10;
-
 const GAP = 12;
-/** One card plus a sliver of the next, so the row reads as scrollable. */
-const CARDS_PER_VIEW = 1.15;
+/**
+ * One card plus a slice of the next, so the row reads as scrollable. Held
+ * tighter than a row of square artwork would be: a portrait clip is nearly
+ * twice as tall as it is wide, so a card this wide is already a tall section.
+ */
+const CARDS_PER_VIEW = 1.25;
+/** Card width ÷ height — the clips are shot portrait. */
+const CARD_ASPECT_RATIO = 9 / 16;
 const SIDE_PADDING = 16;
+const CARD_RADIUS = 16;
+
+/**
+ * How far from the card in view a clip is given a player at all. Every player
+ * costs a video decoder, and the device has few — the storefront's other rows
+ * want them too. Cards outside this window paint their poster and hold none.
+ *
+ * One wider than PLAYBACK_WINDOW, so the card a swipe is heading for has
+ * buffered and arrives on a frame rather than on its poster.
+ */
+const PLAYER_WINDOW = 2;
+/**
+ * How far from the card in view a clip actually runs. The row shows a card and
+ * a slice of the next, so both of those play; everything else stays paused.
+ */
+const PLAYBACK_WINDOW = 1;
+
+/**
+ * The reel this section plays, in order.
+ *
+ * Each entry pairs the manifest key its clip is served under with the SKU of
+ * the piece being worn. The SKU is what the card resolves against the
+ * catalogue — it supplies the price, the name and the brand under the clip,
+ * and it is where a tap on the card lands.
+ *
+ * A SKU the catalogue does not carry drops out of the reel rather than
+ * rendering a clip that goes nowhere.
+ */
+const BEST_SELLER_REEL: { videoKey: AssetKey; skuId: string }[] = [
+  { videoKey: "luxury.bestSellers.video1", skuId: "EA1594" },
+  { videoKey: "luxury.bestSellers.video2", skuId: "GER-24" },
+  { videoKey: "luxury.bestSellers.video3", skuId: "GER-030" },
+  { videoKey: "luxury.bestSellers.video4", skuId: "GNK-026" },
+  { videoKey: "luxury.bestSellers.video5", skuId: "GNK-NK-29" },
+  { videoKey: "luxury.bestSellers.video6", skuId: "KAM-NK-04" },
+  { videoKey: "luxury.bestSellers.video7", skuId: "KAM-NK-04" },
+  { videoKey: "luxury.bestSellers.video8", skuId: "KAM-NK-04" },
+];
+
+type ReelSlide = {
+  videoKey: AssetKey;
+  skuId: string;
+  /** The clip's URL, resolved through the asset manifest. */
+  video: string;
+  /** Shown until the clip has a frame, and for cards holding no player. */
+  poster?: string;
+  product: Product;
+};
+
+type ReelCardProps = {
+  slide: ReelSlide;
+  width: number;
+  height: number;
+  /** Whether this card holds a player at all, or paints its poster instead. */
+  hasPlayer: boolean;
+  /** Of the cards holding a player, whether this one is running. */
+  isPlaying: boolean;
+  onPress: (product: Product) => void;
+  onPressTryOn: (product: Product) => void;
+};
+
+/**
+ * One clip in the reel, with the piece it shows set underneath.
+ *
+ * Memoised because every card's playback is derived from the row's active
+ * index: without this, one swipe re-renders every card in the row, when only
+ * the two either side of the move actually changed.
+ */
+const ReelCard = memo(function ReelCard({
+  slide,
+  width,
+  height,
+  hasPlayer,
+  isPlaying,
+  onPress,
+  onPressTryOn,
+}: ReelCardProps) {
+  const { product } = slide;
+
+  return (
+    <HapticButton
+      style={{ width }}
+      activeOpacity={0.9}
+      onPress={() => onPress(product)}
+    >
+      <View style={[styles.mediaWrapper, { height }]}>
+        {/* Exactly one of these paints the card, so a poster is never left
+            showing under a loaded clip. */}
+        {hasPlayer ? (
+          <Video
+            source={{ uri: slide.video }}
+            style={styles.media}
+            resizeMode={ResizeMode.COVER}
+            shouldPlay={isPlaying}
+            isLooping
+            isMuted
+            // Holds the still until the clip has a frame, so a card scrolled
+            // onto mid-load never flashes black.
+            usePoster={!!slide.poster}
+            posterSource={slide.poster ? { uri: slide.poster } : undefined}
+            posterStyle={styles.poster}
+          />
+        ) : (
+          <Image
+            source={{ uri: slide.poster }}
+            style={styles.media}
+            resizeMode="cover"
+          />
+        )}
+
+        <HapticButton
+          style={styles.tryOnWrapper}
+          activeOpacity={0.85}
+          onPress={(event) => {
+            event?.stopPropagation?.();
+            onPressTryOn(product);
+          }}
+        >
+          <BlurView intensity={75} tint="dark" style={styles.tryOn}>
+            <Ionicons name="sparkles" size={16} color="#FFFFFF" />
+            <Text style={styles.tryOnText}>Try Now</Text>
+          </BlurView>
+        </HapticButton>
+      </View>
+
+      {/* LUXE lists at full price, so there is no struck price beside it. */}
+      <View style={styles.priceRow}>
+        <Text style={styles.price}>
+          ₹{luxuryPrice(product)?.toLocaleString()}
+        </Text>
+      </View>
+
+      <Text style={styles.productName} numberOfLines={1}>
+        {product.name || product.title}
+      </Text>
+      <Text style={styles.brandName} numberOfLines={1}>
+        {product.brand}
+      </Text>
+    </HapticButton>
+  );
+});
 
 type LuxuryBestSellersProps = {
   title?: string;
-  /** Defaults to the product catalogue. */
+  /** The catalogue the reel's SKUs are resolved against. */
   products?: Product[];
   /** Overrides navigation to the product screen. */
   onPressProduct?: (product: Product) => void;
@@ -55,11 +202,35 @@ export default function LuxuryBestSellers({
   const router = useRouter();
   const { data: fetchedProducts = [] } = useGetProductsQuery({});
   const [activeIndex, setActiveIndex] = useState(0);
+  // Clips keep decoding while the shopper is off on another screen unless the
+  // row stops them — the storefront's other video rows want the decoders.
+  const isFocused = useIsFocused();
   // Measured so the cards fit the space this component is actually given
   // (parents may add padding), rather than assuming the full screen width.
   const [rowWidth, setRowWidth] = useState(SCREEN_WIDTH - SIDE_PADDING * 2);
 
-  const bestSellers = (products ?? fetchedProducts).slice(0, MAX_PRODUCTS);
+  const catalogue = products ?? fetchedProducts;
+
+  // The reel is a fixed list, so this only runs again when the catalogue does.
+  const slides = useMemo<ReelSlide[]>(() => {
+    const bySku = new Map<string, Product>();
+    for (const product of catalogue) {
+      if (product.sku) bySku.set(product.sku, product);
+    }
+
+    return BEST_SELLER_REEL.flatMap((entry) => {
+      const product = bySku.get(entry.skuId);
+      if (!product) return [];
+      return [
+        {
+          ...entry,
+          video: assetUrl(entry.videoKey),
+          poster: product.immersiveThumbnailUrl || product.thumbnailUrls?.[0],
+          product,
+        },
+      ];
+    });
+  }, [catalogue]);
 
   const handleLayout = (event: LayoutChangeEvent) => {
     const width = Math.round(event.nativeEvent.layout.width);
@@ -71,36 +242,44 @@ export default function LuxuryBestSellers({
   const cardWidth = Math.round(
     (rowWidth - GAP * (CARDS_PER_VIEW - 1)) / CARDS_PER_VIEW
   );
+  const cardHeight = Math.round(cardWidth / CARD_ASPECT_RATIO);
   const snapInterval = cardWidth + GAP;
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const index = Math.round(event.nativeEvent.contentOffset.x / snapInterval);
-    if (index !== activeIndex && index >= 0 && index < bestSellers.length) {
+    if (index !== activeIndex && index >= 0 && index < slides.length) {
       setActiveIndex(index);
     }
   };
 
-  const handlePressProduct = (product: Product) => {
-    if (onPressProduct) {
-      onPressProduct(product);
-      return;
-    }
-    router.navigate({
-      pathname: "/luxury/product/[id]",
-      params: { id: product.id },
-    });
-  };
+  // Stable so the memoised cards are not re-rendered by a new handler alone.
+  const handlePressProduct = useCallback(
+    (product: Product) => {
+      if (onPressProduct) {
+        onPressProduct(product);
+        return;
+      }
+      router.navigate({
+        pathname: "/luxury/product/[id]",
+        params: { id: product.id },
+      });
+    },
+    [onPressProduct, router]
+  );
 
-  const handlePressTryOn = (product: Product) => {
-    if (onPressTryOn) {
-      onPressTryOn(product);
-      return;
-    }
-    router.navigate({
-      pathname: "/tryOn",
-      params: { productId: product.id },
-    });
-  };
+  const handlePressTryOn = useCallback(
+    (product: Product) => {
+      if (onPressTryOn) {
+        onPressTryOn(product);
+        return;
+      }
+      router.navigate({
+        pathname: "/tryOn",
+        params: { productId: product.id },
+      });
+    },
+    [onPressTryOn, router]
+  );
 
   const handleViewAll = () => {
     if (onViewAll) {
@@ -110,86 +289,81 @@ export default function LuxuryBestSellers({
     router.navigate("/product-list");
   };
 
-  const renderCard = ({ item }: { item: Product }) => {
-    return (
-      <HapticButton
-        style={{ width: cardWidth }}
-        activeOpacity={0.9}
-        onPress={() => handlePressProduct(item)}
-      >
-        <View style={[styles.imageWrapper, { height: cardWidth }]}>
-          <Image
-            source={{ uri: item.thumbnailUrls?.[0] }}
-            style={styles.image}
-            resizeMode="cover"
-          />
-
-          <HapticButton
-            style={styles.tryOnWrapper}
-            activeOpacity={0.85}
-            onPress={() => handlePressTryOn(item)}
-          >
-            <BlurView intensity={75} tint="dark" style={styles.tryOn}>
-              <Ionicons name="sparkles" size={16} color="#FFFFFF" />
-              <Text style={styles.tryOnText}>Try Now</Text>
-            </BlurView>
-          </HapticButton>
-        </View>
-
-        {/* LUXE lists at full price, so there is no struck price beside it. */}
-        <View style={styles.priceRow}>
-          <Text style={styles.price}>
-            ₹{luxuryPrice(item)?.toLocaleString()}
-          </Text>
-        </View>
-
-        <Text style={styles.productName} numberOfLines={1}>
-          {item.name || item.title}
-        </Text>
-        <Text style={styles.brandName} numberOfLines={1}>
-          {item.brand}
-        </Text>
-      </HapticButton>
-    );
-  };
+  const renderCard = useCallback(
+    ({ item, index }: { item: ReelSlide; index: number }) => {
+      const distance = Math.abs(index - activeIndex);
+      return (
+        <ReelCard
+          slide={item}
+          width={cardWidth}
+          height={cardHeight}
+          hasPlayer={distance <= PLAYER_WINDOW}
+          isPlaying={isFocused && distance <= PLAYBACK_WINDOW}
+          onPress={handlePressProduct}
+          onPressTryOn={handlePressTryOn}
+        />
+      );
+    },
+    [
+      activeIndex,
+      cardWidth,
+      cardHeight,
+      isFocused,
+      handlePressProduct,
+      handlePressTryOn,
+    ]
+  );
 
   return (
     <View style={[styles.container, style]}>
       <Text style={styles.title}>{title}</Text>
 
       <View onLayout={handleLayout} style={styles.row}>
-        <FlatList
-          data={bestSellers}
-          renderItem={renderCard}
-          keyExtractor={(item) => item.id}
-          extraData={cardWidth}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          // Only the cards near the viewport are mounted, so an off-screen
-          // card holds no decoded artwork.
-          initialNumToRender={2}
-          maxToRenderPerBatch={2}
-          windowSize={5}
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
-          snapToInterval={snapInterval}
-          snapToAlignment="start"
-          disableIntervalMomentum // Never fling past a single card
-          decelerationRate="fast"
-          contentContainerStyle={styles.listContent}
-          getItemLayout={(_, index) => ({
-            length: snapInterval,
-            offset: snapInterval * index,
-            index,
-          })}
-        />
+        {slides.length > 0 ? (
+          <FlatList
+            data={slides}
+            renderItem={renderCard}
+            keyExtractor={(slide) => slide.skuId}
+            // Which cards hold a player and which run is derived from the
+            // active index, so a row has to re-render when it moves.
+            extraData={`${cardWidth}-${activeIndex}-${isFocused}`}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            // Only the cards near the viewport are mounted, so an off-screen
+            // card holds no decoded artwork.
+            initialNumToRender={2}
+            maxToRenderPerBatch={2}
+            windowSize={5}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+            snapToInterval={snapInterval}
+            snapToAlignment="start"
+            disableIntervalMomentum // Never fling past a single card
+            decelerationRate="fast"
+            contentContainerStyle={styles.listContent}
+            getItemLayout={(_, index) => ({
+              length: snapInterval,
+              offset: snapInterval * index,
+              index,
+            })}
+          />
+        ) : (
+          // Holds the row's height while the catalogue loads, so the page does
+          // not jump once the reel's SKUs resolve.
+          <View
+            style={[
+              styles.placeholderCard,
+              { width: cardWidth, height: cardHeight },
+            ]}
+          />
+        )}
       </View>
 
-      {bestSellers.length > 1 && (
+      {slides.length > 1 && (
         <View style={styles.pagination}>
-          {bestSellers.map((product, index) => (
+          {slides.map((slide, index) => (
             <View
-              key={product.id}
+              key={slide.skuId}
               style={[
                 styles.dot,
                 index === activeIndex ? styles.activeDot : styles.inactiveDot,
@@ -234,13 +408,23 @@ const styles = StyleSheet.create({
     gap: GAP,
     paddingRight: SIDE_PADDING,
   },
-  imageWrapper: {
-    borderRadius: 16,
+  mediaWrapper: {
+    borderRadius: CARD_RADIUS,
     overflow: "hidden",
     backgroundColor: LUXURY_COLORS.surface,
   },
-  image: {
+  media: {
     ...StyleSheet.absoluteFillObject,
+  },
+  // expo-av letterboxes its poster with `contain` by default, which reads as a
+  // jump against the plain poster beside it, cropped to fill.
+  poster: {
+    ...StyleSheet.absoluteFillObject,
+    resizeMode: "cover" as const,
+  },
+  placeholderCard: {
+    borderRadius: CARD_RADIUS,
+    backgroundColor: LUXURY_COLORS.surface,
   },
   tryOnWrapper: {
     position: "absolute",

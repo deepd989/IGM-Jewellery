@@ -57,6 +57,12 @@ type LuxuryProductCardProps = {
   onRemoveFromWishlist?: () => void;
   /** Forces the heart's state instead of reading it from the wishlist. */
   isInWishlist?: boolean;
+  /**
+   * Adds the compare checkbox to the tile. Only the wishlist screen passes
+   * these; without the handler the tile carries no checkbox at all.
+   */
+  isInCompare?: boolean;
+  onToggleCompare?: () => void;
   /** Set when the card sits on the storefront's dark ground. */
   onDark?: boolean;
   /**
@@ -89,6 +95,8 @@ export default function LuxuryProductCard({
   onPress,
   onRemoveFromWishlist,
   isInWishlist: propIsInWishlist,
+  isInCompare = false,
+  onToggleCompare,
   onDark = false,
   compact = false,
   primaryColor = COLORS.primary,
@@ -228,6 +236,31 @@ export default function LuxuryProductCard({
             />
           )}
         </HapticButton>
+
+        {/* Bottom-left, clear of the "New" flag that sits opposite it. */}
+        {!!onToggleCompare && (
+          <HapticButton
+            style={styles.compareCheckbox}
+            onPress={(e) => {
+              e?.stopPropagation?.();
+              onToggleCompare();
+            }}
+          >
+            <View
+              style={[
+                styles.checkbox,
+                isInCompare && {
+                  backgroundColor: primaryColor,
+                  borderColor: primaryColor,
+                },
+              ]}
+            >
+              {isInCompare && (
+                <Ionicons name="checkmark" size={14} color="#FFFFFF" />
+              )}
+            </View>
+          </HapticButton>
+        )}
       </View>
 
       {/* LUXE lists at full price, so there is no struck price beside it. */}
@@ -364,6 +397,21 @@ const styles = StyleSheet.create({
   },
   image: {
     ...StyleSheet.absoluteFillObject,
+  },
+  compareCheckbox: {
+    position: "absolute",
+    bottom: 12,
+    left: 12,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
+    backgroundColor: "rgba(10, 26, 31, 0.45)",
+    alignItems: "center",
+    justifyContent: "center",
   },
   newBadge: {
     position: "absolute",

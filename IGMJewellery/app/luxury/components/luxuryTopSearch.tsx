@@ -24,6 +24,12 @@ import LuxuryWishlistButton from "./luxuryWishlistButton";
 const QUICK_DEPARTMENT = "womens";
 
 /**
+ * How far the bar's bottom corners are turned. Shared by both states so the
+ * open bar meets the page the same way the resting one does.
+ */
+const BAR_RADIUS = 24;
+
+/**
  * The Elanzia mark, as the classic header's toggle sets it. It carries its own
  * teal ground rather than an alpha channel, so it is set as a rounded chip and
  * never tinted.
@@ -270,8 +276,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 16,
     gap: 14,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
+    borderBottomLeftRadius: BAR_RADIUS,
+    borderBottomRightRadius: BAR_RADIUS,
   },
   deliveryButton: {
     alignSelf: "flex-start",
@@ -330,7 +336,11 @@ const styles = StyleSheet.create({
   // The band behind the white card, so the quick row's labels have something
   // to read against once the search takes over the top of the page.
   open: {
+    // Both gradients fill this box absolutely, so the corners only read as
+    // rounded because the overflow is clipped here.
     overflow: "hidden",
+    borderBottomLeftRadius: BAR_RADIUS,
+    borderBottomRightRadius: BAR_RADIUS,
   },
   sheen: {
     position: "absolute",
