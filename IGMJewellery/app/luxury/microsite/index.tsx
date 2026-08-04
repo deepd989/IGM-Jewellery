@@ -200,19 +200,19 @@ export default function MicrositeScreen({ brandId: brandIdProp }: MicrositeScree
           />
         ),
       },
-      collections.length
-        ? {
-            key: "collection",
-            render: () => (
-              <MicrositeCollections
-                collections={collections}
-                primaryColor={primaryColor}
-                onSelect={openCollection}
-                onViewAll={openBrandProducts}
-              />
-            ),
-          }
-        : null,
+      // collections.length
+      //   ? {
+      //       key: "collection",
+      //       render: () => (
+      //         <MicrositeCollections
+      //           collections={collections}
+      //           primaryColor={primaryColor}
+      //           onSelect={openCollection}
+      //           onViewAll={openBrandProducts}
+      //         />
+      //       ),
+      //     }
+      //   : null,
       {
         key: "why",
         render: () => (

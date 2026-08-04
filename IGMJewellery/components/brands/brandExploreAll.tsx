@@ -10,7 +10,7 @@ import {
     StatusBar
   } from 'react-native';
 import BrandGridTileView from '../brandGrid';
-import { BrandGrid, BrandSection } from './brandList';
+import { BrandCarousel, BrandSection } from './brandList';
 import { SafeAreaFrameContext, SafeAreaView } from 'react-native-safe-area-context';
 
 const TOP_BRANDS = [1, 2, 3, 4, 5, 6];
@@ -23,7 +23,7 @@ export default function BrandsExploreAll() {
     <SafeAreaView>
             <ScrollView>
                 <Text style={style.header}>Top Brands</Text>
-                <BrandGrid data={TOP_BRANDS} />
+                <BrandCarousel data={TOP_BRANDS} />
                 <BrandSection title="Ethnic Jewellery Brands" data={ETHNIC_BRANDS} />
                 <BrandSection title="Modern Jewellery Brands" data={MODERN_BRANDS} />
                 <BrandSection title="Only at IGM" data={ETHNIC_BRANDS} />

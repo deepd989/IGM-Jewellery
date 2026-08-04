@@ -136,14 +136,19 @@ const SECTIONS: StorefrontSection[] = [
   // },
   // 4. Shop by Categories
   {
+    key: "tryOn",
+    render: () => <LuxuryTryOn style={styles.fullBleedSection} />,
+  },
+  {
+    key: "swipeAndShop",
+    render: () => <LuxurySwipeAndShop style={styles.fullBleedSection} />,
+  },
+  {
     key: "categories",
     render: () => <LuxuryCategories />,
   },
   // Not in the design's running order.
-  {
-    key: "tryOn",
-    render: () => <LuxuryTryOn style={styles.fullBleedSection} />,
-  },
+
   {
     key: "regional",
     // render: () => <LuxuryRegionalFavorites />,
@@ -161,10 +166,6 @@ const SECTIONS: StorefrontSection[] = [
     render: () => <LuxuryBestSellers />,
   },
   // 8. Try Swipe and Shop
-  {
-    key: "swipeAndShop",
-    render: () => <LuxurySwipeAndShop style={styles.fullBleedSection} />,
-  },
   // 9. Find Something for All
   // {
   //   key: "gender",
@@ -404,6 +405,12 @@ const styles = StyleSheet.create({
    *
    * The band paints no ground of its own — the page's runs through it — so the
    * vertical rhythm lives here rather than in a separator between rows.
+   *
+   * Half a gap each side, so neighbouring bands meet at a full LUXURY_SPACING.
+   * That only holds while the sections themselves carry no vertical padding:
+   * back when each painted a ground of its own, its inset read as part of that
+   * card, but on one shared ground it simply adds to this. A section that needs
+   * space above or below it should be given it here.
    */
   sectionBand: {
     marginHorizontal: -PAGE_PADDING,

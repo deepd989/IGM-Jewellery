@@ -6,6 +6,7 @@ import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import {
+  FlatList,
   LayoutChangeEvent,
   ScrollView,
   StyleSheet,
@@ -17,12 +18,20 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../basic components/hapticButton";
 
 const SPACING = 16;
-const GRID_GAP = 12;
+const CARD_GAP = 12;
 
-/** Three across on every device; the tile shrinks to fit rather than the row. */
-const NUM_COLUMNS = 3;
-/** Tile height as a share of its width. */
-const TILE_RATIO = 0.85;
+/**
+ * Cards in view at once: one brand fills the row, so the row reads as a pager
+ * rather than as a shelf. Nothing peeks in from the edge to say it scrolls, so
+ * the snap does that job — a card is always parked square in the row, and a
+ * swipe moves exactly one.
+ */
+const CARDS_PER_VIEW = 1;
+/**
+ * Tile height as a share of its width: 16:9, so the card reads landscape
+ * rather than as the near-square it was when three sat side by side.
+ */
+const TILE_RATIO = 9 / 16;
 
 const BrandCard = ({ brand, width }: { brand: Brand; width: number }) => {
   const router = useRouter();
@@ -47,40 +56,79 @@ const BrandCard = ({ brand, width }: { brand: Brand; width: number }) => {
   );
 };
 
-export const BrandGrid = ({ data }: { data: Brand[] }) => {
-  const [gridWidth, setGridWidth] = useState(0);
+export const BrandCarousel = ({ data }: { data: Brand[] }) => {
+  const [rowWidth, setRowWidth] = useState(0);
 
   /**
    * Measured from the row itself rather than from `Dimensions.get("window")`.
    * The window and the row disagree on split screen, on foldables and after a
-   * rotation, and a tile sized for the window overflowed the row by a hair —
-   * the third card wrapped onto the next line and left the grid hugging the
-   * left with a hole beside it.
+   * rotation, and a card sized for the window overflows the row by a hair —
+   * enough to leave the snap offsets disagreeing with where the cards actually
+   * sit, which parks the row between two cards.
    *
-   * Rounding down guarantees three tiles plus their gaps never exceed the row;
-   * `justifyContent: "center"` spreads the few leftover pixels evenly.
+   * Rounding down keeps the card plus its gap inside the interval the row
+   * snaps by, so those two can never drift apart.
+   *
+   * At one card per view this is just the row's own width — the subtraction is
+   * left general so the row can be widened back out to several cards by the
+   * constant alone.
    */
-  const itemWidth = useMemo(() => {
-    if (!gridWidth) return 0;
-    const available = gridWidth - GRID_GAP * (NUM_COLUMNS - 1);
-    return Math.floor(available / NUM_COLUMNS);
-  }, [gridWidth]);
+  const cardWidth = useMemo(() => {
+    if (!rowWidth) return 0;
+    const available = rowWidth - CARD_GAP * (CARDS_PER_VIEW - 1);
+    return Math.floor(available / CARDS_PER_VIEW);
+  }, [rowWidth]);
+
+  /**
+   * The gutter rides in the interval rather than in the card, so a card fills
+   * the row exactly and the gap is only ever seen mid-swipe. It is also why
+   * this snaps by interval instead of `pagingEnabled`: paging steps by the
+   * viewport, which is a gap short of where each card actually starts, and the
+   * two drift further apart with every card.
+   */
+  const snapInterval = cardWidth + CARD_GAP;
 
   const handleLayout = (event: LayoutChangeEvent) => {
     const { width } = event.nativeEvent.layout;
-    setGridWidth((current) => (current === width ? current : width));
+    setRowWidth((current) => (current === width ? current : width));
   };
 
   return (
-    <View style={styles.gridContainer} onLayout={handleLayout}>
-      {itemWidth > 0 &&
-        data.map((item) => (
-          <BrandCard
-            key={item.id || item.businessName}
-            brand={item}
-            width={itemWidth}
-          />
-        ))}
+    <View onLayout={handleLayout}>
+      {/* Held back until the width is known, so the row lays out once: sizing
+          cards against a guessed width and re-measuring leaves getItemLayout's
+          offsets disagreeing with the real ones. */}
+      {cardWidth > 0 && (
+        <FlatList
+          data={data}
+          keyExtractor={(item) => item.id || item.businessName}
+          renderItem={({ item }) => (
+            <BrandCard brand={item} width={cardWidth} />
+          )}
+          // Cards are sized from the measured row, so they have to re-render
+          // when it changes.
+          extraData={cardWidth}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          // Settles on a card rather than between two.
+          snapToInterval={snapInterval}
+          snapToAlignment="start"
+          disableIntervalMomentum // Never fling past a single card
+          decelerationRate="fast"
+          contentContainerStyle={styles.carouselContent}
+          // Only the cards near the viewport are mounted, so a brand scrolled
+          // past holds no decoded artwork. Held tighter than a shelf of small
+          // tiles would be: each card is now a full row of artwork.
+          initialNumToRender={2}
+          maxToRenderPerBatch={2}
+          windowSize={5}
+          getItemLayout={(_, index) => ({
+            length: snapInterval,
+            offset: snapInterval * index,
+            index,
+          })}
+        />
+      )}
     </View>
   );
 };
@@ -98,12 +146,8 @@ export const BrandSection = ({
     <View style={styles.sectionContainer}>
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>{title}</Text>
-        <HapticButton style={styles.viewAllBtn}>
-          <Text style={styles.viewAllText}>View All</Text>
-          <Ionicons name="chevron-forward" size={16} color="#053844" />
-        </HapticButton>
       </View>
-      <BrandGrid data={data} />
+      <BrandCarousel data={data} />
     </View>
   );
 };
@@ -166,14 +210,14 @@ export default function BrandList() {
           {filteredBrands.length > 0 ? (
             <>
               <BrandSection title="All Brands" data={filteredBrands} />
-              <BrandSection
+              {/* <BrandSection
                 title="Ethnic Jewellery Brands"
                 data={filteredBrands}
               />
               <BrandSection
                 title="Modern Jewellery Brands"
                 data={filteredBrands}
-              />
+              /> */}
             </>
           ) : (
             <View style={styles.emptyState}>
@@ -262,13 +306,8 @@ const styles = StyleSheet.create({
     color: "#053844",
     marginRight: 2,
   },
-  gridContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: GRID_GAP,
-    // Keeps the rounded-down remainder even on both sides, so the grid stays
-    // centred and a short last row sits under the middle of the one above.
-    justifyContent: "center",
+  carouselContent: {
+    gap: CARD_GAP,
   },
   cardContainer: {
     backgroundColor: "#f5f5f5",

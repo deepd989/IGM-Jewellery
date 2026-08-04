@@ -210,8 +210,10 @@ const styles = StyleSheet.create({
     // artwork behind its cards, and now carries none of its own.
     backgroundColor: LUXURY_COLORS.primary,
   },
+  // No vertical padding: the section grounds on the page's own colour now, so
+  // an inset of its own only stacks onto the band's gap. The storefront's
+  // rhythm lives in app/luxury/index.tsx's sectionBand.
   content: {
-    paddingVertical: LUXURY_SPACING + 10,
     paddingHorizontal: SIDE_PADDING,
   },
   title: {

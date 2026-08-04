@@ -3,12 +3,16 @@ import { LUXURY_COLORS } from "@/constants/theme";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { ArrowRight, Sparkles } from "lucide-react-native";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import {
+  Alert,
   Dimensions,
+  Modal,
+  Platform,
   StyleProp,
   StyleSheet,
   Text,
+  TextInput,
   View,
   ViewStyle,
 } from "react-native";
@@ -32,6 +36,11 @@ type MicrositeHeroProps = {
   /** The brand's own accent, used for the eyebrow and the second action. */
   accentColor?: string;
   onViewAllProducts?: () => void;
+  /**
+   * What a correct password opens. Nothing calls it yet — the gate turns every
+   * attempt away — but it is where the collection is reached from once there is
+   * a password to check against.
+   */
   onPrivateCollection?: () => void;
   style?: StyleProp<ViewStyle>;
 };
@@ -72,6 +81,47 @@ export default function MicrositeHero({
   style,
 }: MicrositeHeroProps) {
   const establishedLine = buildEstablishedLine(establishedDate);
+
+  const [isGateOpen, setIsGateOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  /** iOS only — see handleSubmitPassword. */
+  const [isFailurePending, setIsFailurePending] = useState(false);
+
+  const openGate = () => {
+    setPassword("");
+    setIsGateOpen(true);
+  };
+
+  const closeGate = () => {
+    setIsGateOpen(false);
+    setPassword("");
+  };
+
+  const announceFailure = useCallback(() => {
+    Alert.alert(
+      "Wrong password",
+      "That password does not open this collection."
+    );
+  }, []);
+
+  /**
+   * There is no password that works yet, so every attempt is turned away.
+   *
+   * iOS drops an alert raised while a modal is still dismissing, so there the
+   * alert waits for the gate to be gone and is fired from onDismiss. Android
+   * has no such step.
+   */
+  const handleSubmitPassword = () => {
+    if (!password.trim()) return;
+
+    closeGate();
+
+    if (Platform.OS === "ios") {
+      setIsFailurePending(true);
+      return;
+    }
+    announceFailure();
+  };
 
   return (
     <View style={[styles.container, style]}>
@@ -116,13 +166,12 @@ export default function MicrositeHero({
             onPress={onViewAllProducts}
           >
             <Text style={styles.actionText}>View All Products</Text>
-            <ArrowRight size={18} color="#FFFFFF" strokeWidth={2} />
           </HapticButton>
 
           <HapticButton
             style={[styles.action, { backgroundColor: accentColor }]}
             activeOpacity={0.85}
-            onPress={onPrivateCollection}
+            onPress={openGate}
           >
             <Text style={[styles.actionText, styles.actionTextOnAccent]}>
               Private Collection
@@ -136,6 +185,77 @@ export default function MicrositeHero({
           </HapticButton>
         </View>
       </View>
+
+      <Modal
+        visible={isGateOpen}
+        animationType="fade"
+        transparent
+        onRequestClose={closeGate}
+        onDismiss={() => {
+          if (!isFailurePending) return;
+          setIsFailurePending(false);
+          announceFailure();
+        }}
+      >
+        <View style={styles.gateOverlay}>
+          {/* Tappable backdrop, the same way out as Cancel. */}
+          <HapticButton
+            style={StyleSheet.absoluteFill}
+            activeOpacity={1}
+            onPress={closeGate}
+          >
+            <View />
+          </HapticButton>
+
+          <View style={styles.gateCard}>
+            <Text style={styles.gateTitle}>Private Collection</Text>
+            <Text style={styles.gateSubtitle}>
+              Enter the password {brandName} gave you.
+            </Text>
+
+            <TextInput
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Password"
+              placeholderTextColor="rgba(255,255,255,0.45)"
+              style={styles.gateInput}
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoFocus
+              returnKeyType="go"
+              onSubmitEditing={handleSubmitPassword}
+            />
+
+            <View style={styles.gateActions}>
+              <HapticButton
+                style={[styles.gateButton, styles.gateButtonGhost]}
+                activeOpacity={0.85}
+                onPress={closeGate}
+              >
+                <Text style={styles.gateButtonText}>Cancel</Text>
+              </HapticButton>
+
+              <HapticButton
+                style={[
+                  styles.gateButton,
+                  { backgroundColor: accentColor },
+                  !password.trim() && styles.gateButtonDisabled,
+                ]}
+                activeOpacity={0.85}
+                disabled={!password.trim()}
+                onPress={handleSubmitPassword}
+              >
+                <Text
+                  style={[styles.gateButtonText, styles.actionTextOnAccent]}
+                >
+                  Unlock
+                </Text>
+              </HapticButton>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -257,5 +377,71 @@ const styles = StyleSheet.create({
   // The accent action is light, so its label grounds to the storefront.
   actionTextOnAccent: {
     color: LUXURY_COLORS.primary,
+  },
+
+  // ── Password gate ──
+  gateOverlay: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    backgroundColor: "rgba(6, 18, 22, 0.6)",
+  },
+  gateCard: {
+    alignSelf: "stretch",
+    padding: 24,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.22)",
+    backgroundColor: LUXURY_COLORS.surface,
+  },
+  gateTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    textAlign: "center",
+    color: "#FFFFFF",
+  },
+  gateSubtitle: {
+    marginTop: 8,
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: "center",
+    color: "rgba(255,255,255,0.7)",
+  },
+  gateInput: {
+    marginTop: 20,
+    height: 50,
+    paddingHorizontal: 18,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.22)",
+    fontSize: 16,
+    color: "#FFFFFF",
+    // Android pads its inputs by default, which pushes the text off-centre.
+    paddingVertical: 0,
+  },
+  gateActions: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 20,
+  },
+  gateButton: {
+    flex: 1,
+    height: 48,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  gateButtonGhost: {
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
+  },
+  gateButtonDisabled: {
+    opacity: 0.45,
+  },
+  gateButtonText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#FFFFFF",
   },
 });

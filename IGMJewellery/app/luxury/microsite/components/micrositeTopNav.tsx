@@ -15,12 +15,16 @@ export type MicrositeNavItem = {
   label: string;
 };
 
-/** The microsite's own sections, in the order the brand presents them. */
+/**
+ * The microsite's own sections, in the order the brand presents them.
+ *
+ * Collections are not named here: the section still renders on the page, it
+ * just is not one of the places the band jumps to.
+ */
 export const MICROSITE_NAV_ITEMS: MicrositeNavItem[] = [
   { key: "about", label: "About Us" },
   { key: "stores", label: "Stores" },
   { key: "products", label: "Products" },
-  { key: "collection", label: "Collection" },
 ];
 
 type MicrositeTopNavProps = {
@@ -92,14 +96,25 @@ const styles = StyleSheet.create({
   header: {
     paddingBottom: 4,
   },
+  /**
+   * flexGrow so the content container fills the band before it scrolls: without
+   * it the row is only as wide as its labels and there is no spare width for
+   * space-evenly to hand out. A brand naming more sections than fit still
+   * overflows and scrolls, where justification stops applying.
+   */
   row: {
+    flexGrow: 1,
     flexDirection: "row",
     alignItems: "center",
-    gap: 28,
-    paddingHorizontal: 20,
+    justifyContent: "space-evenly",
   },
+  // The separation lives on the items rather than as a row gap: a gap would be
+  // added on top of the even spaces and only between items, leaving the two
+  // ends short. As padding it is part of each item's width, so what is shared
+  // out stays equal — and it keeps the labels apart once the row scrolls.
   item: {
     paddingVertical: 4,
+    paddingHorizontal: 8,
   },
   label: {
     fontSize: 15,

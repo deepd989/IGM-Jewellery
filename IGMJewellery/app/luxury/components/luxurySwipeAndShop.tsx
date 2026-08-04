@@ -269,10 +269,12 @@ export default function LuxurySwipeAndShop({
 const styles = StyleSheet.create({
   // The page's own ground: the section used to sink the product's artwork
   // behind the mock, and now carries none of its own.
+  // No vertical padding: the section grounds on the page's own colour now, so
+  // an inset of its own only stacks onto the band's gap. The storefront's
+  // rhythm lives in app/luxury/index.tsx's sectionBand.
   container: {
     alignSelf: "stretch",
     alignItems: "center",
-    paddingVertical: LUXURY_SPACING / 2,
     backgroundColor: LUXURY_COLORS.primary,
   },
   title: {
