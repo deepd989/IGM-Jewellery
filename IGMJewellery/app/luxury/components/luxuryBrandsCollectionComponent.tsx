@@ -5,6 +5,7 @@ import { useStorefrontBrands } from "@/hooks/useStorefrontBrands";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   Dimensions,
   Image,
   LayoutChangeEvent,
@@ -27,7 +28,7 @@ export type BrandTileEntry = {
    * name key, by display name, or by brand id — the slots were curated by name,
    * and the microsite is keyed by id, so either identifies the brand here.
    */
-  businessNameKey: string;
+  brandId: string;
 };
 
 /**
@@ -42,14 +43,14 @@ export type BrandTileEntry = {
  * slot's manifest key; the layout does not move.
  */
 const BRAND_TILES: BrandTileEntry[] = [
-  { assetKey: "luxury.brandTile.cover1", businessNameKey: "18" },
-  { assetKey: "luxury.brandTile.cover2", businessNameKey: "belrosa_atelier" },
-  { assetKey: "luxury.brandTile.cover3", businessNameKey: "zaiwarya" },
-  { assetKey: "luxury.brandTile.cover4", businessNameKey: "rang_auraa" },
-  { assetKey: "luxury.brandTile.cover5", businessNameKey: "kaamya_jewels" },
+  { assetKey: "luxury.brandTile.cover1", brandId: "12" },
+  { assetKey: "luxury.brandTile.cover2", brandId: "25" },
+  { assetKey: "luxury.brandTile.cover3", brandId: "15" },
+  { assetKey: "luxury.brandTile.cover4", brandId: "18" },
+  { assetKey: "luxury.brandTile.cover5", brandId: "10" },
   {
     assetKey: "luxury.brandTile.cover6",
-    businessNameKey: "shwaahish_diamond_jewellers",
+    brandId: "13",
   },
 ];
 
@@ -129,26 +130,16 @@ export default function LuxuryBrandsCollection({
       return;
     }
 
-    const key = tile.businessNameKey.toLowerCase();
-    const brand = brands.find(
-      (candidate) =>
-        candidate.id === tile.businessNameKey ||
-        candidate.businessNameKey.toLowerCase() === key ||
-        candidate.businessName.toLowerCase() === key
-    );
+    const brandId = tile.brandId;
 
-    if (brand) {
+
       router.navigate({
         pathname: "/luxury/microsite",
-        params: { brandId: brand.id },
+        params: { brandId: brandId },
       });
       return;
-    }
+}
 
-    // The brands have not arrived yet: the brand route resolves the name
-    // itself and lands on the same microsite, so the tap is never dead.
-    router.navigate(`/brandProfile/${tile.businessNameKey}` as any);
-  };
 
   return (
     <View style={[styles.container, style]} onLayout={handleLayout}>
@@ -187,7 +178,9 @@ export default function LuxuryBrandsCollection({
           <BrandTile
             tile={tiles[4]}
             height={bottomShortHeight}
-            onPress={handlePressBrand}
+            onPress={()=> Alert.alert("Coming Soon", "Your brand is coming soon.")}
+
+
           />
         </View>
         <BrandTile
