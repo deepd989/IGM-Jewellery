@@ -44,14 +44,14 @@ export type BrandTileEntry = {
  */
 const BRAND_TILES: BrandTileEntry[] = [
   { assetKey: "luxury.brandTile.cover1", brandId: "12" },
-  { assetKey: "luxury.brandTile.cover2", brandId: "25" },
-  { assetKey: "luxury.brandTile.cover3", brandId: "15" },
-  { assetKey: "luxury.brandTile.cover4", brandId: "18" },
-  { assetKey: "luxury.brandTile.cover5", brandId: "10" },
   {
     assetKey: "luxury.brandTile.cover6",
     brandId: "13",
   },
+  { assetKey: "luxury.brandTile.cover3", brandId: "15" },
+  { assetKey: "luxury.brandTile.cover4", brandId: "18" },
+  { assetKey: "luxury.brandTile.cover5", brandId: "10" },
+  { assetKey: "luxury.brandTile.cover2", brandId: "25" },
 ];
 
 type BrandTileProps = {

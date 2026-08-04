@@ -18,6 +18,7 @@ import {
 } from "react-native";
 import { SectionHeader } from "./section";
 import { assetUrl } from "@/constants/assets";
+import { COLORS } from "@/constants/theme";
 
 type RegionCard = {
   id: string;
@@ -60,7 +61,22 @@ const Card = React.memo(function Card({
   );
 });
 
-export default function ShopByRegionCards() {
+type ShopByRegionCardsProps = {
+  /** The ground the section paints. Defaults to the classic storefront's white. */
+  primaryColor?: string;
+  /** The type set on that ground: the heading and the loading/error states. */
+  secondaryColor?: string;
+};
+
+/**
+ * The regional rail. Both storefronts show it, and they run on opposite
+ * grounds, so the caller supplies the pair rather than the section assuming
+ * one. The cards carry their own artwork either way.
+ */
+export default function ShopByRegionCards({
+  primaryColor = COLORS.background,
+  secondaryColor = COLORS.primary,
+}: ShopByRegionCardsProps) {
   const { width } = useWindowDimensions();
 
   // Mocking the status variables normally provided by a hook like useQuery
@@ -105,23 +121,37 @@ export default function ShopByRegionCards() {
 
   if (isLoading) {
     return (
-      <View style={[styles.container, styles.center]}>
-        <ActivityIndicator size="large" color="#000" />
+      <View
+        style={[
+          styles.container,
+          styles.center,
+          { backgroundColor: primaryColor },
+        ]}
+      >
+        <ActivityIndicator size="large" color={secondaryColor} />
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={[styles.container, styles.center]}>
-        <Text>Error loading collections.</Text>
+      <View
+        style={[
+          styles.container,
+          styles.center,
+          { backgroundColor: primaryColor },
+        ]}
+      >
+        <Text style={{ color: secondaryColor }}>
+          Error loading collections.
+        </Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <SectionHeader value="Regional Wonders" />
+    <View style={[styles.container, { backgroundColor: primaryColor }]}>
+      <SectionHeader value="Regional Wonders" color={secondaryColor} />
       <FlatList
         data={formattedData}
         renderItem={renderItem}
@@ -137,8 +167,8 @@ export default function ShopByRegionCards() {
 }
 
 const styles = StyleSheet.create({
+  // The ground is given at render, from primaryColor.
   container: {
-    backgroundColor: "white",
     paddingVertical: 10,
   },
   center: {

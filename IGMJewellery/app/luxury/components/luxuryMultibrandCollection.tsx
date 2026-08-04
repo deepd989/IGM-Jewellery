@@ -1,6 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
-import { assetUrl } from "@/constants/assets";
-import { LUXURY_SPACING } from "@/constants/theme";
+import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { Brand } from "@/store/apis/brandsApi";
 import { useStorefrontBrands } from "@/hooks/useStorefrontBrands";
 import {
@@ -26,10 +25,6 @@ import {
 } from "react-native";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-
-/** Backdrop shown before any collection artwork has loaded. */
-const FALLBACK_BACKDROP =
-  assetUrl("luxury.multibrandCollection.fallbackBackdrop");
 
 const GAP = 12;
 /** One card plus a slice of the next, so the row reads as scrollable. */
@@ -85,12 +80,6 @@ export default function LuxuryMultibrandCollection({
     }
   };
 
-  // The card in view doubles as the section's backdrop.
-  const backdrop =
-    collections[activeIndex]?.collectionBannerUrl ||
-    collections[0]?.collectionBannerUrl ||
-    FALLBACK_BACKDROP;
-
   const handlePressCollection = (collection: MultiBrandCollection) => {
     if (onPressCollection) {
       onPressCollection(collection);
@@ -140,15 +129,6 @@ export default function LuxuryMultibrandCollection({
 
   return (
     <View style={[styles.container, style]}>
-      <Image
-        source={{ uri: backdrop }}
-        style={styles.backdrop}
-        resizeMode="cover"
-      />
-      <View style={styles.backdropScrim} pointerEvents="none" />
-
-      {/* Padding lives here, not on the container, so the backdrop above can
-          fill the section edge to edge. */}
       <View style={styles.content}>
         <Text style={styles.title}>{title}</Text>
 
@@ -226,21 +206,13 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     borderRadius: 20,
     overflow: "hidden",
-    backgroundColor: "#0A0A0A",
+    // The page's own ground: the section used to sink the leading collection's
+    // artwork behind its cards, and now carries none of its own.
+    backgroundColor: LUXURY_COLORS.primary,
   },
   content: {
-    paddingVertical: LUXURY_SPACING+10,
+    paddingVertical: LUXURY_SPACING + 10,
     paddingHorizontal: SIDE_PADDING,
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    width: "100%",
-    height: "100%",
-  },
-  /** Sinks the backdrop so the cards and type stay in front of it. */
-  backdropScrim: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(6, 8, 10, 0.78)",
   },
   title: {
     fontSize: 22,

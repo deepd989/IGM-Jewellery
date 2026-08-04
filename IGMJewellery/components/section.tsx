@@ -1,9 +1,16 @@
 import { StyleSheet, Text, View } from "react-native";
 
-export function SectionHeader({ value }: { value: string }) {
+export function SectionHeader({
+  value,
+  color,
+}: {
+  value: string;
+  /** Overrides the heading's ink, for a section set on a dark ground. */
+  color?: string;
+}) {
   return (
     <View style={{ alignItems: "center", marginBottom: 30 }}>
-      <Text style={styles.hey}>{value}</Text>
+      <Text style={[styles.hey, !!color && { color }]}>{value}</Text>
     </View>
   );
 }

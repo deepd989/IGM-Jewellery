@@ -1,5 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
-import { COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { Product } from "@/interfaces/product.interface";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -107,7 +107,7 @@ const ReviewItem = ({ review }: { review: Review }) => (
     <View style={styles.reviewHeader}>
       <View style={styles.ratingBadge}>
         <Text style={styles.ratingBadgeText}>{review.rating}</Text>
-        <Ionicons name="star" size={11} color="#FFFFFF" />
+        <Ionicons name="star" size={11} color={COLORS.primary} />
       </View>
       <Text style={styles.reviewerName}>{review.name}</Text>
     </View>
@@ -119,8 +119,8 @@ const ReviewItem = ({ review }: { review: Review }) => (
       <StarRow
         rating={review.rating}
         size={16}
-        filledColor={COLORS.primary}
-        emptyColor="#C3D0D5"
+        filledColor={LUXURY_COLORS.accent}
+        emptyColor="rgba(255,255,255,0.28)"
       />
     </View>
 
@@ -246,13 +246,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     letterSpacing: 0.5,
-    color: COLORS.text,
+    color: LUXURY_COLORS.text,
     textAlign: "center",
   },
   subtitle: {
     marginTop: 12,
     fontSize: 14,
-    color: COLORS.textSecondary,
+    color: LUXURY_COLORS.textMuted,
     textAlign: "center",
   },
 
@@ -297,17 +297,17 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#DCE6E9",
+    borderColor: LUXURY_COLORS.border,
   },
   filterChipActive: {
-    borderColor: COLORS.primary,
+    borderColor: LUXURY_COLORS.accent,
   },
   filterText: {
     fontSize: 13,
-    color: COLORS.text,
+    color: LUXURY_COLORS.textMuted,
   },
   filterTextActive: {
-    color: COLORS.primary,
+    color: LUXURY_COLORS.accent,
     fontWeight: "600",
   },
 
@@ -323,6 +323,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
+  // Gold on the dark ground: the deep teal it used to carry is all but the
+  // page's own colour now, so the badge would have gone flat.
   ratingBadge: {
     flexDirection: "row",
     alignItems: "center",
@@ -330,23 +332,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
-    backgroundColor: COLORS.primary,
+    backgroundColor: LUXURY_COLORS.accent,
   },
   ratingBadgeText: {
     fontSize: 13,
     fontWeight: "700",
-    color: "#FFFFFF",
+    color: COLORS.primary,
   },
   reviewerName: {
     fontSize: 15,
     fontWeight: "700",
-    color: COLORS.text,
+    color: LUXURY_COLORS.text,
   },
   reviewComment: {
     marginTop: 10,
     fontSize: 14,
     lineHeight: 20,
-    color: "#4A5A60",
+    color: LUXURY_COLORS.textMuted,
   },
   reviewFooter: {
     flexDirection: "row",
@@ -356,7 +358,7 @@ const styles = StyleSheet.create({
   },
   reviewDate: {
     fontSize: 13,
-    color: COLORS.textSecondary,
+    color: LUXURY_COLORS.textMuted,
   },
   photoRow: {
     flexDirection: "row",
@@ -367,16 +369,16 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 10,
-    backgroundColor: "#EFEFEF",
+    backgroundColor: LUXURY_COLORS.surface,
   },
   divider: {
     height: 1,
     marginBottom: 16,
-    backgroundColor: "#E8ECED",
+    backgroundColor: LUXURY_COLORS.border,
   },
   empty: {
     fontSize: 14,
-    color: COLORS.textSecondary,
+    color: LUXURY_COLORS.textMuted,
     textAlign: "center",
     paddingVertical: 24,
   },

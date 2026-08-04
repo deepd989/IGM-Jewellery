@@ -1,6 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { assetUrl } from "@/constants/assets";
-import { LUXURY_SPACING } from "@/constants/theme";
+import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
@@ -11,8 +11,6 @@ import { Image, StyleSheet, Text, View, ViewStyle } from "react-native";
  * Point these at the final URLs and nothing else needs to change.
  */
 const ASSETS = {
-  /** Dark backdrop the whole card sits on. */
-  background: assetUrl("luxury.tryOn.background"),
   /** Left tile: the campaign model wearing the jewellery. */
   modelPhoto: assetUrl("luxury.tryOn.modelPhoto"),
   /** Right tile: the same shot with the shopper's face. */
@@ -60,13 +58,6 @@ export default function LuxuryTryOn({
 
   return (
     <View style={[styles.container, style]}>
-      <Image
-        source={{ uri: ASSETS.background }}
-        style={styles.background}
-        resizeMode="cover"
-      />
-      <View style={styles.backgroundScrim} pointerEvents="none" />
-
       <View style={styles.content}>
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{badgeLabel}</Text>
@@ -136,15 +127,9 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     borderRadius: 24,
     overflow: "hidden",
-    backgroundColor: "#0B1A2E",
-  },
-  // No width/height here: the absolute insets already stretch the artwork to
-  // the container's box, and a percentage size would fight them.
-  background: StyleSheet.absoluteFillObject,
-  /** Holds the artwork back so the white type stays readable. */
-  backgroundScrim: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(6, 18, 38, 0.35)",
+    // The page's own ground: the section used to sink a photograph behind its
+    // content, and now carries none of its own.
+    backgroundColor: LUXURY_COLORS.primary,
   },
   content: {
     paddingVertical: LUXURY_SPACING,

@@ -146,7 +146,14 @@ const SECTIONS: StorefrontSection[] = [
   },
   {
     key: "regional",
-    render: () => <LuxuryRegionalFavorites />,
+    // render: () => <LuxuryRegionalFavorites />,
+   
+    render: () => (
+      <ShopByRegionCards
+        primaryColor={PAGE_BACKGROUND}
+        secondaryColor={LUXURY_COLORS.text}
+      />
+    ),
   },
   // 7. Our Best Sellers
   {
@@ -159,10 +166,10 @@ const SECTIONS: StorefrontSection[] = [
     render: () => <LuxurySwipeAndShop style={styles.fullBleedSection} />,
   },
   // 9. Find Something for All
-  {
-    key: "gender",
-    render: () => <LuxuryGenderVsProducts />,
-  },
+  // {
+  //   key: "gender",
+  //   render: () => <LuxuryGenderVsProducts />,
+  // },
   // 10. Shop for Every You
   {
     key: "outfits",

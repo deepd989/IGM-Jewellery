@@ -1,10 +1,10 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import {
-  SHOP_CATEGORIES,
-  ShopCategory,
-  getCategoryRoute,
-} from "@/store/data/categoriesData";
+  LUXURY_SHOP_CATEGORIES,
+  LuxuryShopCategory,
+  getLuxuryCategoryRoute,
+} from "@/store/data/luxuryCategoriesData";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -26,13 +26,11 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const GAP = 8;
 const TILE_RADIUS = 16;
-/** One feature tile beside a column of three. */
-const TILES_PER_PAGE = 4;
+/** One feature tile beside a column of two. */
+const TILES_PER_PAGE = 3;
 
 type CategoryTileProps = {
-  category?: ShopCategory;
-  /** Pill shown over the feature tile, e.g. "New Additions". */
-  badgeLabel?: string;
+  category?: LuxuryShopCategory;
   labelSize: number;
   height: number;
   flex?: number;
@@ -41,7 +39,6 @@ type CategoryTileProps = {
 
 function CategoryTile({
   category,
-  badgeLabel,
   labelSize,
   height,
   flex,
@@ -71,13 +68,6 @@ function CategoryTile({
         pointerEvents="none"
       />
 
-      {!!badgeLabel && (
-        <View style={styles.badge}>
-          <Ionicons name="star" size={14} color="#FFFFFF" />
-          <Text style={styles.badgeText}>{badgeLabel}</Text>
-        </View>
-      )}
-
       <View style={styles.tileFooter}>
         <Text
           style={[styles.tileLabel, { fontSize: labelSize }]}
@@ -93,18 +83,15 @@ function CategoryTile({
 
 type LuxuryCategoriesProps = {
   title?: string;
-  /** Pill shown on each page's feature tile. Pass "" to hide it. */
-  featureBadgeLabel?: string;
-  categories?: ShopCategory[];
+  categories?: LuxuryShopCategory[];
   /** Overrides navigation to the category's product list. */
-  onPressCategory?: (category: ShopCategory) => void;
+  onPressCategory?: (category: LuxuryShopCategory) => void;
   style?: ViewStyle;
 };
 
 export default function LuxuryCategories({
   title = "Shop by Categories",
-  featureBadgeLabel = "New Additions",
-  categories = SHOP_CATEGORIES,
+  categories = LUXURY_SHOP_CATEGORIES,
   onPressCategory,
   style,
 }: LuxuryCategoriesProps) {
@@ -126,9 +113,9 @@ export default function LuxuryCategories({
 
   const measuredWidth = pageWidth ?? SCREEN_WIDTH;
 
-  // Split into pages of four, padding the last one so its tiles keep their
+  // Split into pages of three, padding the last one so its tiles keep their
   // positions instead of stretching to fill the gaps.
-  const pages: (ShopCategory | undefined)[][] = [];
+  const pages: (LuxuryShopCategory | undefined)[][] = [];
   for (let i = 0; i < categories.length; i += TILES_PER_PAGE) {
     const page = categories.slice(i, i + TILES_PER_PAGE);
     pages.push(
@@ -146,28 +133,23 @@ export default function LuxuryCategories({
   // Tile heights derive from the page width, so the grid keeps its
   // proportions on any screen size.
   const gridHeight = measuredWidth;
-  const stackHeight = Math.round((gridHeight - GAP * 2) / 3);
+  const stackHeight = Math.round((gridHeight - GAP) / 2);
   // The last tile absorbs the rounding so the column ends flush with the
   // feature tile beside it.
-  const stackHeights = [
-    stackHeight,
-    stackHeight,
-    gridHeight - GAP * 2 - stackHeight * 2,
-  ];
+  const stackHeights = [stackHeight, gridHeight - GAP - stackHeight];
 
-  const handlePress = (category: ShopCategory) => {
+  const handlePress = (category: LuxuryShopCategory) => {
     if (onPressCategory) {
       onPressCategory(category);
       return;
     }
-    router.navigate(getCategoryRoute(category));
+    router.navigate(getLuxuryCategoryRoute(category));
   };
 
-  const renderPage = ({ item }: { item: (ShopCategory | undefined)[] }) => (
+  const renderPage = ({ item }: { item: (LuxuryShopCategory | undefined)[] }) => (
     <View style={[styles.page, { width: measuredWidth, height: gridHeight }]}>
       <CategoryTile
         category={item[0]}
-        badgeLabel={featureBadgeLabel || undefined}
         labelSize={18}
         height={gridHeight}
         flex={1}
@@ -203,7 +185,7 @@ export default function LuxuryCategories({
         keyExtractor={(page, index) => page[0]?.id ?? `page-${index}`}
         extraData={measuredWidth}
         horizontal
-        pagingEnabled // Four categories per page: page width === list width
+        pagingEnabled // Three categories per page: page width === list width
         disableIntervalMomentum // Never fling past a single page
         showsHorizontalScrollIndicator={false}
         onScroll={handleScroll}
@@ -238,6 +220,9 @@ export default function LuxuryCategories({
 const styles = StyleSheet.create({
   container: {
     width: "100%",
+    // Painted rather than inherited, so the section keeps its ground wherever
+    // it is dropped in.
+    backgroundColor: LUXURY_COLORS.primary,
   },
   title: {
     fontSize: 22,
@@ -269,25 +254,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: "45%",
-  },
-  badge: {
-    position: "absolute",
-    top: 14,
-    alignSelf: "center",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: "rgba(0,0,0,0.55)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.25)",
-  },
-  badgeText: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "600",
   },
   tileFooter: {
     position: "absolute",

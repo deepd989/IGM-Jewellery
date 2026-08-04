@@ -1,5 +1,4 @@
 import { assetUrl } from "@/constants/assets";
-import { LUXURY_SPACING } from "@/constants/theme";
 import {
   Image,
   ImageSourcePropType,
@@ -84,11 +83,11 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(6, 8, 10, 0.32)",
   },
   content: {
+    // The backdrop and scrim are absolute, so this is the only child in flow —
+    // flexing it fills the square and lets the mark centre on both axes.
+    flex: 1,
     alignItems: "center",
-    // The mark sits near the top and the square's remaining height is left as
-    // artwork, so the page closes on the picture rather than on the logo — and
-    // the floating nav bar rides over that artwork rather than over the mark.
-    paddingTop: LUXURY_SPACING,
+    justifyContent: "center",
     paddingHorizontal: 16,
   },
   glyphClip: {

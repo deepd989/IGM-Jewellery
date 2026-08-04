@@ -1,8 +1,7 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
-import { assetUrl } from "@/constants/assets";
 import { OccasionEnum } from "@/constants/occasions";
 import { RELATIONSHIPS } from "@/constants/relationships";
-import { LUXURY_SPACING } from "@/constants/theme";
+import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { BlurView } from "expo-blur";
@@ -10,7 +9,6 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Dimensions,
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,9 +16,6 @@ import {
   ViewStyle,
 } from "react-native";
 import Modal from "react-native-modal";
-
-/** Artwork behind the section — swap for the final asset when it's hosted. */
-const BACKGROUND_IMAGE_URL = assetUrl("luxury.elanziaSearch.background");
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -48,14 +43,11 @@ type DropdownType = "category" | "relationship" | "occasion" | "price";
 
 type LuxuryElanziaSearchProps = {
   title?: string;
-  /** Overrides the artwork behind the section. */
-  backgroundImageUrl?: string;
   style?: ViewStyle;
 };
 
 export default function LuxuryElanziaSearch({
   title = "Not sure what to gift?",
-  backgroundImageUrl = BACKGROUND_IMAGE_URL,
   style,
 }: LuxuryElanziaSearchProps) {
   const router = useRouter();
@@ -146,16 +138,6 @@ export default function LuxuryElanziaSearch({
 
   return (
     <View style={[styles.container, style]}>
-      {/* Absolutely filled rather than wrapped around the content, so the
-          artwork covers the whole section however tall the card grows. */}
-      <Image
-        source={{ uri: backgroundImageUrl }}
-        style={styles.background}
-        resizeMode="cover"
-      />
-      {/* Keeps the white copy readable whatever the artwork behind it */}
-      <View style={styles.scrim} />
-
       <View style={styles.content}>
         <View style={styles.header}>
           <Text style={styles.title}>{title}</Text>
@@ -277,20 +259,12 @@ export default function LuxuryElanziaSearch({
 }
 
 const styles = StyleSheet.create({
+  // The page's own ground: the section used to sink a photograph behind its
+  // card, and now carries none of its own.
   container: {
     alignSelf: "stretch",
     overflow: "hidden",
-    // Shows through until the artwork loads, so the white copy stays readable.
-    backgroundColor: "#0D2420",
-  },
-  background: {
-    ...StyleSheet.absoluteFillObject,
-    width: "100%",
-    height: "100%",
-  },
-  scrim: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(8, 30, 27, 0.35)",
+    backgroundColor: LUXURY_COLORS.primary,
   },
   content: {
     paddingVertical: LUXURY_SPACING,
@@ -325,8 +299,9 @@ const styles = StyleSheet.create({
   card: {
     paddingHorizontal: 20,
     paddingVertical: 28,
-    // The blur alone reads too dark over the artwork; this lifts it to glass.
-    backgroundColor: "rgba(255,255,255,0.10)",
+    // Lifted from the 0.10 the artwork behind it called for: with a flat ground
+    // under the blur there is nothing else to separate the card from the page.
+    backgroundColor: "rgba(255,255,255,0.16)",
   },
   field: {
     alignItems: "center",

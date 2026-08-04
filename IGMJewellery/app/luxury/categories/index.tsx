@@ -1,6 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { CartBadge } from "@/components/cart/CardBadge";
-import { COLORS } from "@/constants/theme";
+import { COLORS, LUXURY_COLORS } from "@/constants/theme";
 import {
   Department,
   SidebarCategory,
@@ -12,7 +12,6 @@ import {
   useGetSubCategoriesQuery,
 } from "@/store/apis/categories";
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -27,7 +26,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import LuxuryNavBar, {
   LUXURY_NAV_BAR_HEIGHT,
 } from "../components/luxuryNavBar";
-import LuxuryScreenHeader from "../components/luxuryScreenHeader";
+import LuxuryScreenHeader, {
+  LUXURY_HEADER_BACKGROUND,
+} from "../components/luxuryScreenHeader";
 import LuxuryWishlistButton from "../components/luxuryWishlistButton";
 
 const SIDE_PADDING = 16;
@@ -36,11 +37,17 @@ const SIDE_PADDING = 16;
 const ACTIVE_DEPARTMENT_SIZE = 110;
 const DEPARTMENT_SIZE = 82;
 
+
 /** Breathing room between the search pill and the floating nav bar. */
 const SEARCH_BAR_GAP = 14;
 
-const PANEL_BG = "#EDF3F5";
-const SIDEBAR_ACTIVE_BG = "#E7F0F2";
+/**
+ * The screen runs on one ground — the header's teal — so the panel no longer
+ * paints itself a lighter box. The selected sidebar row is picked out with a
+ * wash of the accent instead of a colour of its own.
+ */
+const PANEL_BG = LUXURY_HEADER_BACKGROUND;
+const SIDEBAR_ACTIVE_BG = "rgba(216,195,145,0.14)";
 
 /** Magnifier with a sparkle — the app's mark for AI-assisted search. */
 const SearchGlyph = () => (
@@ -76,14 +83,18 @@ const DepartmentCard = ({
       activeOpacity={0.9}
       onPress={onPress}
     >
-      <Image source={item.imageUrl} style={styles.departmentImage} />
-
-      {/* Holds the artwork back so the label stays readable. */}
-      <LinearGradient
-        colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.55)"]}
-        style={styles.departmentScrim}
-        pointerEvents="none"
-      />
+      {/*
+        Fitted rather than cropped: the artwork is wider than the card is, so
+        filling the card cuts the piece off at both sides. "contain" sits the
+        whole thing in the middle of the space above the label, on both axes.
+      */}
+      <View style={styles.departmentImageBox}>
+        <Image
+          source={item.imageUrl}
+          style={styles.departmentImage}
+          resizeMode="contain"
+        />
+      </View>
 
       <Text
         style={[
@@ -215,7 +226,7 @@ export default function LuxuryCategoriesScreen() {
 
       {loadingDepts ? (
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+          <ActivityIndicator size="large" color={LUXURY_COLORS.accent} />
         </View>
       ) : (
         <>
@@ -253,7 +264,7 @@ export default function LuxuryCategoriesScreen() {
 
             <View style={styles.panel}>
               {loadingSubs ? (
-                <ActivityIndicator color={COLORS.primary} />
+                <ActivityIndicator color={LUXURY_COLORS.accent} />
               ) : (
                 <FlatList
                   data={subCategories}
@@ -300,7 +311,8 @@ export default function LuxuryCategoriesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    // One ground for the whole screen, shared with the header band above it.
+    backgroundColor: LUXURY_HEADER_BACKGROUND,
   },
   centerContent: {
     flex: 1,
@@ -327,9 +339,7 @@ const styles = StyleSheet.create({
   department: {
     borderRadius: 16,
     overflow: "hidden",
-    justifyContent: "flex-end",
     alignItems: "center",
-    paddingBottom: 8,
     backgroundColor: "#E2EAEE",
   },
   departmentActive: {
@@ -342,20 +352,24 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 8,
   },
-  // Just the absolute insets: pairing them with explicit 100% dimensions makes
-  // the image resolve against a stale box when the card resizes between its
-  // active and inactive sizes, and it drops out of view.
-  departmentImage: StyleSheet.absoluteFillObject,
-  departmentScrim: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: "55%",
+  // A flow child rather than an absolute fill. The box takes the card's full
+  // width and whatever height the label leaves, so the image is fitted into a
+  // box the same layout pass measures — it cannot end up resolving against a
+  // stale one when the card grows or shrinks between its two sizes.
+  departmentImageBox: {
+    flex: 1,
+    alignSelf: "stretch",
+  },
+  departmentImage: {
+    width: "100%",
+    height: "100%",
   },
   departmentLabel: {
     fontSize: 13,
-    color: "#FFFFFF",
+    paddingBottom: 8,
+    // Black, not the page's gold: this label sits inside the tile, on the
+    // card's light ground rather than on the teal page.
+    color: "#000000",
   },
   departmentLabelActive: {
     fontSize: 15,
@@ -385,7 +399,7 @@ const styles = StyleSheet.create({
   },
   sidebarText: {
     fontSize: 16,
-    color: COLORS.primary,
+    color: LUXURY_COLORS.accent,
   },
   sidebarTextActive: {
     fontWeight: "700",
@@ -424,7 +438,7 @@ const styles = StyleSheet.create({
   gridLabel: {
     marginTop: 10,
     fontSize: 13,
-    color: COLORS.primary,
+    color: LUXURY_COLORS.accent,
   },
 
   // ── Search ──

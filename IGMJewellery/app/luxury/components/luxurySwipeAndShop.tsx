@@ -1,6 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
-import { assetUrl } from "@/constants/assets";
-import { LUXURY_SPACING } from "@/constants/theme";
+import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
@@ -10,21 +9,33 @@ import { ResizeMode, Video } from "expo-av";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
-  Image,
+  ActivityIndicator,
+  Dimensions,
+  LayoutChangeEvent,
   StyleSheet,
   Text,
   View,
   ViewStyle,
 } from "react-native";
 
-/** The clip that plays inside the mock, shot portrait to fill the screen. */
-const SCREEN_VIDEO = assetUrl("luxury.swipeAndShop.video");
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
+/**
+ * The clip that plays inside the mock, shot portrait to fill the screen.
+ *
+ * A bundled file rather than a manifest key: the hosted clip is encoded at
+ * H.264 Level 6.0, past what iOS will decode, so it never played here.
+ */
+const SCREEN_VIDEO = require("../../../assets/GER-012023.mp4");
 
 /** Phone width ÷ height, so the mock keeps a device's proportions. */
 const PHONE_ASPECT_RATIO = 0.5;
 /** Share of the section's width the phone takes. */
 const PHONE_WIDTH_RATIO = 0.72;
+/** The white rim around the mock's screen. */
+const PHONE_BEZEL = 5;
 
 /** The filters the real Swipe & Shop screen opens with. */
 const CHIPS = ["Latest", "Rings", "Necklace", "Men's gifting", "Earrings"];
@@ -37,12 +48,10 @@ type LuxurySwipeAndShopProps = {
   /** The piece shown on the mock screen; defaults to the catalogue's first. */
   product?: Product;
   /**
-   * Blurred backdrop behind the section, and the still the mock's screen holds
-   * until its clip has a frame. Defaults to the product's own artwork.
+   * The clip playing inside the mock: a remote URL, or a require()d file from
+   * assets/. Defaults to the section's own.
    */
-  imageUri?: string;
-  /** The clip playing inside the mock. Defaults to the section's own. */
-  videoUri?: string;
+  videoUri?: string | number;
   /** Overrides navigation to the Swipe & Shop screen. */
   onPress?: () => void;
   style?: ViewStyle;
@@ -57,7 +66,6 @@ export default function LuxurySwipeAndShop({
   title = "Try Swipe & Shop",
   ctaLabel = "Try Now",
   product,
-  imageUri,
   videoUri = SCREEN_VIDEO,
   onPress,
   style,
@@ -67,9 +75,36 @@ export default function LuxurySwipeAndShop({
   // The clip keeps decoding while the shopper is off on another screen unless
   // the section stops it — the storefront's video rows want the decoders.
   const isFocused = useIsFocused();
+  /** False until the clip has something to show; the screen spins until then. */
+  const [isClipReady, setIsClipReady] = useState(false);
+  // Measured so the mock can be given a size in points rather than in shares of
+  // its parent. The player needs a frame it can measure against: a chain of
+  // percentages, an aspect ratio and a flex resolves for every other view here,
+  // but leaves the video laying out at nothing. Every video row that does
+  // render on this storefront hands its player a parent sized this way.
+  const [sectionWidth, setSectionWidth] = useState(SCREEN_WIDTH);
+
+  const handleLayout = (event: LayoutChangeEvent) => {
+    const width = Math.round(event.nativeEvent.layout.width);
+    if (width > 0 && width !== sectionWidth) {
+      setSectionWidth(width);
+    }
+  };
+
+  /**
+   * A require()d file arrives as a module id, not a URL, and the player takes
+   * it as it is — wrapping that in { uri } leaves it nothing to resolve. Same
+   * shape components/immersiveProductCard.tsx passes its bundled clips in.
+   */
+  const clipSource =
+    typeof videoUri === "string" ? { uri: videoUri } : videoUri;
+
+  const phoneWidth = Math.round(sectionWidth * PHONE_WIDTH_RATIO);
+  const phoneHeight = Math.round(phoneWidth / PHONE_ASPECT_RATIO);
+  const screenWidth = phoneWidth - PHONE_BEZEL * 2;
+  const screenHeight = phoneHeight - PHONE_BEZEL * 2;
 
   const featured = product ?? products[0];
-  const artwork = imageUri ?? featured?.thumbnailUrls?.[0];
   const featuredPrice = featured ? luxuryPrice(featured) : undefined;
 
   const handlePress = () => {
@@ -81,38 +116,38 @@ export default function LuxurySwipeAndShop({
   };
 
   return (
-    <View style={[styles.container, style]}>
-      {!!artwork && (
-        <Image
-          source={{ uri: artwork }}
-          style={styles.backdrop}
-          resizeMode="cover"
-          blurRadius={20}
-        />
-      )}
-      <View style={styles.backdropScrim} pointerEvents="none" />
-
+    <View style={[styles.container, style]} onLayout={handleLayout}>
       <Text style={styles.title}>{title}</Text>
 
       <HapticButton
-        style={styles.phoneWrapper}
+        style={{ width: phoneWidth }}
         activeOpacity={0.95}
         onPress={handlePress}
       >
-        <View style={styles.phone}>
-          <View style={styles.screen}>
-            {/* The frame is portrait, so the clip fills it on its own crop.
-                The artwork stands in until it has a frame to show. */}
+        <View style={[styles.phone, { width: phoneWidth, height: phoneHeight }]}>
+          <View
+            style={[
+              styles.screen,
+              { width: screenWidth, height: screenHeight },
+            ]}
+          >
+            {/* The frame is portrait, so the clip fills it on its own crop. */}
             <Video
-              source={{ uri: videoUri }}
+              source={clipSource}
               style={styles.screenMedia}
               resizeMode={ResizeMode.COVER}
               shouldPlay={isFocused}
               isLooping
               isMuted
-              usePoster={!!artwork}
-              posterSource={artwork ? { uri: artwork } : undefined}
-              posterStyle={styles.screenPoster}
+              // Both, rather than the first frame alone: onReadyForDisplay is
+              // the one that means "there is a picture", but it has not been
+              // dependable on Android, and a spinner that never clears is worse
+              // than one that clears a beat early.
+              onReadyForDisplay={() => setIsClipReady(true)}
+              onLoad={() => setIsClipReady(true)}
+              onError={(error) =>
+                console.warn("Swipe & Shop clip failed to load:", error)
+              }
             />
 
             {/* A picture of the feature, not a working copy of it. */}
@@ -206,12 +241,19 @@ export default function LuxurySwipeAndShop({
                 </View>
               </View>
             </View>
+
+            {/* Last, so it reads over the mock's chrome rather than under it. */}
+            {!isClipReady && (
+              <View style={styles.screenLoader} pointerEvents="none">
+                <ActivityIndicator size="large" color="#FFFFFF" />
+              </View>
+            )}
           </View>
         </View>
       </HapticButton>
 
       <HapticButton
-        style={styles.ctaWrapper}
+        style={[styles.ctaWrapper, { width: phoneWidth }]}
         activeOpacity={0.85}
         onPress={handlePress}
       >
@@ -225,16 +267,13 @@ export default function LuxurySwipeAndShop({
 }
 
 const styles = StyleSheet.create({
+  // The page's own ground: the section used to sink the product's artwork
+  // behind the mock, and now carries none of its own.
   container: {
     alignSelf: "stretch",
     alignItems: "center",
     paddingVertical: LUXURY_SPACING / 2,
-    backgroundColor: "#3A2A1E",
-  },
-  backdrop: StyleSheet.absoluteFillObject,
-  backdropScrim: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(40, 26, 16, 0.35)",
+    backgroundColor: LUXURY_COLORS.primary,
   },
   title: {
     fontSize: 22,
@@ -245,14 +284,10 @@ const styles = StyleSheet.create({
   },
 
   // ── Device ──
-  phoneWrapper: {
-    width: `${PHONE_WIDTH_RATIO * 100}%`,
-  },
+  // Sized in points at render, from the measured section width.
   phone: {
-    width: "100%",
-    aspectRatio: PHONE_ASPECT_RATIO,
     borderRadius: 30,
-    padding: 5,
+    padding: PHONE_BEZEL,
     backgroundColor: "#FFFFFF",
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 10 },
@@ -261,19 +296,27 @@ const styles = StyleSheet.create({
     elevation: 12,
   },
   screen: {
-    flex: 1,
     borderRadius: 26,
     overflow: "hidden",
     backgroundColor: "#0A0A0A",
     borderWidth: 1.5,
     borderColor: "#2F6BD8",
   },
-  screenMedia: StyleSheet.absoluteFillObject,
-  // expo-av letterboxes its poster with `contain` by default, which would show
-  // the black screen around the still the clip is about to fill.
-  screenPoster: {
+  // The insets alone leave the player without a box to measure against inside
+  // the flexed screen, so it lays out at nothing. Same pairing the community
+  // clips in luxurySeenOnYou.tsx are given.
+  screenMedia: {
     ...StyleSheet.absoluteFillObject,
-    resizeMode: "cover" as const,
+    width: "100%",
+    height: "100%",
+  },
+  // Covers the screen's own black while the clip loads, so the spinner sits on
+  // a ground of its own rather than over half-drawn chrome.
+  screenLoader: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#0A0A0A",
   },
   topScrim: {
     position: "absolute",
@@ -453,8 +496,8 @@ const styles = StyleSheet.create({
   },
 
   // ── Section CTA ──
+  // Width is given at render, so the button lines up with the mock above it.
   ctaWrapper: {
-    width: `${PHONE_WIDTH_RATIO * 100}%`,
     marginTop: LUXURY_SPACING / 2,
     borderRadius: 22,
     overflow: "hidden",

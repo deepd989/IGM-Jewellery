@@ -1,5 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
-import { COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
 import { Ionicons } from "@expo/vector-icons";
@@ -31,7 +31,7 @@ if (
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } =
   Dimensions.get("window");
 
-/** The white cap over the section: how far it reaches at the centre… */
+/** The cap over the section: how far it reaches at the centre… */
 const DOME_HEIGHT = 120;
 /** …and at the screen edges. The gap between the two is the curve. */
 const DOME_EDGE = 92;
@@ -49,6 +49,9 @@ const PANEL_HEIGHT = Math.round(SCREEN_HEIGHT * 0.58);
 
 const DETAILS_TAB = "Product Details";
 const PRICE_TAB = "Price Breakdown";
+
+/** Shown greyed out and unpressable until the breakdown is ready to ship. */
+const DISABLED_TABS: string[] = [PRICE_TAB];
 
 const DETAILS_SECTION = "PRODUCT DETAILS";
 const DESCRIPTION_SECTION = "PRODUCT DESCRIPTION";
@@ -228,12 +231,14 @@ export default function LuxuryKnowYourProduct({
           height={DOME_HEIGHT}
           style={StyleSheet.absoluteFill}
         >
-          {/* Square across the top, bowing down to DOME_HEIGHT at the centre. */}
+          {/* Square across the top, bowing down to DOME_HEIGHT at the centre.
+              Painted in the page's own ground, so the curve reads as the screen
+              dipping into this section rather than as a band of its own. */}
           <Path
             d={`M0 0 H${SCREEN_WIDTH} V${DOME_EDGE} Q${SCREEN_WIDTH / 2} ${
               2 * DOME_HEIGHT - DOME_EDGE
             } 0 ${DOME_EDGE} Z`}
-            fill="#FFFFFF"
+            fill={LUXURY_COLORS.primary}
           />
         </Svg>
 
@@ -244,16 +249,26 @@ export default function LuxuryKnowYourProduct({
         <View style={styles.tabs}>
           {[DETAILS_TAB, PRICE_TAB].map((tab) => {
             const isActive = tab === activeTab;
+            const isDisabled = DISABLED_TABS.includes(tab);
 
             return (
               <HapticButton
                 key={tab}
-                style={[styles.tab, isActive && styles.tabActive]}
+                style={[
+                  styles.tab,
+                  isActive && styles.tabActive,
+                  isDisabled && styles.tabDisabled,
+                ]}
                 activeOpacity={0.8}
+                disabled={isDisabled}
                 onPress={() => selectTab(tab)}
               >
                 <Text
-                  style={[styles.tabText, isActive && styles.tabTextActive]}
+                  style={[
+                    styles.tabText,
+                    isActive && styles.tabTextActive,
+                    isDisabled && styles.tabTextDisabled,
+                  ]}
                 >
                   {tab}
                 </Text>
@@ -370,7 +385,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(8, 22, 26, 0.35)",
   },
 
-  // ── White cap ──
+  // ── Cap ──
   dome: {
     height: DOME_HEIGHT,
     alignItems: "center",
@@ -381,7 +396,7 @@ const styles = StyleSheet.create({
   domeTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: COLORS.primary,
+    color: LUXURY_COLORS.text,
   },
 
   content: {
@@ -418,6 +433,12 @@ const styles = StyleSheet.create({
   },
   tabTextActive: {
     fontWeight: "700",
+  },
+  tabDisabled: {
+    opacity: 0.45,
+  },
+  tabTextDisabled: {
+    color: "rgba(255,255,255,0.6)",
   },
 
   // ── Cards ──

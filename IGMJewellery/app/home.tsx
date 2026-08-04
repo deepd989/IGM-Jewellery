@@ -147,7 +147,10 @@ const buildSections = (products: Product[]): HomeSection[] => [
     key: "regions",
     render: () => (
       <>
-        <ShopByRegionCards />
+        <ShopByRegionCards
+          primaryColor={COLORS.background}
+          secondaryColor={COLORS.primary}
+        />
         <HorizontalRuleIGM />
       </>
     ),

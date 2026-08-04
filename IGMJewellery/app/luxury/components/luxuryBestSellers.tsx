@@ -23,18 +23,23 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import LuxuryMediaLoader from "./luxuryMediaLoader";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const GAP = 12;
 /**
  * One card plus a slice of the next, so the row reads as scrollable. Held
- * tighter than a row of square artwork would be: a portrait clip is nearly
- * twice as tall as it is wide, so a card this wide is already a tall section.
+ * tighter than a row of square artwork would be: the clips are portrait, so a
+ * card this wide is already a tall section.
  */
 const CARDS_PER_VIEW = 1.25;
-/** Card width ÷ height — the clips are shot portrait. */
-const CARD_ASPECT_RATIO = 9 / 16;
+/**
+ * Card width ÷ height. The clips are shot 9:16, but a card that tall runs to
+ * over half the screen, so the frame is held shorter than the footage and
+ * ResizeMode.COVER crops the clip's top and bottom into it.
+ */
+const CARD_ASPECT_RATIO = 3 / 4;
 const SIDE_PADDING = 16;
 const CARD_RADIUS = 16;
 
@@ -123,6 +128,8 @@ const ReelCard = memo(function ReelCard({
   onPressTryOn,
 }: ReelCardProps) {
   const { product } = slide;
+  /** False until the card has a picture — a clip frame, or its poster still. */
+  const [isReady, setIsReady] = useState(false);
 
   return (
     <HapticButton
@@ -131,6 +138,11 @@ const ReelCard = memo(function ReelCard({
       onPress={() => onPress(product)}
     >
       <View style={[styles.mediaWrapper, { height }]}>
+        {/* Under the media, not over it: whichever picture arrives first — the
+            poster still or the clip's own frame — covers the loader. A card
+            that has a still to show is never made to spin over it. */}
+        {!isReady && <LuxuryMediaLoader style={styles.media} spinnerSize="small" />}
+
         {/* Exactly one of these paints the card, so a poster is never left
             showing under a loaded clip. */}
         {hasPlayer ? (
@@ -146,12 +158,21 @@ const ReelCard = memo(function ReelCard({
             usePoster={!!slide.poster}
             posterSource={slide.poster ? { uri: slide.poster } : undefined}
             posterStyle={styles.poster}
+            // Both, rather than the first frame alone: onReadyForDisplay is the
+            // one that means "there is a picture", but it has not been
+            // dependable on Android, and a loader that never clears is worse
+            // than one that clears a beat early.
+            onReadyForDisplay={() => setIsReady(true)}
+            onLoad={() => setIsReady(true)}
           />
         ) : (
           <Image
             source={{ uri: slide.poster }}
             style={styles.media}
             resizeMode="cover"
+            // Clears on failure too: a still that will not load leaves the card
+            // on its own ground rather than spinning at the shopper forever.
+            onLoadEnd={() => setIsReady(true)}
           />
         )}
 
@@ -363,7 +384,7 @@ export default function LuxuryBestSellers({
         ) : (
           // Holds the row's height while the catalogue loads, so the page does
           // not jump once the reel's SKUs resolve.
-          <View
+          <LuxuryMediaLoader
             style={[
               styles.placeholderCard,
               { width: cardWidth, height: cardHeight },

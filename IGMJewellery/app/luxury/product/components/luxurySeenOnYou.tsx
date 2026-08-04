@@ -1,5 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
-import { COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
 import {
@@ -235,7 +235,9 @@ export default function LuxurySeenOnYou({
             { width: cardWidth, height: cardHeight, marginLeft: sidePadding },
           ]}
         >
-          {isLoading && <ActivityIndicator size="large" color={COLORS.primary} />}
+          {isLoading && (
+            <ActivityIndicator size="large" color={LUXURY_COLORS.accent} />
+          )}
         </View>
       )}
     </View>
@@ -250,7 +252,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     letterSpacing: 0.5,
-    color: COLORS.text,
+    color: LUXURY_COLORS.text,
     textAlign: "center",
     marginBottom: LUXURY_SPACING,
   },
@@ -278,7 +280,7 @@ const styles = StyleSheet.create({
   },
   emptyCard: {
     borderRadius: CARD_RADIUS,
-    backgroundColor: "#E2EAEE",
+    backgroundColor: LUXURY_COLORS.surface,
     alignItems: "center",
     justifyContent: "center",
   },

@@ -23,6 +23,13 @@ const PADDING_BOTTOM = 12;
 export const LUXURY_HEADER_HEIGHT =
   CONTENT_HEIGHT + PADDING_TOP + PADDING_BOTTOM;
 
+/**
+ * The teal band the "solid" variant paints. Exported so a screen can ground
+ * itself in the same colour and read as one surface with its header, rather
+ * than restating the hex and letting the two drift apart.
+ */
+export const LUXURY_HEADER_BACKGROUND = "#123B47";
+
 type LuxuryScreenHeaderProps = {
   title: string;
   /** Adds the back chevron to the left of the title. */
@@ -88,7 +95,7 @@ const styles = StyleSheet.create({
     paddingBottom: PADDING_BOTTOM,
   },
   solid: {
-    backgroundColor: "#123B47",
+    backgroundColor: LUXURY_HEADER_BACKGROUND,
   },
   row: {
     height: CONTENT_HEIGHT,

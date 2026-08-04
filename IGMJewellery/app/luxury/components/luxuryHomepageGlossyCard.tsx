@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -15,6 +15,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { assetUrl } from "@/constants/assets";
+import LuxuryMediaLoader from './luxuryMediaLoader';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -64,6 +65,75 @@ const CAROUSEL_DATA = [
 
 type CarouselItem = (typeof CAROUSEL_DATA)[number];
 
+type CarouselSlideProps = {
+  item: CarouselItem;
+  width: number;
+  height: number;
+  /** Whether this slide's clip is the one running. */
+  isPlaying: boolean;
+  onPress: (item: CarouselItem) => void;
+};
+
+/**
+ * One slide: the clip, and the glass arrow marking it as a way in.
+ *
+ * Its own component so each slide tracks whether *its* clip has a picture yet.
+ * Held in the carousel that state would have to be a map keyed by slide, and it
+ * would outlive a slide the list unmounts — a remounted slide would then start
+ * with its loader already cleared, on a player that has to fetch again.
+ */
+const CarouselSlide = memo(function CarouselSlide({
+  item,
+  width,
+  height,
+  isPlaying,
+  onPress,
+}: CarouselSlideProps) {
+  /** False until the clip has a picture; the loader holds the slide till then. */
+  const [isReady, setIsReady] = useState(false);
+
+  return (
+    <HapticButton
+      style={[styles.cardContainer, { width, height }]}
+      activeOpacity={0.95}
+      onPress={() => onPress(item)}
+    >
+      {/* The clip paints the slide on its own — no still stands in for it,
+          neither as a poster nor for the slides out of view. Every mounted
+          slide therefore holds a video decoder, which is affordable at four
+          slides; a longer carousel would want that budget back. */}
+      <Video
+        source={{ uri: item.video }}
+        style={styles.cardMedia}
+        resizeMode={ResizeMode.COVER}
+        shouldPlay={isPlaying}
+        isLooping
+        isMuted
+        // Both, rather than the first frame alone: onReadyForDisplay is the one
+        // that means "there is a picture", but it has not been dependable on
+        // Android, and a loader that never clears is worse than one that clears
+        // a beat early.
+        onReadyForDisplay={() => setIsReady(true)}
+        onLoad={() => setIsReady(true)}
+      />
+
+      {/* Over the clip rather than under it: the slide carries no still, so a
+          player with no frame yet leaves nothing to see a loader through. */}
+      {!isReady && <LuxuryMediaLoader style={styles.loader} />}
+
+      {/* Glass arrow, on its own in the corner. It only marks the slide as a
+          way in — the whole clip is the tap target, so the arrow takes no
+          touches of its own. The radius and the clip live on the wrapper: a
+          BlurView does not round its own blur. */}
+      <View style={styles.arrowWrapper} pointerEvents="none">
+        <BlurView intensity={40} tint="dark" style={styles.arrowGlass}>
+          <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+        </BlurView>
+      </View>
+    </HapticButton>
+  );
+});
+
 type GlassCarouselProps = {
   /** Fixed card height. Omit to fill the height the parent leaves available. */
   height?: number;
@@ -107,53 +177,32 @@ export default function GlassCarousel({
     }
   };
 
-  const handlePressSlide = (item: CarouselItem) => {
-    if (onPressSlide) {
-      onPressSlide(item);
-      return;
-    }
-    router.navigate({
-      pathname: "/luxury/product/[id]",
-      params: { id: item.productId },
-    });
-  };
+  // Stable, so a slide is not re-rendered by a new handler alone.
+  const handlePressSlide = useCallback(
+    (item: CarouselItem) => {
+      if (onPressSlide) {
+        onPressSlide(item);
+        return;
+      }
+      router.navigate({
+        pathname: "/luxury/product/[id]",
+        params: { id: item.productId },
+      });
+    },
+    [onPressSlide, router]
+  );
 
-  const renderItem = ({ item, index }: { item: CarouselItem; index: number }) => {
-    // Only the slide actually in view runs; the rest hold a player but stay
-    // paused on their first frame.
-    const isPlaying = isFocused && index === activeIndex;
-
-    return (
-      <HapticButton
-        style={[styles.cardContainer, { width: cardWidth, height: cardHeight }]}
-        activeOpacity={0.95}
-        onPress={() => handlePressSlide(item)}
-      >
-        {/* The clip paints the slide on its own — no still stands in for it,
-            neither as a poster nor for the slides out of view. Every mounted
-            slide therefore holds a video decoder, which is affordable at three
-            slides; a longer carousel would want that budget back. */}
-        <Video
-          source={{ uri: item.video }}
-          style={styles.cardMedia}
-          resizeMode={ResizeMode.COVER}
-          shouldPlay={isPlaying}
-          isLooping
-          isMuted
-        />
-
-        {/* Glass arrow, on its own in the corner. It only marks the slide as a
-            way in — the whole clip is the tap target, so the arrow takes no
-            touches of its own. The radius and the clip live on the wrapper: a
-            BlurView does not round its own blur. */}
-        <View style={styles.arrowWrapper} pointerEvents="none">
-          <BlurView intensity={40} tint="dark" style={styles.arrowGlass}>
-            <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-          </BlurView>
-        </View>
-      </HapticButton>
-    );
-  };
+  const renderItem = ({ item, index }: { item: CarouselItem; index: number }) => (
+    <CarouselSlide
+      item={item}
+      width={cardWidth}
+      height={cardHeight}
+      // Only the slide actually in view runs; the rest hold a player but stay
+      // paused on their first frame.
+      isPlaying={isFocused && index === activeIndex}
+      onPress={handlePressSlide}
+    />
+  );
 
   return (
     <View
@@ -222,6 +271,11 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     width: '100%',
     height: '100%',
+  },
+  loader: {
+    // The card wrapper already rounds and clips, so the loader takes the
+    // slide's corners from it rather than carrying a radius of its own.
+    ...StyleSheet.absoluteFillObject,
   },
   arrowWrapper: {
     position: 'absolute',

@@ -1,6 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { CartBadge } from "@/components/cart/CardBadge";
-import { COLORS } from "@/constants/theme";
+import { COLORS, LUXURY_COLORS } from "@/constants/theme";
 import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
 import {
@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -32,12 +32,15 @@ import LuxuryWishlistButton from "../../components/luxuryWishlistButton";
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 /**
- * The artwork runs edge to edge and under the status bar, stopping just high
- * enough that the details sheet below it is visible without scrolling.
+ * How tall the gallery is allowed to get: enough to lead the screen, short
+ * enough that the details sheet below it is visible without scrolling. A shot
+ * shorter than this sizes the frame to itself instead — see galleryHeight.
  */
 export const LUXURY_HERO_HEIGHT = Math.round(SCREEN_HEIGHT * 0.66);
 
 const THUMBNAIL_SIZE = 40;
+/** Gap the meta card keeps from the artwork above and the title below it. */
+const CARD_MARGIN = 10;
 /** Thumbnails the meta card shows before it stops adding them. */
 const MAX_THUMBNAILS = 4;
 /** Stands in until the catalogue returns a review count. */
@@ -74,6 +77,16 @@ export default function LuxuryProductHero({
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<string>>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  /**
+   * The frame is sized to the artwork rather than the other way round, so a
+   * contained shot leaves no band under it and everything anchored to the
+   * frame's floor — the dots — sits against the image itself.
+   *
+   * Taken from the leading shot alone: the gallery pages horizontally, so its
+   * height has to hold while the shopper swipes. A sibling with a different
+   * ratio letterboxes within the frame the first one set.
+   */
+  const [galleryHeight, setGalleryHeight] = useState(LUXURY_HERO_HEIGHT);
 
   const { data: wishlistData } = useGetWishlistQuery();
   const [addToWishlist, { isLoading: isAddingToWishlist }] =
@@ -88,6 +101,34 @@ export default function LuxuryProductHero({
 
   const reviewCount = product.reviews?.length || FALLBACK_REVIEW_COUNT;
   const thumbnails = images.slice(0, MAX_THUMBNAILS);
+  const leadImage = images[0];
+
+  useEffect(() => {
+    if (!leadImage) return;
+
+    // The shot can land after the screen has moved on; ignore it if it does.
+    let isCurrent = true;
+
+    Image.getSize(
+      leadImage,
+      (width, height) => {
+        if (!isCurrent || !width || !height) return;
+        setGalleryHeight(
+          Math.min(
+            Math.round((SCREEN_WIDTH * height) / width),
+            LUXURY_HERO_HEIGHT
+          )
+        );
+      },
+      // Nothing to measure — the full frame stands, and the shot letterboxes
+      // inside it as it did before.
+      () => {}
+    );
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [leadImage]);
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const index = Math.round(event.nativeEvent.contentOffset.x / SCREEN_WIDTH);
@@ -144,57 +185,70 @@ export default function LuxuryProductHero({
 
   return (
     <View style={styles.container}>
-      <FlatList
-        ref={listRef}
-        data={images}
-        keyExtractor={(uri, index) => `${uri}-${index}`}
-        renderItem={({ item }) => (
-          <Image source={{ uri: item }} style={styles.image} />
-        )}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        getItemLayout={(_, index) => ({
-          length: SCREEN_WIDTH,
-          offset: SCREEN_WIDTH * index,
-          index,
-        })}
-      />
+      <View style={[styles.gallery, { height: galleryHeight }]}>
+        <FlatList
+          ref={listRef}
+          data={images}
+          keyExtractor={(uri, index) => `${uri}-${index}`}
+          renderItem={({ item }) => (
+            // "contain", not the default "cover": covering a frame the shot
+            // does not fill scales it up and crops the piece. The leading shot
+            // fills this frame exactly; the ground shows through wherever a
+            // sibling of another ratio falls short.
+            <Image
+              source={{ uri: item }}
+              style={[styles.image, { height: galleryHeight }]}
+              resizeMode="contain"
+            />
+          )}
+          extraData={galleryHeight}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          getItemLayout={(_, index) => ({
+            length: SCREEN_WIDTH,
+            offset: SCREEN_WIDTH * index,
+            index,
+          })}
+        />
 
-      {/* Keeps the white action pill and the status bar legible over pale shots */}
-      <LinearGradient
-        colors={["rgba(0,0,0,0.35)", "rgba(0,0,0,0)"]}
-        style={styles.topScrim}
-        pointerEvents="none"
-      />
+        {/* Keeps the white action pill and the status bar legible over pale shots */}
+        <LinearGradient
+          colors={["rgba(0,0,0,0.35)", "rgba(0,0,0,0)"]}
+          style={styles.topScrim}
+          pointerEvents="none"
+        />
 
-      <View style={[styles.header, { top: insets.top + 8 }]}>
-        <HapticButton style={styles.backButton} onPress={() => router.back()}>
-          <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFill} />
-          <Ionicons name="chevron-back" size={26} color="#FFFFFF" />
-        </HapticButton>
-
-        <View style={styles.actionPill}>
-          <HapticButton
-            style={styles.actionIcon}
-            onPress={() => router.navigate("/searchPage")}
-          >
-            <SearchGlyph />
+        <View style={[styles.header, { top: insets.top + 8 }]}>
+          <HapticButton style={styles.backButton} onPress={() => router.back()}>
+            <BlurView
+              intensity={30}
+              tint="dark"
+              style={StyleSheet.absoluteFill}
+            />
+            <Ionicons name="chevron-back" size={26} color="#FFFFFF" />
           </HapticButton>
 
-          <LuxuryWishlistButton size={24} style={styles.actionIcon} />
+          <View style={styles.actionPill}>
+            <HapticButton
+              style={styles.actionIcon}
+              onPress={() => router.navigate("/searchPage")}
+            >
+              <SearchGlyph />
+            </HapticButton>
 
-          <View style={styles.actionIcon}>
-            <CartBadge iconSize={24} iconColor={COLORS.primary} />
+            <LuxuryWishlistButton size={24} style={styles.actionIcon} />
+
+            <View style={styles.actionIcon}>
+              <CartBadge iconSize={24} iconColor={COLORS.primary} />
+            </View>
           </View>
         </View>
-      </View>
 
-      <View style={styles.bottomStack} pointerEvents="box-none">
         {images.length > 1 && (
-          <View style={styles.pagination}>
+          <View style={styles.pagination} pointerEvents="none">
             {images.map((uri, index) => (
               <View
                 key={`${uri}-${index}`}
@@ -206,66 +260,70 @@ export default function LuxuryProductHero({
             ))}
           </View>
         )}
+      </View>
 
-        <View style={styles.metaCard}>
-          {/* Both backdrops stay out of the way of the buttons above them. */}
-          <BlurView
-            intensity={26}
-            tint="dark"
-            style={StyleSheet.absoluteFill}
-            pointerEvents="none"
-          />
-          <View style={styles.metaFill} pointerEvents="none" />
+      <View style={styles.metaCard}>
+        {/* Both backdrops stay out of the way of the buttons above them. */}
+        <BlurView
+          intensity={26}
+          tint="dark"
+          style={StyleSheet.absoluteFill}
+          pointerEvents="none"
+        />
+        <View style={styles.metaFill} pointerEvents="none" />
 
-          <View style={styles.ratingRow}>
-            <Text style={styles.ratingText}>
-              {(product.rating || 5).toFixed(1)}
-            </Text>
-            <Ionicons name="star" size={13} color="#FFFFFF" />
-            <Text style={styles.ratingCount}>(+{reviewCount})</Text>
+        <View style={styles.ratingRow}>
+          <Text style={styles.ratingText}>
+            {(product.rating || 5).toFixed(1)}
+          </Text>
+          <Ionicons name="star" size={13} color="#FFFFFF" />
+          <Text style={styles.ratingCount}>(+{reviewCount})</Text>
+        </View>
+
+        <View style={styles.metaBottomRow}>
+          <View style={styles.thumbnails}>
+            {thumbnails.map((uri, index) => (
+              <HapticButton
+                key={`${uri}-${index}`}
+                style={[
+                  styles.thumbnail,
+                  index === activeIndex && styles.thumbnailActive,
+                ]}
+                onPress={() => handleSelectThumbnail(index)}
+              >
+                <Image
+                  source={{ uri }}
+                  style={styles.thumbnailImage}
+                  resizeMode="contain"
+                />
+              </HapticButton>
+            ))}
           </View>
 
-          <View style={styles.metaBottomRow}>
-            <View style={styles.thumbnails}>
-              {thumbnails.map((uri, index) => (
-                <HapticButton
-                  key={`${uri}-${index}`}
-                  style={[
-                    styles.thumbnail,
-                    index === activeIndex && styles.thumbnailActive,
-                  ]}
-                  onPress={() => handleSelectThumbnail(index)}
-                >
-                  <Image source={{ uri }} style={styles.thumbnailImage} />
-                </HapticButton>
-              ))}
-            </View>
+          <View style={styles.metaIcons}>
+            <HapticButton
+              style={styles.metaIcon}
+              activeOpacity={0.6}
+              onPress={handleShare}
+            >
+              <Ionicons name="share-social-outline" size={24} color="#FFFFFF" />
+            </HapticButton>
 
-            <View style={styles.metaIcons}>
-              <HapticButton
-                style={styles.metaIcon}
-                activeOpacity={0.6}
-                onPress={handleShare}
-              >
-                <Ionicons name="share-social-outline" size={24} color="#FFFFFF" />
-              </HapticButton>
-
-              <HapticButton
-                style={styles.metaIcon}
-                activeOpacity={0.6}
-                onPress={handleToggleWishlist}
-              >
-                {isWishlistBusy ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
-                ) : (
-                  <Ionicons
-                    name={isInWishlist ? "heart" : "heart-outline"}
-                    size={24}
-                    color="#FFFFFF"
-                  />
-                )}
-              </HapticButton>
-            </View>
+            <HapticButton
+              style={styles.metaIcon}
+              activeOpacity={0.6}
+              onPress={handleToggleWishlist}
+            >
+              {isWishlistBusy ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Ionicons
+                  name={isInWishlist ? "heart" : "heart-outline"}
+                  size={24}
+                  color="#FFFFFF"
+                />
+              )}
+            </HapticButton>
           </View>
         </View>
       </View>
@@ -274,14 +332,22 @@ export default function LuxuryProductHero({
 }
 
 const styles = StyleSheet.create({
+  // The screen's own ground, so the bands the contained shot leaves above and
+  // below it carry on from the page rather than reading as a frame around it.
+  // Height is left to the content: the gallery is fixed, the meta card below it
+  // is not.
   container: {
     width: SCREEN_WIDTH,
-    height: LUXURY_HERO_HEIGHT,
-    backgroundColor: "#0A1A1F",
+    backgroundColor: LUXURY_COLORS.primary,
+  },
+  // Both are given their height at render: it is measured from the artwork, so
+  // the frame ends where the image does. See galleryHeight.
+  /** The artwork's own frame — everything floating over it anchors to this. */
+  gallery: {
+    width: SCREEN_WIDTH,
   },
   image: {
     width: SCREEN_WIDTH,
-    height: LUXURY_HERO_HEIGHT,
   },
   topScrim: {
     position: "absolute",
@@ -334,15 +400,12 @@ const styles = StyleSheet.create({
     top: -2,
     right: -4,
   },
-  bottomStack: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 16,
-    paddingHorizontal: 16,
-    gap: 14,
-  },
+  // Stays over the artwork: it reads the gallery, not the card below it.
   pagination: {
+    position: "absolute",
+    left: 16,
+    right: 16,
+    bottom: 16,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -360,7 +423,12 @@ const styles = StyleSheet.create({
     width: 6,
     backgroundColor: "rgba(255,255,255,0.6)",
   },
+  // In flow under the gallery rather than floating over it, with CARD_MARGIN
+  // clear of the artwork above and of the product title below.
   metaCard: {
+    marginHorizontal: 16,
+    marginTop: CARD_MARGIN,
+    marginBottom: CARD_MARGIN,
     borderRadius: 24,
     overflow: "hidden",
     padding: 12,

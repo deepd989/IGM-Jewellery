@@ -1,5 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
-import { COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { getEstimatedDeliveryDate } from "@/utils/deliveryDate";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -106,7 +106,7 @@ export default function LuxuryDeliveryDetails({
             value={pincode}
             onChangeText={setPincode}
             placeholder="Enter pincode"
-            placeholderTextColor={MUTED}
+            placeholderTextColor={LUXURY_COLORS.textMuted}
             keyboardType="numeric"
             returnKeyType="done"
             onSubmitEditing={handleCheck}
@@ -120,7 +120,11 @@ export default function LuxuryDeliveryDetails({
           onPress={handleCheck}
         >
           <Text style={styles.checkText}>Check</Text>
-          <Ionicons name="chevron-forward" size={20} color={COLORS.primary} />
+          <Ionicons
+            name="chevron-forward"
+            size={20}
+            color={LUXURY_COLORS.text}
+          />
         </HapticButton>
       </View>
 
@@ -210,13 +214,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 19,
     fontWeight: "700",
-    color: COLORS.primary,
+    color: LUXURY_COLORS.text,
   },
   subtitle: {
     marginTop: 6,
     fontSize: 14,
     lineHeight: 20,
-    color: MUTED,
+    color: LUXURY_COLORS.textMuted,
   },
   pincodeRow: {
     flexDirection: "row",
@@ -224,6 +228,8 @@ const styles = StyleSheet.create({
     gap: 14,
     marginTop: LUXURY_SPACING / 2,
   },
+  // Same frosted field the storefront's search box uses, so the two read as
+  // one input across the two screens.
   inputWrapper: {
     flex: 1,
     height: 48,
@@ -231,12 +237,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: "#DCE6E9",
-    backgroundColor: "#FFFFFF",
+    borderColor: LUXURY_COLORS.border,
+    backgroundColor: LUXURY_COLORS.surface,
   },
   input: {
     fontSize: 16,
-    color: COLORS.primary,
+    color: LUXURY_COLORS.text,
     // Android pads its inputs by default, which pushes the text off-centre.
     paddingVertical: 0,
   },
@@ -248,7 +254,7 @@ const styles = StyleSheet.create({
   },
   checkText: {
     fontSize: 16,
-    color: COLORS.primary,
+    color: LUXURY_COLORS.text,
   },
   // The three availability rows read as one block, so they sit tighter to each
   // other than to the sections around them.

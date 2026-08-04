@@ -1,7 +1,7 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { CustomizationModal } from "@/components/products/CustomizationModal";
 import { TryOnSelectorModal } from "@/components/products/TryOnSelectorModal";
-import { COLORS } from "@/constants/theme";
+import { LUXURY_COLORS } from "@/constants/theme";
 import { useCartStatus } from "@/hooks/useCartStatus";
 import { useAddToCartMutation } from "@/store/apis/cart";
 import { useGetProductByIdQuery } from "@/store/apis/product";
@@ -28,13 +28,20 @@ import LuxuryDeliveryDetails from "./components/luxuryDeliveryDetails";
 import LuxuryDiscounts from "./components/luxuryDiscounts";
 import LuxuryKnowYourProduct from "./components/luxuryKnowYourProduct";
 import LuxurySeenOnYou from "./components/luxurySeenOnYou";
-import LuxurySizeGuideBanner from "./components/luxurySizeGuideBanner";
 import LuxuryYouMayLike from "./components/luxuryYouMayLike";
 import LuxuryProductHero from "./components/luxuryProductHero";
 import LuxuryProductInfo from "./components/luxuryProductInfo";
 import LuxuryStickyActionBar, {
   LUXURY_ACTION_BAR_HEIGHT,
 } from "./components/luxuryStickyActionBar";
+
+/**
+ * The same ground the storefront sits on (app/luxury/index.tsx), so the product
+ * screen carries on from the page the shopper arrived from. Everything set
+ * directly on it reads in LUXURY_COLORS' light ink rather than the dark teal
+ * the sheet called for while it was white.
+ */
+const PAGE_BACKGROUND = LUXURY_COLORS.primary;
 
 /**
  * The luxury storefront's product screen. Same data and cart/try-on behaviour
@@ -99,7 +106,7 @@ export default function LuxuryProductDetailScreen() {
   if (isLoading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <ActivityIndicator size="large" color={LUXURY_COLORS.accent} />
       </View>
     );
   }
@@ -109,7 +116,7 @@ export default function LuxuryProductDetailScreen() {
       <View style={styles.container}>
         <View style={[styles.errorHeader, { paddingTop: insets.top + 8 }]}>
           <HapticButton onPress={() => router.back()}>
-            <Ionicons name="chevron-back" size={26} color={COLORS.primary} />
+            <Ionicons name="chevron-back" size={26} color={LUXURY_COLORS.text} />
           </HapticButton>
         </View>
         <View style={styles.centerContent}>
@@ -143,13 +150,7 @@ export default function LuxuryProductDetailScreen() {
 
         <LuxurySeparator />
 
-        {/* Buttons in both sections are presentational for now, as asked. */}
-        <LuxurySizeGuideBanner
-          imageUri={product.thumbnailUrls?.[1] || product.thumbnailUrls?.[0]}
-        />
-
-        <LuxurySeparator />
-
+        {/* Buttons in this section are presentational for now, as asked. */}
         <LuxuryDeliveryDetails />
 
         <LuxurySeparator />
@@ -230,10 +231,10 @@ export default function LuxuryProductDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: PAGE_BACKGROUND,
   },
   scrollContent: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: PAGE_BACKGROUND,
   },
   centerContent: {
     flex: 1,
@@ -248,7 +249,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 20,
     fontWeight: "600",
-    color: COLORS.text,
+    color: LUXURY_COLORS.text,
   },
   callButton: {
     position: "absolute",

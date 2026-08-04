@@ -1,5 +1,5 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
-import { COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
 import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { Product } from "@/interfaces/product.interface";
 import { useGetProductsQuery } from "@/store/apis/product";
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "700",
-    color: COLORS.primary,
+    color: LUXURY_COLORS.text,
     textAlign: "center",
     marginBottom: LUXURY_SPACING,
   },
@@ -335,11 +335,11 @@ const styles = StyleSheet.create({
   },
   activeDot: {
     width: 22,
-    backgroundColor: COLORS.primary,
+    backgroundColor: LUXURY_COLORS.text,
   },
   inactiveDot: {
     width: 6,
-    backgroundColor: "#C3D0D5",
+    backgroundColor: "rgba(255,255,255,0.35)",
   },
 
   // ── View all ──
