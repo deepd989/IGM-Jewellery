@@ -11,9 +11,9 @@ export type TrustBadge = {
 };
 
 export const TRUST_BADGES: TrustBadge[] = [
-  { label: "100% Trusted", icon: "shield" },
-  { label: "100% Curated", icon: "star" },
-  { label: "100% Certified", icon: "checkbox" },
+  { label: "Trusted", icon: "shield" },
+  { label: "Curated", icon: "star" },
+  { label: "Certified", icon: "checkbox" },
 ];
 
 type LuxuryTrustBadgesProps = {

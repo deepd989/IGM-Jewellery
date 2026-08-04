@@ -1,9 +1,11 @@
 import BottomNavBar from "@/components/bottomNavBar";
+import { useResetProfile } from "@/hooks/useResetProfile";
 import { RootState } from "@/store/store";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
+  ActivityIndicator,
   Image,
   ImageBackground,
   ScrollView,
@@ -134,6 +136,7 @@ function ClassicProfileScreen() {
   const router = useRouter();
   const profile = useSelector((state: RootState) => state.user.profile);
   const { userId, logout } = useAuth();
+  const { resetProfile, isResetting } = useResetProfile();
 
   async function handleLogout() {
     await logout();
@@ -281,6 +284,18 @@ function ClassicProfileScreen() {
           ))}
         </View>
 
+        <HapticButton
+          style={[styles.resetBtn, isResetting && styles.btnDisabled]}
+          disabled={isResetting}
+          onPress={resetProfile}
+        >
+          {isResetting ? (
+            <ActivityIndicator size="small" color="#C0392B" />
+          ) : (
+            <Text style={styles.resetText}>Reset Profile</Text>
+          )}
+        </HapticButton>
+
         {userId && (
           <HapticButton style={styles.logoutBtn} onPress={handleLogout}>
             <Text style={styles.logoutText}>Logout</Text>
@@ -423,6 +438,20 @@ const styles = StyleSheet.create({
     borderBottomColor: "#F5F5F5",
   },
   footerLinkText: { fontSize: 14, fontWeight: "500", color: COLORS.primary },
+  resetBtn: {
+    marginHorizontal: 24,
+    marginTop: 24,
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#E8C4BE",
+    backgroundColor: "#FFF5F4",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 52,
+  },
+  resetText: { fontSize: 14, fontWeight: "600", color: "#C0392B" },
+  btnDisabled: { opacity: 0.6 },
   logoutBtn: {
     margin: 24,
     padding: 16,

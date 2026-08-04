@@ -183,6 +183,7 @@ export default function LuxuryWishlistScreen() {
             onRemoveFromWishlist={() => handleRemoveFromWishlist(item.id)}
             isInCompare={compareList.some((p) => p.id === item.id)}
             onToggleCompare={() => handleToggleCompare(item)}
+            loadAiPreview
           />
         )}
       />

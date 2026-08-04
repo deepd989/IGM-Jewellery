@@ -115,9 +115,9 @@ export default function LuxuryTopSearch({
   /**
    * Gold over the dark band, teal over the white search card.
    *
-   * The wishlist count rides on a badge filled with that same tint, so its ink
-   * has to follow it: dark over the gold, white over the teal. Painting it dark
-   * in both states left the count unreadable once the bar opened.
+   * Both counts ride on a badge filled with that same tint, so their ink has to
+   * follow it: dark over the gold, white over the teal. Painting it dark in
+   * both states left the counts unreadable once the bar opened.
    */
   const renderActions = (tint: string, badgeTextColor: string) => (
     <View style={styles.actions}>
@@ -137,7 +137,12 @@ export default function LuxuryTopSearch({
       />
 
       <View style={styles.actionIcon}>
-        <CartBadge iconSize={24} iconColor={tint} />
+        <CartBadge
+          iconSize={24}
+          iconColor={tint}
+          badgeColor={tint}
+          badgeTextColor={badgeTextColor}
+        />
       </View>
     </View>
   );

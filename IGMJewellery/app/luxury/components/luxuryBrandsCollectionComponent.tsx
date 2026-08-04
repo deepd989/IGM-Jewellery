@@ -1,9 +1,6 @@
 import { HapticButton } from "@/components/basic components/hapticButton";
+import { AssetKey, assetUrl } from "@/constants/assets";
 import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
-import { Brand } from "@/store/apis/brandsApi";
-import { useStorefrontBrands } from "@/hooks/useStorefrontBrands";
-import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -20,19 +17,47 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const GAP = 8;
 const TILE_RADIUS = 18;
-/** The mosaic has room for exactly this many brands. */
-const TILE_COUNT = 7;
 
-type BrandTileProps = {
-  brand?: Brand;
-  height: number;
-  flex?: number;
-  onPress: (brand: Brand) => void;
+export type BrandTileEntry = {
+  /** Manifest key for this tile's cover artwork. */
+  assetKey: AssetKey;
+  /** The brand the tile opens — the key /brandProfile/[brandName] takes. */
+  businessNameKey: string;
 };
 
-function BrandTile({ brand, height, flex, onPress }: BrandTileProps) {
-  // Keeps the mosaic's shape intact when fewer brands come back than slots.
-  if (!brand) {
+/**
+ * The mosaic, slot by slot, in the order the tiles are laid out: the big tile
+ * top left, then the two down its right, then the two stacked bottom left, then
+ * the big tile bottom right.
+ *
+ * Each slot pairs its own artwork with whichever brand currently sits in it, so
+ * the covers are curated rather than taken from the brand's own profile image —
+ * a logo on a transparent canvas does not fill a tile the way these do. Rotating
+ * a brand through a slot means changing its businessNameKey and re-pointing that
+ * slot's manifest key; the layout does not move.
+ */
+const BRAND_TILES: BrandTileEntry[] = [
+  { assetKey: "luxury.brandTile.cover1", businessNameKey: "roma_design" },
+  { assetKey: "luxury.brandTile.cover2", businessNameKey: "belrosa_atelier" },
+  { assetKey: "luxury.brandTile.cover3", businessNameKey: "zaiwarya" },
+  { assetKey: "luxury.brandTile.cover4", businessNameKey: "rang_auraa" },
+  { assetKey: "luxury.brandTile.cover5", businessNameKey: "kaamya_jewels" },
+  {
+    assetKey: "luxury.brandTile.cover6",
+    businessNameKey: "shwaahish_diamond_jewellers",
+  },
+];
+
+type BrandTileProps = {
+  tile?: BrandTileEntry;
+  height: number;
+  flex?: number;
+  onPress: (tile: BrandTileEntry) => void;
+};
+
+function BrandTile({ tile, height, flex, onPress }: BrandTileProps) {
+  // Keeps the mosaic's shape intact when a slot has been left empty.
+  if (!tile) {
     return <View style={[styles.tile, { height, flex }]} />;
   }
 
@@ -40,36 +65,33 @@ function BrandTile({ brand, height, flex, onPress }: BrandTileProps) {
     <HapticButton
       style={[styles.tile, { height, flex }]}
       activeOpacity={0.85}
-      onPress={() => onPress(brand)}
+      onPress={() => onPress(tile)}
     >
-      {!!brand.profileImageUri && (
-        <Image
-          source={{ uri: brand.profileImageUri }}
-          style={styles.tileImage}
-          resizeMode="cover"
-        />
-      )}
+      <Image
+        source={{ uri: assetUrl(tile.assetKey) }}
+        style={styles.tileImage}
+        resizeMode="cover"
+      />
     </HapticButton>
   );
 }
 
 type LuxuryBrandsCollectionProps = {
   title?: string;
+  /** The six slots of the mosaic. Defaults to the curated set above. */
+  tiles?: BrandTileEntry[];
   /** Overrides navigation to the brand's profile screen. */
-  onPressBrand?: (brand: Brand) => void;
-  /** Overrides navigation to the full brands list. */
-  onViewAll?: () => void;
+  onPressBrand?: (tile: BrandTileEntry) => void;
   style?: ViewStyle;
 };
 
 export default function LuxuryBrandsCollection({
   title = "One-Stop-Shop For All Brands",
+  tiles = BRAND_TILES,
   onPressBrand,
-  onViewAll,
   style,
 }: LuxuryBrandsCollectionProps) {
   const router = useRouter();
-  const { data: brands = [] } = useStorefrontBrands({});
   // Measured so the mosaic fits the space this component is actually given
   // (parents may add padding), rather than assuming the full screen width.
   const [containerWidth, setContainerWidth] = useState(SCREEN_WIDTH);
@@ -92,59 +114,37 @@ export default function LuxuryBrandsCollection({
   const bottomTallHeight = Math.round((bottomRowHeight - GAP) * 0.6);
   const bottomShortHeight = bottomRowHeight - GAP - bottomTallHeight;
 
-  const tiles: (Brand | undefined)[] = Array.from(
-    { length: TILE_COUNT },
-    (_, index) => brands[index]
-  );
-
-  const handlePressBrand = (brand: Brand) => {
+  const handlePressBrand = (tile: BrandTileEntry) => {
     if (onPressBrand) {
-      onPressBrand(brand);
+      onPressBrand(tile);
       return;
     }
-    router.navigate(`/brandProfile/${brand.businessNameKey}` as any);
-  };
-
-  const handleViewAll = () => {
-    if (onViewAll) {
-      onViewAll();
-      return;
-    }
-    router.navigate("/brands");
+    router.navigate(`/brandProfile/${tile.businessNameKey}` as any);
   };
 
   return (
     <View style={[styles.container, style]} onLayout={handleLayout}>
       <Text style={styles.title}>{title}</Text>
 
-      {/* Top half: one large tile beside a wide tile stacked over two squares */}
+      {/* Top half: one large tile beside a wide tile stacked over a second */}
       <View style={styles.row}>
         <BrandTile
-          brand={tiles[0]}
+          tile={tiles[0]}
           height={topRowHeight}
           flex={50}
           onPress={handlePressBrand}
         />
         <View style={[styles.stack, { flex: 50 }]}>
           <BrandTile
-            brand={tiles[1]}
+            tile={tiles[1]}
             height={topWideHeight}
             onPress={handlePressBrand}
           />
-          <View style={styles.row}>
-            <BrandTile
-              brand={tiles[2]}
-              height={topSmallHeight}
-              flex={1}
-              onPress={handlePressBrand}
-            />
-            <BrandTile
-              brand={tiles[3]}
-              height={topSmallHeight}
-              flex={1}
-              onPress={handlePressBrand}
-            />
-          </View>
+          <BrandTile
+            tile={tiles[2]}
+            height={topSmallHeight}
+            onPress={handlePressBrand}
+          />
         </View>
       </View>
 
@@ -152,35 +152,23 @@ export default function LuxuryBrandsCollection({
       <View style={[styles.row, { marginTop: GAP }]}>
         <View style={[styles.stack, { flex: 39 }]}>
           <BrandTile
-            brand={tiles[4]}
+            tile={tiles[3]}
             height={bottomTallHeight}
             onPress={handlePressBrand}
           />
           <BrandTile
-            brand={tiles[5]}
+            tile={tiles[4]}
             height={bottomShortHeight}
             onPress={handlePressBrand}
           />
         </View>
         <BrandTile
-          brand={tiles[6]}
+          tile={tiles[5]}
           height={bottomRowHeight}
           flex={61}
           onPress={handlePressBrand}
         />
       </View>
-
-      <HapticButton style={styles.viewAllWrapper} onPress={handleViewAll}>
-        <LinearGradient
-          colors={["#175E63", "#053844"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.viewAllButton}
-        >
-          <Text style={styles.viewAllText}>View All</Text>
-          <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
-        </LinearGradient>
-      </HapticButton>
     </View>
   );
 }
@@ -211,30 +199,5 @@ const styles = StyleSheet.create({
   tileImage: {
     width: "100%",
     height: "100%",
-  },
-  viewAllWrapper: {
-    alignSelf: "center",
-    marginTop: LUXURY_SPACING,
-    borderRadius: 14,
-    overflow: "hidden",
-    shadowColor: "#052A33",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  viewAllButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-    height: 48,
-    paddingHorizontal: 56,
-  },
-  viewAllText: {
-    color: "#FFFFFF",
-    fontSize: 17,
-    fontWeight: "600",
-    letterSpacing: 0.2,
   },
 });

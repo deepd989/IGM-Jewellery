@@ -1,4 +1,5 @@
 import { LUXURY_COLORS, LUXURY_SPACING } from "@/constants/theme";
+import { useResetProfile } from "@/hooks/useResetProfile";
 import { RootState } from "@/store/store";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -145,6 +146,7 @@ export default function LuxuryProfileScreen() {
   const insets = useSafeAreaInsets();
   const profile = useSelector((state: RootState) => state.user.profile);
   const { userId, logout } = useAuth();
+  const { resetProfile, isResetting } = useResetProfile();
 
   const openPath = (path?: string) => {
     if (path) router.navigate(path as any);
@@ -217,6 +219,14 @@ export default function LuxuryProfileScreen() {
           style={styles.block}
         />
 
+        <LuxuryActionButton
+          label={isResetting ? "Resetting…" : "Reset Profile"}
+          variant="outline"
+          disabled={isResetting}
+          style={styles.reset}
+          onPress={resetProfile}
+        />
+
         {!!userId && (
           <LuxuryActionButton
             label="Logout"
@@ -255,8 +265,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: LUXURY_COLORS.text,
   },
-  logout: {
+  reset: {
     marginTop: LUXURY_SPACING / 2,
+  },
+  logout: {
+    marginTop: 12,
   },
   version: {
     marginTop: 12,

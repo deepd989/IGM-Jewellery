@@ -1,6 +1,9 @@
+import { useAuth } from "@/auth/authContext";
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { TryOnSelectorModal } from "@/components/products/TryOnSelectorModal";
 import { COLORS, LUXURY_COLORS } from "@/constants/theme";
+import { generateJewelleryImage } from "@/helpers/generateJewelleryImage";
+import { firstImageHelper } from "@/helpers/imageUsageHelper";
 import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { useCartStatus } from "@/hooks/useCartStatus";
 import { Product } from "@/interfaces/product.interface";
@@ -12,7 +15,7 @@ import {
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -81,6 +84,12 @@ type LuxuryProductCardProps = {
    * to, so the two never compete.
    */
   priceColor?: string;
+  /**
+   * Shows the shopper wearing the piece instead of the catalogue shot, the way
+   * the classic card does on the wishlist. Off everywhere else: the preview is
+   * a per-card network round trip, so grids that don't ask for it don't pay it.
+   */
+  loadAiPreview?: boolean;
   style?: ViewStyle;
 };
 
@@ -102,13 +111,44 @@ export default function LuxuryProductCard({
   primaryColor = COLORS.primary,
   secondaryColor = COLORS.secondary,
   priceColor = COLORS.text,
+  loadAiPreview = false,
   style,
 }: LuxuryProductCardProps) {
   const router = useRouter();
+  const { userId } = useAuth();
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const { isInCart, goToCart } = useCartStatus(product.id);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
+  const [firstImageBase64State, setFirstImageBase64State] = useState("");
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+
+  useEffect(() => {
+    // Only the AI preview has anything to wait for; flipping this on for every
+    // card would cost each one an extra render at mount.
+    if (!loadAiPreview) return;
+
+    setIsPreviewLoading(true);
+    const handleAiPreview = async () => {
+      if (firstImageBase64State === "") {
+        try {
+          await generateJewelleryImage(
+            userId as string,
+            product,
+            setFirstImageBase64State,
+            "any outfit that goes with the jewellery and a person's face",
+            "any color"
+          );
+        } catch (error) {
+          console.error("Failed to generate preview:", error);
+        } finally {
+          setIsPreviewLoading(false);
+        }
+      }
+    };
+
+    handleAiPreview();
+  }, []);
 
   const { data: wishlistData } = useGetWishlistQuery();
   const [addToWishlist, { isLoading: isAddingToWishlist }] =
@@ -209,11 +249,24 @@ export default function LuxuryProductCard({
       onPress={handlePress}
     >
       <View style={[styles.tile, onDark && { backgroundColor: ON_DARK.tile }]}>
-        <Image
-          source={{ uri: product.thumbnailUrls?.[0] }}
-          style={styles.image}
-          resizeMode="cover"
-        />
+        {isPreviewLoading && loadAiPreview ? (
+          <View style={styles.previewLoading}>
+            <ActivityIndicator size="small" color={primaryColor} />
+            <Text style={styles.previewLoadingText}>Generating preview…</Text>
+          </View>
+        ) : (
+          <Image
+            source={{
+              uri: firstImageHelper(
+                firstImageBase64State,
+                product.thumbnailUrls?.[0],
+                loadAiPreview
+              ),
+            }}
+            style={styles.image}
+            resizeMode="cover"
+          />
+        )}
 
         {product.isNew && (
           <View style={[styles.newBadge, { backgroundColor: secondaryColor }]}>
@@ -397,6 +450,20 @@ const styles = StyleSheet.create({
   },
   image: {
     ...StyleSheet.absoluteFillObject,
+  },
+  /** Sits inside the tile, so the card keeps its footprint while it waits. */
+  previewLoading: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingHorizontal: 12,
+  },
+  previewLoadingText: {
+    fontSize: 11,
+    letterSpacing: 0.3,
+    color: MUTED,
+    textAlign: "center",
   },
   compareCheckbox: {
     position: "absolute",

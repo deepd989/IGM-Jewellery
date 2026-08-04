@@ -10,12 +10,18 @@ import { HapticButton } from "../basic components/hapticButton";
 interface CartBadgeProps {
   iconSize?: number;
   iconColor?: string;
+  /** Fill behind the count. Defaults to the app's primary. */
+  badgeColor?: string;
+  /** Ink for the count. Has to follow the fill — dark over a light badge. */
+  badgeTextColor?: string;
   showLabel?: boolean;
 }
 
 export const CartBadge: React.FC<CartBadgeProps> = ({
   iconSize = 22,
   iconColor = COLORS.text,
+  badgeColor = COLORS.primary,
+  badgeTextColor = "#FFFFFF",
   showLabel = false,
 }) => {
   const router = useRouter();
@@ -37,8 +43,8 @@ export const CartBadge: React.FC<CartBadgeProps> = ({
       <View style={styles.iconContainer}>
         <Ionicons name="bag-outline" size={iconSize} color={iconColor} />
         {totalItems > 0 && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>
+          <View style={[styles.badge, { backgroundColor: badgeColor }]}>
+            <Text style={[styles.badgeText, { color: badgeTextColor }]}>
               {totalItems > 99 ? "99+" : totalItems}
             </Text>
           </View>
@@ -58,11 +64,12 @@ const styles = StyleSheet.create({
   iconContainer: {
     position: "relative",
   },
+  // Fill and ink come from the props, so the badge can follow whatever header
+  // it is sitting in rather than carrying one colour everywhere.
   badge: {
     position: "absolute",
     top: -6,
     right: -8,
-    backgroundColor: COLORS.primary,
     minWidth: 18,
     height: 18,
     borderRadius: 9,
@@ -75,7 +82,6 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#FFFFFF",
   },
   label: {
     fontSize: 10,

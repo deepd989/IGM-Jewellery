@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import {
   StyleSheet,
-  Text,
   View,
   FlatList,
   Dimensions,
-  TouchableOpacity,
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -13,7 +11,9 @@ import {
 import { useIsFocused } from '@react-navigation/native';
 import { ResizeMode, Video } from 'expo-av';
 import { BlurView } from 'expo-blur';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { HapticButton } from "@/components/basic components/hapticButton";
 import { assetUrl } from "@/constants/assets";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -24,28 +24,41 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const MIN_CARD_HEIGHT = Math.round(SCREEN_HEIGHT * 0.35) + 30;
 const MAX_CARD_HEIGHT = Math.round(SCREEN_HEIGHT * 0.50) + 30;
 
-// Sample Carousel Data
+/** Diameter of the glass arrow in the slide's corner. */
+const ARROW_SIZE = 44;
+
+/**
+ * The hero reel. Each slide is a clip and the piece it shows: the whole slide
+ * is the tap target, and it opens that product.
+ *
+ * `title` is not drawn anywhere — the slide carries no caption. It is kept as
+ * a note to whoever maintains this list, so a row can be matched to its clip
+ * without opening the video.
+ */
 const CAROUSEL_DATA = [
   {
     id: '1',
     title: 'Timeless Diamond Collection',
-    subtitle: 'TBZ Jewellers',
     video: assetUrl("luxury.glossyCard.slide1.video"),
-    logo: assetUrl("luxury.glossyCard.slide1.brandLogo"),
+    productId: '118',
   },
   {
     id: '2',
     title: 'Royal Heritage Gold',
-    subtitle: 'TBZ Jewellers',
     video: assetUrl("luxury.glossyCard.slide2.video"),
-    logo: assetUrl("luxury.glossyCard.slide2.brandLogo"),
+    productId: '40',
   },
   {
     id: '3',
     title: 'Modern Solitaire Series',
-    subtitle: 'TBZ Jewellers',
     video: assetUrl("luxury.glossyCard.slide3.video"),
-    logo: assetUrl("luxury.glossyCard.slide3.brandLogo"),
+    productId: '128',
+  },
+  {
+    id: '4',
+    title: 'Modern Solitaire Series',
+    video: assetUrl("luxury.glossyCard.slide4.video"),
+    productId: '41',
   },
 ];
 
@@ -54,9 +67,15 @@ type CarouselItem = (typeof CAROUSEL_DATA)[number];
 type GlassCarouselProps = {
   /** Fixed card height. Omit to fill the height the parent leaves available. */
   height?: number;
+  /** Overrides navigation to the slide's product screen. */
+  onPressSlide?: (item: CarouselItem) => void;
 };
 
-export default function GlassCarousel({ height }: GlassCarouselProps) {
+export default function GlassCarousel({
+  height,
+  onPressSlide,
+}: GlassCarouselProps) {
+  const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
   // Clips keep decoding while the shopper is off on another screen unless the
   // carousel stops them — the storefront's other video rows want the decoders.
@@ -88,13 +107,28 @@ export default function GlassCarousel({ height }: GlassCarouselProps) {
     }
   };
 
+  const handlePressSlide = (item: CarouselItem) => {
+    if (onPressSlide) {
+      onPressSlide(item);
+      return;
+    }
+    router.navigate({
+      pathname: "/luxury/product/[id]",
+      params: { id: item.productId },
+    });
+  };
+
   const renderItem = ({ item, index }: { item: CarouselItem; index: number }) => {
     // Only the slide actually in view runs; the rest hold a player but stay
     // paused on their first frame.
     const isPlaying = isFocused && index === activeIndex;
 
     return (
-      <View style={[styles.cardContainer, { width: cardWidth, height: cardHeight }]}>
+      <HapticButton
+        style={[styles.cardContainer, { width: cardWidth, height: cardHeight }]}
+        activeOpacity={0.95}
+        onPress={() => handlePressSlide(item)}
+      >
         {/* The clip paints the slide on its own — no still stands in for it,
             neither as a poster nor for the slides out of view. Every mounted
             slide therefore holds a video decoder, which is affordable at three
@@ -108,33 +142,16 @@ export default function GlassCarousel({ height }: GlassCarouselProps) {
           isMuted
         />
 
-        {/* Top Right Brand Logo */}
-        <View style={styles.logoBadge}>
-          <Text style={styles.logoText}>tbz</Text>
-        </View>
-
-        {/* Bottom Glassmorphic Button Overlay */}
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={() => console.log(`Pressed: ${item.title}`)}
-          style={styles.glassButtonWrapper}
-        >
-          <BlurView intensity={45} tint="dark" style={styles.glassButtonContent}>
-            <View style={styles.textContainer}>
-              <Text style={styles.titleText} numberOfLines={1}>
-                {item.title}
-              </Text>
-              <Text style={styles.subtitleText}>{item.subtitle}</Text>
-            </View>
-
-            {/* Circular Arrow Button */}
-            <View style={styles.arrowButton}>
-              <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-            </View>
+        {/* Glass arrow, on its own in the corner. It only marks the slide as a
+            way in — the whole clip is the tap target, so the arrow takes no
+            touches of its own. The radius and the clip live on the wrapper: a
+            BlurView does not round its own blur. */}
+        <View style={styles.arrowWrapper} pointerEvents="none">
+          <BlurView intensity={40} tint="dark" style={styles.arrowGlass}>
+            <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
           </BlurView>
-        </TouchableOpacity>
-
-      </View>
+        </View>
+      </HapticButton>
     );
   };
 
@@ -206,68 +223,24 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  logoBadge: {
+  arrowWrapper: {
     position: 'absolute',
-    top: 24,
-    right: 24,
-    width: 60,
-    height: 60,
-    borderRadius: 16,
-    backgroundColor: 'rgba(58, 45, 40, 0.85)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  logoText: {
-    color: '#D4AF37',
-    fontSize: 22,
-    fontWeight: 'bold',
-    fontStyle: 'italic',
-  },
-  glassButtonWrapper: {
-    position: 'absolute',
-    bottom: 50,
-    left: 20,
     right: 20,
-    borderRadius: 24,
+    // Clears the pagination dots, which sit on the same edge of the card.
+    bottom: 44,
+    width: ARROW_SIZE,
+    height: ARROW_SIZE,
+    borderRadius: ARROW_SIZE / 2,
     overflow: 'hidden',
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-  },
-  glassButtonContent: {
-    paddingVertical: 18,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: 'rgba(30, 30, 30, 0.35)',
-  },
-  textContainer: {
-    flex: 1,
-    marginRight: 12,
-  },
-  titleText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '600',
-    letterSpacing: 0.3,
-    marginBottom: 4,
-  },
-  subtitleText: {
-    color: 'rgba(255, 255, 255, 0.75)',
-    fontSize: 14,
-    fontWeight: '400',
-  },
-  arrowButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
-    justifyContent: 'center',
-    alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  arrowGlass: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // The lit face over the blur, so the glass reads as raised off the clip.
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   paginationContainer: {
     position: 'absolute',
