@@ -8,7 +8,7 @@ import { useGetProductByIdQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -60,7 +60,11 @@ export default function LuxuryProductDetailScreen() {
 
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const { isInCart, goToCart } = useCartStatus(productId as string);
-  const { base64String: tryOnImage } = useGetImage(`${productId}_${userId}`);
+  // Both halves are needed to name the shot; without a signed-in shopper the
+  // id would read "<product>_undefined" and ask the server for a stranger.
+  const { imageUri: tryOnImage } = useGetImage(
+    productId && userId ? `${productId}_${userId}` : ""
+  );
 
   const {
     data: product,
@@ -68,8 +72,13 @@ export default function LuxuryProductDetailScreen() {
     isError,
   } = useGetProductByIdQuery(productId as string);
 
-  /** The shopper's own try-on shot leads the gallery when they arrived from it. */
-  const getImageUrls = () => {
+  /**
+   * The shopper's own try-on shot leads the gallery when they arrived from it.
+   *
+   * Memoised because the hero measures its lead shot off this list; a fresh
+   * array on every render had it re-measuring on each one.
+   */
+  const imageUrls = useMemo(() => {
     if (!product) return [];
     if (fromTryOn === "true" && tryOnImage) {
       return [tryOnImage, ...(product.thumbnailUrls || [])];
@@ -82,7 +91,7 @@ export default function LuxuryProductDetailScreen() {
       ];
     }
     return product.thumbnailUrls || [];
-  };
+  }, [product, tryOnImage, fromTryOn]);
 
   /** Adds the piece, or opens the bag once it is already in there. */
   const handleBagPress = async () => {
@@ -141,7 +150,7 @@ export default function LuxuryProductDetailScreen() {
           },
         ]}
       >
-        <LuxuryProductHero product={product} images={getImageUrls()} />
+        <LuxuryProductHero product={product} images={imageUrls} />
 
         <LuxuryProductInfo
           product={product}

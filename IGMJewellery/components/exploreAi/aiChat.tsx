@@ -89,8 +89,13 @@ export default function AiChatComponent({
 }) {
   const router = useRouter();
   const styles = useMemo(() => createStyles(isLuxury), [isLuxury]);
-  /** Header glyphs read against the screen's own ground. */
-  const headerTint = isLuxury ? LUXURY_COLORS.text : COLORS.text;
+  /**
+   * Header glyphs read against the screen's own ground. The luxury storefront
+   * marks its icons in gold rather than in body white — `LUXURY_COLORS.text` is
+   * plain #FFFFFF, which left this header reading as the Massy one on a green
+   * ground.
+   */
+  const headerTint = isLuxury ? LUXURY_COLORS.accent : COLORS.text;
   const { data: wishlistData } = useGetWishlistQuery();
   const wishlistCount = wishlistData?.items.length || 0;
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -405,12 +410,7 @@ export default function AiChatComponent({
           </HapticButton>
           <Image
             source={require("../../assets/images/elanzia_ai.png")}
-            style={{
-              height: 50,
-              width: 150,
-              paddingLeft: 20,
-              alignSelf: "center",
-            }}
+            style={styles.headerLogo}
           />
           <View style={styles.headerIcons}>
             <HapticButton
@@ -645,8 +645,18 @@ const createStyles = (isLuxury: boolean) =>
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.accent : COLORS.primary,
     fontStyle: "italic",
+  },
+  headerLogo: {
+    height: 50,
+    width: 150,
+    paddingLeft: 20,
+    alignSelf: "center" as const,
+    // The wordmark ships as a black glyph on transparent, drawn for the Massy
+    // header's white ground. On the luxury green it has to be repainted, and in
+    // the storefront's gold rather than left to sit there as a black hole.
+    ...(isLuxury ? { tintColor: LUXURY_COLORS.accent } : null),
   },
   headerIcons: {
     flexDirection: "row",
@@ -668,10 +678,12 @@ const createStyles = (isLuxury: boolean) =>
     alignItems: "center" as const,
     paddingHorizontal: 4,
     borderWidth: 2,
-    borderColor: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
+    // Takes the header's gold with the icon it sits on, rather than ringing a
+    // gold heart in white.
+    borderColor: isLuxury ? LUXURY_COLORS.accent : COLORS.primary,
   },
   headerBadgeText: {
-    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.accent : COLORS.primary,
     fontSize: 10,
     fontWeight: "700" as const,
   },

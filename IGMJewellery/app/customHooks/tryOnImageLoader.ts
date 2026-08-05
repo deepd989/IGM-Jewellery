@@ -1,51 +1,62 @@
-import { Buffer } from "buffer"; // You may need to install this: npm install buffer
 import { useEffect, useState } from "react";
 import { WRAPPER_API } from "../../store/newApis/apiUrl.const";
 
+/**
+ * Resolves a shopper's generated try-on shot to a plain HTTP URL.
+ *
+ * The image is handed to <Image> as a URL rather than a base64 data URI on
+ * purpose. Pulling the bytes into JS and encoding them left four live copies
+ * of a multi-megabyte PNG on the JS thread (ArrayBuffer, Buffer, the base64
+ * string, and the `data:` prefix concat), and a data URI is then decoded at
+ * full resolution natively with no disk cache and no downsampling. Landing on
+ * the product screen straight after a try-on paid all of that at once, which
+ * is what was killing the app.
+ *
+ * A HEAD request only asks whether the shot exists yet — the bytes never reach
+ * JS, and the native image layer fetches and caches them itself.
+ */
 export const useGetImage = (imageId: string) => {
-  const [base64String, setBase64String] = useState("");
+  const [imageUri, setImageUri] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  // Replace with your actual machine IP or domain
-  const BASE_URL = WRAPPER_API;
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!imageId) return;
+    if (!imageId) {
+      setImageUri("");
+      return;
+    }
 
-    const fetchImage = async () => {
+    // The answer can land after the screen has moved on; ignore it if it does.
+    let isCurrent = true;
+    const url = `${WRAPPER_API}/getImage/${imageId}`;
+
+    const checkImage = async () => {
       setIsLoading(true);
       setError(null);
 
       try {
-        const response = await fetch(`${BASE_URL}/getImage/${imageId}`);
+        const response = await fetch(url, { method: "HEAD" });
+        if (!isCurrent) return;
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch image: ${response.status}`);
-        }
-
-        const arrayBuffer = await response.arrayBuffer();
-
-        // Check if the buffer actually contains data
-        if (arrayBuffer.byteLength === 0) {
-          console.warn("Received empty image data");
-          setBase64String(""); // Explicitly set to null
-          return;
-        }
-
-        const base64 = Buffer.from(arrayBuffer).toString("base64");
-        setBase64String(`data:image/png;base64,${base64}`);
-      } catch (err) {
-        console.error("Error fetching image:", err);
+        // A 404 just means this shopper has no try-on shot for this piece yet,
+        // which is the ordinary case rather than a failure.
+        setImageUri(response.ok ? url : "");
+      } catch (err: any) {
+        if (!isCurrent) return;
+        console.error("Error checking try-on image:", err);
         setError(err.message);
-        setBase64String(""); // Ensure state is cleared on error
+        setImageUri("");
       } finally {
-        setIsLoading(false);
+        if (isCurrent) setIsLoading(false);
       }
     };
 
-    fetchImage();
+    checkImage();
+
+    return () => {
+      isCurrent = false;
+    };
   }, [imageId]);
 
-  return { isLoading, base64String, error };
+  return { isLoading, imageUri, error };
 };

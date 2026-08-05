@@ -9,7 +9,7 @@ import {
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -40,7 +40,13 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
   const router = useRouter();
   const [activeSlide, setActiveSlide] = useState(0);
   const [showSimilarModal, setShowSimilarModal] = useState(false);
-  const imageUrls = images.map((img) => ({ url: img }));
+  const imageUrls = useMemo(() => images.map((img) => ({ url: img })), [images]);
+  /**
+   * ImageViewer measures its shots once, in componentDidMount, and never again.
+   * The try-on shot arrives after mount and takes the lead slot, so without a
+   * remount it would be drawn at whatever ratio the thumbnail it displaced had.
+   */
+  const viewerKey = useMemo(() => images.join("|"), [images]);
 
   // Wishlist functionality
   const { data: wishlistData } = useGetWishlistQuery();
@@ -111,6 +117,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
 
       <View style={{ width, height: IMAGE_HEIGHT }}>
         <ImageViewer
+          key={viewerKey}
           imageUrls={imageUrls}
           resizeMode="cover"
           index={activeSlide}

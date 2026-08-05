@@ -9,7 +9,7 @@ import { ResizeMode, Video } from "expo-av";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -77,6 +77,13 @@ export default function LuxurySwipeAndShop({
   const isFocused = useIsFocused();
   /** False until the clip has something to show; the screen spins until then. */
   const [isClipReady, setIsClipReady] = useState(false);
+  // The section gives its player up when it loses focus, so on the way back
+  // there is no picture again. Without this reset the mock would clear its
+  // spinner on the old player's readiness and show black until the new one has
+  // a frame.
+  useEffect(() => {
+    if (!isFocused) setIsClipReady(false);
+  }, [isFocused]);
   // Measured so the mock can be given a size in points rather than in shares of
   // its parent. The player needs a frame it can measure against: a chain of
   // percentages, an aspect ratio and a flex resolves for every other view here,
@@ -131,12 +138,17 @@ export default function LuxurySwipeAndShop({
               { width: screenWidth, height: screenHeight },
             ]}
           >
-            {/* The frame is portrait, so the clip fills it on its own crop. */}
+            {/* The frame is portrait, so the clip fills it on its own crop.
+                Mounted only while the section is focused: pausing an expo-av
+                player does not release its decoder, and the device's few are
+                shared with every other clip on the storefront and with the
+                try-on camera. */}
+            {isFocused && (
             <Video
               source={clipSource}
               style={styles.screenMedia}
               resizeMode={ResizeMode.COVER}
-              shouldPlay={isFocused}
+              shouldPlay
               isLooping
               isMuted
               // Both, rather than the first frame alone: onReadyForDisplay is
@@ -149,6 +161,7 @@ export default function LuxurySwipeAndShop({
                 console.warn("Swipe & Shop clip failed to load:", error)
               }
             />
+            )}
 
             {/* A picture of the feature, not a working copy of it. */}
             <View style={StyleSheet.absoluteFill} pointerEvents="none">

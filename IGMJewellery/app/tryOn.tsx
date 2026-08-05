@@ -72,17 +72,25 @@ export default function JewelleryTryOn() {
   };
 
   const handleProductPageRedirection = async (productId: string) => {
-    console.log("Starting image generation for productId:", productId, product);
+    // Without the product the helper would return without generating anything
+    // and the product screen would open with no shot to show.
+    if (!product) return;
+
     setShowImageGeneratingModal(true);
-    await generateJewelleryImage(userId as string, product, () => {});
+    // No callback: the shot is stored server-side and the product screen reads
+    // it back by URL. Asking for the bytes here only bought a multi-megabyte
+    // base64 encode on the JS thread that nothing consumed.
+    await generateJewelleryImage(userId as string, product);
     setShowImageGeneratingModal(false);
-    router.navigate({
+    // replace, not navigate: the shopper reached this screen *from* the product
+    // page, and navigating with a different param pushed a second copy of it
+    // rather than returning to the first, leaving both mounted.
+    router.replace({
       pathname: `/product/${productId}`,
       params: {
         fromTryOn: "true",
       },
     });
-    console.log("redirecting to product page for productId:", productId);
   };
 
   useEffect(() => {
@@ -283,7 +291,7 @@ export default function JewelleryTryOn() {
                     onPress={() => {
                       handleProductPageRedirection(productId);
                     }}
-                    disabled={showImageGeneratingModal}
+                    disabled={showImageGeneratingModal || !product}
                   >
                     <Text style={styles.confirmBtnText}>Proceed</Text>
                   </TouchableOpacity>

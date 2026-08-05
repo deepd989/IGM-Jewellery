@@ -9,7 +9,7 @@ import {
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -21,7 +21,7 @@ import {
 } from "react-native";
 import { useAuth } from "../../auth/authContext";
 import { COLORS, SPACING } from "../../constants/theme";
-import { generateJewelleryImage } from "../../helpers/generateJewelleryImage";
+import { useJewelleryPreview } from "../../hooks/useJewelleryPreview";
 import { firstImageHelper } from "../../helpers/imageUsageHelper";
 import { HapticButton } from "../basic components/hapticButton";
 
@@ -54,49 +54,35 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
   const { isInCart, goToCart } = useCartStatus(product.id);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [firstImageBase64State, setFirstImageBase64State] = useState("");
-  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
   const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
+  // Shared and cached across cards, so a grid of them generates a couple at a
+  // time rather than a screenful at once, and a card scrolled out and back
+  // does not pay for its preview twice.
+  const { uri: previewUri, isLoading: isPreviewLoading } = useJewelleryPreview(
+    product,
+    userId,
+    loadAiPreview
+  );
 
   // Wishlist functionality
-  const { data: wishlistData } = useGetWishlistQuery();
   const [addToWishlist, { isLoading: isAddingToWishlist }] =
     useAddToWishlistMutation();
   const [removeFromWishlist, { isLoading: isRemovingFromWishlist }] =
     useRemoveFromWishlistMutation();
 
-  useEffect(() => {
-    // Only the AI preview has anything to wait for; flipping this on for every
-    // card cost each one an extra render at mount.
-    if (!loadAiPreview) return;
-
-    setIsPreviewLoading(true);
-    const handleAiPreview = async () => {
-      if (firstImageBase64State === "") {
-        try {
-          await generateJewelleryImage(
-            userId as string,
-            product,
-            setFirstImageBase64State,
-            "any outfit that goes with the jewellery and a person's face",
-            "any color"
-          );
-          setIsPreviewLoading(false);
-        } catch (error) {
-          setIsPreviewLoading(false);
-          console.error("Failed to generate preview:", error);
-        }
-      }
-    };
-
-    handleAiPreview();
-  }, []);
+  // Narrowed to this one piece, and skipped outright when the caller already
+  // knows the answer — the wishlist screen always does. Subscribing to the
+  // whole wishlist re-rendered every card in the grid on every mutation.
+  const { isInWishlist: wishlistHasPiece } = useGetWishlistQuery(undefined, {
+    skip: propIsInWishlist !== undefined,
+    selectFromResult: ({ data }) => ({
+      isInWishlist: !!data?.items.some((item) => item.product.id === product.id),
+    }),
+  });
 
   // Determine if in wishlist from props or query
   const isInWishlist =
-    propIsInWishlist !== undefined
-      ? propIsInWishlist
-      : wishlistData?.items.some((item) => item.product.id === product.id);
+    propIsInWishlist !== undefined ? propIsInWishlist : wishlistHasPiece;
 
   const isGrid = viewMode === "grid";
   const GRID_GAP = SPACING.s; // 8px gap between cards
@@ -259,7 +245,7 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
           <Image
             source={{
               uri: firstImageHelper(
-                firstImageBase64State,
+                previewUri,
                 product.thumbnailUrls[0],
                 loadAiPreview
               ),

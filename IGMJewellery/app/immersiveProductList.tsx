@@ -19,11 +19,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ImmersiveProductCard } from "../components/immersiveProductCard";
+import { Product } from "../interfaces/product.interface";
 import { useGetProductsQuery } from "../store/apis/product";
 
 const { height } = Dimensions.get("window");
 
-const swipeNShopDummyData = [
+const swipeNShopDummyData = new Set([
   "EA1594",
   "GER-24",
   "GER-030",
@@ -37,10 +38,30 @@ const swipeNShopDummyData = [
   "Parampara1",
   "Shri1",
   "Swarna1",
-];
+]);
+
+/**
+ * Shared empty array for the pre-fetch render. A fresh `[]` default would hand
+ * the filter memo a new identity on every render before the data lands.
+ */
+const NO_PRODUCTS: Product[] = [];
+
+// Hoisted out of the component: none of these close over props or state, so
+// re-creating them per render only served to churn the FlatList's props.
+const keyExtractor = (item: Product) => item.id.toString();
+
+const getItemLayout = (_: unknown, index: number) => ({
+  length: height,
+  offset: height * index,
+  index,
+});
 
 const ImmersiveProductList = () => {
-  const { data: products = [], isLoading, isError } = useGetProductsQuery({});
+  const {
+    data: products = NO_PRODUCTS,
+    isLoading,
+    isError,
+  } = useGetProductsQuery({});
   const [showHint, setShowHint] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -142,10 +163,26 @@ const ImmersiveProductList = () => {
   const immersiveProducts = useMemo(() => {
     return products.filter((product) => {
       return (
-        product.immersiveVideoUrl && swipeNShopDummyData.includes(product.sku)
+        product.immersiveVideoUrl &&
+        swipeNShopDummyData.has(product.sku as string)
       );
     });
   }, [products]);
+
+  const hideHint = useCallback(() => setShowHint(false), []);
+
+  /**
+   * Only the two cards whose `isActive` flips get new props here; the rest keep
+   * the same `item` reference and the same `false`, so the memoised card bails
+   * out instead of rebuilding its gradients, icons and query subscriptions
+   * mid-swipe.
+   */
+  const renderItem = useCallback(
+    ({ item, index }: { item: Product; index: number }) => (
+      <ImmersiveProductCard item={item} isActive={index === activeIndex} />
+    ),
+    [activeIndex]
+  );
 
   if (isLoading) return <ActivityIndicator size="large" style={{ flex: 1 }} />;
   if (isError) return <Text>Error loading products</Text>;
@@ -158,13 +195,8 @@ const ImmersiveProductList = () => {
         <FlatList
           ref={flatListRef}
           data={immersiveProducts}
-          renderItem={({ item, index }) => (
-            <ImmersiveProductCard
-              item={item}
-              isActive={index === activeIndex}
-            />
-          )}
-          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
           // 2. Core Paging Props
           pagingEnabled={true}
           snapToInterval={height}
@@ -173,14 +205,10 @@ const ImmersiveProductList = () => {
           disableIntervalMomentum={true} // Prevents accidental double-scrolling
           showsVerticalScrollIndicator={false}
           // 3. Performance & Layout (Crucial for "cutting" issues)
-          getItemLayout={(_, index) => ({
-            length: height,
-            offset: height * index,
-            index,
-          })}
+          getItemLayout={getItemLayout}
           // This ensures the list fills the whole screen space
-          contentContainerStyle={{ flexGrow: 1 }}
-          onScrollBeginDrag={() => setShowHint(false)}
+          contentContainerStyle={hintStyles.listContent}
+          onScrollBeginDrag={hideHint}
           // 4. Video memory management — only render nearby items
           onViewableItemsChanged={onViewableItemsChanged}
           viewabilityConfig={viewabilityConfig}
@@ -218,6 +246,9 @@ const ImmersiveProductList = () => {
 };
 
 const hintStyles = StyleSheet.create({
+  listContent: {
+    flexGrow: 1,
+  },
   overlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: "flex-end",

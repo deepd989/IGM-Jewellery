@@ -46,7 +46,7 @@ const ImmersiveVideoLocalPath: Record<string, any> = {
   Swarna1: require("../assets/Swarna1.mp4"),
 };
 
-export const ImmersiveProductCard = ({
+const ImmersiveProductCardComponent = ({
   item: product,
   isActive = true,
 }: {
@@ -59,20 +59,30 @@ export const ImmersiveProductCard = ({
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
+  // The try-on sheet is a whole second screen of views. Building it for every
+  // card in the window costs on each swipe, so it only mounts once the shopper
+  // has actually reached for it — and stays mounted after, so closing keeps its
+  // slide-out animation.
+  const [hasOpenedTryOn, setHasOpenedTryOn] = useState(false);
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const { isInCart, goToCart } = useCartStatus(product.id);
-  const { data: wishlistData } = useGetWishlistQuery();
+  // Narrowed the same way `useCartStatus` is: without this every card re-renders
+  // whenever any other piece is wishlisted.
+  const { isInWishlist } = useGetWishlistQuery(undefined, {
+    selectFromResult: ({ data }) => ({
+      isInWishlist: !!data?.items.some(
+        (item) => item.product.id === product.id
+      ),
+    }),
+  });
   const [addToWishlist, { isLoading: isAddingToWishlist }] =
     useAddToWishlistMutation();
   const [removeFromWishlist, { isLoading: isRemovingFromWishlist }] =
     useRemoveFromWishlistMutation();
 
   const discountedPrice = product.discountedPrice;
-  const isInWishlist = wishlistData?.items.some(
-    (item) => item.product.id === product.id
-  );
 
   /** Adds the piece, or opens the bag once it is already in there. */
   const handleBagPress = async (e: any) => {
@@ -253,7 +263,10 @@ export const ImmersiveProductCard = ({
           <View style={styles.buttonRow}>
             <HapticButton
               style={styles.tryNowBtn}
-              onPress={() => setIsTryOnSelectorVisible(true)}
+              onPress={() => {
+                setHasOpenedTryOn(true);
+                setIsTryOnSelectorVisible(true);
+              }}
             >
               <Sparkles size={18} color="#FFFFFF" fill="#FFFFFF" />
               <Text style={styles.tryNowText}>Try Now</Text>
@@ -298,25 +311,35 @@ export const ImmersiveProductCard = ({
         </View>
       </View>
 
-      <TryOnSelectorModal
-        visible={isTryOnSelectorVisible}
-        onClose={() => setIsTryOnSelectorVisible(false)}
-        onSelectVR={() =>
-          router.navigate({
-            pathname: "/virtualTryOn2",
-            params: { productId: product.id, productTitle: product.title },
-          })
-        }
-        onSelectAI={() =>
-          router.navigate({
-            pathname: "/tryOn",
-            params: { productId: product.id },
-          })
-        }
-      />
+      {hasOpenedTryOn && (
+        <TryOnSelectorModal
+          visible={isTryOnSelectorVisible}
+          onClose={() => setIsTryOnSelectorVisible(false)}
+          onSelectVR={() =>
+            router.navigate({
+              pathname: "/virtualTryOn2",
+              params: { productId: product.id, productTitle: product.title },
+            })
+          }
+          onSelectAI={() =>
+            router.navigate({
+              pathname: "/tryOn",
+              params: { productId: product.id },
+            })
+          }
+        />
+      )}
     </View>
   );
 };
+
+/**
+ * Memoised: the list re-renders on every swipe to move `isActive`, and without
+ * this each of those rebuilt every card in the window — gradients, five rating
+ * icons, the poster layer and all of its query subscriptions — during the one
+ * moment the frames matter.
+ */
+export const ImmersiveProductCard = React.memo(ImmersiveProductCardComponent);
 
 const styles = StyleSheet.create({
   card: {

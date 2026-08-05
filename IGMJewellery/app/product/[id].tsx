@@ -14,7 +14,7 @@ import { useGetWishlistQuery } from "@/store/apis/wishlist";
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -60,8 +60,11 @@ function ClassicProductDetailScreen() {
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
   const { isInCart, goToCart } = useCartStatus(productId as string);
   const [showSuccess, setShowSuccess] = useState(false);
-  const { base64String: tryOnImage, isLoading: isTryOnImageLoading } =
-    useGetImage(`${productId}_${userId}`);
+  // Both halves are needed to name the shot; without a signed-in shopper the
+  // id would read "<product>_undefined" and ask the server for a stranger.
+  const { imageUri: tryOnImage, isLoading: isTryOnImageLoading } = useGetImage(
+    productId && userId ? `${productId}_${userId}` : ""
+  );
 
   // Fetch product from Redux API
   const {
@@ -95,7 +98,11 @@ function ClassicProductDetailScreen() {
     }
   };
 
-  const getImageUrls = () => {
+  /**
+   * Memoised because the gallery below rebuilds its own state from this list:
+   * handing it a fresh array on every render made it re-measure every shot.
+   */
+  const imageUrls = useMemo(() => {
     if (!product) return [];
     if (fromTryOn === "true" && tryOnImage) {
       return [tryOnImage, ...(product?.thumbnailUrls || [])];
@@ -108,7 +115,7 @@ function ClassicProductDetailScreen() {
       ];
     }
     return product?.thumbnailUrls || [];
-  };
+  }, [product, tryOnImage, fromTryOn]);
 
   const handleTryAtHome = async () => {
     if (!product) return;
@@ -220,7 +227,7 @@ function ClassicProductDetailScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <ProductImageGallery images={getImageUrls()} product={product} />
+        <ProductImageGallery images={imageUrls} product={product} />
 
         <View style={styles.infoWrapper}>
           <ProductInfo

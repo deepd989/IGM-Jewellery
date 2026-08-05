@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -27,6 +27,20 @@ const MAX_CARD_HEIGHT = Math.round(SCREEN_HEIGHT * 0.50) + 30;
 
 /** Diameter of the glass arrow in the slide's corner. */
 const ARROW_SIZE = 44;
+
+/**
+ * How far from the slide in view a clip is given a player at all.
+ *
+ * A paused player is not a free one: expo-av holds an ExoPlayer, and with it a
+ * hardware decoder, from mount until unmount. Four slides is affordable on its
+ * own, but this is the hero of a storefront whose other rows want decoders too,
+ * and the device has few — between them they could exhaust the pool and take
+ * the app down with MediaCodec refusing to allocate.
+ *
+ * One is enough here: the carousel pages one slide at a time, so the slide a
+ * swipe is heading for is always the neighbour, and it buffers before arrival.
+ */
+const PLAYER_WINDOW = 1;
 
 /**
  * The hero reel. Each slide is a clip and the piece it shows: the whole slide
@@ -69,6 +83,8 @@ type CarouselSlideProps = {
   item: CarouselItem;
   width: number;
   height: number;
+  /** Whether this slide holds a player at all, or waits on its loader. */
+  hasPlayer: boolean;
   /** Whether this slide's clip is the one running. */
   isPlaying: boolean;
   onPress: (item: CarouselItem) => void;
@@ -86,11 +102,19 @@ const CarouselSlide = memo(function CarouselSlide({
   item,
   width,
   height,
+  hasPlayer,
   isPlaying,
   onPress,
 }: CarouselSlideProps) {
   /** False until the clip has a picture; the loader holds the slide till then. */
   const [isReady, setIsReady] = useState(false);
+
+  // A slide that gives its player up has no picture again. Without this reset a
+  // slide handed a fresh player would clear its loader on the previous clip's
+  // readiness and show black until the new one has a frame.
+  useEffect(() => {
+    if (!hasPlayer) setIsReady(false);
+  }, [hasPlayer]);
 
   return (
     <HapticButton
@@ -98,28 +122,31 @@ const CarouselSlide = memo(function CarouselSlide({
       activeOpacity={0.95}
       onPress={() => onPress(item)}
     >
-      {/* The clip paints the slide on its own — no still stands in for it,
-          neither as a poster nor for the slides out of view. Every mounted
-          slide therefore holds a video decoder, which is affordable at four
-          slides; a longer carousel would want that budget back. */}
-      <Video
-        source={{ uri: item.video }}
-        style={styles.cardMedia}
-        resizeMode={ResizeMode.COVER}
-        shouldPlay={isPlaying}
-        isLooping
-        isMuted
-        // Both, rather than the first frame alone: onReadyForDisplay is the one
-        // that means "there is a picture", but it has not been dependable on
-        // Android, and a loader that never clears is worse than one that clears
-        // a beat early.
-        onReadyForDisplay={() => setIsReady(true)}
-        onLoad={() => setIsReady(true)}
-      />
+      {/* The clip paints the slide on its own — no still stands in for it.
+          Only the slides near the one in view are given a player, so the rest
+          hold no decoder; the pool is shared with every other clip on the
+          storefront and exhausting it crashes the app outright. */}
+      {hasPlayer && (
+        <Video
+          source={{ uri: item.video }}
+          style={styles.cardMedia}
+          resizeMode={ResizeMode.COVER}
+          shouldPlay={isPlaying}
+          isLooping
+          isMuted
+          // Both, rather than the first frame alone: onReadyForDisplay is the one
+          // that means "there is a picture", but it has not been dependable on
+          // Android, and a loader that never clears is worse than one that clears
+          // a beat early.
+          onReadyForDisplay={() => setIsReady(true)}
+          onLoad={() => setIsReady(true)}
+        />
+      )}
 
       {/* Over the clip rather than under it: the slide carries no still, so a
-          player with no frame yet leaves nothing to see a loader through. */}
-      {!isReady && <LuxuryMediaLoader style={styles.loader} />}
+          player with no frame yet leaves nothing to see a loader through. A
+          slide holding no player waits here until one is handed to it. */}
+      {(!hasPlayer || !isReady) && <LuxuryMediaLoader style={styles.loader} />}
 
       {/* Glass arrow, on its own in the corner. It only marks the slide as a
           way in — the whole clip is the tap target, so the arrow takes no
@@ -192,16 +219,23 @@ export default function GlassCarousel({
     [onPressSlide, router]
   );
 
-  const renderItem = ({ item, index }: { item: CarouselItem; index: number }) => (
-    <CarouselSlide
-      item={item}
-      width={cardWidth}
-      height={cardHeight}
-      // Only the slide actually in view runs; the rest hold a player but stay
-      // paused on their first frame.
-      isPlaying={isFocused && index === activeIndex}
-      onPress={handlePressSlide}
-    />
+  // Stable so the memoised slides are not re-rendered by a new handler alone.
+  const renderItem = useCallback(
+    ({ item, index }: { item: CarouselItem; index: number }) => (
+      <CarouselSlide
+        item={item}
+        width={cardWidth}
+        height={cardHeight}
+        // Only the slide in view and its neighbours hold a player; only the one
+        // in view runs. Gated on focus too: a screen the shopper has navigated
+        // away from stays mounted in the stack, and a paused player holds its
+        // decoder just as a running one does.
+        hasPlayer={isFocused && Math.abs(index - activeIndex) <= PLAYER_WINDOW}
+        isPlaying={isFocused && index === activeIndex}
+        onPress={handlePressSlide}
+      />
+    ),
+    [cardWidth, cardHeight, activeIndex, isFocused, handlePressSlide]
   );
 
   return (
@@ -215,7 +249,7 @@ export default function GlassCarousel({
         keyExtractor={(item) => item.id}
         // The active index decides which slides hold a player, so a row has to
         // re-render when it moves — without this the clips never hand off.
-        extraData={`${cardWidth}-${activeIndex}`}
+        extraData={`${cardWidth}-${activeIndex}-${isFocused}`}
         horizontal
         pagingEnabled // One card per page: card width === list width
         disableIntervalMomentum // Never fling past a single card

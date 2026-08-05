@@ -1,8 +1,8 @@
 import { Camera, CameraView } from "expo-camera";
-// import {
-//   ExpoSpeechRecognitionModule,
-//   useSpeechRecognitionEvent,
-// } from "expo-speech-recognition";
+import {
+  ExpoSpeechRecognitionModule,
+  useSpeechRecognitionEvent,
+} from "expo-speech-recognition";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -36,35 +36,38 @@ export default function VoiceVideoInterface({
   const [bar4] = useState(new Animated.Value(0.6));
   const [bar5] = useState(new Animated.Value(0.4));
 
-  // Speech recognition event listeners
-  // useSpeechRecognitionEvent("start", () => {
-  //   setIsListening(true);
-  // });
+  // Speech recognition event listeners. These read component state directly:
+  // the hook keeps the listener in a ref it refreshes on every render, so a
+  // handler always sees the current transcript rather than the one that was
+  // there when it subscribed.
+  useSpeechRecognitionEvent("start", () => {
+    setIsListening(true);
+  });
 
-  // useSpeechRecognitionEvent("end", () => {
-  //   setIsListening(false);
-  //   // When speech recognition ends, send the transcript if available
-  //   if (transcript && onTranscript) {
-  //     onTranscript(transcript);
-  //   }
-  // });
+  useSpeechRecognitionEvent("end", () => {
+    setIsListening(false);
+    // When speech recognition ends, send the transcript if available
+    if (transcript && onTranscript) {
+      onTranscript(transcript);
+    }
+  });
 
-  // useSpeechRecognitionEvent("result", (event) => {
-  //   const recognizedText = event.results[0]?.transcript || "";
-  //   setTranscript(recognizedText);
-  // });
+  useSpeechRecognitionEvent("result", (event) => {
+    const recognizedText = event.results[0]?.transcript || "";
+    setTranscript(recognizedText);
+  });
 
-  // useSpeechRecognitionEvent("error", (event) => {
-  //   console.log("Speech recognition error:", event.error, event.message);
-  //   setIsListening(false);
-  //   if (event.error === "not-allowed") {
-  //     Alert.alert(
-  //       "Permission Required",
-  //       "Please grant microphone and speech recognition permissions to use voice search.",
-  //       [{ text: "OK" }]
-  //     );
-  //   }
-  // });
+  useSpeechRecognitionEvent("error", (event) => {
+    console.log("Speech recognition error:", event.error, event.message);
+    setIsListening(false);
+    if (event.error === "not-allowed") {
+      Alert.alert(
+        "Permission Required",
+        "Please grant microphone and speech recognition permissions to use voice search.",
+        [{ text: "OK" }]
+      );
+    }
+  });
 
   useEffect(() => {
     // Request camera permission for video mode
@@ -124,34 +127,36 @@ export default function VoiceVideoInterface({
     }
 
     return () => {
-      // Cleanup: stop recognition when component unmounts
-      if (isListening) {
-        // ExpoSpeechRecognitionModule.stop();
-      }
+      // Cleanup: drop recognition when the component unmounts.
+      //
+      // Unconditional, and abort rather than stop: this effect runs once, so a
+      // guard on `isListening` would read the value from the first render and
+      // never fire. Abort also skips the final `result`/`end` pair, which would
+      // otherwise land on a screen the shopper has already left.
+      ExpoSpeechRecognitionModule.abort();
     };
   }, []);
 
   const startListening = async () => {
     try {
       // Request permissions
-      // const result = true as any
-      //   // await ExpoSpeechRecognitionModule.requestPermissionsAsync();
+      const result = await ExpoSpeechRecognitionModule.requestPermissionsAsync();
 
-      // if (!result.granted) {
-      //   Alert.alert(
-      //     "Permission Required",
-      //     "Please grant microphone and speech recognition permissions to use voice search.",
-      //     [{ text: "OK" }]
-      //   );
-      //   return;
-      // }
+      if (!result.granted) {
+        Alert.alert(
+          "Permission Required",
+          "Please grant microphone and speech recognition permissions to use voice search.",
+          [{ text: "OK" }]
+        );
+        return;
+      }
 
       // Start speech recognition
-      // ExpoSpeechRecognitionModule.start({
-      //   lang: "en-IN", // Indian English for better recognition
-      //   interimResults: true,
-      //   continuous: false,
-      // });
+      ExpoSpeechRecognitionModule.start({
+        lang: "en-IN", // Indian English for better recognition
+        interimResults: true,
+        continuous: false,
+      });
     } catch (error) {
       console.error("Error starting speech recognition:", error);
       Alert.alert(
@@ -162,7 +167,9 @@ export default function VoiceVideoInterface({
   };
 
   const stopListening = () => {
-    // ExpoSpeechRecognitionModule.stop();
+    // stop, not abort: it asks the recognizer for one final `result` before it
+    // emits `end`, which is what the transcript is sent from.
+    ExpoSpeechRecognitionModule.stop();
   };
 
   const toggleListening = () => {

@@ -2,10 +2,10 @@ import { useAuth } from "@/auth/authContext";
 import { HapticButton } from "@/components/basic components/hapticButton";
 import { TryOnSelectorModal } from "@/components/products/TryOnSelectorModal";
 import { COLORS, LUXURY_COLORS } from "@/constants/theme";
-import { generateJewelleryImage } from "@/helpers/generateJewelleryImage";
 import { firstImageHelper } from "@/helpers/imageUsageHelper";
 import { luxuryPrice } from "@/helpers/luxuryPrice";
 import { useCartStatus } from "@/hooks/useCartStatus";
+import { useJewelleryPreview } from "@/hooks/useJewelleryPreview";
 import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation } from "@/store/apis/cart";
 import {
@@ -15,7 +15,7 @@ import {
 } from "@/store/apis/wishlist";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { memo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -98,7 +98,7 @@ type LuxuryProductCardProps = {
  * details set on the page background beneath it. Wishlist, bag and try-on all
  * behave exactly as they do in components/products/ProductCard.tsx.
  */
-export default function LuxuryProductCard({
+function LuxuryProductCard({
   product,
   width,
   onPress,
@@ -120,46 +120,32 @@ export default function LuxuryProductCard({
   const { isInCart, goToCart } = useCartStatus(product.id);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
-  const [firstImageBase64State, setFirstImageBase64State] = useState("");
-  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  // Shared and cached across cards, so a grid of them generates a couple at a
+  // time rather than a screenful at once, and a card scrolled out and back
+  // does not pay for its preview twice.
+  const { uri: previewUri, isLoading: isPreviewLoading } = useJewelleryPreview(
+    product,
+    userId,
+    loadAiPreview
+  );
 
-  useEffect(() => {
-    // Only the AI preview has anything to wait for; flipping this on for every
-    // card would cost each one an extra render at mount.
-    if (!loadAiPreview) return;
-
-    setIsPreviewLoading(true);
-    const handleAiPreview = async () => {
-      if (firstImageBase64State === "") {
-        try {
-          await generateJewelleryImage(
-            userId as string,
-            product,
-            setFirstImageBase64State,
-            "any outfit that goes with the jewellery and a person's face",
-            "any color"
-          );
-        } catch (error) {
-          console.error("Failed to generate preview:", error);
-        } finally {
-          setIsPreviewLoading(false);
-        }
-      }
-    };
-
-    handleAiPreview();
-  }, []);
-
-  const { data: wishlistData } = useGetWishlistQuery();
   const [addToWishlist, { isLoading: isAddingToWishlist }] =
     useAddToWishlistMutation();
   const [removeFromWishlist, { isLoading: isRemovingFromWishlist }] =
     useRemoveFromWishlistMutation();
 
+  // Narrowed to this one piece, and skipped outright when the caller already
+  // knows the answer — the wishlist screen always does. Subscribing to the
+  // whole wishlist re-rendered every card in the grid on every mutation.
+  const { isInWishlist: wishlistHasPiece } = useGetWishlistQuery(undefined, {
+    skip: propIsInWishlist !== undefined,
+    selectFromResult: ({ data }) => ({
+      isInWishlist: !!data?.items.some((item) => item.product.id === product.id),
+    }),
+  });
+
   const isInWishlist =
-    propIsInWishlist !== undefined
-      ? propIsInWishlist
-      : wishlistData?.items.some((item) => item.product.id === product.id);
+    propIsInWishlist !== undefined ? propIsInWishlist : wishlistHasPiece;
 
   const isWishlistBusy = isAddingToWishlist || isRemovingFromWishlist;
 
@@ -258,7 +244,7 @@ export default function LuxuryProductCard({
           <Image
             source={{
               uri: firstImageHelper(
-                firstImageBase64State,
+                previewUri,
                 product.thumbnailUrls?.[0],
                 loadAiPreview
               ),
@@ -433,6 +419,14 @@ export default function LuxuryProductCard({
     </HapticButton>
   );
 }
+
+/**
+ * Memoised because the wishlist and listing grids re-render on every wishlist,
+ * bag and compare mutation. Callers that build a card's handlers inline hand it
+ * fresh props each time and opt themselves out — the wishlist grid wraps this
+ * in its own memoised row for exactly that reason.
+ */
+export default memo(LuxuryProductCard);
 
 const styles = StyleSheet.create({
   card: {

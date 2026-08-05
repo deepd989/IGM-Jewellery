@@ -16,6 +16,7 @@ import {
   Animated,
   Dimensions,
   FlatList,
+  Image,
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -44,6 +45,19 @@ const SIDE_PADDING = 16;
  * can see decode video; the rest stay paused so a long row stays smooth.
  */
 const PLAYBACK_WINDOW = 1;
+/**
+ * How far from the card in view a clip is given a player at all.
+ *
+ * A paused player is not a free one: expo-av holds an ExoPlayer, and with it a
+ * hardware decoder, from mount until unmount. This row sits on the product
+ * page, which a shopper reaches from a storefront still mounted behind it and
+ * leaves for the camera — and the camera needs the pool too. Cards outside this
+ * window paint their still and hold nothing.
+ *
+ * One wider than PLAYBACK_WINDOW, so the card a swipe is heading for has
+ * buffered and arrives on a frame rather than on its poster.
+ */
+const PLAYER_WINDOW = PLAYBACK_WINDOW + 1;
 
 /**
  * Animated.FlatList carries no useful generics; casting back to FlatList keeps
@@ -147,6 +161,14 @@ export default function LuxurySeenOnYou({
       extrapolate: "clamp",
     });
 
+    const distance = Math.abs(index - activeIndex);
+    // Gated on focus as well as distance: the page stays mounted behind the
+    // try-on screen, and a paused player holds its decoder just as a running
+    // one does — the camera the shopper is heading for needs the pool.
+    const hasPlayer = isFocused && distance <= PLAYER_WINDOW;
+    // The worn-on-model still, the same one the storefront's clip rows use.
+    const poster = item.immersiveThumbnailUrl || item.thumbnailUrls?.[0];
+
     return (
       <Animated.View
         style={[
@@ -159,16 +181,29 @@ export default function LuxurySeenOnYou({
           activeOpacity={0.95}
           onPress={() => handlePressProduct(item)}
         >
-          <Video
-            source={getCommunityVideoSource(item.sku)}
-            style={styles.video}
-            resizeMode={ResizeMode.COVER}
-            shouldPlay={
-              isFocused && Math.abs(index - activeIndex) <= PLAYBACK_WINDOW
-            }
-            isLooping
-            isMuted
-          />
+          {/* Exactly one of these paints the card, so a still is never left
+              showing under a loaded clip. */}
+          {hasPlayer ? (
+            <Video
+              source={getCommunityVideoSource(item.sku)}
+              style={styles.video}
+              resizeMode={ResizeMode.COVER}
+              shouldPlay={isFocused && distance <= PLAYBACK_WINDOW}
+              isLooping
+              isMuted
+              // Holds the still until the clip has a frame, so a card scrolled
+              // onto mid-load never flashes black.
+              usePoster={!!poster}
+              posterSource={poster ? { uri: poster } : undefined}
+              posterStyle={styles.poster}
+            />
+          ) : (
+            <Image
+              source={{ uri: poster }}
+              style={styles.video}
+              resizeMode="cover"
+            />
+          )}
 
           {/* Marks the card as a clip; the whole card is the tap target. */}
           <Ionicons
@@ -199,7 +234,9 @@ export default function LuxurySeenOnYou({
           data={clips}
           renderItem={renderCard}
           keyExtractor={(item: Product) => item.id}
-          extraData={`${cardWidth}-${activeIndex}`}
+          // Which cards hold a player and which run is derived from the active
+          // index and focus, so the row has to re-render when either moves.
+          extraData={`${cardWidth}-${activeIndex}-${isFocused}`}
           horizontal
           showsHorizontalScrollIndicator={false}
           // Only the cards near the viewport are mounted, so an off-screen
@@ -277,6 +314,12 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     width: "100%",
     height: "100%",
+  },
+  // expo-av letterboxes its poster with `contain` by default, which reads as a
+  // jump against the plain still beside it, cropped to fill.
+  poster: {
+    ...StyleSheet.absoluteFillObject,
+    resizeMode: "cover" as const,
   },
   emptyCard: {
     borderRadius: CARD_RADIUS,

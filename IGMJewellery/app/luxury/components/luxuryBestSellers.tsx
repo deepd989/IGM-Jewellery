@@ -44,19 +44,21 @@ const SIDE_PADDING = 16;
 const CARD_RADIUS = 16;
 
 /**
+ * How far from the card in view a clip actually runs. The row shows a card and
+ * a slice of the next, so both of those play; everything else stays paused.
+ */
+const PLAYBACK_WINDOW = 1;
+/**
  * How far from the card in view a clip is given a player at all. Every player
  * costs a video decoder, and the device has few — the storefront's other rows
  * want them too. Cards outside this window paint their poster and hold none.
  *
  * One wider than PLAYBACK_WINDOW, so the card a swipe is heading for has
- * buffered and arrives on a frame rather than on its poster.
+ * buffered and arrives on a frame rather than on its poster. Held to exactly
+ * that and no wider: at two either side this row alone reserved five of the
+ * pool, and the storefront has three other clip rows bidding for the same few.
  */
-const PLAYER_WINDOW = 2;
-/**
- * How far from the card in view a clip actually runs. The row shows a card and
- * a slice of the next, so both of those play; everything else stays paused.
- */
-const PLAYBACK_WINDOW = 1;
+const PLAYER_WINDOW = PLAYBACK_WINDOW + 1;
 
 type ReelEntry = {
   /** The manifest key the clip is served under, resolved to a backend URL. */
@@ -329,7 +331,11 @@ export default function LuxuryBestSellers({
           slide={item}
           width={cardWidth}
           height={cardHeight}
-          hasPlayer={distance <= PLAYER_WINDOW}
+          // Gated on focus as well as distance: a screen the shopper has
+          // navigated away from stays mounted in the stack, and a paused player
+          // holds its decoder just as a running one does. The row gives all of
+          // them up on the way out and takes them back on return.
+          hasPlayer={isFocused && distance <= PLAYER_WINDOW}
           isPlaying={isFocused && distance <= PLAYBACK_WINDOW}
           onPress={handlePressProduct}
           onPressTryOn={handlePressTryOn}

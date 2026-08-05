@@ -10,11 +10,12 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { ResizeMode, Video } from "expo-av";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Platform,
   StyleSheet,
   Text,
   View,
@@ -30,6 +31,64 @@ import LuxuryWishlistScreen from "./luxury/wishlist";
 
 /** Room the floating compare bar needs above the last row of cards. */
 const COMPARE_BAR_CLEARANCE = 84;
+
+/**
+ * How much of the grid is mounted at once.
+ *
+ * Every card here carries an AI preview, so a mounted card is a generation
+ * round trip and an image held in memory. FlatList's default of ten opened the
+ * screen on ten of them at once; two rows is enough to fill the viewport.
+ */
+const INITIAL_CARDS = 4;
+const CARDS_PER_BATCH = 4;
+
+type WishlistCardProps = {
+  product: Product;
+  viewMode: "grid" | "list";
+  isInCompare: boolean;
+  onPress: (product: Product) => void;
+  onRemove: (product: Product) => void;
+  onToggleCompare: (product: Product) => void;
+};
+
+/**
+ * One saved piece.
+ *
+ * Its own memoised component so the card's handlers can be built from the
+ * screen's stable ones rather than inline in renderItem. Closures made in
+ * renderItem are new on every render, which would hand every card fresh props
+ * and undo the memo on ProductCard itself — and with an AI preview behind each
+ * tile, a needless re-render of the grid is not cheap.
+ */
+const WishlistCard = memo(function WishlistCard({
+  product,
+  viewMode,
+  isInCompare,
+  onPress,
+  onRemove,
+  onToggleCompare,
+}: WishlistCardProps) {
+  const handleRemove = useCallback(() => onRemove(product), [onRemove, product]);
+  const handleToggleCompare = useCallback(
+    () => onToggleCompare(product),
+    [onToggleCompare, product]
+  );
+
+  return (
+    <View style={styles.productWrapper}>
+      <ProductCard
+        product={product}
+        viewMode={viewMode}
+        onPress={onPress}
+        isInWishlist
+        onRemoveFromWishlist={handleRemove}
+        isInCompare={isInCompare}
+        onToggleCompare={handleToggleCompare}
+        loadAiPreview
+      />
+    </View>
+  );
+});
 
 /**
  * Both storefronts share this route, so every existing link to /wishlist lands
@@ -61,39 +120,61 @@ function ClassicWishlistScreen() {
   };
 
   // Extract products from wishlist items (WishlistItem contains { product, addedAt })
-  const wishlistItems = wishlistData?.items?.map((item) => item.product) || [];
-  const compareList = wishlistData?.compareList || [];
+  // Memoised: this is the list's `data`, and a fresh array on every render
+  // re-renders the whole grid — every card of which holds an AI preview.
+  const wishlistItems = useMemo(
+    () => wishlistData?.items?.map((item) => item.product) || [],
+    [wishlistData?.items]
+  );
+  const compareList = useMemo(
+    () => wishlistData?.compareList || [],
+    [wishlistData?.compareList]
+  );
+  /** Membership by id, so a row is a lookup rather than a scan per card. */
+  const compareIds = useMemo(
+    () => new Set(compareList.map((product) => product.id)),
+    [compareList]
+  );
 
   const toggleViewMode = () => {
     setViewMode((prev) => (prev === "grid" ? "list" : "grid"));
   };
 
-  const handleProductPress = (product: Product) => {
-    router.navigate({
-      pathname: "/product/[id]",
-      params: { id: product.id },
-    });
-  };
+  const handleProductPress = useCallback(
+    (product: Product) => {
+      router.navigate({
+        pathname: "/product/[id]",
+        params: { id: product.id },
+      });
+    },
+    [router]
+  );
 
-  const handleRemoveFromWishlist = async (productId: string) => {
-    try {
-      await removeFromWishlist(productId).unwrap();
-    } catch (error) {
-      Alert.alert("Error", "Failed to remove item from wishlist");
-    }
-  };
-
-  const handleToggleCompare = async (product: Product) => {
-    try {
-      await toggleCompare(product).unwrap();
-    } catch (error: any) {
-      if (error?.data === "You can only compare 2 products at a time") {
-        Alert.alert("Compare Limit", error.data);
-      } else {
-        Alert.alert("Error", "Failed to update compare list");
+  const handleRemoveFromWishlist = useCallback(
+    async (product: Product) => {
+      try {
+        await removeFromWishlist(product.id).unwrap();
+      } catch (error) {
+        Alert.alert("Error", "Failed to remove item from wishlist");
       }
-    }
-  };
+    },
+    [removeFromWishlist]
+  );
+
+  const handleToggleCompare = useCallback(
+    async (product: Product) => {
+      try {
+        await toggleCompare(product).unwrap();
+      } catch (error: any) {
+        if (error?.data === "You can only compare 2 products at a time") {
+          Alert.alert("Compare Limit", error.data);
+        } else {
+          Alert.alert("Error", "Failed to update compare list");
+        }
+      }
+    },
+    [toggleCompare]
+  );
 
   const handleStartComparing = () => {
     if (compareList.length < 2) {
@@ -117,10 +198,6 @@ function ClassicWishlistScreen() {
     } catch (error) {
       Alert.alert("Error", "Failed to clear compare list");
     }
-  };
-
-  const isProductInCompare = (productId: string) => {
-    return compareList.some((item) => item.id === productId);
   };
 
   /**
@@ -167,19 +244,24 @@ function ClassicWishlistScreen() {
     </View>
   );
 
-  const renderItem = ({ item }: { item: Product }) => (
-    <View style={styles.productWrapper}>
-      <ProductCard
+  const renderItem = useCallback(
+    ({ item }: { item: Product }) => (
+      <WishlistCard
         product={item}
         viewMode={viewMode}
+        isInCompare={compareIds.has(item.id)}
         onPress={handleProductPress}
-        isInWishlist={true}
-        onRemoveFromWishlist={() => handleRemoveFromWishlist(item.id)}
-        isInCompare={isProductInCompare(item.id)}
-        onToggleCompare={() => handleToggleCompare(item)}
-        loadAiPreview={true} // Disable AI preview in wishlist for faster loading
+        onRemove={handleRemoveFromWishlist}
+        onToggleCompare={handleToggleCompare}
       />
-    </View>
+    ),
+    [
+      viewMode,
+      compareIds,
+      handleProductPress,
+      handleRemoveFromWishlist,
+      handleToggleCompare,
+    ]
   );
 
   if (isLoading) {
@@ -243,6 +325,14 @@ function ClassicWishlistScreen() {
           },
         ]}
         showsVerticalScrollIndicator={false}
+        // Every card generates and holds an AI preview, so only the rows near
+        // the viewport are mounted.
+        initialNumToRender={INITIAL_CARDS}
+        maxToRenderPerBatch={CARDS_PER_BATCH}
+        windowSize={5}
+        // Detaches rows scrolled out of the window. Android only: on iOS this
+        // is known to blank out content.
+        removeClippedSubviews={Platform.OS === "android"}
       />
       {/* View Toggle FAB */}
       {/* <HapticButton style={styles.leftFab} onPress={toggleViewMode}>

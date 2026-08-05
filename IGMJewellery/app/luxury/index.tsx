@@ -1,76 +1,51 @@
-import BespokeSection from "@/components/bespokeSection";
-import BottomNavBar from "@/components/bottomNavBar";
-import CommunityCarousel from "@/components/communityCarousel";
-import EventCard from "@/components/eventCard";
-import GiftFinder from "@/components/giftFinder";
-import GiftingCard from "@/components/giftingCard";
-import HorizontalRuleIGM from "@/components/horizontalRuleIGM";
-import OccasionCardList from "@/components/occasionsHome";
-import { TopPicks } from "@/components/topPicks";
 import { getUserPincode } from "@/scripts/location";
-import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useNavigation, useRouter } from "expo-router";
-import { Sparkles } from "lucide-react-native";
 import React, {
+  memo,
   useCallback,
   useEffect,
   useLayoutEffect,
-  useRef,
   useState,
 } from "react";
 import {
-  Animated,
   BackHandler,
   FlatList,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Platform,
   StyleSheet,
-  Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "../../auth/authContext";
-import AnnouncementSection from "../../components/announcementSectionHome";
-import CallUsComponent from "../../components/basic components/callUsComponent";
 import { HapticButton } from "../../components/basic components/hapticButton";
-import BrandsVerticalScroll from "../../components/brandsHorizontalScroll";
-import CategoriesHorizontalScroll from "../../components/categoriesHorizontallScroll";
-import HowItLooksWrapper from "../../components/homePageCard";
-import { SectionHeader } from "../../components/section";
-import BrandCollectionCards from "../../components/shopByCollectionsNew";
 import ShopByRegionCards from "../../components/shopByRegion";
-import { TrendingProducts } from "../../components/TrendingProducts";
-import TrustBar from "../../components/trustBarBanner";
-import { COLORS, LUXURY_COLORS, LUXURY_SPACING } from "../../constants/theme";
+import { LUXURY_COLORS, LUXURY_SPACING } from "../../constants/theme";
 import { useLuxury } from "../../context/luxuryContext";
-import { useWalletBalance } from "../customHooks/walletBalanceLoader";
-import SearchBarLuxury from "./components/searchBarLuxury";
 import GlossyHorizontalCard from "./components/luxuryHomepageGlossyCard";
 import LuxuryBestSellers from "./components/luxuryBestSellers";
 import LuxuryBrandsCollection from "./components/luxuryBrandsCollectionComponent";
-import LuxuryBrandsGrid from "./components/luxuryBrandsGridComponent";
 import LuxuryCategories from "./components/luxuryCategoriesComponent";
-import LuxuryCollections from "./components/luxuryCollections";
 import LuxuryCommunityCarousel from "./components/luxuryCommunityCarousel";
 import LuxuryElanziaAllRights from "./components/luxuryElanziaAllRights";
 import LuxuryElanziaSearch from "./components/luxuryElanziaSearch";
-import LuxuryGenderVsProducts from "./components/luxuryGenderVsProducts";
-import LuxuryHorizontalCollectionCarousel from "./components/luxuryHorizontalCollectionCarousel";
 import LuxuryMultibrandCollection from "./components/luxuryMultibrandCollection";
 import LuxuryNavBar from "./components/luxuryNavBar";
 import LuxurySeparator from "./components/luxurySeparator";
-import LuxuryNewProducts from "./components/luxuryNewProducts";
-import LuxuryRegionalFavorites from "./components/luxuryRegionalFavorites";
-import LuxurySellingFast from "./components/luxurySellingFast";
 import LuxurySwipeAndShop from "./components/luxurySwipeAndShop";
-import LuxuryTopPicks from "./components/luxuryTopPicks";
 import LuxuryTopSearch from "./components/luxuryTopSearch";
 import LuxuryTrustBadges from "./components/luxuryTrustBadges";
 import LuxuryTryOn from "./components/luxuryTryOn";
 import OutfitTypesCarousel from "./components/outfitTypesCarousel";
+
+/**
+ * Only the sections the storefront actually renders are imported. The ones
+ * commented out of SECTIONS below need their import added back with them —
+ * Metro does not tree-shake, so an import that is only mentioned in a comment
+ * still runs that module, and every one of its own imports, before this screen
+ * can paint.
+ */
 
 /** Hero carousel height: tall enough to lead the page, short enough that the
  *  collection row below it is visible without scrolling. */
@@ -223,61 +198,101 @@ const SECTIONS: StorefrontSection[] = [
   },
 ];
 
+/**
+ * One section's slot on the page.
+ *
+ * Memoised on the section object, which is one of SECTIONS' own entries and so
+ * keeps its identity for the life of the module. Without this, anything that
+ * re-renders the screen — the top bar collapsing, the pincode arriving — walks
+ * back through `render()` for every mounted section, and a mounted section is a
+ * whole carousel with its own list and players.
+ */
+const SectionRow = memo(function SectionRow({
+  section,
+}: {
+  section: StorefrontSection;
+}) {
+  return (
+    <View
+      style={[styles.sectionBand, section.flush && styles.sectionBandFlush]}
+    >
+      {section.render()}
+    </View>
+  );
+});
+
 const renderSection = ({ item }: { item: StorefrontSection }) => (
-  <View style={[styles.sectionBand, item.flush && styles.sectionBandFlush]}>
-    {item.render()}
-  </View>
+  <SectionRow section={item} />
 );
 
-export default function HomeScreen() {
-  const [expanded, setExpanded] = useState(false);
-
-  const navigation = useNavigation();
-  const [firstRowHeight, setFirstRowHeight] = useState<number | null>(68);
-  const {
-    data: products = [],
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useGetProductsQuery({});
+/**
+ * The page's own search field, above the first section.
+ *
+ * Its own component because it owns the text being typed. Held on the screen,
+ * that state re-rendered the whole storefront on every keystroke; held here,
+ * a keystroke stops at this box.
+ */
+const SearchBox = memo(function SearchBox() {
   const router = useRouter();
-  const [textInput, setTextInput] = useState<string>("");
-  const [pincode, setPincode] = useState(null);
+  const [textInput, setTextInput] = useState("");
+
+  return (
+    <>
+      <View style={styles.searchBox}>
+        <View style={{ flex: 1 }}>
+          <TextInput
+            placeholder="Search for ..."
+            placeholderTextColor={LUXURY_COLORS.textMuted}
+            style={styles.inputText}
+            value={textInput}
+            returnKeyType="send"
+            onSubmitEditing={() =>
+              router.navigate({
+                pathname: "/exploreAi",
+                params: { value: textInput },
+              })
+            }
+            onChangeText={setTextInput}
+          />
+        </View>
+        <View style={styles.iconGroup}>
+          <HapticButton
+            onPress={() => {
+              router.navigate({
+                pathname: "/exploreAi",
+                params: { mode: "voice" },
+              });
+            }}
+          >
+            <Ionicons
+              name="mic-outline"
+              size={22}
+              color={LUXURY_COLORS.text}
+            />
+          </HapticButton>
+        </View>
+      </View>
+      {/* Halved: the first band brings the other half of the gap. */}
+      <LuxurySeparator size={0.5} />
+    </>
+  );
+});
+
+/**
+ * The luxury storefront.
+ *
+ * Deliberately holds as little state as it can: everything here re-renders the
+ * list, so anything only one part of the page cares about belongs to that part.
+ * The catalogue is not read here either — the sections that show products query
+ * it themselves, and RTK Query serves them all from one request.
+ */
+export default function HomeScreen() {
+  const navigation = useNavigation();
+  const router = useRouter();
+  const [pincode, setPincode] = useState<string | null>(null);
   /** Past this, the top bar gives up the delivery line for the search field. */
   const [isScrolled, setIsScrolled] = useState(false);
-  const { userId } = useAuth();
   const { switchMode } = useLuxury();
-  const { balance: walletBalance } = useWalletBalance(userId as string);
-
-  const revolvingTexts = [
-    "I want a necklace",
-    "I want a ring for my mom",
-    "Help me find a bracelet",
-    "What should I give her on anniversary?",
-    "Wedding rings",
-    "Earrings like Deepika Padukone",
-  ];
-  const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const fadeAnim = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => {
-        setPlaceholderIndex((prev) => (prev + 1) % revolvingTexts.length);
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }).start();
-      });
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     (async () => {
@@ -285,12 +300,6 @@ export default function HomeScreen() {
       setPincode(pin || "Mumbai 400 999");
     })();
   }, []);
-  const handleSubmit = () => {
-    router.navigate({
-      pathname: "/exploreAi",
-      params: { value: textInput },
-    });
-  };
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const scrolled = event.nativeEvent.contentOffset.y > SEARCH_COLLAPSE_OFFSET;
@@ -340,42 +349,19 @@ export default function HomeScreen() {
         data={SECTIONS}
         keyExtractor={(section) => section.key}
         renderItem={renderSection}
-        ListHeaderComponent={
-          <>
-            <View style={styles.searchBox}>
-              <View style={{ flex: 1 }}>
-                <TextInput
-                  placeholder="Search for ..."
-                  placeholderTextColor={LUXURY_COLORS.textMuted}
-                  style={styles.inputText}
-                  value={textInput}
-                  returnKeyType="send"
-                  onSubmitEditing={handleSubmit}
-                  onChangeText={(text) => setTextInput(text)}
-                />
-              </View>
-              <View style={styles.iconGroup}>
-                <HapticButton
-                  onPress={() => {
-                    router.navigate({
-                      pathname: "/exploreAi",
-                      params: { mode: "voice" },
-                    });
-                  }}
-                >
-                  <Ionicons name="mic-outline" size={22} color={LUXURY_COLORS.text} />
-                </HapticButton>
-              </View>
-            </View>
-            {/* Halved: the first band brings the other half of the gap. */}
-            <LuxurySeparator size={0.5} />
-          </>
-        }
+        // The component itself rather than an element, so the header is not
+        // rebuilt every time the screen re-renders.
+        ListHeaderComponent={SearchBox}
         // The storefront is long and every section pulls its own artwork, so
         // only the ones near the viewport are mounted.
         initialNumToRender={2}
         maxToRenderPerBatch={2}
         windowSize={5}
+        // Detaches the views of sections scrolled out of the window. Worth a
+        // lot here, where a section is a whole carousel — but Android only:
+        // on iOS it is known to blank out content in nested scrollers, which
+        // is exactly what these sections are.
+        removeClippedSubviews={Platform.OS === "android"}
       />
       {/* <BottomNavBar></BottomNavBar> */}
       <LuxuryNavBar/>
@@ -429,161 +415,6 @@ const styles = StyleSheet.create({
   sectionBandFlush: {
     paddingBottom: 0,
   },
-  AiContainer: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 20,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 6,
-    paddingHorizontal: 20,
-    marginBottom: 5,
-  },
-  luxuryButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 14,
-    backgroundColor: COLORS.primary,
-  },
-  luxuryButtonText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#FFFFFF",
-  },
-  viewElanziaIsListening: {
-    padding: 16,
-    borderRadius: 12,
-  },
-  balance: {
-    textAlign: "center",
-    // paddingHorizontal: 20,
-    paddingVertical: 4,
-    backgroundColor: COLORS.primary,
-    color: "white",
-    borderRadius: 20,
-    fontWeight: "600",
-    minWidth: 60,
-  },
-  deliveryText: { fontSize: 14, color: COLORS.primary },
-  bold: { fontWeight: "600" },
-
-  centerBox: { alignItems: "center", marginTop: 30 },
-  sparkle: { color: "#555", marginTop: 3 },
-
-  voiceBox: {
-    marginTop: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 12,
-    borderRadius: 30,
-    gap: 12,
-    backgroundColor: "#F8F8F8",
-  },
-  input: { flex: 1, backgroundColor: "white" },
-
-  chipsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    marginVertical: 10,
-  },
-  iconContainer: {
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  greetingBold: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
-    textAlign: "center",
-    marginBottom: 4,
-  },
-  greetingLight: {
-    fontSize: 14,
-    fontWeight: "300",
-    color: "#666",
-    textAlign: "center",
-  },
-
-  chip: {
-    backgroundColor: "#f2f2f2",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-
-  moreText: {
-    paddingHorizontal: 12,
-    color: "black",
-    marginTop: 6,
-    fontWeight: "100",
-  },
-
-  chipText: { fontSize: 12, color: "#444" },
-
-  card: {
-    marginTop: 16,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#eee",
-  },
-
-  heartIcon: { position: "absolute", top: 20, right: 20 },
-
-  deliveryDate: { marginTop: 8, color: "#666", fontSize: 12 },
-
-  productName: { marginTop: 6, fontSize: 18, fontWeight: "600" },
-
-  priceRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    marginTop: 4,
-  },
-  price: { fontSize: 18, fontWeight: "700" },
-  cutPrice: { fontSize: 14, color: "#888", textDecorationLine: "line-through" },
-
-  brand: { marginTop: 4, color: "#444" },
-
-  tryButton: {
-    marginTop: 14,
-    backgroundColor: "#053844",
-    paddingVertical: 12,
-    borderRadius: 30,
-    alignItems: "center",
-  },
-  tryButtonText: { color: "#fff", fontWeight: "600" },
-  badgeContainer: {
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  aiBadge: {
-    flexDirection: "row",
-    backgroundColor: "#7CBFB2",
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 20,
-    alignItems: "center",
-    gap: 6,
-  },
-  aiBadgeText: {
-    color: "#003A45",
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  mainTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#FFFFFF",
-    textAlign: "center",
-    marginBottom: 20,
-  },
   searchBox: {
     flexDirection: "row",
     height: 56,
@@ -599,51 +430,9 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: LUXURY_COLORS.text,
   },
-  brandBold: {
-    fontWeight: "800",
-    fontStyle: "italic",
-  },
   iconGroup: {
     flexDirection: "row",
     alignItems: "center",
     gap: 15,
-  },
-  waveformCircle: {
-    backgroundColor: "#4A7C87", // Muted teal
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  carouselContainer: {
-    paddingRight: 20,
-  },
-  cardWrapper: {
-    alignItems: "center",
-    marginRight: 12,
-  },
-  imageCard: {
-    width: 85,
-    height: 100,
-    backgroundColor: "#FFF",
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  productImage: {
-    width: "80%",
-    height: "80%",
-  },
-  cardLabel: {
-    fontSize: 14,
-    color: "#1A3B4A",
-    fontWeight: "500",
-  },
-  micIcon: {
-    padding: 8, // Increases the touch target area
-    marginRight: 5,
-    color: "#1A3B4A", // Matching the dark teal theme color
   },
 });

@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { ResizeMode, Video } from "expo-av";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -40,6 +40,127 @@ const CARD_RADIUS = 20;
  * can see decode video; the rest stay paused so a long row stays smooth.
  */
 const PLAYBACK_WINDOW = 1;
+/**
+ * How far from the card in view a clip is given a player at all.
+ *
+ * A paused player is not a free one: expo-av holds an ExoPlayer, and with it a
+ * hardware decoder, from mount until unmount. The device has few, and this row
+ * shares them with every other clip on the storefront — so a card outside this
+ * window paints its still and holds none. Pausing alone was not enough, and a
+ * row of thirteen cards could exhaust the decoders on its own.
+ *
+ * One wider than PLAYBACK_WINDOW, so the card a swipe is heading for has
+ * buffered and arrives on a frame rather than on its poster.
+ */
+const PLAYER_WINDOW = 2;
+
+type CommunityCardProps = {
+  product: Product;
+  width: number;
+  height: number;
+  /** Whether this card holds a player at all, or paints its still instead. */
+  hasPlayer: boolean;
+  /** Of the cards holding a player, whether this one is running. */
+  isPlaying: boolean;
+  onPress: (product: Product) => void;
+};
+
+/**
+ * One clip in the row, with the piece it shows captioned over it.
+ *
+ * Memoised because every card's playback is derived from the row's active
+ * index: without this, one scroll frame re-renders every card in the row, when
+ * only the two either side of the move actually changed.
+ */
+const CommunityCard = memo(function CommunityCard({
+  product,
+  width,
+  height,
+  hasPlayer,
+  isPlaying,
+  onPress,
+}: CommunityCardProps) {
+  // The worn-on-model still, the same one the immersive row uses. The caption
+  // thumbnail is a cutout on white and would read wrong blown up to full bleed.
+  const poster = product.immersiveThumbnailUrl || product.thumbnailUrls?.[0];
+
+  return (
+    <HapticButton
+      style={[styles.card, { width, height }]}
+      activeOpacity={0.95}
+      onPress={() => onPress(product)}
+    >
+      {/* Exactly one of these paints the card, so a still is never left showing
+          under a loaded clip. */}
+      {hasPlayer ? (
+        <Video
+          source={getCommunityVideoSource(product.sku)}
+          style={styles.video}
+          resizeMode={ResizeMode.COVER}
+          shouldPlay={isPlaying}
+          isLooping
+          isMuted
+          // Holds the still until the clip has a frame, so a card scrolled onto
+          // mid-load never flashes black.
+          usePoster={!!poster}
+          posterSource={poster ? { uri: poster } : undefined}
+          posterStyle={styles.poster}
+        />
+      ) : (
+        <Image
+          source={{ uri: poster }}
+          style={styles.video}
+          resizeMode="cover"
+        />
+      )}
+
+      {/* Marks the card as a clip; the whole card is the tap target. */}
+      <Ionicons name="play" size={34} color="#FFFFFF" style={styles.playIcon} />
+
+      {/* Keeps the caption legible over whatever the clip is doing */}
+      <LinearGradient
+        colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.75)"]}
+        style={styles.scrim}
+        pointerEvents="none"
+      />
+
+      <View style={styles.caption}>
+        <View style={styles.thumbnail}>
+          {!!product.thumbnailUrls?.[0] && (
+            <Image
+              source={{ uri: product.thumbnailUrls[0] }}
+              style={styles.thumbnailImage}
+              resizeMode="contain"
+            />
+          )}
+        </View>
+
+        <View style={styles.captionText}>
+          <Text style={styles.productName} numberOfLines={1}>
+            {product.name || product.title}
+          </Text>
+          <Text style={styles.brandName} numberOfLines={1}>
+            {product.brand}
+          </Text>
+          <Text style={styles.price}>
+            ₹{luxuryPrice(product)?.toLocaleString()}
+          </Text>
+        </View>
+
+        <HapticButton
+          style={styles.arrowButton}
+          activeOpacity={0.85}
+          onPress={(event) => {
+            event?.stopPropagation?.();
+            onPress(product);
+          }}
+        >
+          <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
+        </HapticButton>
+      </View>
+    </HapticButton>
+  );
+});
 
 type LuxuryCommunityCarouselProps = {
   title?: string;
@@ -92,79 +213,39 @@ export default function LuxuryCommunityCarousel({
     }
   };
 
-  const handlePressProduct = (product: Product) => {
-    if (onPressProduct) {
-      onPressProduct(product);
-      return;
-    }
-    router.navigate({
-      pathname: "/luxury/product/[id]",
-      params: { id: product.id },
-    });
-  };
+  // Stable so the memoised cards are not re-rendered by a new handler alone.
+  const handlePressProduct = useCallback(
+    (product: Product) => {
+      if (onPressProduct) {
+        onPressProduct(product);
+        return;
+      }
+      router.navigate({
+        pathname: "/luxury/product/[id]",
+        params: { id: product.id },
+      });
+    },
+    [onPressProduct, router]
+  );
 
-  const renderCard = ({ item, index }: { item: Product; index: number }) => (
-    <HapticButton
-      style={[styles.card, { width: cardWidth, height: cardHeight }]}
-      activeOpacity={0.95}
-      onPress={() => handlePressProduct(item)}
-    >
-      <Video
-        source={getCommunityVideoSource(item.sku)}
-        style={styles.video}
-        resizeMode={ResizeMode.COVER}
-        shouldPlay={
-          isFocused && Math.abs(index - activeIndex) <= PLAYBACK_WINDOW
-        }
-        isLooping
-        isMuted
-      />
-
-      {/* Marks the card as a clip; the whole card is the tap target. */}
-      <Ionicons name="play" size={34} color="#FFFFFF" style={styles.playIcon} />
-
-      {/* Keeps the caption legible over whatever the clip is doing */}
-      <LinearGradient
-        colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.75)"]}
-        style={styles.scrim}
-        pointerEvents="none"
-      />
-
-      <View style={styles.caption}>
-        <View style={styles.thumbnail}>
-          {!!item.thumbnailUrls?.[0] && (
-            <Image
-              source={{ uri: item.thumbnailUrls[0] }}
-              style={styles.thumbnailImage}
-              resizeMode="contain"
-            />
-          )}
-        </View>
-
-        <View style={styles.captionText}>
-          <Text style={styles.productName} numberOfLines={1}>
-            {item.name || item.title}
-          </Text>
-          <Text style={styles.brandName} numberOfLines={1}>
-            {item.brand}
-          </Text>
-          <Text style={styles.price}>
-            ₹{luxuryPrice(item)?.toLocaleString()}
-          </Text>
-        </View>
-
-        <HapticButton
-          style={styles.arrowButton}
-          activeOpacity={0.85}
-          onPress={(event) => {
-            event?.stopPropagation?.();
-            handlePressProduct(item);
-          }}
-        >
-          <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
-        </HapticButton>
-      </View>
-    </HapticButton>
+  const renderCard = useCallback(
+    ({ item, index }: { item: Product; index: number }) => {
+      const distance = Math.abs(index - activeIndex);
+      return (
+        <CommunityCard
+          product={item}
+          width={cardWidth}
+          height={cardHeight}
+          // Gated on focus as well as distance: a screen the shopper has
+          // navigated away from stays mounted in the stack, and a paused player
+          // holds its decoder just as a running one does.
+          hasPlayer={isFocused && distance <= PLAYER_WINDOW}
+          isPlaying={isFocused && distance <= PLAYBACK_WINDOW}
+          onPress={handlePressProduct}
+        />
+      );
+    },
+    [activeIndex, cardWidth, cardHeight, isFocused, handlePressProduct]
   );
 
   return (
@@ -176,7 +257,9 @@ export default function LuxuryCommunityCarousel({
           data={communityProducts}
           renderItem={renderCard}
           keyExtractor={(item) => item.id}
-          extraData={`${cardWidth}-${activeIndex}`}
+          // Which cards hold a player and which run is derived from the active
+          // index, so a row has to re-render when it moves.
+          extraData={`${cardWidth}-${activeIndex}-${isFocused}`}
           horizontal
           showsHorizontalScrollIndicator={false}
           // Only the cards near the viewport are mounted, so an off-screen
@@ -239,6 +322,12 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     width: "100%",
     height: "100%",
+  },
+  // expo-av letterboxes its poster with `contain` by default, which reads as a
+  // jump against the plain still beside it, cropped to fill.
+  poster: {
+    ...StyleSheet.absoluteFillObject,
+    resizeMode: "cover" as const,
   },
   playIcon: {
     position: "absolute",
