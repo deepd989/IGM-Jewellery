@@ -7,8 +7,20 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS } from "../../constants/theme";
+import { useLuxury } from "../../context/luxuryContext";
+import LuxuryLoyaltyScreen from "../luxury/profile/loyalty";
 
+/**
+ * Both storefronts share this route, so every existing link to the rewards
+ * screen lands on the presentation the shopper is browsing in.
+ */
 export default function LoyaltyScreen() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? <LuxuryLoyaltyScreen /> : <ClassicLoyaltyScreen />;
+}
+
+function ClassicLoyaltyScreen() {
   const router = useRouter();
   const profile = useSelector((state: RootState) => state.user.profile);
 

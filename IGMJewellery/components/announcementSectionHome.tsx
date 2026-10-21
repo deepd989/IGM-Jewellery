@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import { HapticButton } from "./basic components/hapticButton";
+import { assetUrl } from "@/constants/assets";
 
 const { width } = Dimensions.get("window");
 const HORIZONTAL_PADDING = 16;
@@ -18,11 +19,13 @@ const SwipeAndShopComponent = () => {
       {/* Swipe & Shop Button */}
       <HapticButton
         activeOpacity={0.9}
-        onPress={() => router.push("/immersiveProductList")}
+        onPress={() => router.navigate("/immersiveProductList")}
         style={styles.buttonWrapper}
       >
         <Image
-          source={require("../assets/images/featureButtons/swipeAndShop.jpg")}
+          source={{
+            uri: assetUrl("home.featureButton.swipeAndShop"),
+          }}
           style={styles.buttonImage}
           contentFit="cover"
           transition={200}
@@ -32,12 +35,12 @@ const SwipeAndShopComponent = () => {
       {/* Become Model Button */}
       <HapticButton
         activeOpacity={0.9}
-        onPress={() => router.push("/tryOn")}
+        onPress={() => router.navigate("/tryOn")}
         style={styles.buttonWrapper}
       >
         <Image
           source={{
-            uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Feature%20Buttons%2FBecome_Model_4.webp?alt=media&token=5e3fddfc-e39b-4aac-bf2d-c328a80d6fb1",
+            uri: assetUrl("home.featureButton.becomeModel"),
           }}
           style={styles.buttonImage}
           contentFit="cover"

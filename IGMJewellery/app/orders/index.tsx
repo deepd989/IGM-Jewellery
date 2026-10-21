@@ -85,7 +85,7 @@ export default function AllOrdersScreen() {
                     styles.subItem,
                     idx === order.items.length - 1 && { borderBottomWidth: 0 },
                   ]}
-                  onPress={() => router.push(`/orders/${order.id}`)}
+                  onPress={() => router.navigate(`/orders/${order.id}`)}
                 >
                   <View style={styles.subItemThumb} />
                   <View style={styles.subItemDetails}>

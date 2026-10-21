@@ -86,7 +86,7 @@ export const BagTabContent: React.FC<BagTabContentProps> = ({
       <Text style={styles.sectionHeader}>OFFERS & BENEFITS</Text>
       <HapticButton
         style={styles.couponRow}
-        onPress={() => router.push("/coupons")}
+        onPress={() => router.navigate("/coupons")}
       >
         <View style={styles.couponIcon}>
           <Ionicons name="pricetag-outline" size={24} color={COLORS.text} />

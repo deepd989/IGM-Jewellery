@@ -8,6 +8,7 @@ import { useAuth } from "../auth/authContext";
 import { HapticButton } from "../components/basic components/hapticButton";
 import { COLORS } from "../constants/theme";
 import { GiftCardData, useGetAllGiftsQuery } from "../store/apis/giftApi";
+import { assetUrl } from "@/constants/assets";
 
 // Placeholder component for RibbonCard
 const RibbonCard = ({ children }) => <View>{children}</View>;
@@ -50,7 +51,7 @@ const GiftCardRedeemStep1 = () => {
 
   const claimCard = (card: GiftCardData) => {
     const navigationData = {};
-    router.push({
+    router.navigate({
       pathname: "/redeemGiftStep2",
       params: card,
     });
@@ -122,6 +123,7 @@ const GiftCardRedeemStep1 = () => {
               <RibbonCard key={card.id}>
                 <View style={styles.card}>
                   <GiftingCard
+                    imgUrl={assetUrl("gifting.banner")}
                     showExploreButton={false}
                     amount={card.amount}
                     description={card.title}

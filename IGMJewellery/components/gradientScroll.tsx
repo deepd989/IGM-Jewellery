@@ -37,8 +37,11 @@ export default function GradientHorizontalScroll({
       contentContainerStyle={styles.carouselContainer}
     >
       {data.map((item, index) => (
-        <HapticButton onPress={item.onpress}>
-          <View key={index} style={styles.cardWrapper}>
+        // The key belongs on the outermost element of the iteration; on the
+        // inner view it left every card keyless, so a re-render rebuilt the
+        // whole row instead of matching cards up.
+        <HapticButton key={item.name ?? index} onPress={item.onpress}>
+          <View style={styles.cardWrapper}>
             <View
               style={[
                 styles.imageCard,

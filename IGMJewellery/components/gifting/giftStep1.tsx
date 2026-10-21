@@ -2,6 +2,7 @@ import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { HapticButton } from "../basic components/hapticButton";
 import RibbonGiftCard from "./ribbonGiftCard";
+import { assetUrl } from "@/constants/assets";
 
 const GiftStepA = ({ nextStepFn }: { nextStepFn: () => void }) => {
   const steps = [
@@ -32,7 +33,7 @@ const GiftStepA = ({ nextStepFn }: { nextStepFn: () => void }) => {
       <View style={styles.content}>
         {/* Header Image Placeholder */}
         {/* <View style={styles.imageContainer} /> */}
-        <RibbonGiftCard />
+        <RibbonGiftCard imgUrl={assetUrl("gifting.banner")} />
 
         {/* Title Section */}
         <Text style={styles.title}>Send a Gift Card!</Text>

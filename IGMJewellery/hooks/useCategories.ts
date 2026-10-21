@@ -1,3 +1,4 @@
+import { assetUrl } from "@/constants/assets";
 import { Department, SubCategory } from '@/interfaces/category.interface';
 import { useMemo, useState } from 'react';
 
@@ -5,22 +6,22 @@ import { useMemo, useState } from 'react';
 // Using specific Unsplash images to mimic the look of Gold Rings, Pendants, etc.
 
 const SUB_CATS_RINGS: SubCategory[] = [
-  { id: 'all', name: 'All', imageUrl: 'https://images.unsplash.com/photo-1605100804763-eb2fc645a382?q=80&w=200' },
-  { id: 'engagement', name: 'Engagement', imageUrl: 'https://images.unsplash.com/photo-1573408301185-9146fe635da0?q=80&w=200' },
-  { id: 'wedding', name: 'Wedding', imageUrl: 'https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=200' },
-  { id: 'casual', name: 'Casual', imageUrl: 'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?q=80&w=200' },
-  { id: 'stone', name: 'Stone', imageUrl: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?q=80&w=200' },
-  { id: 'bands', name: 'Bands', imageUrl: 'https://images.unsplash.com/photo-1626784215021-2e39ccf971cd?q=80&w=200' },
-  { id: 'signet', name: 'Signet', imageUrl: 'https://images.unsplash.com/photo-1589674781759-c21c37956a44?q=80&w=200' },
-  { id: 'promise', name: 'Promise', imageUrl: 'https://images.unsplash.com/photo-1605100804763-eb2fc645a382?q=80&w=200' },
-  { id: 'stackable', name: 'Stackable', imageUrl: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=200' },
+  { id: 'all', name: 'All', imageUrl: assetUrl("mock.subcategory.ring.all") },
+  { id: 'engagement', name: 'Engagement', imageUrl: assetUrl("mock.subcategory.ring.engagement") },
+  { id: 'wedding', name: 'Wedding', imageUrl: assetUrl("mock.subcategory.ring.wedding") },
+  { id: 'casual', name: 'Casual', imageUrl: assetUrl("mock.subcategory.ring.casual") },
+  { id: 'stone', name: 'Stone', imageUrl: assetUrl("mock.subcategory.ring.stone") },
+  { id: 'bands', name: 'Bands', imageUrl: assetUrl("mock.subcategory.ring.bands") },
+  { id: 'signet', name: 'Signet', imageUrl: assetUrl("mock.subcategory.ring.signet") },
+  { id: 'promise', name: 'Promise', imageUrl: assetUrl("mock.subcategory.ring.promise") },
+  { id: 'stackable', name: 'Stackable', imageUrl: assetUrl("mock.subcategory.ring.stackable") },
 ];
 
 const SUB_CATS_NECKLACE: SubCategory[] = [
-  { id: 'all', name: 'All', imageUrl: 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=200' },
-  { id: 'chains', name: 'Chains', imageUrl: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=200' },
-  { id: 'pendants', name: 'Pendants', imageUrl: 'https://images.unsplash.com/photo-1602751584552-8ba42d52e90e?q=80&w=200' },
-  { id: 'chokers', name: 'Chokers', imageUrl: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=200' },
+  { id: 'all', name: 'All', imageUrl: assetUrl("mock.subcategory.necklace.all") },
+  { id: 'chains', name: 'Chains', imageUrl: assetUrl("mock.subcategory.necklace.chains") },
+  { id: 'pendants', name: 'Pendants', imageUrl: assetUrl("mock.subcategory.necklace.pendants") },
+  { id: 'chokers', name: 'Chokers', imageUrl: assetUrl("mock.subcategory.necklace.chokers") },
 ];
 
 const DEPARTMENTS: Department[] = [

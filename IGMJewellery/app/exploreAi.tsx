@@ -7,43 +7,77 @@ import { MessageSquare, Mic, Send } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../auth/authContext";
 import { HapticButton } from "../components/basic components/hapticButton";
 import AiChatComponent from "../components/exploreAi/aiChat";
+import { useLuxury } from "../context/luxuryContext";
+import LuxuryExploreAi from "./luxury/exploreAi";
 
+/**
+ * Both storefronts share this route, so every existing link to the assistant
+ * lands on the presentation the shopper is currently browsing in. The luxury
+ * screen also keeps its own route for direct links.
+ */
 export default function ExploreAi() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? <LuxuryExploreAi /> : <ClassicExploreAi />;
+}
+
+function ClassicExploreAi() {
   const params = useLocalSearchParams();
   const router = useRouter();
   const { userId } = useAuth();
   const searchQuery = (params.value as string) || "";
+
   const [showVoiceVideoInterface, setShowVoiceVideoInterface] = useState(
     params.mode
   );
-
   const [inputText, setInputText] = useState("");
   const [showChat, setShowChat] = useState(false);
   const [userMessage, setUserMessage] = useState("");
   const [hasHistory, setHasHistory] = useState(false);
 
-  // Check for persisted chat history on mount
+  // State to track keyboard visibility to hide BottomNavBar
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
   useEffect(() => {
+    // Check for persisted chat history
     (async () => {
       const history = await loadChatHistory(userId);
       setHasHistory(history.length > 0);
     })();
+
+    // Keyboard listeners to toggle BottomNavBar visibility
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => setKeyboardVisible(true)
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => setKeyboardVisible(false)
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
   }, [userId]);
 
   const suggestions = [
     "Our New collection",
     "Our New Offers",
-    "Our New collection",
     "Gifting Options",
     "I'm not sure what to buy",
     "Latest TBZ Collection",
@@ -66,15 +100,10 @@ export default function ExploreAi() {
     setShowChat(true);
   };
 
-  // Show chat component if user sent a message
-  if (showChat) {
+  if (showChat)
     return <AiChatComponent initialMessage={userMessage} userId={userId} />;
-  }
-
-  if (searchQuery && searchQuery != "") {
+  if (searchQuery && searchQuery !== "")
     return <AiChatComponent initialMessage={searchQuery} userId={userId} />;
-  }
-
   if (showVoiceVideoInterface) {
     return (
       <AiChatComponent
@@ -87,108 +116,113 @@ export default function ExploreAi() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-      <HapticButton onPress={() => router.back()} style={styles.iconBtn}>
-        <Ionicons name="chevron-back" size={24} color={COLORS.text} />
-      </HapticButton>
-      <View style={styles.container}>
-        {/* Sparkle Icon */}
-        <View style={styles.iconContainer}>
-          <Image
-            source={require("../assets/images/elanziaNav.png")}
-            style={styles.aiImage}
-          />
-        </View>
-
-        {/* Greeting Text */}
-        <Text style={styles.greetingBold}>Hey there!</Text>
-        {/* <Text style={styles.greetingLight}>What sparkle</Text> */}
-        <Text style={styles.greetingLight}>
-          Tell us what you are looking for today?
-        </Text>
-
-        <ScrollView
-          style={styles.suggestionsContainer}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.suggestionsGrid}>
-            {suggestions.map((suggestion, index) => (
-              <HapticButton
-                key={index}
-                style={styles.suggestionChip}
-                onPress={() => handleSuggestionPress(suggestion)}
-              >
-                <Text style={styles.suggestionText}>{suggestion}</Text>
-              </HapticButton>
-            ))}
-          </View>
-        </ScrollView>
-
-        {/* Input Field */}
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Tell me what are you looking for |"
-            placeholderTextColor="#999"
-            value={inputText}
-            onChangeText={setInputText}
-            onSubmitEditing={handleSend}
-            returnKeyType="send"
-          />
-          <HapticButton
-            style={styles.iconButton}
-            onPress={() => {
-              setShowVoiceVideoInterface("voice");
-            }}
-          >
-            <Mic size={20} color="#333" />
-          </HapticButton>
-          {/* <HapticButton
-            style={styles.iconButton}
-            onPress={() => {
-              setShowVoiceVideoInterface("video");
-            }}
-          >
-            <AudioLines />
-          </HapticButton> */}
-          {inputText.trim().length > 0 && (
-            <HapticButton style={styles.sendButton} onPress={handleSend}>
-              <Send size={18} color="#fff" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+        // keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20} // Adjust if status bar causes offset
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={{ flex: 1 }}>
+            <HapticButton onPress={() => router.back()} style={styles.iconBtn}>
+              <Ionicons name="chevron-back" size={24} color={COLORS.text} />
             </HapticButton>
-          )}
-        </View>
 
-        {/* Continue / Clear Chat */}
-        {hasHistory && (
-          <View style={styles.historyActions}>
-            <HapticButton
-              style={styles.continueChatButton}
-              onPress={() => {
-                setUserMessage("");
-                setShowChat(true);
-              }}
-            >
-              <MessageSquare
-                size={16}
-                color="#fff"
-                style={{ marginRight: 8 }}
-              />
-              <Text style={styles.continueChatText}>
-                Continue Previous Chat
+            <View style={styles.container}>
+              {/* Sparkle Icon */}
+              <View style={styles.iconContainer}>
+                <Image
+                  source={require("../assets/images/elanziaNav.png")}
+                  style={styles.aiImage}
+                />
+              </View>
+
+              {/* Greeting Text */}
+              <Text style={styles.greetingBold}>Hey there!</Text>
+              <Text style={styles.greetingLight}>
+                Tell us what you are looking for today?
               </Text>
-            </HapticButton>
-            <HapticButton
-              style={styles.clearChatButton}
-              onPress={async () => {
-                await clearChatHistory(userId);
-                setHasHistory(false);
-              }}
-            >
-              <Text style={styles.clearChatText}>Clear Chat</Text>
-            </HapticButton>
+
+              {/* Suggestions Grid */}
+              <ScrollView
+                style={styles.suggestionsContainer}
+                contentContainerStyle={{ paddingBottom: 20 }}
+                showsVerticalScrollIndicator={false}
+              >
+                <View style={styles.suggestionsGrid}>
+                  {suggestions.map((suggestion, index) => (
+                    <HapticButton
+                      key={index}
+                      style={styles.suggestionChip}
+                      onPress={() => handleSuggestionPress(suggestion)}
+                    >
+                      <Text style={styles.suggestionText}>{suggestion}</Text>
+                    </HapticButton>
+                  ))}
+                </View>
+              </ScrollView>
+
+              {/* Input Field Section */}
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Tell me what are you looking for |"
+                  placeholderTextColor="#999"
+                  value={inputText}
+                  onChangeText={setInputText}
+                  onSubmitEditing={handleSend}
+                  returnKeyType="send"
+                  multiline={false}
+                />
+                <HapticButton
+                  style={styles.iconButton}
+                  onPress={() => setShowVoiceVideoInterface("voice")}
+                >
+                  <Mic size={20} color="#333" />
+                </HapticButton>
+                {inputText.trim().length > 0 && (
+                  <HapticButton style={styles.sendButton} onPress={handleSend}>
+                    <Send size={18} color="#fff" />
+                  </HapticButton>
+                )}
+              </View>
+
+              {/* History Actions */}
+              {hasHistory && !isKeyboardVisible && (
+                <View style={styles.historyActions}>
+                  <HapticButton
+                    style={styles.continueChatButton}
+                    onPress={() => {
+                      setUserMessage("");
+                      setShowChat(true);
+                    }}
+                  >
+                    <MessageSquare
+                      size={16}
+                      color="#fff"
+                      style={{ marginRight: 8 }}
+                    />
+                    <Text style={styles.continueChatText}>
+                      Continue Previous Chat
+                    </Text>
+                  </HapticButton>
+                  <HapticButton
+                    style={styles.clearChatButton}
+                    onPress={async () => {
+                      await clearChatHistory(userId);
+                      setHasHistory(false);
+                    }}
+                  >
+                    <Text style={styles.clearChatText}>Clear Chat</Text>
+                  </HapticButton>
+                </View>
+              )}
+            </View>
           </View>
-        )}
-      </View>
-      <BottomNavBar activeTab="AiDiscover"></BottomNavBar>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+
+      {/* Hide Bottom Nav when typing to maximize space */}
+      {!isKeyboardVisible && <BottomNavBar activeTab="AiDiscover" />}
     </SafeAreaView>
   );
 }
@@ -207,6 +241,8 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     width: 80,
     backgroundColor: COLORS.primary,
+    justifyContent: "center",
+    alignItems: "center",
   },
   aiImage: {
     height: 80,
@@ -236,13 +272,15 @@ const styles = StyleSheet.create({
     borderColor: "#e0e0e0",
     borderRadius: 8,
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: Platform.OS === "ios" ? 12 : 5, // Taller for iOS touch area
     marginBottom: 20,
+    backgroundColor: "#fff",
   },
   input: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 14,
     color: "#333",
+    minHeight: 40,
   },
   iconButton: {
     marginLeft: 12,
@@ -259,12 +297,12 @@ const styles = StyleSheet.create({
   },
   suggestionsContainer: {
     flex: 1,
-    marginTop: 30,
+    marginTop: 20,
   },
   suggestionsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginHorizontal: -5, // Negative margin to offset chip margins
+    justifyContent: "center",
   },
   suggestionChip: {
     paddingHorizontal: 16,
@@ -272,9 +310,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e0e0e0",
     borderRadius: 20,
-    marginRight: 10,
-    marginBottom: 10,
-    marginLeft: 5,
+    margin: 5,
   },
   suggestionText: {
     fontSize: 12,
@@ -282,9 +318,9 @@ const styles = StyleSheet.create({
     fontWeight: "400",
   },
   historyActions: {
-    marginBottom: 16,
+    marginBottom: 10,
     alignItems: "center",
-    gap: 10,
+    gap: 8,
   },
   continueChatButton: {
     flexDirection: "row",

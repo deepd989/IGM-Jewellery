@@ -17,6 +17,9 @@ import { useAuth } from "../../auth/authContext";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import PaymentMethods from "../../components/paymentMethods";
 import { COLORS } from "../../constants/theme";
+import { useLuxury } from "../../context/luxuryContext";
+import LuxuryProfileScreen from "../luxury/profile";
+import { assetUrl } from "@/constants/assets";
 
 const PROFILE_STATS = [
   {
@@ -111,10 +114,21 @@ const MENU_ITEMS = [
   },
 ];
 
+/**
+ * Both storefronts share this route, so every existing link to the account
+ * screen lands on the presentation the shopper is currently browsing in. The
+ * luxury screen also keeps its own route for direct links.
+ */
 export default function ProfileScreen() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? <LuxuryProfileScreen /> : <ClassicProfileScreen />;
+}
+
+function ClassicProfileScreen() {
   const productImageLinks = [
-    "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FRings%2FRing_Eternity.webp?alt=media&token=195729b9-5863-440c-b8cd-762318f7de62",
-    "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Sub-Category%20Images%2FRings%2FRing_anniversary.webp?alt=media&token=9cad0037-bb91-4334-a586-d5290f309bdb",
+    assetUrl("profile.recentOrder.image1"),
+    assetUrl("profile.recentOrder.image2"),
   ];
 
   const router = useRouter();
@@ -131,7 +145,7 @@ export default function ProfileScreen() {
         <Text style={styles.headerTitle}>Profile</Text>
         {/* <HapticButton
           style={styles.pointsBadge}
-          onPress={() => router.push("/profile/loyalty")}
+          onPress={() => router.navigate("/profile/loyalty")}
         >
           <Ionicons name="trophy" size={14} color="#053844" />
           <Text style={styles.pointsText}>{profile.points} Points</Text>
@@ -142,7 +156,7 @@ export default function ProfileScreen() {
         <View style={styles.userSection}>
           <Image
             source={{
-              uri: "https://drive.google.com/uc?export=download&id=19-d6USaW7yMEDIqEEPWx-lfilvBiNBCF",
+              uri: assetUrl("profile.avatarFallback"),
             }}
             style={styles.avatarPlaceholder}
           />
@@ -152,11 +166,11 @@ export default function ProfileScreen() {
           </View>
           <HapticButton
             style={styles.langSelector}
-            onPress={() => router.push("/profile/language-currency")}
+            onPress={() => router.navigate("/profile/language-currency")}
           >
             <Image
               source={{
-                uri: "https://upload.wikimedia.org/wikipedia/en/thumb/4/41/Flag_of_India.svg/255px-Flag_of_India.svg.png",
+                uri: assetUrl("profile.flag.india"),
               }}
               style={styles.flag}
             />
@@ -169,7 +183,7 @@ export default function ProfileScreen() {
             <HapticButton
               key={stat.id}
               style={[styles.statCard]}
-              onPress={() => stat.path && router.push(stat.path as any)}
+              onPress={() => stat.path && router.navigate(stat.path as any)}
             >
               <Ionicons name={stat.icon as any} size={24} color="white" />
               <Text style={styles.statTitle}>{stat.title}</Text>
@@ -183,7 +197,7 @@ export default function ProfileScreen() {
             <HapticButton
               key={item.id}
               style={styles.menuItem}
-              onPress={() => item.path && router.push(item.path as any)}
+              onPress={() => item.path && router.navigate(item.path as any)}
             >
               <View style={styles.menuIconContainer}>
                 <Ionicons
@@ -229,7 +243,7 @@ export default function ProfileScreen() {
             <HapticButton
               key={i}
               style={styles.subOrderItem}
-              onPress={() => router.push("/orders/ord1")}
+              onPress={() => router.navigate("/orders/ord1")}
             >
               <ImageBackground
                 style={styles.subOrderThumb}
@@ -260,7 +274,7 @@ export default function ProfileScreen() {
             <HapticButton
               key={link.title}
               style={styles.footerLinkItem}
-              onPress={() => link.path && router.push(link.path as any)}
+              onPress={() => link.path && router.navigate(link.path as any)}
             >
               <Text style={styles.footerLinkText}>{link.title}</Text>
             </HapticButton>
@@ -273,7 +287,7 @@ export default function ProfileScreen() {
           </HapticButton>
         )}
         <PaymentMethods />
-        <Text style={styles.version}>APP VERSION 1.1.0</Text>
+        <Text style={styles.version}>APP VERSION 2.0.2</Text>
       </ScrollView>
       <BottomNavBar activeTab="Profile" />
     </SafeAreaView>
@@ -367,7 +381,7 @@ const styles = StyleSheet.create({
   orderThumb: {
     width: 40,
     height: 40,
-    backgroundColor: "red",
+    backgroundColor: "white",
     borderRadius: 4,
   },
   orderInfo: { flex: 1, marginLeft: 12 },

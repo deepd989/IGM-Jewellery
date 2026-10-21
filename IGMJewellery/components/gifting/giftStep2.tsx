@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { OCCASIONS } from "../../constants/occasions";
 import { HapticButton } from "../basic components/hapticButton";
 import RibbonGiftCard from "./ribbonGiftCard";
+import { assetUrl } from "@/constants/assets";
 
 interface GiftCardScreenProps {
   onNext: () => void;
@@ -139,7 +140,7 @@ export default function GiftCardScreen({
 
       {/* Gift Card Preview */}
       <RibbonGiftCard
-        cardBackgroundColor="white"
+        imgUrl={assetUrl("gifting.banner")}
         heading={"Happy " + occasion + "!"}
         caption={message}
         amount={selectedAmount}

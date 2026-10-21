@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { OccasionEnum } from "../constants/occasions";
 import { SectionHeader } from "./section";
+import { assetUrl } from "@/constants/assets";
 
 const { width } = Dimensions.get("window");
 
@@ -17,37 +18,33 @@ const OCCASIONS = [
   {
     id: "1",
     title: OccasionEnum.Wedding,
-    image:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Wedding%20with%20text.webp?alt=media&token=70ca4103-9084-4fe1-bcb2-0d048e3a5152",
+    image: assetUrl("occasion.wedding"),
   },
   {
     id: "2",
     title: OccasionEnum.Anniversary,
-    image:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2Focasssion%20banner_Anniversary%20with%20text.webp?alt=media&token=4040cf38-94d8-4054-a5dd-ee8cfc1fdb17",
+    image: assetUrl("occasion.anniversary"),
   },
   {
     id: "3",
     title: OccasionEnum.Birthday,
-    image:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2FOccasion%20_Birthday%20with%20text.webp?alt=media&token=896dc501-4df7-4366-b829-b16f3a43972b",
+    image: assetUrl("occasion.birthday"),
   },
   {
     id: "4",
     title: OccasionEnum.Engagement,
-    image:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Shop%20by%20Occassions%2Focasssion%20banner_Engagement%20with%20text.webp?alt=media&token=5466465d-eb33-4733-a668-d0afade15567",
+    image: assetUrl("occasion.engagement"),
   },
 ];
 
-const CategoryCard = ({ title, image }) => {
+const CategoryCard = React.memo(function CategoryCard({ title, image }) {
   const router = useRouter();
   return (
     <TouchableOpacity
       activeOpacity={0.9}
       style={styles.cardContainer}
       onPress={() =>
-        router.push({
+        router.navigate({
           pathname: "/product-list",
           params: {
             occasion: title.toLowerCase(),
@@ -67,7 +64,11 @@ const CategoryCard = ({ title, image }) => {
       </ImageBackground>
     </TouchableOpacity>
   );
-};
+});
+
+const renderOccasion = ({ item }: { item: (typeof OCCASIONS)[0] }) => (
+  <CategoryCard title={item.title.toUpperCase()} image={item.image} />
+);
 
 export default function OccasionCardList() {
   return (
@@ -77,11 +78,12 @@ export default function OccasionCardList() {
         <FlatList
           data={OCCASIONS}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <CategoryCard title={item.title.toUpperCase()} image={item.image} />
-          )}
+          renderItem={renderOccasion}
           contentContainerStyle={styles.listPadding}
           showsVerticalScrollIndicator={false}
+          // Four banners down the page's own scroll — a second vertical
+          // scroller here only competes with it for the gesture.
+          scrollEnabled={false}
         />
       </View>
     </>

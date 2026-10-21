@@ -1,3 +1,4 @@
+import { useCartStatus } from "@/hooks/useCartStatus";
 import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation } from "@/store/apis/cart";
 import { useGetProductsQuery } from "@/store/apis/product";
@@ -16,11 +17,11 @@ import {
   FlatList,
   Image,
   Modal,
-  ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import ImageViewer from "react-native-image-zoom-viewer";
 import { COLORS, SPACING } from "../../constants/theme";
 import { HapticButton } from "../basic components/hapticButton";
 
@@ -39,6 +40,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
   const router = useRouter();
   const [activeSlide, setActiveSlide] = useState(0);
   const [showSimilarModal, setShowSimilarModal] = useState(false);
+  const imageUrls = images.map((img) => ({ url: img }));
 
   // Wishlist functionality
   const { data: wishlistData } = useGetWishlistQuery();
@@ -107,24 +109,17 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
         </HapticButton>
       </View>
 
-      <ScrollView
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={onScroll}
-        scrollEventThrottle={16}
-        style={styles.scrollView}
-      >
-        {images.map((img, index) => (
-          <View key={index} style={styles.imageContainer}>
-            <Image
-              source={{ uri: img }}
-              style={styles.image}
-              resizeMode="contain"
-            />
-          </View>
-        ))}
-      </ScrollView>
+      <View style={{ width, height: IMAGE_HEIGHT }}>
+        <ImageViewer
+          imageUrls={imageUrls}
+          resizeMode="cover"
+          index={activeSlide}
+          onChange={(index) => setActiveSlide(index || 0)}
+          enableSwipeDown={false}
+          saveToLocalByLongPress={false}
+          renderIndicator={() => {}}
+        />
+      </View>
 
       {/* Pagination Indicators */}
       <View style={styles.pagination}>
@@ -221,7 +216,7 @@ export const ProductImageGallery: React.FC<ProductImageGalleryProps> = ({
                   product={item}
                   onPress={() => {
                     setShowSimilarModal(false);
-                    router.push({
+                    router.navigate({
                       pathname: "/product/[id]",
                       params: { id: item.id },
                     });
@@ -255,6 +250,7 @@ const SimilarProductCard = ({
   const [addToWishlist] = useAddToWishlistMutation();
   const [removeFromWishlist] = useRemoveFromWishlistMutation();
   const [addToCart] = useAddToCartMutation();
+  const { isInCart, goToCart } = useCartStatus(product.id);
 
   const isInWishlist = wishlistData?.items.some(
     (item) => item.product.id === product.id
@@ -273,8 +269,15 @@ const SimilarProductCard = ({
     }
   };
 
-  const handleAddToCart = async (e: any) => {
+  /** Adds the piece, or opens the cart once it is already in there. */
+  const handleCartPress = async (e: any) => {
     e.stopPropagation();
+
+    if (isInCart) {
+      goToCart();
+      return;
+    }
+
     try {
       await addToCart({ product, quantity: 1 }).unwrap();
       Alert.alert("Success", "Added to cart");
@@ -345,9 +348,11 @@ const SimilarProductCard = ({
         </HapticButton>
         <HapticButton
           style={styles.addToCartBtnSmall}
-          onPress={handleAddToCart}
+          onPress={handleCartPress}
         >
-          <Text style={styles.addToCartBtnText}>Add to cart</Text>
+          <Text style={styles.addToCartBtnText}>
+            {isInCart ? "Go to cart" : "Add to cart"}
+          </Text>
         </HapticButton>
       </View>
     </HapticButton>
@@ -378,7 +383,7 @@ const styles = StyleSheet.create({
     height: IMAGE_HEIGHT,
     justifyContent: "center",
     alignItems: "center",
-    padding: SPACING.l,
+    paddingBottom: 50,
   },
   image: {
     width: "100%",

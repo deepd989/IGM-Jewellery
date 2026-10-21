@@ -1,6 +1,7 @@
 import { FILTER_CATEGORIES } from "@/dummyData/filters";
+import { useFilterCategories } from "@/hooks/useFilterCategories";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -11,7 +12,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SPACING } from "../../constants/theme";
-import { WRAPPER_API } from "../../store/newApis/apiUrl.const";
 import { HapticButton } from "../basic components/hapticButton";
 
 interface FilterModalProps {
@@ -32,41 +32,9 @@ export const FilterModal: React.FC<FilterModalProps> = ({
   const [activeCategoryId, setActiveCategoryId] = useState("productType");
   const [selections, setSelections] =
     useState<Record<string, string[]>>(initialFilters);
-  const [brandOptions, setBrandOptions] = useState<
-    { id: string; label: string }[]
-  >([]);
 
-  // Fetch brands from API
-  useEffect(() => {
-    const fetchBrands = async () => {
-      try {
-        const response = await fetch(`${WRAPPER_API}/getSellers`);
-        if (response.ok) {
-          const sellers = await response.json();
-          const options = sellers.map(
-            (s: { brandid: string; brandName: string }) => ({
-              id: s.brandName,
-              label: s.brandName,
-            })
-          );
-          setBrandOptions(options);
-        }
-      } catch (error) {
-        console.error("Error fetching brands:", error);
-      }
-    };
-    fetchBrands();
-  }, []);
-
-  // Merge dynamic brand options into filter categories
-  const filterCategories = useMemo(() => {
-    return FILTER_CATEGORIES.map((cat) => {
-      if (cat.id === "brand" && brandOptions.length > 0) {
-        return { ...cat, options: brandOptions };
-      }
-      return cat;
-    });
-  }, [brandOptions]);
+  // Categories with the brand list filled in from the sellers endpoint.
+  const filterCategories = useFilterCategories();
 
   // Update selections when modal opens with new initial filters
   useEffect(() => {
@@ -143,7 +111,9 @@ export const FilterModal: React.FC<FilterModalProps> = ({
   }: {
     item: { id: string; label: string };
   }) => {
-    const isSelected = (selections[activeCategoryId] || []).includes(item.id);
+    const isSelected = (selections[activeCategoryId] || [])
+      .map((val) => val.toLowerCase())
+      .includes(item.id.toLowerCase());
     return (
       <HapticButton
         style={styles.gridItemContainer}
@@ -178,7 +148,9 @@ export const FilterModal: React.FC<FilterModalProps> = ({
   }: {
     item: { id: string; label: string };
   }) => {
-    const isSelected = (selections[activeCategoryId] || []).includes(item.id);
+    const isSelected = (selections[activeCategoryId] || [])
+      .map((val) => val.toLowerCase())
+      .includes(item.id.toLowerCase());
     return (
       <HapticButton
         style={styles.listItem}

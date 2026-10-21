@@ -4,10 +4,11 @@ import CommunityCarousel from "@/components/communityCarousel";
 import EventCard from "@/components/eventCard";
 import GiftFinder from "@/components/giftFinder";
 import GiftingCard from "@/components/giftingCard";
+import HeaderRowClassic from "@/components/headerRowClassic";
 import HorizontalRuleIGM from "@/components/horizontalRuleIGM";
 import OccasionCardList from "@/components/occasionsHome";
-import SearchBar from "@/components/searchBar";
 import { TopPicks } from "@/components/topPicks";
+import { Product } from "@/interfaces/product.interface";
 import { getUserPincode } from "@/scripts/location";
 import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,81 +18,253 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useRef,
+  useMemo,
   useState,
 } from "react";
 import {
-  Animated,
   BackHandler,
-  ScrollView,
+  FlatList,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "../auth/authContext";
 import AnnouncementSection from "../components/announcementSectionHome";
 import CallUsComponent from "../components/basic components/callUsComponent";
 import { HapticButton } from "../components/basic components/hapticButton";
-import BrandsHorizontalScroll from "../components/brandsHorizontalScroll";
+import BrandsVerticalScroll from "../components/brandsHorizontalScroll";
 import CategoriesHorizontalScroll from "../components/categoriesHorizontallScroll";
 import HowItLooksWrapper from "../components/homePageCard";
-import LatestCollections from "../components/latestCollections";
 import { SectionHeader } from "../components/section";
 import BrandCollectionCards from "../components/shopByCollectionsNew";
 import ShopByRegionCards from "../components/shopByRegion";
 import { TrendingProducts } from "../components/TrendingProducts";
 import TrustBar from "../components/trustBarBanner";
 import { COLORS } from "../constants/theme";
-import { useWalletBalance } from "./customHooks/walletBalanceLoader";
+import { assetUrl } from "@/constants/assets";
+import LatestOffers from "../components/latestOffers";
+
+const GIFTING_BANNER_URL = assetUrl("gifting.banner");
+
+type HomeSection = { key: string; render: () => React.ReactNode };
+
+/**
+ * The assistant prompt at the top of the page. It owns the field's text so a
+ * keystroke re-renders this box alone — held on the screen, every character
+ * typed re-rendered all twenty sections below it.
+ */
+const HomeAiSearch = React.memo(function HomeAiSearch() {
+  const router = useRouter();
+  const [textInput, setTextInput] = useState("");
+
+  const handleSubmit = () => {
+    router.navigate({
+      pathname: "/exploreAi",
+      params: { value: textInput },
+    });
+  };
+
+  return (
+    <View style={styles.AiContainer}>
+      <View style={styles.viewElanziaIsListening}>
+        <View style={styles.badgeContainer}>
+          <View style={styles.aiBadge}>
+            <Sparkles size={16} color="#FFF" fill="#FFF" />
+            <Text style={styles.aiBadgeText}>Ai powered</Text>
+          </View>
+        </View>
+
+        {/* 2. Main Title */}
+        <Text style={styles.mainTitle}>Tell us what you are looking for</Text>
+
+        {/* 3. Enhanced Search Bar */}
+        <View style={styles.searchBox}>
+          <View style={{ flex: 1 }}>
+            <TextInput
+              placeholder="Search for ..."
+              placeholderTextColor="#999"
+              style={styles.inputText}
+              value={textInput}
+              returnKeyType="send"
+              onSubmitEditing={handleSubmit}
+              onChangeText={setTextInput}
+            />
+          </View>
+          <View style={styles.iconGroup}>
+            <HapticButton
+              onPress={() => {
+                router.navigate({
+                  pathname: "/exploreAi",
+                  params: { mode: "voice" },
+                });
+              }}
+            >
+              <Ionicons name="mic-outline" size={22} color="#003A45" />
+            </HapticButton>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+});
+
+/**
+ * The storefront in order. Kept as data rather than one long block of JSX so
+ * the list can mount each section as the shopper reaches it — rendering all of
+ * them up front loads every carousel's artwork, and starts every video, before
+ * the page has even been scrolled.
+ */
+const buildSections = (products: Product[]): HomeSection[] => [
+  {
+    key: "categories",
+    render: () => (
+      <View style={{ marginTop: 40 }}>
+        <CategoriesHorizontalScroll />
+      </View>
+    ),
+  },
+  { key: "trustBarTop", render: () => <TrustBar /> },
+  {
+    key: "bespoke",
+    render: () => (
+      <>
+        <BespokeSection />
+        <HorizontalRuleIGM />
+      </>
+    ),
+  },
+  {
+    key: "brands",
+    render: () => (
+      <>
+        <BrandsVerticalScroll />
+        <HorizontalRuleIGM />
+      </>
+    ),
+  },
+  {
+    key: "regions",
+    render: () => (
+      <>
+        <ShopByRegionCards />
+        <HorizontalRuleIGM />
+      </>
+    ),
+  },
+  {
+    key: "community",
+    render: () => (
+      <>
+        <CommunityCarousel />
+        <HorizontalRuleIGM />
+      </>
+    ),
+  },
+  {
+    key: "announcements",
+    render: () => (
+      <>
+        <AnnouncementSection />
+        <HorizontalRuleIGM />
+      </>
+    ),
+  },
+  {
+    key: "events",
+    render: () => (
+      <>
+        <EventCard />
+        <HorizontalRuleIGM />
+      </>
+    ),
+  },
+  {
+    key: "collections",
+    render: () => (
+      <>
+        <BrandCollectionCards />
+        <HorizontalRuleIGM />
+      </>
+    ),
+  },
+  {
+    key: "topPicks",
+    render: () => (
+      <>
+        <TopPicks products={products} />
+        <View style={{ marginTop: 30 }}>
+          <HorizontalRuleIGM />
+        </View>
+      </>
+    ),
+  },
+  {
+    key: "giftFinder",
+    render: () => (
+      <>
+        <GiftFinder />
+        <HorizontalRuleIGM />
+      </>
+    ),
+  },
+  {
+    key: "tryOn",
+    render: () => (
+      <>
+        <SectionHeader value="Explore AI Try On" />
+        <HowItLooksWrapper seeHowItLooks={true} />
+        <HorizontalRuleIGM />
+      </>
+    ),
+  },
+  {
+    key: "latestOffers",
+    render: () => (
+      <>
+        <LatestOffers style={styles.fullBleedSection} />
+        <HorizontalRuleIGM />
+      </>
+    ),
+  },
+  {
+    key: "occasions",
+    render: () => (
+      <>
+        <OccasionCardList />
+        <HorizontalRuleIGM />
+      </>
+    ),
+  },
+  {
+    key: "trending",
+    render: () => (
+      <>
+        <TrendingProducts products={products} />
+        <HorizontalRuleIGM />
+      </>
+    ),
+  },
+  {
+    key: "gifting",
+    render: () => (
+      <GiftingCard showExploreButton={true} imgUrl={GIFTING_BANNER_URL} />
+    ),
+  },
+  { key: "trustBarBottom", render: () => <TrustBar /> },
+  { key: "callUs", render: () => <CallUsComponent /> },
+];
+
+const renderSection = ({ item }: { item: HomeSection }) => <>{item.render()}</>;
+
+const keyExtractor = (section: HomeSection) => section.key;
 
 export default function HomeScreen() {
-  const [expanded, setExpanded] = useState(false);
-
   const navigation = useNavigation();
-  const [firstRowHeight, setFirstRowHeight] = useState<number | null>(68);
-  const {
-    data: products = [],
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useGetProductsQuery({});
-  const router = useRouter();
-  const [textInput, setTextInput] = useState<string>("");
-  const [pincode, setPincode] = useState(null);
-  const { userId } = useAuth();
-  const { balance: walletBalance } = useWalletBalance(userId as string);
+  const { data: products = [] } = useGetProductsQuery({});
+  const [pincode, setPincode] = useState<string | null>(null);
 
-  const revolvingTexts = [
-    "I want a necklace",
-    "I want a ring for my mom",
-    "Help me find a bracelet",
-    "What should I give her on anniversary?",
-    "Wedding rings",
-    "Earrings like Deepika Padukone",
-  ];
-  const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const fadeAnim = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => {
-        setPlaceholderIndex((prev) => (prev + 1) % revolvingTexts.length);
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }).start();
-      });
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+  const sections = useMemo(() => buildSections(products), [products]);
 
   useEffect(() => {
     (async () => {
@@ -99,12 +272,6 @@ export default function HomeScreen() {
       setPincode(pin || "Mumbai 400 999");
     })();
   }, []);
-  const handleSubmit = () => {
-    router.push({
-      pathname: "/exploreAi",
-      params: { value: textInput },
-    });
-  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -127,145 +294,55 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <View style={styles.header}>
-        <Text style={styles.deliveryText}>
-          Deliver to{" "}
-          <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
+        <HapticButton style={styles.deliveryButton} activeOpacity={0.7}>
+          <Text style={styles.deliveryText}>
+            <Text style={styles.deliveryStrong}>Deliver</Text> to{" "}
             {pincode || "Fetching..."}
           </Text>
-        </Text>
-        {/* Wallet balance pill hidden for now */}
+          <Ionicons name="chevron-down" size={20} color={COLORS.primary} />
+        </HapticButton>
+
+        < HeaderRowClassic />
       </View>
-      <SearchBar />
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.AiContainer}>
-          <View style={(styles.centerBox, styles.viewElanziaIsListening)}>
-            <View style={styles.badgeContainer}>
-              <View style={styles.aiBadge}>
-                <Sparkles size={16} color="#FFF" fill="#FFF" />
-                <Text style={styles.aiBadgeText}>Ai powered</Text>
-              </View>
-            </View>
 
-            {/* 2. Main Title */}
-            <Text style={styles.mainTitle}>
-              Tell us what you are looking for
-            </Text>
+      <FlatList
+        style={styles.container}
+        data={sections}
+        keyExtractor={keyExtractor}
+        renderItem={renderSection}
+        ListHeaderComponent={HomeAiSearch}
+        showsVerticalScrollIndicator={false}
+        initialNumToRender={2}
+        maxToRenderPerBatch={2}
+        windowSize={5}
+      />
 
-            {/* 3. Enhanced Search Bar */}
-            <View style={styles.searchBox}>
-              <View style={{ flex: 1 }}>
-                <TextInput
-                  placeholder="Search for ..."
-                  placeholderTextColor="#999"
-                  style={styles.inputText}
-                  value={textInput}
-                  returnKeyType="send"
-                  onSubmitEditing={handleSubmit}
-                  onChangeText={(text) => setTextInput(text)}
-                />
-                {/* {!textInput && (
-                  <Animated.Text
-                    style={[
-                      styles.inputText,
-                      {
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        textAlignVertical: "center",
-                        color: "#FFFFFF",
-                        opacity: fadeAnim,
-                      },
-                    ]}
-                    pointerEvents="none"
-                  >
-                    {revolvingTexts[placeholderIndex]}
-                  </Animated.Text>
-                )} */}
-              </View>
-              <View style={styles.iconGroup}>
-                <HapticButton
-                  onPress={() => {
-                    router.push({
-                      pathname: "/exploreAi",
-                      params: { mode: "voice" },
-                    });
-                  }}
-                >
-                  <Ionicons name="mic-outline" size={22} color="#003A45" />
-                </HapticButton>
-              </View>
-            </View>
-          </View>
-        </View>
-        <AnnouncementSection />
-        <HorizontalRuleIGM />
-        <ShopByRegionCards />
-        <HorizontalRuleIGM />
-        <BrandCollectionCards />
-        <HorizontalRuleIGM />
-        <CategoriesHorizontalScroll />
-        <TrustBar />
-        <BrandsHorizontalScroll />
-        <HorizontalRuleIGM />
-        <TopPicks products={products} />
-        <HorizontalRuleIGM />
-        <>
-          <SectionHeader value="Explore AI Try On"></SectionHeader>
-          <HowItLooksWrapper seeHowItLooks={true}></HowItLooksWrapper>
-        </>
-        {/* <HorizontalRuleIGM /> */}
-        <GiftFinder />
-
-        <OccasionCardList />
-        <HorizontalRuleIGM />
-        <TrendingProducts products={products} />
-        <HorizontalRuleIGM />
-        <LatestCollections />
-        {/* <HorizontalRuleIGM /> */}
-
-        {/* <HorizontalRuleIGM /> */}
-        {/* <TryAtHomeCard /> */}
-        <GiftingCard
-          showExploreButton={true}
-          imgUrl="https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Gifting%20Banner%2FGifting_banner-05.webp?alt=media&token=5b1e9a31-d5c7-47ee-bf47-8abcca8b5475"
-        />
-        <HorizontalRuleIGM />
-        <>
-          <SectionHeader value="Trending Products"></SectionHeader>
-          <HowItLooksWrapper seeHowItLooks={false}></HowItLooksWrapper>
-        </>
-        <HorizontalRuleIGM />
-        <CommunityCarousel />
-
-        {/* <BestSellersSection /> */}
-        <HorizontalRuleIGM />
-        <BespokeSection />
-        <HorizontalRuleIGM />
-        <EventCard />
-        <TrustBar />
-        <CallUsComponent></CallUsComponent>
-
-        {/* Necklace Section */}
-      </ScrollView>
-      <BottomNavBar></BottomNavBar>
+      <BottomNavBar />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 8, backgroundColor: "white" },
+  // Cancels the page gutter so a section's artwork runs to the screen edges.
+  fullBleedSection: { marginHorizontal: -8, borderRadius: 0 },
   AiContainer: {
     backgroundColor: COLORS.primary,
     borderRadius: 20,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 6,
+    gap: 12,
     paddingHorizontal: 20,
-    marginBottom: 5,
+    paddingBottom: 12,
+  },
+  deliveryButton: {
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  deliveryStrong: {
+    fontWeight: "700",
   },
   viewElanziaIsListening: {
     padding: 16,

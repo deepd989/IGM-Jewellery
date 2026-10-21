@@ -1,8 +1,8 @@
 import { useClearCartMutation, useGetCartQuery } from "@/store/apis/cart";
 import {
-    useClearCheckoutSessionMutation,
-    useCreateOrderMutation,
-    useGetCheckoutSessionQuery,
+  useClearCheckoutSessionMutation,
+  useCreateOrderMutation,
+  useGetCheckoutSessionQuery,
 } from "@/store/apis/checkout";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,15 +10,15 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-    ActivityIndicator,
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as z from "zod";
@@ -115,7 +115,7 @@ export default function CardDetailsScreen() {
       console.log("Order Created:", orderResponse);
 
       // Navigate to confirmation
-      router.push({
+      router.navigate({
         pathname: "/checkout/confirmation",
         params: {
           orderId: orderResponse.orderId,

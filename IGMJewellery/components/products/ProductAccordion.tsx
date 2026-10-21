@@ -64,7 +64,7 @@ const AccordionItem = ({
 
 export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
   const [openSection, setOpenSection] = useState<string | null>(
-    "PRODUCT DETAILS",
+    "PRODUCT DETAILS"
   );
   const {
     data: brandData,
@@ -81,7 +81,7 @@ export const ProductAccordion: React.FC<AccordionProps> = ({ product }) => {
 
   const handleExploreBrand = () => {
     const brandKey = getBrandKey(product.brand);
-    router.push(`/brandProfile/${brandKey}`);
+    router.navigate(`/brandProfile/${brandKey}`);
   };
 
   // Extract product details with fallbacks
@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.m,
   },
   placeholderLogo: {
-    width: 100,
+    width: 300,
     height: 100,
     backgroundColor: "#F5F5F5",
     borderRadius: 10,

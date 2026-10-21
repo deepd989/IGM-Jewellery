@@ -2,12 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Platform,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  Alert,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SPACING } from "../constants/theme";
@@ -15,12 +15,12 @@ import { COLORS, SPACING } from "../constants/theme";
 import { TrialTabContent } from "@/components/trial/TrailTabContent";
 import { Product } from "@/interfaces/product.interface";
 import {
-    useGetCartQuery,
-    useMoveToWishlistMutation,
-    useRemoveFromCartMutation,
-    useRemoveFromTrialMutation,
-    useToggleGiftAddonMutation,
-    useUpdateQuantityMutation,
+  useGetCartQuery,
+  useMoveToWishlistMutation,
+  useRemoveFromCartMutation,
+  useRemoveFromTrialMutation,
+  useToggleGiftAddonMutation,
+  useUpdateQuantityMutation,
 } from "@/store/apis/cart";
 import { useInitializeCheckoutMutation } from "@/store/apis/checkout";
 import { HapticButton } from "../components/basic components/hapticButton";
@@ -127,7 +127,7 @@ export default function CartScreen() {
 
     try {
       await initializeCheckout().unwrap();
-      router.push("/checkout/address");
+      router.navigate("/checkout/address");
     } catch (error: any) {
       Alert.alert(
         "Error",
@@ -164,7 +164,7 @@ export default function CartScreen() {
       return;
     }
 
-    router.push("/trial/schedule");
+    router.navigate("/trial/schedule");
   };
 
   const isBag = activeTab === "bag";
@@ -211,7 +211,7 @@ export default function CartScreen() {
           </Text>
           <HapticButton
             style={styles.browseButton}
-            onPress={() => router.push("/product-list")}
+            onPress={() => router.navigate("/product-list")}
           >
             <Text style={styles.browseButtonText}>Browse Products</Text>
           </HapticButton>
@@ -279,7 +279,7 @@ export default function CartScreen() {
             <Text style={styles.emptyTabText}>Your shopping bag is empty</Text>
             <HapticButton
               style={styles.browseButton}
-              onPress={() => router.push("/product-list")}
+              onPress={() => router.navigate("/product-list")}
             >
               <Text style={styles.browseButtonText}>Browse Products</Text>
             </HapticButton>
@@ -300,7 +300,7 @@ export default function CartScreen() {
           </Text>
           <HapticButton
             style={styles.browseButton}
-            onPress={() => router.push("/product-list")}
+            onPress={() => router.navigate("/product-list")}
           >
             <Text style={styles.browseButtonText}>Browse Products</Text>
           </HapticButton>
@@ -325,7 +325,7 @@ export default function CartScreen() {
             ) : (
               <HapticButton
                 style={styles.browseBtn}
-                onPress={() => router.push("/product-list")}
+                onPress={() => router.navigate("/product-list")}
               >
                 <Text style={styles.browseText}>Browse trial designs</Text>
               </HapticButton>

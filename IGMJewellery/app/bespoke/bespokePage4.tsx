@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useRouter } from "expo-router";
 import {
   CheckCircle2,
@@ -10,9 +11,11 @@ import {
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { HapticButton } from "../../components/basic components/hapticButton";
-import { COLORS } from "../../constants/theme";
+import { COLORS, LUXURY_COLORS } from "../../constants/theme";
 
-const BespokePage4 = () => {
+const BespokePage4 = ({ isLuxury = false }: { isLuxury?: boolean }) => {
+  const styles = useMemo(() => createStyles(isLuxury), [isLuxury]);
+
   const router = useRouter();
   const requestNumber = "#12345";
 
@@ -90,7 +93,7 @@ const BespokePage4 = () => {
         </HapticButton> */}
         <HapticButton
           style={styles.continueButton}
-          onPress={() => router.push("/home")}
+          onPress={() => router.navigate("/home")}
         >
           <Text style={styles.continueButtonText}>Continue Shopping</Text>
         </HapticButton>
@@ -99,10 +102,12 @@ const BespokePage4 = () => {
   );
 };
 
-const styles = StyleSheet.create({
+/** One set of steps, two surfaces: the tone lives here, not in a copy. */
+const createStyles = (isLuxury: boolean) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: isLuxury ? LUXURY_COLORS.surface : "#fff",
   },
   scrollContent: {
     alignItems: "center",
@@ -122,18 +127,18 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -5,
     right: -5,
-    backgroundColor: "white",
+    backgroundColor: isLuxury ? LUXURY_COLORS.surface : "white",
     borderRadius: 12,
   },
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 14,
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
     textAlign: "center",
     lineHeight: 20,
   },
@@ -150,13 +155,13 @@ const styles = StyleSheet.create({
   },
   requestIdText: {
     fontSize: 16,
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
     fontWeight: "500",
   },
   expectTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
     marginBottom: 30,
   },
   timelineContainer: {
@@ -187,7 +192,7 @@ const styles = StyleSheet.create({
   line: {
     width: 1.5,
     height: "100%",
-    backgroundColor: COLORS.primary,
+    backgroundColor: isLuxury ? LUXURY_COLORS.gradient[1] : COLORS.primary,
   },
   diamondConnector: {
     width: 8,
@@ -195,7 +200,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: "#333",
     transform: [{ rotate: "45deg" }],
-    backgroundColor: COLORS.primary,
+    backgroundColor: isLuxury ? LUXURY_COLORS.gradient[1] : COLORS.primary,
     position: "absolute",
     zIndex: 3,
   },
@@ -207,12 +212,12 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
     marginBottom: 4,
   },
   stepDescription: {
     fontSize: 13,
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
     lineHeight: 18,
   },
   footer: {
@@ -221,7 +226,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: isLuxury ? LUXURY_COLORS.surface : "#fff",
     borderTopWidth: 1,
     borderTopColor: "#eee",
     justifyContent: "space-between",
@@ -233,11 +238,11 @@ const styles = StyleSheet.create({
   statusButtonText: {
     fontSize: 15,
     fontWeight: "500",
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
   },
   continueButton: {
     flex: 1,
-    backgroundColor: COLORS.primary,
+    backgroundColor: isLuxury ? LUXURY_COLORS.gradient[1] : COLORS.primary,
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: "center",

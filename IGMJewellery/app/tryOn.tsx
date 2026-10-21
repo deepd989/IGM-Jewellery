@@ -76,7 +76,7 @@ export default function JewelleryTryOn() {
     setShowImageGeneratingModal(true);
     await generateJewelleryImage(userId as string, product, () => {});
     setShowImageGeneratingModal(false);
-    router.push({
+    router.navigate({
       pathname: `/product/${productId}`,
       params: {
         fromTryOn: "true",
@@ -177,7 +177,15 @@ export default function JewelleryTryOn() {
           </View>
 
           <View style={styles.cameraWrapper}>
-            <CameraView style={styles.camera} ref={cameraRef} facing="front">
+            {/* The front camera's preview is mirrored, but the capture is not,
+                so the shot came back flipped from what the shopper framed.
+                `mirror` flips the output to match the preview. */}
+            <CameraView
+              style={styles.camera}
+              ref={cameraRef}
+              facing="front"
+              mirror
+            >
               <View style={styles.overlayFrame}>
                 <TouchableOpacity style={styles.pillBtn} onPress={pickImage}>
                   <Ionicons name="image-outline" size={18} color="#333" />

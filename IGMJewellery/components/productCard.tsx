@@ -1,3 +1,4 @@
+import { useCartStatus } from "@/hooks/useCartStatus";
 import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
@@ -15,6 +16,8 @@ interface ProductCardProps {
   deliveryDate?: string;
   label1Text?: string;
   label2Text?: string;
+  /** Replaces label2Text once the piece is in the cart. */
+  label2InCartText?: string;
 }
 
 const ProductCard2: React.FC<ProductCardProps> = ({
@@ -23,15 +26,24 @@ const ProductCard2: React.FC<ProductCardProps> = ({
   width,
   label1Text = "Try Now",
   label2Text = "Add to cart",
+  label2InCartText = "Go to cart",
   onPress,
 }) => {
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const { isInCart, goToCart } = useCartStatus(product?.id);
   const { userId, apiUrl, imageGlobal } = useAuth();
   const [firstImageBase64State, setFirstImageBase64State] = useState("");
   const [isTryOnModalVisible, setIsTryOnModalVisible] = useState(false);
 
-  const handleAddToCart = async (e: any) => {
+  /** Adds the piece, or opens the cart once it is already in there. */
+  const handleCartPress = async (e: any) => {
     e.stopPropagation();
+
+    if (isInCart) {
+      goToCart();
+      return;
+    }
+
     try {
       alert(` ${product.title} Added to cart`);
       await addToCart({ product, quantity: 1 }).unwrap();
@@ -65,7 +77,7 @@ const ProductCard2: React.FC<ProductCardProps> = ({
             text: "View Trial List",
             onPress: () => {
               console.log("Navigating to trial tab");
-              router.push("/cart?tab=trial");
+              router.navigate("/cart?tab=trial");
             },
           },
         ]
@@ -82,7 +94,7 @@ const ProductCard2: React.FC<ProductCardProps> = ({
             { text: "OK", style: "cancel" },
             {
               text: "View Trial List",
-              onPress: () => router.push("/cart?tab=trial"),
+              onPress: () => router.navigate("/cart?tab=trial"),
             },
           ]
         );
@@ -184,7 +196,7 @@ const ProductCard2: React.FC<ProductCardProps> = ({
         <HapticButton
           style={[styles.button, styles.tryNow]}
           onPress={(e) => {
-            router.push({
+            router.navigate({
               pathname: "/virtualTryOn2",
               params: {
                 tryOnUrl: `https://jeweltry.plushvie.in/igmindia/118305`,
@@ -201,10 +213,12 @@ const ProductCard2: React.FC<ProductCardProps> = ({
         <HapticButton
           style={[styles.button, styles.tryAtHome]}
           onPress={(event) => {
-            handleAddToCart(event);
+            handleCartPress(event);
           }}
         >
-          <Text style={styles.tryAtHomeText}>{label2Text}</Text>
+          <Text style={styles.tryAtHomeText}>
+            {isInCart ? label2InCartText : label2Text}
+          </Text>
         </HapticButton>
       </View>
     </HapticButton>

@@ -7,6 +7,7 @@ import { ReviewSection } from "@/components/products/ReviewSection";
 import { TryOnSelectorModal } from "@/components/products/TryOnSelectorModal";
 
 import { CartBadge } from "@/components/cart/CardBadge";
+import { useCartStatus } from "@/hooks/useCartStatus";
 import { useGetProductByIdQuery } from "@/store/apis/product";
 import { useGetWishlistQuery } from "@/store/apis/wishlist";
 // Import Cart Mutations
@@ -27,9 +28,26 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../auth/authContext";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS, SPACING } from "../../constants/theme";
+import { useLuxury } from "../../context/luxuryContext";
 import { useGetImage } from "../customHooks/tryOnImageLoader";
+import LuxuryProductDetailScreen from "../luxury/product/[id]";
 
+/**
+ * Both storefronts share this route, so every existing link to /product/[id]
+ * lands on the presentation the shopper is currently browsing in. The luxury
+ * screen also keeps its own route for direct links.
+ */
 export default function ProductDetailScreen() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? (
+    <LuxuryProductDetailScreen />
+  ) : (
+    <ClassicProductDetailScreen />
+  );
+}
+
+function ClassicProductDetailScreen() {
   const { id: productId, fromTryOn } = useLocalSearchParams();
   console.log("ProductDetailScreen params:", { productId, fromTryOn });
   const router = useRouter();
@@ -40,6 +58,7 @@ export default function ProductDetailScreen() {
   // Cart & Trial Logic
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
+  const { isInCart, goToCart } = useCartStatus(productId as string);
   const [showSuccess, setShowSuccess] = useState(false);
   const { base64String: tryOnImage, isLoading: isTryOnImageLoading } =
     useGetImage(`${productId}_${userId}`);
@@ -56,8 +75,15 @@ export default function ProductDetailScreen() {
   const { data: wishlistData } = useGetWishlistQuery();
   const wishlistCount = wishlistData?.items.length || 0;
 
-  const handleAddToCart = async () => {
+  /** Adds the piece, or opens the cart once it is already in there. */
+  const handleCartPress = async () => {
     if (!product) return;
+
+    if (isInCart) {
+      goToCart();
+      return;
+    }
+
     try {
       console.log("Adding to cart:", product.title);
       await addToCart({ product, quantity: 1 }).unwrap();
@@ -100,7 +126,7 @@ export default function ProductDetailScreen() {
           },
           {
             text: "View Trial List",
-            onPress: () => router.push("/cart?tab=trial"),
+            onPress: () => router.navigate("/cart?tab=trial"),
           },
         ]
       );
@@ -113,7 +139,7 @@ export default function ProductDetailScreen() {
             { text: "OK", style: "cancel" },
             {
               text: "View Trial List",
-              onPress: () => router.push("/cart?tab=trial"),
+              onPress: () => router.navigate("/cart?tab=trial"),
             },
           ]
         );
@@ -160,14 +186,14 @@ export default function ProductDetailScreen() {
         <View style={styles.headerRight}>
           <HapticButton
             style={styles.iconWrapper}
-            onPress={() => router.push("/searchPage")}
+            onPress={() => router.navigate("/searchPage")}
           >
             <Ionicons name="search-outline" size={22} color={COLORS.text} />
           </HapticButton>
 
           <HapticButton
             style={styles.iconWrapper}
-            onPress={() => router.push("/wishlist")}
+            onPress={() => router.navigate("/wishlist")}
           >
             <Ionicons
               name={wishlistCount > 0 ? "heart" : "heart-outline"}
@@ -183,7 +209,7 @@ export default function ProductDetailScreen() {
 
           <HapticButton
             style={styles.iconWrapper}
-            onPress={() => router.push("/cart")}
+            onPress={() => router.navigate("/cart")}
           >
             <CartBadge iconSize={22} iconColor={COLORS.text} />
           </HapticButton>
@@ -231,7 +257,7 @@ export default function ProductDetailScreen() {
             styles.stickyAddBtn,
             showSuccess && styles.stickyAddBtnSuccess,
           ]}
-          onPress={handleAddToCart}
+          onPress={handleCartPress}
           disabled={isAddingToCart}
         >
           {isAddingToCart ? (
@@ -240,6 +266,11 @@ export default function ProductDetailScreen() {
             <>
               <Ionicons name="checkmark-circle" size={18} color="#FFFFFF" />
               <Text style={styles.stickyAddText}>Added!</Text>
+            </>
+          ) : isInCart ? (
+            <>
+              <Ionicons name="bag-handle-outline" size={18} color="#FFFFFF" />
+              <Text style={styles.stickyAddText}>Go to Cart</Text>
             </>
           ) : (
             <>
@@ -260,7 +291,7 @@ export default function ProductDetailScreen() {
         visible={isTryOnSelectorVisible}
         onClose={() => setIsTryOnSelectorVisible(false)}
         onSelectVR={() => {
-          router.push({
+          router.navigate({
             pathname: "/virtualTryOn2",
             params: {
               productId: product.id,
@@ -270,7 +301,7 @@ export default function ProductDetailScreen() {
           });
         }}
         onSelectAI={() => {
-          router.push({
+          router.navigate({
             pathname: "/tryOn",
             params: {
               productId: product.id,

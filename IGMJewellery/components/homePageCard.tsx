@@ -3,7 +3,7 @@ import { useGetProductsQuery } from "@/store/apis/product";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -13,7 +13,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { useAuth } from "../auth/authContext";
 import { COLORS } from "../constants/theme";
 import {
   useAddToWishlistMutation,
@@ -24,6 +23,7 @@ import { HapticButton } from "./basic components/hapticButton";
 import { ProductCard } from "./products/ProductCard";
 import { TryOnSelectorModal } from "./products/TryOnSelectorModal";
 import EarringIcon from "./ui/earingsComponentSvg";
+import { assetUrl } from "@/constants/assets";
 
 const { width } = Dimensions.get("window");
 
@@ -33,23 +33,20 @@ export default function HowItLooksWrapper({
   seeHowItLooks?: boolean;
   children?: React.ReactNode;
 }) {
-  const { userId } = useAuth();
   const { data: products = [] } = useGetProductsQuery({});
   const [cardTitle, setCardTitle] = React.useState<string>(
-    ProductType.Necklace,
+    ProductType.Necklace
   );
-  let filteredProduct = products[0];
-  products.forEach((p) => {
-    const filteredProducts = products.filter(
-      (prod) => prod.productType === cardTitle,
-    );
-    filteredProduct =
-      filteredProducts[filteredProducts.length - 1] || products[0];
-  });
 
-  useEffect(() => {
-    console.log("cardTitle changed:", cardTitle);
-  }, [cardTitle]);
+  /**
+   * The last product of the chosen type, or the first of any type. This used
+   * to re-filter the whole catalogue once per product — the same answer,
+   * computed n times, on every render of the page.
+   */
+  const filteredProduct = useMemo(() => {
+    const ofType = products.filter((prod) => prod.productType === cardTitle);
+    return ofType[ofType.length - 1] || products[0];
+  }, [products, cardTitle]);
 
   if (!filteredProduct)
     return (
@@ -122,9 +119,12 @@ export default function HowItLooksWrapper({
             }}
           >
             <Image
-              source={require("../assets/images/categoryIcons/bracelet-icon.png")}
-              style={{ width: 28, height: 28, tintColor: "#053844" }}
-            />
+              source={{
+                uri: assetUrl("home.categoryTab.icon.bracelet"),
+              }}
+              style={{ width: 28, height: 28 }}
+              contentFit="contain"
+            ></Image>
             <Text
               style={{
                 marginTop: 5,
@@ -148,9 +148,12 @@ export default function HowItLooksWrapper({
             }}
           >
             <Image
-              source={require("../assets/images/categoryIcons/bangles-icon.png")}
-              style={{ width: 28, height: 28, tintColor: "#053844" }}
-            />
+              source={{
+                uri: assetUrl("home.categoryTab.icon.bangle"),
+              }}
+              style={{ width: 28, height: 28 }}
+              contentFit="contain"
+            ></Image>
             <Text
               style={{
                 marginTop: 5,
@@ -192,7 +195,16 @@ export default function HowItLooksWrapper({
         <FlatList
           data={[filteredProduct]}
           renderItem={({ item }) => (
-            <ProductCard product={item} viewMode="list" onPress={() => {}} />
+            <ProductCard
+              product={item}
+              viewMode="list"
+              onPress={() =>
+                router.navigate({
+                  pathname: "/product/[id]",
+                  params: { id: item.id },
+                })
+              }
+            />
           )}
           numColumns={1}
           keyExtractor={(item) => item?.id}
@@ -205,6 +217,9 @@ export default function HowItLooksWrapper({
 
 export const SeeHowItLooksOnYouCard = ({ product }) => {
   const { data: wishlistData } = useGetWishlistQuery();
+  // Declared with the other hooks: it used to sit below the `!product` return,
+  // so the hook order changed the moment a product arrived.
+  const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
 
   const [addToWishlist, { isLoading: isAddingToWishlist }] =
     useAddToWishlistMutation();
@@ -212,7 +227,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
     useRemoveFromWishlistMutation();
 
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.product?.id === product?.id,
+    (item) => item.product?.id === product?.id
   );
   const handleToggleWishlist = async (e: any) => {
     e.stopPropagation();
@@ -230,7 +245,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
         if (error?.data === "Item already in wishlist") {
           Alert.alert(
             "Already in Wishlist",
-            "This item is already wishlisted.",
+            "This item is already wishlisted."
           );
         } else {
           Alert.alert("Error", "Failed to add to wishlist");
@@ -249,16 +264,16 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
 
   if (!product) return null;
 
-  const [isTryOnSelectorVisible, setIsTryOnSelectorVisible] = useState(false);
-
   return (
     <View style={necklaceCardStyle.wrapper}>
       <HapticButton
         style={necklaceCardStyle.card}
+        // The card shows one piece, so it opens that piece rather than the
+        // listing for its category.
         onPress={() =>
-          router.push({
-            pathname: "/product-list",
-            params: { categoryName: product.productType },
+          router.navigate({
+            pathname: "/product/[id]",
+            params: { id: product.id },
           })
         }
       >
@@ -341,7 +356,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
         visible={isTryOnSelectorVisible}
         onClose={() => setIsTryOnSelectorVisible(false)}
         onSelectVR={() => {
-          router.push({
+          router.navigate({
             pathname: "/virtualTryOn2",
             params: {
               productId: product.id,
@@ -350,7 +365,7 @@ export const SeeHowItLooksOnYouCard = ({ product }) => {
           });
         }}
         onSelectAI={() => {
-          router.push({
+          router.navigate({
             pathname: "/tryOn",
             params: {
               productId: product.id,
@@ -366,6 +381,7 @@ const styles = StyleSheet.create({
   outerContainer: {
     backgroundColor: "white", // Light blue background from image
     padding: 16,
+    paddingBottom: 0,
     borderRadius: 12,
     marginTop: 0,
     marginBottom: 0,
@@ -382,7 +398,7 @@ const styles = StyleSheet.create({
 const necklaceCardStyle = StyleSheet.create({
   wrapper: {
     alignItems: "center",
-    paddingBottom: 12, // Space for the button to hang off the bottom
+    height: 430,
   },
   card: {
     backgroundColor: "#EBF2F5",

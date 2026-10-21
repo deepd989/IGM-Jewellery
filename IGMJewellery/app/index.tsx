@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HapticButton } from "../components/basic components/hapticButton";
+import { generateUniquePhoneNumber } from "../helpers/generatePhoneNumber";
 
 const { width } = Dimensions.get("window");
 
@@ -42,23 +43,35 @@ const BANNER_IMAGES = [
 
 export default function JewelryLanding() {
   const router = useRouter();
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, userId, login } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [isVideoFinished, setIsVideoFinished] = useState(false);
   const flatListRef = useRef(null);
 
+  useEffect(() => {console.log("userId at home page is",userId)},[userId])
+
   // After video finishes, route based on auth state
   useEffect(() => {
-    if (!isVideoFinished || authLoading) return;
     if (isAuthenticated) {
       router.replace("/home");
     }
-  }, [isVideoFinished, authLoading, isAuthenticated]);
+    if (!isVideoFinished) return;
+  }, [ authLoading, isAuthenticated]);
 
   const handlePlaybackStatusUpdate = (status) => {
     if (status.didJustFinish) {
       setIsVideoFinished(true);
     }
+  };
+
+  // Signs the shopper straight in on a number nobody has used before, so there
+  // is no phone-entry screen and no OTP to clear on the way to /home.
+  const handleExploreAsGuest = async () => {
+    await login({
+      token: "dummy-token",
+      userId: generateUniquePhoneNumber(),
+    });
+    router.replace("/home");
   };
 
   const renderItem = ({ item }) => (
@@ -75,7 +88,7 @@ export default function JewelryLanding() {
           source={require("../assets/splash.mp4")}
           style={StyleSheet.absoluteFill}
           resizeMode={ResizeMode.COVER}
-          shouldPlay
+          shouldPlay = {true}
           rate={2.0}
           isLooping={false}
           isMuted={true}
@@ -104,8 +117,8 @@ export default function JewelryLanding() {
             delayLongPress={800}
           >
             <Image
-              source={require("../assets/images/elanziaIndex.png")}
-              style={{ height: 80, width: 260 }}
+              source={require("../assets/images/elanziaSCroppedPng.png")}
+              style={{ height: 60, width: 300, marginTop: 30, resizeMode: "contain" }}
             />
           </HapticButton>
           <Text style={styles.subtitle}>
@@ -132,14 +145,14 @@ export default function JewelryLanding() {
         <View style={styles.authContainer}>
           <HapticButton
             style={styles.fullButton}
-            onPress={() => router.push("/login")}
+            onPress={() => router.navigate("/login")}
           >
             <Text style={styles.buttonText}>Get Started</Text>
           </HapticButton>
 
           <HapticButton
             style={[styles.fullButton, styles.secondaryButton]}
-            onPress={() => router.push("/home")}
+            onPress={handleExploreAsGuest}
           >
             <Text style={[styles.buttonText, { color: COLORS.primary }]}>
               Explore as Guest
@@ -156,7 +169,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     flex: 1,
     justifyContent: "flex-start",
-    paddingTop: 10,
+    paddingTop: 20,
   },
   safeArea: {
     flex: 1,
@@ -167,7 +180,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     alignItems: "center",
-    // paddingTop: 10,
+    paddingVertical: 10,
     paddingHorizontal: 30,
   },
   subtitle: {

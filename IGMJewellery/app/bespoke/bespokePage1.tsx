@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import {
   ArrowRight,
@@ -17,11 +18,21 @@ import {
   View,
 } from "react-native";
 import { HapticButton } from "../../components/basic components/hapticButton";
-import { COLORS } from "../../constants/theme";
+import { COLORS, LUXURY_COLORS } from "../../constants/theme";
+import { assetUrl } from "@/constants/assets";
 
 const { width } = Dimensions.get("window");
 
-const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
+const BespokePage1 = ({
+  nextStepFn,
+  isLuxury = false,
+}: {
+  nextStepFn: () => void;
+  /** Dresses the step for the luxury storefront. */
+  isLuxury?: boolean;
+}) => {
+  const styles = useMemo(() => createStyles(isLuxury), [isLuxury]);
+
   const steps = [
     {
       title: "Inspire",
@@ -104,7 +115,7 @@ const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
         <View style={styles.imgcontainer}>
           <Image
             source={{
-              uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Bespoke%20Banners%2FExplore%20Bespoke%2Fbespoke-01.webp?alt=media&token=5cb0fb49-268e-4953-acc5-92abb0db0249",
+              uri: assetUrl("bespoke.hero.primary"),
             }}
             style={styles.image}
             resizeMode="cover"
@@ -162,7 +173,7 @@ const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
         <View style={(styles.imgcontainer, { paddingBottom: 80 })}>
           <Image
             source={{
-              uri: "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Bespoke%20Banners%2FExplore%20Bespoke%2Fbespoke-02.webp?alt=media&token=9e40b901-d9eb-491c-ac15-5e419466639b",
+              uri: assetUrl("bespoke.hero.secondary"),
             }}
             style={styles.image}
             resizeMode="cover"
@@ -177,7 +188,9 @@ const BespokePage1 = ({ nextStepFn }: { nextStepFn: () => void }) => {
   );
 };
 
-const styles = StyleSheet.create({
+/** One set of steps, two surfaces: the tone lives here, not in a copy. */
+const createStyles = (isLuxury: boolean) =>
+  StyleSheet.create({
   container: { flex: 1 },
   mainRingContainer: {
     width: "100%",
@@ -193,7 +206,7 @@ const styles = StyleSheet.create({
     width: 180,
     height: 180,
     borderRadius: 90,
-    backgroundColor: "#FFF",
+    backgroundColor: isLuxury ? LUXURY_COLORS.surface : "#FFF",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -203,11 +216,11 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "700",
     textAlign: "center",
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
   },
   subtitle: {
     fontSize: 14,
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
     textAlign: "center",
     marginTop: 8,
     paddingHorizontal: 30,
@@ -246,10 +259,10 @@ const styles = StyleSheet.create({
     width: "33.3%",
     height: "100%",
     borderWidth: 2,
-    borderColor: "#EEE",
+    borderColor: isLuxury ? LUXURY_COLORS.border : "#EEE",
     borderRadius: 10,
     opacity: 0.2,
-    backgroundColor: COLORS.primary,
+    backgroundColor: isLuxury ? LUXURY_COLORS.gradient[1] : COLORS.primary,
   },
   ringImage: { width: width * 0.8, height: 200 },
 
@@ -257,7 +270,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     left: 40,
-    backgroundColor: "white",
+    backgroundColor: isLuxury ? LUXURY_COLORS.surface : "white",
     padding: 8,
     borderRadius: 20,
     elevation: 3,
@@ -267,7 +280,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 30,
     right: 30,
-    backgroundColor: "white",
+    backgroundColor: isLuxury ? LUXURY_COLORS.surface : "white",
     padding: 8,
     borderRadius: 20,
     elevation: 3,
@@ -277,18 +290,22 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 10,
     left: 20,
-    backgroundColor: "white",
+    backgroundColor: isLuxury ? LUXURY_COLORS.surface : "white",
     padding: 8,
     borderRadius: 20,
     elevation: 3,
     shadowOpacity: 0.1,
   },
-  badgeText: { fontSize: 12, fontWeight: "500", color: COLORS.primary },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: "500",
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
+  },
 
   ctaButton: {
     position: "absolute",
     bottom: 35,
-    backgroundColor: COLORS.primary,
+    backgroundColor: isLuxury ? LUXURY_COLORS.gradient[1] : COLORS.primary,
     flexDirection: "row",
     alignSelf: "center",
     paddingVertical: 14,
@@ -305,7 +322,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginVertical: 30,
   },
-  line: { height: 1, width: 60, backgroundColor: COLORS.primary },
+  line: {
+    height: 1,
+    width: 60,
+    backgroundColor: isLuxury ? LUXURY_COLORS.accent : COLORS.primary,
+  },
   diamond: {
     width: 10,
     height: 10,
@@ -313,7 +334,7 @@ const styles = StyleSheet.create({
     borderColor: "#333",
     transform: [{ rotate: "45deg" }],
     marginHorizontal: 5,
-    backgroundColor: COLORS.primary,
+    backgroundColor: isLuxury ? LUXURY_COLORS.gradient[1] : COLORS.primary,
   },
 
   processSection: { paddingHorizontal: 25, marginTop: 10 },
@@ -321,11 +342,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "700",
     textAlign: "center",
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
   },
   processSubtitle: {
     fontSize: 13,
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
     textAlign: "center",
     marginVertical: 10,
     lineHeight: 18,
@@ -341,9 +362,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     zIndex: 2,
-    color: COLORS.primary,
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
   },
-  verticalLine: { width: 1.5, height: 25, backgroundColor: COLORS.primary },
+  verticalLine: {
+    width: 1.5,
+    height: 25,
+    backgroundColor: isLuxury ? LUXURY_COLORS.accent : COLORS.primary,
+  },
   smallDiamond: {
     width: 8,
     height: 8,
@@ -351,12 +376,16 @@ const styles = StyleSheet.create({
     borderColor: "#333",
     transform: [{ rotate: "45deg" }],
     marginVertical: 3,
-    backgroundColor: COLORS.primary,
+    backgroundColor: isLuxury ? LUXURY_COLORS.gradient[1] : COLORS.primary,
   },
 
   stepContent: { flex: 1, marginLeft: 15, paddingTop: 5, paddingBottom: 35 },
-  stepTitle: { fontSize: 16, fontWeight: "700", color: COLORS.primary },
-  stepDescription: { fontSize: 14, color: COLORS.primary, marginTop: 4 },
+  stepTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: isLuxury ? LUXURY_COLORS.text : COLORS.primary,
+  },
+  stepDescription: { fontSize: 14, color: isLuxury ? LUXURY_COLORS.text : COLORS.primary, marginTop: 4 },
   image: {
     height: 400,
     width: "100%",

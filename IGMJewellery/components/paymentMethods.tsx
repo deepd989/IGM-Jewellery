@@ -1,28 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../constants/theme";
+import { assetUrl } from "@/constants/assets";
 
 export default function PaymentMethods() {
+  /** Providers whose logo failed to load; they fall back to their name. */
+  const [failed, setFailed] = useState<Record<string, boolean>>({});
+
   const paymentIcons = [
     {
       name: "PhonePe",
-      uri: "https://drive.google.com/uc?export=view&id=1sTBoePSN7S_U_PE3s1Ehely4MjOQnI7M",
+      uri: assetUrl("payment.icon.phonePe"),
     },
     {
       name: "GPay",
-      uri: "https://drive.google.com/uc?export=view&id=1dos8DTWR05FAc0nPeVIlNmvIlhy2UowR",
+      uri: assetUrl("payment.icon.gPay"),
     },
     {
       name: "Paytm",
-      uri: "https://drive.google.com/uc?export=view&id=1jCi1WkNc6ck_wA8Kd0gI_Q2tVB_i2JG2",
+      uri: assetUrl("payment.icon.paytm"),
     },
     {
       name: "Amex",
-      uri: "https://drive.google.com/uc?export=view&id=1Jbrdq-W5JhrqDMlfMj-qqDU20Ybxaudi",
+      uri: assetUrl("payment.icon.amex"),
     },
     {
       name: "Mastercard",
-      uri: "https://drive.google.com/uc?export=view&id=1z0ugQX0ewzKCXubMooUS_eGEe4Ug41v2",
+      uri: assetUrl("payment.icon.mastercard"),
     },
   ];
 
@@ -33,7 +37,21 @@ export default function PaymentMethods() {
       <View style={styles.logoRow}>
         {paymentIcons.map((item, index) => (
           <View key={index} style={styles.logoBox}>
-            <Image source={{ uri: item.uri }} style={styles.icon} />
+            {failed[item.name] ? (
+              // A blank tile reads as a broken screen; the name still tells
+              // the shopper the rail is accepted.
+              <Text style={styles.fallback} numberOfLines={1}>
+                {item.name}
+              </Text>
+            ) : (
+              <Image
+                source={{ uri: item.uri }}
+                style={styles.icon}
+                onError={() =>
+                  setFailed((current) => ({ ...current, [item.name]: true }))
+                }
+              />
+            )}
           </View>
         ))}
       </View>
@@ -74,5 +92,11 @@ const styles = StyleSheet.create({
     width: "80%",
     height: "80%",
     resizeMode: "contain",
+  },
+  fallback: {
+    paddingHorizontal: 4,
+    fontSize: 9,
+    fontWeight: "600",
+    color: COLORS.primary,
   },
 });

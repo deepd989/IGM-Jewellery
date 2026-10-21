@@ -1,4 +1,5 @@
 import { TryOnSelectorModal } from "@/components/products/TryOnSelectorModal";
+import { useCartStatus } from "@/hooks/useCartStatus";
 import { Product } from "@/interfaces/product.interface";
 import { useAddToCartMutation, useAddToTrialMutation } from "@/store/apis/cart";
 import {
@@ -37,7 +38,7 @@ interface ProductCardProps {
 
 const { width } = Dimensions.get("window");
 
-export const ProductCard: React.FC<ProductCardProps> = ({
+const ProductCardComponent: React.FC<ProductCardProps> = ({
   product,
   viewMode,
   onPress,
@@ -51,6 +52,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const router = useRouter();
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const [addToTrial, { isLoading: isAddingToTrial }] = useAddToTrialMutation();
+  const { isInCart, goToCart } = useCartStatus(product.id);
   const [showSuccess, setShowSuccess] = useState(false);
   const [firstImageBase64State, setFirstImageBase64State] = useState("");
   const [isPreviewLoading, setIsPreviewLoading] = useState(false);
@@ -64,9 +66,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     useRemoveFromWishlistMutation();
 
   useEffect(() => {
+    // Only the AI preview has anything to wait for; flipping this on for every
+    // card cost each one an extra render at mount.
+    if (!loadAiPreview) return;
+
     setIsPreviewLoading(true);
     const handleAiPreview = async () => {
-      if (loadAiPreview && firstImageBase64State === "") {
+      if (firstImageBase64State === "") {
         try {
           await generateJewelleryImage(
             userId as string,
@@ -98,8 +104,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     ? (width - SPACING.m * 2 - GRID_GAP) / 2
     : width - SPACING.m * 2;
 
-  const handleAddToCart = async (e: any) => {
+  /** Adds the piece, or opens the bag once it is already in there. */
+  const handleBagPress = async (e: any) => {
     e.stopPropagation();
+
+    if (isInCart) {
+      goToCart();
+      return;
+    }
+
     try {
       console.log("Adding to cart:", product.title);
       await addToCart({ product, quantity: 1 }).unwrap();
@@ -132,7 +145,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             text: "View Trial List",
             onPress: () => {
               console.log("Navigating to trial tab");
-              router.push("/cart?tab=trial");
+              router.navigate("/cart?tab=trial");
             },
           },
         ]
@@ -148,7 +161,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             { text: "OK", style: "cancel" },
             {
               text: "View Trial List",
-              onPress: () => router.push("/cart?tab=trial"),
+              onPress: () => router.navigate("/cart?tab=trial"),
             },
           ]
         );
@@ -213,7 +226,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <HapticButton
-      style={[styles.card, { width: cardWidth }, isGrid && { height: 300 }]}
+      style={[styles.card, { width: cardWidth }, isGrid && { height: 320 }]}
       onPress={() => onPress(product)}
       activeOpacity={0.9}
     >
@@ -221,7 +234,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       <View
         style={[
           styles.imageWrapper,
-          !isGrid && styles.listImageWrapper && { height: 300 },
+          !isGrid && styles.listImageWrapper && { height: 320 },
           ,
         ]}
       >
@@ -257,11 +270,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* New Badge */}
-        {product.isNew && (
+        {/* {product.isNew && (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>New</Text>
           </View>
-        )}
+        )} */}
 
         {/* Favorite Icon */}
         <HapticButton
@@ -365,7 +378,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               styles.addToBagBtn,
               isAddingToCart && styles.addToBagBtnDisabled,
             ]}
-            onPress={handleAddToCart}
+            onPress={handleBagPress}
             disabled={isAddingToCart}
           >
             {isAddingToCart ? (
@@ -373,7 +386,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             ) : showSuccess ? (
               <Ionicons name="checkmark" size={16} color="#FFFFFF" />
             ) : (
-              <Text style={styles.addToBagText}>Add to Bag</Text>
+              <Text style={styles.addToBagText}>
+                {isInCart ? "Go to Bag" : "Add to Bag"}
+              </Text>
             )}
           </HapticButton>
         </View>
@@ -383,7 +398,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         visible={isTryOnSelectorVisible}
         onClose={() => setIsTryOnSelectorVisible(false)}
         onSelectVR={() => {
-          router.push({
+          router.navigate({
             pathname: "/virtualTryOn2",
             params: {
               productId: product.id,
@@ -392,7 +407,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           });
         }}
         onSelectAI={() => {
-          router.push({
+          router.navigate({
             pathname: "/tryOn",
             params: {
               productId: product.id,
@@ -403,6 +418,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     </HapticButton>
   );
 };
+
+/**
+ * Memoised: the card subscribes to the wishlist and cart, so a list of them
+ * re-rendered with its screen — a keystroke, a fetch resolving — rebuilt every
+ * card on the page.
+ */
+export const ProductCard = React.memo(ProductCardComponent);
 
 const styles = StyleSheet.create({
   addToBagBtn: {

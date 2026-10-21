@@ -3,7 +3,7 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { COLORS } from "../../constants/theme";
 
-const ViewAllButton = ({ onPress }) => {
+const ViewAllButton = ({ onPress }: { onPress?: () => void }) => {
   return (
     <TouchableOpacity
       style={styles.buttonContainer}

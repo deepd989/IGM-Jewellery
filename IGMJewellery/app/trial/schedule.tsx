@@ -59,7 +59,7 @@ export default function ScheduleTrialScreen() {
     }
 
     // Navigate to address page with the selected data
-    router.push({
+    router.navigate({
       pathname: "/trial/address",
       params: {
         date: data.date,

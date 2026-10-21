@@ -4,7 +4,7 @@
     "slug": "IGMJewellery",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/Elanzia_logo1.png",
     "android": {
       "package": "com.deepd989.IGMJewellery",
       "permissions": ["CAMERA", "RECORD_AUDIO"]

@@ -8,8 +8,21 @@ import BespokePage1 from "./bespokePage1";
 import BespokePage2 from "./bespokePage2";
 import BespokePage3 from "./bespokePage3";
 import BespokePage4 from "./bespokePage4";
+import { useLuxury } from "../../context/luxuryContext";
+import LuxuryBespokeStepper from "../luxury/bespoke";
 
+/**
+ * Both storefronts share this route, so every existing link to the bespoke
+ * flow lands on the presentation the shopper is currently browsing in. The
+ * luxury shell also keeps its own route for direct links.
+ */
 export default function BespokeStepperPage() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? <LuxuryBespokeStepper /> : <ClassicBespokeStepper />;
+}
+
+function ClassicBespokeStepper() {
   const [step, setStep] = useState(0);
   const router = useRouter();
 

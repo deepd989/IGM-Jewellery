@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"; // Critical 
 
 import { ImageBackground } from "expo-image";
 import { COLORS } from "../constants/theme";
+import { useCartStatus } from "../hooks/useCartStatus";
 import { Product } from "../interfaces/product.interface";
 import { useAddToCartMutation } from "../store/apis/cart";
 import {
@@ -28,6 +29,22 @@ import { HapticButton } from "./basic components/hapticButton";
 import { TryOnSelectorModal } from "./products/TryOnSelectorModal";
 
 const { width, height } = Dimensions.get("window");
+
+const ImmersiveVideoLocalPath: Record<string, any> = {
+  EA1594: require("../assets/EA1594.mp4"),
+  "GER-24": require("../assets/GER-24.mp4"),
+  "GER-030": require("../assets/GER-030.mp4"),
+  "GER-012023": require("../assets/GER-012023.mp4"),
+  "GNK-026": require("../assets/GNK-026.mp4"),
+  "GNK-89-12": require("../assets/GNK-89-12.mp4"),
+  "GNK-NK-29": require("../assets/GNK-NK-29.mp4"),
+  "KAM-NK-04": require("../assets/KAM-NK-04.mp4"),
+  Kana1: require("../assets/Kana1.mp4"),
+  Moonlight1: require("../assets/Moonlight1.mp4"),
+  Parampara1: require("../assets/Parampara1.mp4"),
+  Shri1: require("../assets/Shri1.mp4"),
+  Swarna1: require("../assets/Swarna1.mp4"),
+};
 
 export const ImmersiveProductCard = ({
   item: product,
@@ -45,6 +62,7 @@ export const ImmersiveProductCard = ({
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
   const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const { isInCart, goToCart } = useCartStatus(product.id);
   const { data: wishlistData } = useGetWishlistQuery();
   const [addToWishlist, { isLoading: isAddingToWishlist }] =
     useAddToWishlistMutation();
@@ -53,11 +71,18 @@ export const ImmersiveProductCard = ({
 
   const discountedPrice = product.discountedPrice;
   const isInWishlist = wishlistData?.items.some(
-    (item) => item.product.id === product.id,
+    (item) => item.product.id === product.id
   );
 
-  const handleAddToCart = async (e: any) => {
+  /** Adds the piece, or opens the bag once it is already in there. */
+  const handleBagPress = async (e: any) => {
     e.stopPropagation();
+
+    if (isInCart) {
+      goToCart();
+      return;
+    }
+
     try {
       await addToCart({ product, quantity: 1 }).unwrap();
       Animated.timing(fadeAnim, {
@@ -125,7 +150,7 @@ export const ImmersiveProductCard = ({
             <Video
               ref={videoRef}
               style={styles.videoFill}
-              source={{ uri: product.immersiveVideoUrl }}
+              source={ImmersiveVideoLocalPath[product.sku as string]}
               resizeMode={ResizeMode.COVER}
               shouldPlay
               isLooping
@@ -217,7 +242,7 @@ export const ImmersiveProductCard = ({
                 ₹{product.givenPrice.toLocaleString()}
               </Text>
               <HapticButton
-                onPress={() => router.push(`/product/${product.id}`)}
+                onPress={() => router.navigate(`/product/${product.id}`)}
               >
                 <Text style={styles.viewLink}>View Product</Text>
               </HapticButton>
@@ -240,7 +265,7 @@ export const ImmersiveProductCard = ({
                 isAddingToCart && styles.addBagBtnDisabled,
                 showSuccess && styles.addBagBtnSuccess,
               ]}
-              onPress={handleAddToCart}
+              onPress={handleBagPress}
               disabled={isAddingToCart || showSuccess}
             >
               <Animated.View
@@ -263,7 +288,9 @@ export const ImmersiveProductCard = ({
                     </Text>
                   </>
                 ) : (
-                  <Text style={styles.addBagText}>Add to Bag</Text>
+                  <Text style={styles.addBagText}>
+                    {isInCart ? "Go to Bag" : "Add to Bag"}
+                  </Text>
                 )}
               </Animated.View>
             </HapticButton>
@@ -275,13 +302,16 @@ export const ImmersiveProductCard = ({
         visible={isTryOnSelectorVisible}
         onClose={() => setIsTryOnSelectorVisible(false)}
         onSelectVR={() =>
-          router.push({
+          router.navigate({
             pathname: "/virtualTryOn2",
             params: { productId: product.id, productTitle: product.title },
           })
         }
         onSelectAI={() =>
-          router.push({ pathname: "/tryOn", params: { productId: product.id } })
+          router.navigate({
+            pathname: "/tryOn",
+            params: { productId: product.id },
+          })
         }
       />
     </View>

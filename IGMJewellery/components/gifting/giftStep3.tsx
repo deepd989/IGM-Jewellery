@@ -13,6 +13,7 @@ import { useAuth } from "../../auth/authContext";
 import { useSendGiftMutation } from "../../store/apis/giftApi";
 import { HapticButton } from "../basic components/hapticButton";
 import RibbonGiftCard from "./ribbonGiftCard";
+import { assetUrl } from "@/constants/assets";
 
 const { width } = Dimensions.get("window");
 
@@ -84,8 +85,9 @@ export default function EGiftCardScreen({
         showsVerticalScrollIndicator={false}
       >
         <RibbonGiftCard
+          imgUrl={assetUrl("gifting.banner")}
+          heading={"Happy " + occasion + "!"}
           cardBackgroundColor="white"
-          heading={"Happy " + occasion + " !"}
           caption={message}
           amount={formattedAmount}
         />

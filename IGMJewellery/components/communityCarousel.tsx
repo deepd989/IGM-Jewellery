@@ -1,57 +1,60 @@
+import { useIsFocused } from "@react-navigation/native";
 import { ResizeMode, Video } from "expo-av"; // Corrected import
 import { useRouter } from "expo-router";
-import React, { useMemo, useRef } from "react";
-import { Animated, Dimensions, StyleSheet, Text, View } from "react-native";
+import React, { useMemo, useRef, useState } from "react";
+import {
+  Animated,
+  Dimensions,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useGetProductsQuery } from "../store/apis/product";
+import {
+  filterCommunityProducts,
+  getCommunityVideoSource,
+} from "../store/data/communityVideosData";
 import { HapticButton } from "./basic components/hapticButton";
 import { SectionHeader } from "./section";
 
 const { width } = Dimensions.get("window");
 
-const PARENT_PADDING = 16;
 const FULL_WIDTH = width;
 const CARD_WIDTH = FULL_WIDTH * 0.75;
 const CARD_SPACING = 10;
 
-const DATA = [
-  {
-    id: "1",
-    title: "24K Diamond Ring",
-    brand: "Kalyan Jewellers",
-    video:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Swipe%20%26%20Shop%20Videos%2FDER-ER03.mp4?alt=media&token=3d9a5c46-295c-4edb-8063-5e05ceaf095f",
-  },
-  {
-    id: "2",
-    title: "Gold Necklace",
-    brand: "Tanishq",
-    video:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Swipe%20%26%20Shop%20Videos%2FDER-ER04.mp4?alt=media&token=ea0772fe-c0d3-4bd6-9d10-9fb5a86accd4",
-  },
-  {
-    id: "3",
-    title: "Wedding Set",
-    brand: "Malabar",
-    video:
-      "https://firebasestorage.googleapis.com/v0/b/igmjewellery.firebasestorage.app/o/Swipe%20%26%20Shop%20Videos%2FDER-ER05.mp4?alt=media&token=a92ba75e-c216-4d0e-ab69-b7ec1b0e4658",
-  },
-];
+/**
+ * How far from the card in view a clip still plays. Devices only have a couple
+ * of hardware video decoders; letting every card play at once pushes the rest
+ * into software decoding and drags the whole screen down.
+ */
+const PLAYBACK_WINDOW = 1;
 
 export default function CommunityCarousel() {
   const router = useRouter();
   const { data: products = [], isLoading, isError } = useGetProductsQuery({});
   const scrollX = useRef(new Animated.Value(0)).current;
+  const [activeIndex, setActiveIndex] = useState(0);
+  // Clips keep decoding while the shopper is off on another screen unless the
+  // carousel stops them.
+  const isFocused = useIsFocused();
   const SIDE_PADDING = (FULL_WIDTH - CARD_WIDTH) / 2 - CARD_SPACING;
   const SNAP_INTERVAL = CARD_WIDTH + CARD_SPACING * 2;
 
-  let immersiveProducts = useMemo(() => {
-    const arr = products
-      .filter((product) => {
-        return product.immersiveVideoUrl; // Only include products that have an immersive video URL
-      })
-      .slice(0, 5); // Limits the array to a maximum of 5 item
-    return arr;
-  }, [products]);
+  let immersiveProducts = useMemo(
+    () => filterCommunityProducts(products),
+    [products]
+  );
+
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const index = Math.round(event.nativeEvent.contentOffset.x / SNAP_INTERVAL);
+    if (index !== activeIndex && index >= 0 && index < immersiveProducts.length) {
+      setActiveIndex(index);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <SectionHeader value="From the Community" />
@@ -63,9 +66,14 @@ export default function CommunityCarousel() {
         snapToInterval={SNAP_INTERVAL}
         decelerationRate="fast"
         contentContainerStyle={{ paddingHorizontal: SIDE_PADDING }}
+        extraData={`${activeIndex}-${isFocused}`}
+        // Only a few cards stay mounted, so the ones off screen hold no decoder.
+        initialNumToRender={2}
+        maxToRenderPerBatch={2}
+        windowSize={3}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: true }
+          { useNativeDriver: true, listener: handleScroll }
         )}
         renderItem={({ item, index }) => {
           const inputRange = [
@@ -94,23 +102,35 @@ export default function CommunityCarousel() {
               <HapticButton
                 onPress={() => {
                   // Debug log to check the product ID
-                  router.push({
+                  router.navigate({
                     pathname: "/product/[id]",
                     params: { id: item.id },
                   });
                 }}
               >
                 <Video
-                  source={{ uri: item.immersiveVideoUrl }}
+                  source={getCommunityVideoSource(item.sku)}
                   style={styles.video}
                   resizeMode={ResizeMode.COVER}
-                  shouldPlay
+                  shouldPlay={
+                    isFocused &&
+                    Math.abs(index - activeIndex) <= PLAYBACK_WINDOW
+                  }
                   isLooping
                   isMuted
                 />
                 <View style={styles.videoCaption}>
+                  {/* <LinearGradient
+                    colors={["white", "black"]}
+                    style={{
+                      flex: 1,
+                      justifyContent: "flex-end",
+                      opacity: 0.8,
+                    }}
+                  > */}
                   <Text style={styles.title}>{item.title}</Text>
                   <Text style={styles.brand}>{item.brand}</Text>
+                  {/* </LinearGradient> */}
                 </View>
               </HapticButton>
             </Animated.View>
@@ -127,27 +147,66 @@ const styles = StyleSheet.create({
   container: { marginHorizontal: -PARENT_PADDING_STYLE },
   card: {
     width: CARD_WIDTH,
-    height: 420,
+    height: 480, // Increased height slightly for better aspect ratio
     marginHorizontal: CARD_SPACING,
-    borderRadius: 16,
-    backgroundColor: "white",
+    borderRadius: 24, // Softer corners like the image
+    backgroundColor: "black",
     overflow: "hidden",
   },
   video: { width: "100%", height: "100%" },
+  playIconContainer: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    opacity: 0.9,
+  },
   videoCaption: {
-    position: "relative",
-    top: -80,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.4)", // Dark transparent overlay
+    borderRadius: 0,
+    padding: 12,
+  },
+  productInfoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  thumbnailPlaceholder: {
+    width: 50,
+    height: 50,
+    backgroundColor: "white",
+    borderRadius: 8,
+    marginRight: 12,
+  },
+  textContainer: {
+    flex: 1,
   },
   title: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "700",
     color: "white",
-    paddingHorizontal: 10,
   },
   brand: {
-    fontSize: 12,
-    paddingHorizontal: 10,
-    fontWeight: "500",
-    color: "black",
+    fontSize: 14,
+    fontWeight: "400",
+    color: "rgba(255, 255, 255, 0.8)",
+    marginTop: 2,
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "white",
+    marginTop: 4,
+  },
+  arrowButton: {
+    width: 32,
+    height: 32,
+    backgroundColor: "white",
+    borderRadius: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 8,
   },
 });

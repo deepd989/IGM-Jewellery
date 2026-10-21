@@ -14,10 +14,22 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import CallUsComponent from "../../components/basic components/callUsComponent";
 import { HapticButton } from "../../components/basic components/hapticButton";
 import { COLORS } from "../../constants/theme";
+import { useLuxury } from "../../context/luxuryContext";
+import LuxuryFAQScreen from "../luxury/profile/faqs";
 
 const CATEGORIES = ["Payment", "Brands", "Orders", "Try At Home", "Ai Sonar"];
 
+/**
+ * Both storefronts share this route, so every existing link to the help
+ * screen lands on the presentation the shopper is browsing in.
+ */
 export default function FAQScreen() {
+  const { isLuxury } = useLuxury();
+
+  return isLuxury ? <LuxuryFAQScreen /> : <ClassicFAQScreen />;
+}
+
+function ClassicFAQScreen() {
   const router = useRouter();
   const [activeCat, setActiveCat] = useState("Payment");
   const [expandedId, setExpandedId] = useState<string | null>(null);
